@@ -31,6 +31,9 @@ use \Lightbit\Action;
 use \Lightbit\Base\IContainer;
 use \Lightbit\Base\IPlugin;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpRouter;
 
@@ -58,6 +61,30 @@ interface IApplication extends IContainer
 	 * in proper order, due to their dependencies.
 	 */
 	public function dispose() : void;
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public function getHtmlAdapter() : IHtmlAdapter;
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument;
+
+	/**
+	 * Gets the http query string.
+	 *
+	 * @return IHttpQueryString
+	 *	The http query string.
+	 */
+	public function getHttpQueryString() : IHttpQueryString;
 
 	/**
 	 * Gets the http request.

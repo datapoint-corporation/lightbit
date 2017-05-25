@@ -43,6 +43,10 @@ use \Lightbit\Data\NoCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\SlugManager;
 use \Lightbit\Exception;
+use \Lightbit\Html\HtmlAdapter;
+use \Lightbit\Html\HtmlDocument;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\HttpQueryString;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpRequest;
@@ -158,6 +162,8 @@ class Application extends Object implements IApplication
 			'data.cache.memory' => [ '@class' => NoCache::class ],
 			'data.cache.network' => [ '@class' => NoCache::class ],
 			'data.slug.manager' => [ '@class' => SlugManager::class ],
+			'html.adapter' => [ '@class' => HtmlAdapter::class ],
+			'html.document' => [ '@class' => HtmlDocument::class ],
 			'http.query.string' => [ '@class' => HttpQueryString::class ],
 			'http.request' => [ '@class' => HttpRequest::class ],
 			'http.response' => [ '@class' => HttpRequest::class ],
@@ -350,6 +356,28 @@ class Application extends Object implements IApplication
 	public final function getFileCache() : IFileCache
 	{
 		return $this->getComponent('data.cache.file');
+	}
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public final function getHtmlAdapter() : IHtmlAdapter
+	{
+		return $this->getComponent('html.adapter');
+	}
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public final function getHtmlDocument() : IHtmlDocument
+	{
+		return $this->getComponent('html.document');
 	}
 
 	/**

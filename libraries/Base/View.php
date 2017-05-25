@@ -144,7 +144,7 @@ class View extends Element implements IView
 			}
 		}
 		
-		Lightbit::inclusion()->bindTo(null, static::class)($this->path, $parameters);
+		Lightbit::inclusion()->bindTo($this, null)($this->path, $parameters);
 
 		if ($capture)
 		{

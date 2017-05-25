@@ -29,6 +29,8 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\IApplication;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpRouter;
@@ -48,6 +50,22 @@ interface IElement
 	 *	The application.
 	 */
 	public function getApplication() : IApplication;
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public function getHtmlAdapter() : IHtmlAdapter;
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument;
 
 	/**
 	 * Gets the http query string.

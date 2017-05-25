@@ -31,6 +31,8 @@ use \Lightbit;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpRouter;
@@ -52,6 +54,28 @@ abstract class Element extends Object implements IElement
 	public final function getApplication() : IApplication
 	{
 		return Lightbit::getApplication();
+	}
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public final function getHtmlAdapter() : IHtmlAdapter
+	{
+		return Lightbit::getApplication()->getHtmlAdapter();
+	}
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public final function getHtmlDocument() : IHtmlDocument
+	{
+		return Lightbit::getApplication()->getHtmlDocument();
 	}
 
 	/**
