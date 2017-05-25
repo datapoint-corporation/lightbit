@@ -27,6 +27,7 @@
 
 use \Lightbit\Base\IApplication;
 use \Lightbit\ClassPathResolutionException;
+use \Lightbit\Html\HtmlView;
 use \Lightbit\Http\HttpException;
 use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\NamespacePathResolutionException;
@@ -223,11 +224,8 @@ class Lightbit
 					$throwable = new HttpException(500, $throwable->getMessage(), $throwable);
 				}
 
-				self::inclusion()
-				(
-					(new Alias('lightbit://views/http/throwable'))->resolve('php'),
-					[ 'throwable' => $throwable ]
-				);
+				(new HtmlView((new Alias('lightbit://views/http/throwable'))->resolve('php')))
+					->run([ 'throwable' => $throwable ]);
 			}
 
 			if (self::$application)
