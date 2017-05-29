@@ -82,12 +82,36 @@ interface IContext
 	public function getDefaultRoute() : array;
 
 	/**
+	 * Gets the global identifier.
+	 *
+	 * @return string
+	 *	The global identifier.
+	 */
+	public function getGlobalID() : string;
+
+	/**
 	 * Gets the identifier.
 	 *
 	 * @return string
 	 *	The identifier.
 	 */
 	public function getID() : string;
+
+	/**
+	 * Gets the layout.
+	 *
+	 * @return string
+	 *	The layout.
+	 */
+	public function getLayout() : ?string;
+
+	/**
+	 * Gets the layout path.
+	 *
+	 * @return string
+	 *	The layout path.
+	 */
+	public function getLayoutPath() : ?string;
 
 	/**
 	 * Gets a module.
@@ -128,6 +152,22 @@ interface IContext
 	public function getPlugin(string $id) : IPlugin;
 
 	/**
+	 * Gets the prefix.
+	 *
+	 * @return string
+	 *	The prefix.
+	 */
+	public function getPrefix() : string;
+
+	/**
+	 * Gets the views base paths.
+	 *
+	 * @return array
+	 *	The views base paths.
+	 */
+	public function getViewsBasePaths() : array;
+
+	/**
 	 * Checks for a component availability.
 	 *
 	 * @param string $id
@@ -161,29 +201,37 @@ interface IContext
 	public function hasModule(string $id) : string;
 
 	/**
-	 * Sets a controller configuration.
+	 * Sets a component configuration.
 	 *
 	 * @param string $id
-	 *	The controller identifier.
+	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The controller configuration.
+	 *	The component configuration.
 	 *
 	 * @param bool $merge
-	 *	The controllers configuration merge flag.
+	 *	The components configuration merge flag.
 	 */
-	public function setControllerConfiguration(string $id, array $configuration, bool $merge = true) : void;
+	public function setComponentConfiguration(string $id, array $configuration, bool $merge = true) : void;
 
 	/**
-	 * Sets the controllers configuration.
+	 * Sets the components configuration.
 	 *
-	 * @param array $controllersConfiguration
-	 *	The controllers configuration.
+	 * @param array $componentsConfiguration
+	 *	The components configuration.
 	 *
 	 * @param bool $merge
-	 *	The controllers configuration merge flag.
+	 *	The components configuration merge flag.
 	 */
-	public function setControllersConfiguration(array $controllersConfiguration, bool $merge = true) : void;
+	public function setComponentsConfiguration(array $setComponentsConfiguration, bool $merge = true) : void;
+
+	/**
+	 * Sets the layout.
+	 *
+	 * @param string $layout
+	 *	The layout.
+	 */
+	public function setLayout(?string $layout) : void;
 
 	/**
 	 * Sets a module configuration.

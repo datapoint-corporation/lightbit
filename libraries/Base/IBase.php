@@ -27,10 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
-use \Lightbit\Action;
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IElement;
 use \Lightbit\Data\ICache;
 use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
@@ -45,34 +42,20 @@ use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
 
 /**
- * Element.
+ * IBase.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Element extends Object implements IElement
+interface IBase
 {
-	/**
-	 * Gets the application.
-	 *
-	 * @return IApplication
-	 *	The application.
-	 */
-	public final function getApplication() : IApplication
-	{
-		return Lightbit::getApplication();
-	}
-
 	/**
 	 * Gets the cache.
 	 *
 	 * @return ICache
 	 *	The cache.
 	 */
-	public function getCache() : ICache
-	{
-		return $this->getContext()->getCache();
-	}
+	public function getCache() : ICache;
 
 	/**
 	 * Gets a component.
@@ -83,28 +66,7 @@ abstract class Element extends Object implements IElement
 	 * @return IComponent
 	 *	The component.
 	 */
-	public final function getComponent(string $id) : IComponent
-	{
-		return $this->getContext()->getComponent($id);
-	}
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return IContext
-	 *	The context.
-	 */
-	public function getContext() : IContext
-	{
-		$action = Action::getInstance();
-
-		if ($action)
-		{
-			return $action->getController()->getContext();
-		}
-
-		return Lightbit::getApplication();
-	}
+	public function getComponent(string $id) : IComponent;
 
 	/**
 	 * Gets the file cache.
@@ -112,10 +74,7 @@ abstract class Element extends Object implements IElement
 	 * @return IFileCache
 	 *	The file cache.
 	 */
-	public function getFileCache() : IFileCache
-	{
-		return $this->getContext()->getFileCache();
-	}
+	public function getFileCache() : IFileCache;
 
 	/**
 	 * Gets the html adapter.
@@ -123,10 +82,7 @@ abstract class Element extends Object implements IElement
 	 * @return IHtmlAdapter
 	 *	The html adapter.
 	 */
-	public function getHtmlAdapter() : IHtmlAdapter
-	{
-		return $this->getContext()->getHtmlAdapter();
-	}
+	public function getHtmlAdapter() : IHtmlAdapter;
 
 	/**
 	 * Gets the html document.
@@ -134,10 +90,7 @@ abstract class Element extends Object implements IElement
 	 * @return IHtmlDocument
 	 *	The html document.
 	 */
-	public function getHtmlDocument() : IHtmlDocument
-	{
-		return $this->getContext()->getHtmlDocument();
-	}
+	public function getHtmlDocument() : IHtmlDocument;
 
 	/**
 	 * Gets the http query string.
@@ -145,10 +98,7 @@ abstract class Element extends Object implements IElement
 	 * @return IHttpQueryString
 	 *	The http query string.
 	 */
-	public function getHttpQueryString() : IHttpQueryString
-	{
-		return $this->getContext()->getHttpQueryString();
-	}
+	public function getHttpQueryString() : IHttpQueryString;
 
 	/**
 	 * Gets the http request component.
@@ -156,10 +106,7 @@ abstract class Element extends Object implements IElement
 	 * @param IHttpRequest
 	 *	The http request component.
 	 */
-	public function getHttpRequest() : IHttpRequest
-	{
-		return $this->getContext()->getHttpRequest();
-	}
+	public function getHttpRequest() : IHttpRequest;
 
 	/**
 	 * Gets the http response component.
@@ -167,10 +114,7 @@ abstract class Element extends Object implements IElement
 	 * @param IHttpResponse
 	 *	The http response component.
 	 */
-	public function getHttpResponse() : IHttpResponse
-	{
-		return $this->getContext()->getHttpResponse();
-	}
+	public function getHttpResponse() : IHttpResponse;
 
 	/**
 	 * Gets the http router.
@@ -178,10 +122,7 @@ abstract class Element extends Object implements IElement
 	 * @return IHttpRouter
 	 *	The http router.
 	 */
-	public function getHttpRouter() : IHttpRouter
-	{
-		return $this->getContext()->getHttpRouter();
-	}
+	public function getHttpRouter() : IHttpRouter;
 
 	/**
 	 * Gets the http session.
@@ -189,10 +130,7 @@ abstract class Element extends Object implements IElement
 	 * @return IHttpSession
 	 *	The http session.
 	 */
-	public function getHttpSession() : IHttpSession
-	{
-		return $this->getContext()->getHttpSession();
-	}
+	public function getHttpSession() : IHttpSession;
 
 	/**
 	 * Gets the memory cache.
@@ -200,10 +138,7 @@ abstract class Element extends Object implements IElement
 	 * @return IMemoryCache
 	 *	The memory cache.
 	 */
-	public function getMemoryCache() : IMemoryCache
-	{
-		return $this->getContext()->getMemoryCache();
-	}
+	public function getMemoryCache() : IMemoryCache;
 
 	/**
 	 * Gets the network cache.
@@ -211,10 +146,7 @@ abstract class Element extends Object implements IElement
 	 * @return INetworkCache
 	 *	The network cache.
 	 */
-	public function getNetworkCache() : INetworkCache
-	{
-		return $this->getContext()->getNetworkCache();
-	}
+	public function getNetworkCache() : INetworkCache;
 
 	/**
 	 * Gets the slug manager.
@@ -222,42 +154,5 @@ abstract class Element extends Object implements IElement
 	 * @return ISlugManager
 	 *	The slug manager.
 	 */
-	public function getSlugManager() : ISlugManager
-	{
-		return $this->getContext()->getSlugManager();
-	}
-
-	/**
-	 * Calls a method.
-	 *
-	 * @param string $method
-	 *	The method name.
-	 *
-	 * @param array $arguments
-	 *	The method arguments.
-	 *
-	 * @return mixed
-	 *	The method result.
-	 */
-	public function __call(string $method, array $arguments) // : mixed
-	{
-		$context = $this->getContext();
-
-		if (method_exists($context, $method))
-		{
-			return $context->{$method}(...$arguments);
-		}
-
-		if (!($context instanceof IApplication))
-		{
-			$context = $this->getApplication();
-
-			if (method_exists($context, $method))
-			{
-				return $context->{$method}(...$arguments);
-			}
-		}
-
-		return parent::__call($method, $arguments);
-	}
+	public function getSlugManager() : ISlugManager;
 }

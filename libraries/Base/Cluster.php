@@ -30,6 +30,7 @@ namespace Lightbit\Base;
 use \Lightbit;
 use \Lightbit\Base\ICluster;
 use \Lightbit\Base\IController;
+use \Lightbit\ControllerNotFoundException;
 
 /**
  * Cluster.
@@ -39,6 +40,13 @@ use \Lightbit\Base\IController;
  */
 abstract class Cluster extends Object implements ICluster
 {
+	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
 	/**
 	 * The controllers.
 	 *
@@ -62,11 +70,16 @@ abstract class Cluster extends Object implements ICluster
 
 	/**
 	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The context.
 	 */
-	protected function __construct(string $path)
+	protected function __construct(IContext $context, string $path)
 	{
 		$this->controllers = [];
 		$this->controllersConfiguration = [];
+
+		$this->context = $context;
 
 		$this->path = $path;
 	}
@@ -83,7 +96,7 @@ abstract class Cluster extends Object implements ICluster
 	protected function controllerClassName(string $id) : string
 	{
 		return $this->getNamespaceName()
-			. '\\' 
+			. '\\Controllers\\' 
 			. strtr(ucwords(strtr($id, [ '/' => ' \\ ', '-' => ' ' ])), [ ' ' => '' ])
 			. 'Controller';
 	}
@@ -101,6 +114,11 @@ abstract class Cluster extends Object implements ICluster
 	{
 		if (!isset($this->controllers[$id]))
 		{
+			if (!$this->hasController($id))
+			{
+				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: "%s", at context "%s"', $id, $this->context->getPrefix()));
+			}
+
 			$className = $this->getControllerClassName($id);
 
 			return $this->controllers[$id] = new $className
@@ -153,6 +171,12 @@ abstract class Cluster extends Object implements ICluster
 		return $result;
 	}
 
+	/**
+	 * Gets the path.
+	 *
+	 * @return string
+	 *	The path.
+	 */
 	public final function getPath() : string
 	{
 		return $this->path;
@@ -169,7 +193,14 @@ abstract class Cluster extends Object implements ICluster
 	 */
 	public final function hasController(string $id) : bool
 	{
-		return Lightbit::hasClass($this->getControllerClassName($id));
+		static $results = [];
+
+		if (!isset($results[$id]))
+		{
+			return $results[$id] = Lightbit::hasClass($this->getControllerClassName($id));
+		}
+
+		return $results[$id];
 	}
 
 	/**

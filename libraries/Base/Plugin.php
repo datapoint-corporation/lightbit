@@ -56,7 +56,7 @@ class Plugin extends Cluster implements IPlugin
 	 */
 	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
 	{
-		parent::__construct($context, $id, $path, $configuration);
+		parent::__construct($context, $configuration);
 	}
 
 	/**

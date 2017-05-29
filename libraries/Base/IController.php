@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Action;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
@@ -53,6 +54,17 @@ interface IController extends IElement
 	public function __construct(IContext $context, string $id, array $configuration = null);
 
 	/**
+	 * Gets an action method name.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @return string
+	 *	The action method name.
+	 */
+	public function getActionMethodName(string $id) : string;
+
+	/**
 	 * Gets the context.
 	 *
 	 * @return IContext
@@ -67,4 +79,18 @@ interface IController extends IElement
 	 *	The identifier.
 	 */
 	public function getID() : string;
+
+	/**
+	 * Resolves to an action.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @param array $parameters
+	 *	The action parameters.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
+	public function resolve(string $id, array $parameters) : Action;
 }

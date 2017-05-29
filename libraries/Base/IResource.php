@@ -27,31 +27,35 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IElement;
+use \Lightbit\Base\IComponent;
 
 /**
- * IModule.
+ * IResource.
+ *
+ * A resource is a special type of component that requires some preparation
+ * before being available for use and, as a consequence, some closing during 
+ * the application dispose procedure.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModule extends IContext, IBase
+interface IResource extends IComponent
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The module context.
-	 *
-	 * @param string $id
-	 *	The module identifier.
-	 *
-	 * @param string $path
-	 *	The module path.
-	 *
-	 * @param array $configuration
-	 *	The module configuration.
+	 * Closes the resource.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+	public function close() : void;
+
+	/**
+	 * Checks the resource status.
+	 *
+	 * @return bool
+	 *	The resource status.
+	 */
+	public function isClosed() : bool;
+
+	/**
+	 * Starts the resource.
+	 */
+	public function start() : void;
 }

@@ -27,31 +27,80 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\Component;
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IElement;
+use \Lightbit\Helpers\ObjectHelper;
 
 /**
- * IModule.
+ * Component.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModule extends IContext, IBase
+abstract class Component extends Element implements IComponent
 {
+	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
+	 * The identifier.
+	 *
+	 * @type string
+	 */
+	private $id;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The module context.
+	 *	The component context.
 	 *
 	 * @param string $id
-	 *	The module identifier.
-	 *
-	 * @param string $path
-	 *	The module path.
+	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The module configuration.
+	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+	public function __construct(?IContext $context, string $id, array $configuration = null)
+	{
+		$this->context = $context;
+		$this->id = $id;
+
+		if ($configuration)
+		{
+			ObjectHelper::configure($this, $configuration);
+		}
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public final function getContext() : IContext
+	{
+		if (!$this->context)
+		{
+			$this->context = parent::getContext();
+		}
+
+		return $this->context;
+	}
+
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public function getID() : string
+	{
+		return $this->id;
+	}
 }

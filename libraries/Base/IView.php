@@ -27,31 +27,73 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
 /**
- * IModule.
+ * IView.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModule extends IContext, IBase
+interface IView extends IElement
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The module context.
-	 *
-	 * @param string $id
-	 *	The module identifier.
-	 *
 	 * @param string $path
-	 *	The module path.
+	 *	The path.
 	 *
 	 * @param array $configuration
-	 *	The module configuration.
+	 *	The configuration.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+	public function __construct(string $path, array $configuration = null);
+
+	/**
+	 * Gets the base path.
+	 *
+	 * @return string
+	 *	The base path.
+	 */
+	public function getBasePath() : string;
+
+	/**
+	 * Gets the path.
+	 *
+	 * @return string
+	 *	The path.
+	 */
+	public function getPath() : string;
+
+	/**
+	 * Renders a view.
+	 *
+	 * @param string $view
+	 *	The view file system alias.
+	 *
+	 * @param array $parameters
+	 *	The view parameters.
+	 *
+	 * @param bool $capture
+	 *	The capture flag which, when set, will use an additional output 
+	 *	buffer to capture any generated contents.
+	 *
+	 * @return string
+	 *	The captured content.
+	 */
+	public function render(string $view, array $parameters = null, bool $capture = false) : ?string;
+
+	/**
+	 * Runs the view.
+	 *
+	 * @param array $parameters
+	 *	The parameters.
+	 *
+	 * @param bool $capture
+	 *	The capture flag which, when set, will use an additional output 
+	 *	buffer to capture any generated contents.
+	 *
+	 * @return string
+	 *	The captured content.
+	 */
+	public function run(array $parameters = null, bool $capture = false) : ?string;
 }

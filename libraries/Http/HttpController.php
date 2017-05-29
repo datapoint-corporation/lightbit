@@ -28,7 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\Controller;
-use \Lightbit\Base\IContainer;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IView;
 use \Lightbit\Html\HtmlView;
 
@@ -43,8 +43,8 @@ abstract class HttpController extends Controller
 	/**
 	 * Constructor.
 	 *
-	 * @param IContainer $container
-	 *	The container.
+	 * @param IContext $context
+	 *	The context.
 	 *
 	 * @param string $id
 	 *	The identifier.
@@ -52,9 +52,9 @@ abstract class HttpController extends Controller
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(IContainer $container, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($container, $id, $configuration);
+		parent::__construct($context, $id, $configuration);
 	}
 
 	/**

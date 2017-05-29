@@ -27,9 +27,23 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit;
+use \Lightbit\Action;
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
+use \Lightbit\Base\IView;
+use \Lightbit\Base\View;
+use \Lightbit\Data\Validation\Filter;
+use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Helpers\TypeHelper;
+use \Lightbit\IllegalParameterRouteException;
+use \Lightbit\IO\FileSystem\Alias;
+use \Lightbit\MethodNotFoundRouteException;
+use \Lightbit\MissingParameterRouteException;
+use \Lightbit\SlugParseParameterRouteException;
 
 /**
  * Controller.
@@ -37,12 +51,12 @@ use \Lightbit\Helpers\ObjectHelper;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Controller extends Element implements IController
+abstract class Controller extends Element implements IController
 {
 	/**
 	 * The context.
 	 *
-	 * @type string
+	 * @type IContext
 	 */
 	private $context;
 
@@ -54,16 +68,30 @@ class Controller extends Element implements IController
 	private $id;
 
 	/**
+	 * The layout.
+	 *
+	 * @type string
+	 */
+	private $layout;
+
+	/**
+	 * The layout path.
+	 *
+	 * @type string
+	 */
+	private $layoutPath;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The controller context.
+	 *	The context.
 	 *
 	 * @param string $id
-	 *	The controller identifier.
+	 *	The identifier.
 	 *
 	 * @param array $configuration
-	 *	The component configuration.
+	 *	The configuration.
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
@@ -77,24 +105,423 @@ class Controller extends Element implements IController
 	}
 
 	/**
+	 * Creates a default action method name.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @return string
+	 *	The default action method name.
+	 */
+	protected function actionMethodName(string $action) : string
+	{
+		return lcfirst(strtr(ucwords(strtr($action, [ '-' => ' ' ])), [ ' ' => '' ]));
+	}
+
+	/**
+	 * Displays a view.
+	 *
+	 * @param string $view
+	 *	The view file system alias.
+	 *
+	 * @param array $parameters
+	 *	The view parameters.
+	 */
+	public final function display(string $view, array $parameters = null) : void
+	{
+		$layoutPath = $this->getLayoutPath();
+
+		if ($layoutPath)
+		{
+			(new View($layoutPath))
+				->run([ 'content' => $this->render($view, $parameters, true) ]);
+		}
+		else
+		{
+			$this->render($view, $parameters, false);
+		}
+	}
+
+	/**
+	 * Gets an action method name.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @return string
+	 *	The action method name.
+	 */
+	public final function getActionMethodName(string $id) : string
+	{
+		static $actionMethodNames = [];
+
+		if (!isset($actionMethodNames[$id]))
+		{
+			$actionMethodNames[$id] = $this->actionMethodName($id);
+		}
+
+		return $actionMethodNames[$id];
+	}
+
+	/**
 	 * Gets the context.
 	 *
 	 * @return IContext
 	 *	The context.
 	 */
-	public function getContext() : IContext
+	public final function getContext() : IContext
 	{
 		return $this->context;
 	}
 
 	/**
-	 * Get the identifier.
+	 * Gets the identifier.
 	 *
 	 * @return string
 	 *	The identifier.
 	 */
-	public function getID() : string
+	public final function getID() : string
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Gets the layout.
+	 *
+	 * @return string
+	 *	The layout.
+	 */
+	public final function getLayout() : ?string
+	{
+		if (!$this->layout)
+		{
+			return $this->getApplication()->getLayout();
+		}
+
+		return $this->layout;
+	}
+
+	/**
+	 * Gets the layout path.
+	 *
+	 * @return string
+	 *	The layout path.
+	 */
+	public final function getLayoutPath() : ?string
+	{
+		if (!$this->layoutPath)
+		{
+			if (!$this->layout)
+			{
+				return $this->getApplication()->getLayoutPath();
+			}
+
+			$this->layoutPath = (new Alias($this->layout))
+				->resolve('php', $this->getApplication()->getPath());
+		}
+
+		return $this->layoutPath;
+	}
+
+	/**
+	 * Gets the views base paths.
+	 *
+	 * @return array
+	 *	The views base paths.
+	 */
+	public function getViewsBasePaths() : array
+	{
+		static $viewsBasePaths;
+
+		if (!isset($viewsBasePaths))
+		{
+			$viewsBasePaths = [];
+
+			foreach ($this->getContext()->getViewsBasePaths() as $i => $path)
+			{
+				$viewsBasePaths[] = $path . DIRECTORY_SEPARATOR . strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
+			}
+		}
+
+		return $viewsBasePaths;
+	}
+
+	/**
+	 * Renders a view.
+	 *
+	 * @param string $view
+	 *	The view file system alias.
+	 *
+	 * @param array $parameters
+	 *	The view parameters.
+	 *
+	 * @param bool $capture
+	 *	The capture flag which, when set, will use an additional output 
+	 *	buffer to capture any generated contents.
+	 *
+	 * @return string
+	 *	The captured content.
+	 */
+	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
+	{
+		return $this->view((new Alias($view))->lookup('php', $this->getViewsBasePaths()))
+			->run($parameters, $capture);
+	}
+
+	/**
+	 * Resolves an action.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @param array $parameters
+	 *	The action parameters.
+	 *
+	 * @return Action
+	 *	The result.
+	 */
+	public final function resolve(string $id, array $parameters) : Action
+	{
+		$methodName = $this->getActionMethodName($id);
+		$method;
+
+		try
+		{
+			$method = (new \ReflectionClass($this))->getMethod($methodName);
+		}
+		catch (\ReflectionException $e)
+		{
+			throw new MethodNotFoundRouteException
+			(
+				($route = ([ $this->id . '/' . $id ] + $parameters)),
+				sprintf
+				(
+					'Action not found, method is not defined: "%s", at controller "%s", at context "%s"', 
+					$id, 
+					$this->id, 
+					$this->getContext()->getPrefix()
+				)
+			);
+		}
+
+		if (!$method->isPublic() || $method->isStatic())
+		{
+			throw new MethodNotFoundRouteException
+			(
+				($route = ([ $this->id . '/' . $id ] + $parameters)),
+				sprintf
+				(
+					'Action not found, method signature mismatch: "%s", at controller "%s", at context "%s"', 
+					$id, 
+					$this->id, 
+					$this->getContext()->getPrefix()
+				)
+			);
+		}
+
+		$arguments = [];
+
+		foreach ($method->getParameters() as $i => $parameter)
+		{
+			$parameterName = $parameter->getName();
+
+			if (isset($parameters[$parameterName]))
+			{
+				$arguments[] = $this->argument($id, $parameters, $methodName, $parameter->getType(), $parameterName, $parameters[$parameterName]);
+				continue;
+			}
+
+			if ($parameter->isDefaultValueAvailable())
+			{
+				$arguments[] = $parameter->getDefaultValue();
+				continue;
+			}
+
+			if ($parameter->allowsNull())
+			{
+				$arguments[] = null;
+				continue;
+			}
+
+			throw new MissingParameterRouteException
+			(
+				($route = ([ $this->id . '/' . $id ] + $parameters)),
+				sprintf
+				(
+					'Action binding failure, missing parameter: "%s", at action, "%s", at controller "%s", at context "%s"', 
+					$parameterName,
+					$id, 
+					$this->id, 
+					$this->getContext()->getPrefix()
+				)
+			);
+		}
+
+		return new Action($this, $id, $arguments);
+	}
+
+	/**
+	 * Sets the layout.
+	 *
+	 * @param string $layout
+	 *	The layout.
+	 */
+	public final function setLayout(?string $layout) : void
+	{
+		$this->layout = $layout;
+		$this->layoutPath = null;
+	}
+
+	/**
+	 * Creates a view.
+	 *
+	 * @param string $path
+	 *	The view path.
+	 *
+	 * @param array $configuration
+	 *	The view configuration.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	protected function view(string $path, array $configuration = null) : IView
+	{
+		return new View($path, $configuration);
+	}
+
+	/**
+	 * Creates an action argument.
+	 *
+	 * @param string $id
+	 *	The identifier.
+	 *
+	 * @param array $parameters
+	 *	The parameters.
+	 *
+	 * @param string $methodName
+	 *	The method name.
+	 *
+	 * @param string $typeName
+	 *	The type name.
+	 *
+	 * @param string $parameterName
+	 *	The parameter name.
+	 *
+	 * @param mixed $value
+	 *	The value.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	private function argument(string $id, array $parameters, string $methodName, ?string $typeName, string $parameterName, $value)
+	{
+		// When a type name is not defined, only scalar values will be accepted
+		// as action parameters.
+		if (!$typeName)
+		{
+			if (!TypeHelper::isScalarTypeName($typeName))
+			{
+				throw new IllegalParameterRouteException
+				(
+					($route = ([ $this->id . '/' . $id ] + $parameters)),
+					sprintf
+					(
+						'Action binding failure, not a scalar: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						$parameterName,
+						$id, 
+						$this->id, 
+						$this->getContext()->getPrefix()
+					)
+				);
+			}
+		}
+
+		$valueTypeName = TypeHelper::getNameOf($value);
+
+		if ($typeName == $valueTypeName)
+		{
+			return $value;
+		}
+
+		if (TypeHelper::isScalarTypeName($typeName))
+		{
+			try
+			{
+				return Filter::create($typeName)->run($value);
+			}
+			catch (FilterException $e)
+			{
+				throw new IllegalParameterRouteException
+				(
+					($route = ([ $this->id . '/' . $id ] + $parameters)),
+					sprintf
+					(
+						'Action binding failure, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						$parameterName,
+						$id, 
+						$this->id, 
+						$this->getContext()->getPrefix()
+					),
+					$e
+				);
+			}
+		}
+
+		if (is_string($value))
+		{
+			$result;
+
+			try
+			{
+				$result = $this->getSlugManager()->parse($typeName, $value);
+
+				if (!isset($result))
+				{
+					throw new IllegalParameterRouteException
+					(
+						($route = ([ $this->id . '/' . $id ] + $parameters)),
+						sprintf
+						(
+							'Action binding failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+							$parameterName,
+							$id, 
+							$this->id, 
+							$this->getContext()->getPrefix()
+						)
+					);
+				}
+
+				return $result;
+			}
+			catch (\Throwable $e)
+			{
+				throw new IllegalParameterRouteException
+				(
+					($route = ([ $this->id . '/' . $id ] + $parameters)),
+					sprintf
+					(
+						'Action binding failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						$parameterName,
+						$id, 
+						$this->id, 
+						$this->getContext()->getPrefix()
+					),
+					$e
+				);
+			}
+		}
+
+		throw new IllegalParameterRouteException
+		(
+			($route = ([ $this->id . '/' . $id ] + $parameters)),
+			sprintf
+			(
+				'Action binding failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+				$parameterName,
+				$id, 
+				$this->id, 
+				$this->getContext()->getPrefix()
+			)
+		);
 	}
 }

@@ -28,6 +28,8 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\IApplication;
+use \Lightbit\Base\IBase;
+use \Lightbit\Base\IContext;
 
 /**
  * IElement.
@@ -35,7 +37,7 @@ use \Lightbit\Base\IApplication;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IElement
+interface IElement extends IBase
 {
 	/**
 	 * Gets the application.
@@ -44,4 +46,12 @@ interface IElement
 	 *	The application.
 	 */
 	public function getApplication() : IApplication;
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext;
 }

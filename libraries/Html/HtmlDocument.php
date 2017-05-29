@@ -28,6 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlDocument;
 
@@ -91,15 +92,18 @@ class HtmlDocument extends Component implements IHtmlDocument
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The component configuration.
 	 */
-	public function __construct(string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($id);
+		parent::__construct($context, $id, null);
 
 		$this->reset();
 

@@ -28,6 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
 use \Lightbit\Helpers\ObjectHelper;
 
 /**
@@ -49,15 +50,18 @@ abstract class HttpMessage extends Component
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The component configuration.
 	 */
-	public function __construct(string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($id, $configuration);
+		parent::__construct($context, $id, $configuration);
 	}
 
 }

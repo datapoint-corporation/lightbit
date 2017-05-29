@@ -32,8 +32,24 @@ use \Lightbit\Action;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Cluster;
-use \Lightbit\Exception;
+use \Lightbit\Base\IElement;
+use \Lightbit\ControllerNotFoundException;
+use \Lightbit\Data\ICache;
+use \Lightbit\Data\IFileCache;
+use \Lightbit\Data\IMemoryCache;
+use \Lightbit\Data\INetworkCache;
+use \Lightbit\Data\ISlugManager;
 use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpQueryString;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\IHttpSession;
+use \Lightbit\Exception;
+use \Lightbit\IO\FileSystem\Alias;
+use \Lightbit\ModuleNotFoundException;
 
 /**
  * Context.
@@ -48,7 +64,7 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @type array
 	 */
-	private $component;
+	private $components;
 
 	/**
 	 * The components configuration.
@@ -70,6 +86,20 @@ abstract class Context extends Cluster implements IContext
 	 * @type string
 	 */
 	private $id;
+
+	/**
+	 * The layout.
+	 *
+	 * @type string
+	 */
+	private $layout;
+
+	/**
+	 * The layout path.
+	 *
+	 * @type string
+	 */
+	private $layoutPath;
 
 	/**
 	 * The modules.
@@ -131,10 +161,13 @@ abstract class Context extends Cluster implements IContext
 	 */
 	protected function __construct(?IContext $context, string $id, string $path, array $configuration = null)
 	{
-		parent::__construct($path);
+		parent::__construct($this, $path);
 
 		$this->context = $context;
 		$this->id = $id;
+
+		$this->components = [];
+		$this->componentsConfiguration = [];
 
 		$this->modules = [];
 		$this->modulesConfiguration = [];
@@ -305,6 +338,17 @@ abstract class Context extends Cluster implements IContext
 	}
 
 	/**
+	 * Gets the cache.
+	 *
+	 * @return ICache
+	 *	The cache.
+	 */
+	public final function getCache() : ICache
+	{
+		return $this->getComponent('data.cache');
+	}
+
+	/**
 	 * Gets a component.
 	 *
 	 * @param string $id
@@ -315,12 +359,36 @@ abstract class Context extends Cluster implements IContext
 	 */
 	public final function getComponent(string $id) : IComponent
 	{
-		if ($this->context)
+		if (!isset($this->components[$id]))
 		{
-			return $this->context->getComponent($id);
+			if (!isset($this->componentsConfiguration[$id]))
+			{
+				if ($this->context)
+				{
+					return $this->context->getComponent($id);
+				}
+
+				throw new Exception(sprintf('Component configuration not found: "%s"', $id));
+			}
+
+			if (!isset($this->componentsConfiguration[$id]['@class']))
+			{
+				throw new Exception(sprintf('Component class name not available: "%s" ("@class")', $id));
+			}
+
+			$className = $this->componentsConfiguration[$id]['@class'];
+
+			$component 
+				= $this->components[$id] 
+					= new $className($this, $id, $this->componentsConfiguration[$id]);
+
+			if ($component instanceof IResource)
+			{
+				$component->start();
+			}
 		}
 
-		throw new Exception(sprintf('Component is not available: "%s"'));
+		return $this->components[$id];
 	}
 
 	/**
@@ -346,6 +414,121 @@ abstract class Context extends Cluster implements IContext
 	}
 
 	/**
+	 * Gets the file cache.
+	 *
+	 * @return IFileCache
+	 *	The file cache.
+	 */
+	public function getFileCache() : IFileCache
+	{
+		return $this->getComponent('data.cache.file');
+	}
+
+	/**
+	 * Gets the global identifier.
+	 *
+	 * @return string
+	 *	The global identifier.
+	 */
+	public final function getGlobalID() : string
+	{
+		static $globalID;
+
+		if (!$globalID)
+		{
+			$tokens = [];
+			$context = $this;
+
+			do
+			{
+				$tokens[] = $context->getID();
+			}
+			while ($context = $context->getContext());
+
+			$globalID = implode('/', array_reverse($tokens));
+		}
+
+		return $globalID;
+	}
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public function getHtmlAdapter() : IHtmlAdapter
+	{
+		return $this->getComponent('html.adapter');
+	}
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument
+	{
+		return $this->getComponent('html.document');
+	}
+
+	/**
+	 * Gets the http query string.
+	 *
+	 * @return IHttpQueryString
+	 *	The http query string.
+	 */
+	public function getHttpQueryString() : IHttpQueryString
+	{
+		return $this->getComponent('http.query.string');
+	}
+
+	/**
+	 * Gets the http request component.
+	 *
+	 * @param IHttpRequest
+	 *	The http request component.
+	 */
+	public function getHttpRequest() : IHttpRequest
+	{
+		return $this->getComponent('http.request');
+	}
+
+	/**
+	 * Gets the http response component.
+	 *
+	 * @param IHttpResponse
+	 *	The http response component.
+	 */
+	public function getHttpResponse() : IHttpResponse
+	{
+		return $this->getComponent('http.response'); 
+	}
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public function getHttpRouter() : IHttpRouter
+	{
+		return $this->getComponent('http.router');
+	}
+
+	/**
+	 * Gets the http session.
+	 *
+	 * @return IHttpSession
+	 *	The http session.
+	 */
+	public function getHttpSession() : IHttpSession
+	{
+		return $this->getComponent('http.session');
+	}
+
+	/**
 	 * Gets the identifier.
 	 *
 	 * @return string
@@ -354,6 +537,55 @@ abstract class Context extends Cluster implements IContext
 	public final function getID() : string
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Gets the layout.
+	 *
+	 * @return string
+	 *	The layout.
+	 */
+	public final function getLayout() : ?string
+	{
+		return $this->layout;
+	}
+
+	/**
+	 * Gets the layout path.
+	 *
+	 * @return string
+	 *	The layout path.
+	 */
+	public final function getLayoutPath() : ?string
+	{
+		if ($this->layout && !$this->layoutPath)
+		{
+			$this->layoutPath = (new Alias($this->layout))->resolve('php', $this->getPath());
+		}
+
+		return $this->layoutPath;
+	}
+
+	/**
+	 * Gets the memory cache.
+	 *
+	 * @return IMemoryCache
+	 *	The memory cache.
+	 */
+	public function getMemoryCache() : IMemoryCache
+	{
+		return $this->getComponent('data.cache.memory');
+	}
+
+	/**
+	 * Gets the network cache.
+	 *
+	 * @return INetworkCache
+	 *	The network cache.
+	 */
+	public function getNetworkCache() : INetworkCache
+	{
+		return $this->getComponent('data.cache.network');
 	}
 
 	/**
@@ -369,7 +601,7 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->modules[$id]))
 		{
-			throw new Exception(sprintf('Module not found: "%s"', $id));
+			throw new ModuleNotFoundException($this, $id, sprintf('Module not found: "%s", at context "%s"', $id, $this->getPrefix()));
 		}
 
 		return $this->modules[$id];
@@ -404,7 +636,7 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->plugins[$id]))
 		{
-			throw new Exception(sprintf('Plugin is not available: "%s"'));
+			throw new Exception(sprintf('Plugin is not available: "%s"', $id));
 		}
 
 		return $this->plugins[$id];
@@ -424,6 +656,62 @@ abstract class Context extends Cluster implements IContext
 		}
 
 		return $this->pluginsBasePath;
+	}
+
+	/**
+	 * Gets the prefix.
+	 *
+	 * @return string
+	 *	The prefix.
+	 */
+	public final function getPrefix() : string
+	{
+		static $prefix;
+
+		if (!$prefix)
+		{
+			$tokens = [];
+			$context = $this;
+
+			while ($previous = $context->getContext())
+			{
+				$tokens[] = $context->getID();
+				$context = $previous;
+			}
+
+			$prefix = '/' . implode('/', array_reverse($tokens));
+		}		
+
+		return $prefix;
+	}
+
+	/**
+	 * Gets the slug manager.
+	 *
+	 * @return ISlugManager
+	 *	The slug manager.
+	 */
+	public function getSlugManager() : ISlugManager
+	{
+		return $this->getComponent('data.slug.manager');
+	}
+
+	/**
+	 * Gets the views base paths.
+	 *
+	 * @return array
+	 *	The views base paths.
+	 */
+	public final function getViewsBasePaths() : array
+	{
+		static $viewsBasePaths;
+
+		if (!$viewsBasePaths)
+		{
+			$viewsBasePaths = $this->viewsBasePaths();
+		}
+
+		return $viewsBasePaths;
 	}
 
 	/**
@@ -452,6 +740,55 @@ abstract class Context extends Cluster implements IContext
 	public final function hasModule(string $id) : string
 	{
 		return isset($this->modules[$id]);
+	}
+
+	/**
+	 * Sets a component configuration.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 *
+	 * @param bool $merge
+	 *	The components configuration merge flag.
+	 */
+	public function setComponentConfiguration(string $id, array $configuration, bool $merge = true) : void
+	{
+		$this->componentsConfiguration[$id]
+			= ($merge && isset($this->componentsConfiguration[$id]))
+			? array_replace_recursive($this->componentsConfiguration[$id], $configuration)
+			: $configuration;
+	}
+
+	/**
+	 * Sets the components configuration.
+	 *
+	 * @param array $componentsConfiguration
+	 *	The components configuration.
+	 *
+	 * @param bool $merge
+	 *	The components configuration merge flag.
+	 */
+	public function setComponentsConfiguration(array $componentsConfiguration, bool $merge = true) : void
+	{
+		foreach ($componentsConfiguration as $id => $configuration)
+		{
+			$this->setComponentConfiguration($id, $configuration, $merge);
+		}
+	}
+
+	/**
+	 * Sets the layout.
+	 *
+	 * @param string $layout
+	 *	The layout.
+	 */
+	public function setLayout(?string $layout) : void
+	{
+		$this->layout = $layout;
+		$this->layoutPath = null;
 	}
 
 	/**
@@ -560,5 +897,16 @@ abstract class Context extends Cluster implements IContext
 		{
 			$this->setPluginConfiguration($id, $configuration, $merge);
 		}
+	}
+
+	/**
+	 * Creates the views base paths collection.
+	 *
+	 * @return array
+	 *	The views base paths collection.
+	 */
+	protected function viewsBasePaths() : array
+	{
+		return [ $this->getPath() . DIRECTORY_SEPARATOR . 'views' ];
 	}
 }

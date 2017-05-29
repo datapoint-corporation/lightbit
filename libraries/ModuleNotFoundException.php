@@ -25,33 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit;
 
+use \Lightbit\ContextException;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IElement;
+use \Lightbit\Exception;
 
 /**
- * IModule.
+ * ModuleNotFoundException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModule extends IContext, IBase
+class ModuleNotFoundException extends ContextException
 {
+	/**
+	 * The module identifier.
+	 *
+	 * @type string
+	 */
+	private $moduleID;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The module context.
+	 *	The context.
 	 *
-	 * @param string $id
+	 * @param string $moduleID
 	 *	The module identifier.
 	 *
-	 * @param string $path
-	 *	The module path.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @param array $configuration
-	 *	The module configuration.
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($context, $message, $previous);
+	}
+
+	/**
+	 * Gets the module identifier.
+	 *
+	 * @return string
+	 *	The module identifier.
+	 */
+	public final function getModuleID() : string
+	{
+		return $this->moduleID;
+	}
 }

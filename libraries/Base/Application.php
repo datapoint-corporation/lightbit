@@ -27,12 +27,35 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit;
 use \Lightbit\Action;
 use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\Context;
+use \Lightbit\Data\ICache;
+use \Lightbit\Data\IFileCache;
+use \Lightbit\Data\IMemoryCache;
+use \Lightbit\Data\INetworkCache;
+use \Lightbit\Data\NoCache;
+use \Lightbit\Data\ISlugManager;
+use \Lightbit\Data\SlugManager;
 use \Lightbit\ControllerNotFoundRouteException;
 use \Lightbit\Exception;
+use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Html\HtmlAdapter;
+use \Lightbit\Html\HtmlDocument;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\HttpQueryString;
+use \Lightbit\Http\HttpResponse;
+use \Lightbit\Http\HttpRequest;
+use \Lightbit\Http\HttpSession;
+use \Lightbit\Http\IHttpQueryString;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\IHttpSession;
+use \Lightbit\Http\QueryStringHttpRouter;
+use \Lightbit\ModuleNotFoundException;
 use \Lightbit\ModuleNotFoundRouteException;
 
 /**
@@ -54,7 +77,30 @@ class Application extends Context implements IApplication
 	 */
 	public function __construct(string $path, array $configuration = null)
 	{
-		parent::__construct(null, 'application', $path, $configuration);
+		parent::__construct(null, 'application', $path, null);
+
+		$this->setComponentsConfiguration
+		(
+			[
+				'data.cache' => [ '@class' => NoCache::class ],
+				'data.cache.file' => [ '@class' => NoCache::class ],
+				'data.cache.memory' => [ '@class' => NoCache::class ],
+				'data.cache.network' => [ '@class' => NoCache::class ],
+				'data.slug.manager' => [ '@class' => SlugManager::class ],
+				'html.adapter' => [ '@class' => HtmlAdapter::class ],
+				'html.document' => [ '@class' => HtmlDocument::class ],
+				'http.query.string' => [ '@class' => HttpQueryString::class ],
+				'http.request' => [ '@class' => HttpRequest::class ],
+				'http.response' => [ '@class' => HttpRequest::class ],
+				'http.router' => [ '@class' => QueryStringHttpRouter::class ],
+				'http.session' => [ '@class' => HttpSession::class ]
+			]
+		);
+
+		if ($configuration)
+		{
+			ObjectHelper::configure($this, $configuration);
+		}
 	}
 
 	/**
@@ -79,87 +125,80 @@ class Application extends Context implements IApplication
 	 */
 	public function resolve(?array $route) : Action
 	{
-		if (!isset($route))
-		{
-			$route = $this->getDefaultRoute();
-		}
-
-		else if (!isset($route[0]))
-		{
-			$route = $this->getDefaultRoute() + $route;
-		}
-
-		$parameters = $route;
-		unset($parameters[0]);
-
-		if ($route[0][0] === '/')
-		{
-			return $this->resolveContext($this, $route, substr($route[0], 1), $parameters);
-		}
-
-		$action = Action::getInstance();
-
-		if (!$action)
-		{
-			throw new Exception(sprintf('Context is not available for relative route resolution: "%s"', $route[0]));
-		}
-
-		if (strpos($route[0], '~/') === 0 && strpos($route[0], '/', 3) === false)
-		{
-			return $action->resolve(substr($route[0], 2), $parameters);
-		}
-		
-		if (strpos($route[0], '@/') === 0)
-		{
-			$context = $action->getController()->getContext();
-
-			return $this->resolveContext
-			(
-				$action->getController()->getContext(),
-				$route,
-				substr($route[0], 2),
-				$parameters
-			);
-		}
-
-		throw new Exception(sprintf('Route path format is not supported: "%s"', $route[0]));
+		return $this->resolveContext($this, $route);
 	}
 
-	/**
-	 * Resolves through a context.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param string $path
-	 *	The route path, without prefixes.
-	 *
-	 * @param array $parameters
-	 *	The route parameters.
-	 *
-	 * @return Action
-	 *	The action.
-	 */
-	private function resolveContext(IContext $context, array $route, string $path, array $parameters) : Action
+	private function resolveContext(IContext $context, ?array $route) : Action
 	{
-		_resolveContext:
+		if (!isset($route))
+		{
+			$route = $context->getDefaultRoute();
+		}
 
+		else if (!isset($route[0]) || !$route[0])
+		{
+			$route = $context->getDefaultRoute() + $route;
+		}
+
+		$path = $route[0];
+		$parameters = $route; 
+		unset($parameters[0]);
+
+		if ($path[0] == '/')
+		{
+			$context = Lightbit::getApplication();
+			$path = substr($path, 1);
+		}
+
+		else if (strpos($path, '~/') === 0)
+		{
+			$action = Action::getInstance();
+
+			if (!$action)
+			{
+				throw new Exception(sprintf('Route can not be relative, action not available: "%s"', $route[0]));
+			}
+
+			return $action->getController(substr($path, 2), $parameters);
+		}
+
+		else if (strpos($path, '@/') === 0)
+		{
+			$action = Action::getInstance();
+			$path = substr($path, 2);
+			
+			$context = $action
+				? $action->getController()->getContext()
+				: $context;
+		}
+
+		_resolveContext1:
+
+		// If only a single token is present, the resolution becomes
+		// pretty straight forward as it can only be done to another module.
 		$i = strrpos($path, '/');
 
 		if ($i === false)
 		{
-			// Since a path separator is not present, this can only mean
-			// we're trying to resolve to a default route of a module.
-			if (!$context->hasModule($path))
+			try
 			{
-				throw new ModuleNotFoundRouteException($route, sprintf('Module not found: "%s"', $path));
-			}
+				$module = $context->getModule($path);
 
-			return $this->resolveContextDefault($context, $route, $parameters);
+				return $this->resolveContext($module, ($module->getDefaultRoute() + $parameters));
+			}
+			catch (ModuleNotFoundException $e)
+			{
+				throw new ModuleNotFoundRouteException
+				(
+					$route, 
+					sprintf('Module not found: "%s", at context "%s"', $path, $context->getPrefix()),
+					$e
+				);
+			}
 		}
 
-		// First match is done directly by controller name within the
-		// context and, if it exists, we'll simply delegate resolution to it.
+		// If the controller id and action matches an existing controller
+		// then we'll delegate the resolution to it.
 		$controllerID = substr($path, 0, $i);
 		$actionID = substr($path, $i + 1);
 
@@ -168,48 +207,26 @@ class Application extends Context implements IApplication
 			return $context->getController($controllerID)->resolve($actionID, $parameters);
 		}
 
-		// If it gets here it means we must be referring to a module
-		// defined within the context.
-		$i = strpos($path, '/');
-		$moduleID = substr($path, 0, $i);
+		// If all else fails, we'll make an attempt at resolving it recursively
+		// through the child modules – a "goto" is used here purely for
+		// performance.
+		$moduleID = substr($path, 0, $i = strpos($path, '/'));
 
-		if (!$context->hasModule($moduleID))
+		try
 		{
-			// We're throwing a controller not found here just to let the
-			// developer know that had a controller exist, which he probably
-			// what he's looking to have, this exception would not have been thrown.
-			throw new ControllerNotFoundRouteException($route, sprintf('Controller not found: "%s"', $controllerID));
+			$context = $context->getModule($moduleID);
+		}
+		catch (ModuleNotFoundException $e)
+		{
+			throw new ControllerNotFoundRouteException
+			(
+				$route, 
+				sprintf('Controller not found: "%s", at context "%s"', $controllerID, $context->getPrefix())
+			);
 		}
 
-		// We're going back to the top using a goto statetement
-		// which is a lot faster than recursion.
-		$context = $context->getModule($moduleID);
 		$path = substr($path, $i + 1);
-
-		goto _resolveContext;
-	}
-
-	/**
-	 * Resolves through a context default route.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param array $parameters
-	 *	The parameters.
-	 *
-	 * @return Action
-	 *	The action.
-	 */
-	private function resolveContextDefault(IContext $context, array $route, array $parameters) : Action
-	{
-		$route = $context->getDefaultRoute() + $parameters;
-
-		$path = $route[0];
-		$parameters = $route;
-		unset($parameters[0]);
-
-		return $this->resolveContext($context, $path, $parameters);
+		goto _resolveContext1;
 	}
 
 	/**
@@ -220,9 +237,18 @@ class Application extends Context implements IApplication
 	 */
 	public function run() : int
 	{
-		$this->resolve([ '/my-module/default/index' ]);
+		$result;
 
-		return 0;
+		if (Lightbit::isCli())
+		{
+			$result = $this->resolve($this->getDefaultRoute())->run();
+		}
+		else
+		{
+			$result = $this->getHttpRouter()->resolve()->run();
+		}
+
+		return (is_int($result) ? $result : 0);
 	}
 
 	/**
