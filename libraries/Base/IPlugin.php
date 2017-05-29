@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContainer;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
 /**
@@ -36,38 +36,22 @@ use \Lightbit\Base\IElement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IPlugin extends IContainer, IElement
+interface IPlugin extends ICluster, IElement
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IContainer $container
-	 *	The container.
+	 * @param IContext $context
+	 *	The plugin context.
 	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The plugin identifier.
 	 *
 	 * @param string $path
-	 *	The path.
+	 *	The plugin path.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The plugin configuration.
 	 */
-	public function __construct(IContainer $container, string $id, string $path, array $configuration = null);
-
-	/**
-	 * Gets the container.
-	 *
-	 * @return IContainer
-	 *	The container.
-	 */
-	public function getContainer() : IContainer;
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
 }

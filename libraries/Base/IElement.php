@@ -28,12 +28,6 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\IApplication;
-use \Lightbit\Data\ISlugManager;
-use \Lightbit\Html\IHtmlAdapter;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpQueryString;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpRouter;
 
 /**
  * IElement.
@@ -50,52 +44,4 @@ interface IElement
 	 *	The application.
 	 */
 	public function getApplication() : IApplication;
-
-	/**
-	 * Gets the html adapter.
-	 *
-	 * @return IHtmlAdapter
-	 *	The html adapter.
-	 */
-	public function getHtmlAdapter() : IHtmlAdapter;
-
-	/**
-	 * Gets the html document.
-	 *
-	 * @return IHtmlDocument
-	 *	The html document.
-	 */
-	public function getHtmlDocument() : IHtmlDocument;
-
-	/**
-	 * Gets the http query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The http query string.
-	 */
-	public function getHttpQueryString() : IHttpQueryString;
-
-	/**
-	 * Gets the http request component.
-	 *
-	 * @param IHttpRequest
-	 *	The http request component.
-	 */
-	public function getHttpRequest() : IHttpRequest;
-
-	/**
-	 * Gets the http router.
-	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public function getHttpRouter() : IHttpRouter;
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public function getSlugManager() : ISlugManager;
 }

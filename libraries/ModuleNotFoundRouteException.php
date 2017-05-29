@@ -25,37 +25,32 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit;
 
-use \Lightbit\Base\IComponent;
+use \Lightbit\Exception;
 
 /**
- * IResource.
- *
- * A resource is a special type of component that requires some preparation
- * before being available for use and, as a consequence, some closing during 
- * the application dispose procedure.
+ * ModuleNotFoundRouteException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IResource extends IComponent
+class ModuleNotFoundRouteException extends RouteException
 {
 	/**
-	 * Closes the resource.
-	 */
-	public function close() : void;
-
-	/**
-	 * Checks the resource status.
+	 * Constructor.
 	 *
-	 * @return bool
-	 *	The resource status.
+	 * @param array $route
+	 *	The route.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function isClosed() : bool;
-
-	/**
-	 * Starts the resource.
-	 */
-	public function start() : void;
+	public function __construct(array $route, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($route, $message, $previous);
+	}
 }

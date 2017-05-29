@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
 /**
@@ -35,24 +36,30 @@ use \Lightbit\Base\IElement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IComponent extends IElement
+interface IComponent extends IContext, IElement
 {
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The component identifier.
+	 *
+	 * @param string $path
+	 *	The component path.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The component configuration.
 	 */
-	public function __construct(string $id, array $configuration = null);
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
 
 	/**
-	 * Gets the identifier.
+	 * Gets the path.
 	 *
 	 * @return string
-	 *	The identifier.
+	 *	The path.
 	 */
-	public function getID() : string;
+	public function getPath() : string;
 }

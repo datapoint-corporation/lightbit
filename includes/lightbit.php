@@ -195,6 +195,8 @@ class Lightbit
 	{
 		static $throwing;
 
+		throw $throwable;
+
 		if (!isset($throwing))
 		{
 			$throwing = true;

@@ -27,255 +27,46 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
-use \Lightbit\Base\IApplication;
-use \Lightbit\Base\IContainer;
-use \Lightbit\Base\Object;
-use \Lightbit\Base\Plugin;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Base\Context;
+use \Lightbit\Base\IPlugin;
+use \Lightbit\Exception;
 
 /**
- * Application.
+ * Plugin.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Plugin extends Element implements IPlugin
+class Plugin extends Cluster implements IPlugin
 {
-	/**
-	 * The container.
-	 *
-	 * @type IContainer
-	 */
-	private $container;
-
-	/**
-	 * The controllers.
-	 *
-	 * @type array
-	 */
-	private $controllers;
-
-	/**
-	 * The identifier.
-	 *
-	 * @type string
-	 */
-	private $id;
-
-	/**
-	 * The layout.
-	 *
-	 * @type string
-	 */
-	private $layout;
-
-	/**
-	 * The layout path.
-	 *
-	 * @type string
-	 */
-	private $layoutPath;
-
-	/**
-	 * The path.
-	 *
-	 * @type string
-	 */
-	private $path;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IContainer $container
-	 *	The container.
+	 * @param IContext $context
+	 *	The module context.
 	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The module identifier.
 	 *
 	 * @param string $path
-	 *	The path.
+	 *	The module path.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The module configuration.
 	 */
-	public function __construct(IContainer $container, string $id, string $path, array $configuration = null)
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
 	{
-		$this->container = $container;
-		$this->id = $id;
-		$this->path = $path;
-
-		if ($configuration)
-		{
-			ObjectHelper::configure($this, $configuration);
-		}
+		parent::__construct($context, $id, $path, $configuration);
 	}
 
 	/**
-	 * Creates a controller class name.
+	 * Gets the application.
 	 *
-	 * @param string $id
-	 *	The controller identifier.
-	 *
-	 * @return string
-	 *	The controller class name.
+	 * @return IApplication
+	 *	The application.
 	 */
-	protected function controllerClassName(string $id) : string
+	public final function getApplication() : IApplication
 	{
-		return $controllersClassName[$id]
-			= $this->getNamespaceName()
-			. '\\Controllers\\'
-			. strtr(ucwords(strtr($id, [ '-' =>  ' ', '/' => ' \\ '])), [ ' ' => '' ])
-			. 'Controller';
-	}
-
-	/**
-	 * Gets the container.
-	 *
-	 * @return IContainer
-	 *	The container.
-	 */
-	public function getContainer() : IContainer
-	{
-		return $this->container;
-	}
-
-	/**
-	 * Gets a controller class name.
-	 *
-	 * @param string $id
-	 *	The controller identifier.
-	 *
-	 * @return string
-	 *	The controller class name.
-	 */
-	public final function getControllerClassName(string $id) : string
-	{
-		static $controllersClassName = [];
-
-		if (!isset($controllersClassName[$id]))
-		{
-			$controllersClassName[$id] = $this->controllerClassName($id);
-		}
-
-		return $controllersClassName[$id];
-	}
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string
-	{
-		return $this->id;
-	}
-
-	/**
-	 * Gets the layout.
-	 *
-	 * @return string
-	 *	The layout.
-	 */
-	public final function getLayout() : ?string
-	{
-		return $this->layout;
-	}
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public final function getLayoutPath() : ?string
-	{
-		if (!$this->layoutPath && $this->layout)
-		{
-			$this->layoutPath = (new Alias($this->layout))->resolve('php', $this->getPath());
-		}
-
-		return $this->layoutPath;
-	}
-
-	/**
-	 * Gets the namespace name.
-	 *
-	 * @return string
-	 *	The namespace name.
-	 */
-	public final function getNamespaceName() : string
-	{
-		static $namespaceName;
-
-		if (!$namespaceName)
-		{
-			if (static::class === Plugin::class)
-			{
-				$namespaceName
-					= $this->getApplication()->getNamespaceName()
-					. '\\'
-					. strtr(ucwords(strtr($this->id, [ '-' =>  ' ', '/' => ' / '])), [ ' ' => '', '/', '\\' ]);
-			}
-			else
-			{
-				$namespaceName = Lightbit::getClassNamespaceName(static::class);
-			}
-		}
-
-		return $namespaceName;
-	}
-
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
-	public final function getPath() : string
-	{
-		return $this->path;
-	}
-
-	/**
-	 * Gets the views base paths.
-	 *
-	 * @return array
-	 *	The views base paths.
-	 */
-	public function getViewsBasePaths() : array
-	{
-		echo 'aaa';
-		$viewPaths = $this->container->getViewsBasePaths();
-		$viewPaths[] = $this->getPath() . DIRECTORY_SEPARATOR . 'views';
-
-		return $viewPaths;
-	}
-
-	/**
-	 * Checks a controller availability.
-	 *
-	 * @param string $id
-	 *	The controller identifier.
-	 *
-	 * @return bool
-	 *	The check result.
-	 */
-	public final function hasController(string $id) : bool
-	{
-		return Lightbit::hasClass($this->getControllerClassName($id));
-	}
-
-	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public final function setLayout(string $layout) : void
-	{
-		$this->layout = $layout;
-		$this->layoutPath = null;
+		return Lightbit::getApplication();
 	}
 }

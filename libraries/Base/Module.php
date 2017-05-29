@@ -27,73 +27,48 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IElement;
+use \Lightbit\Action;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IModule;
+use \Lightbit\Base\Context;
+use \Lightbit\Exception;
 
 /**
- * IView.
+ * Module.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IView extends IElement
+abstract class Module extends Context implements IModule
 {
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The module context.
+	 *
+	 * @param string $id
+	 *	The module identifier.
+	 *
 	 * @param string $path
-	 *	The path.
+	 *	The module path.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The module configuration.
 	 */
-	public function __construct(string $path, array $configuration = null);
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
+	{
+		parent::__construct($context, $id, $path, $configuration);
+	}
 
 	/**
-	 * Gets the base path.
+	 * Gets the application.
 	 *
-	 * @return string
-	 *	The base path.
+	 * @return IApplication
+	 *	The application.
 	 */
-	public function getBasePath() : string;
-
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
-	public function getPath() : string;
-
-	/**
-	 * Renders a view.
-	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
-	 *
-	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
-	 *	buffer to capture any generated contents.
-	 *
-	 * @return string
-	 *	The captured content.
-	 */
-	public function render(string $view, array $parameters = null, bool $capture = false) : ?string;
-
-	/**
-	 * Runs the view.
-	 *
-	 * @param array $parameters
-	 *	The parameters.
-	 *
-	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
-	 *	buffer to capture any generated contents.
-	 *
-	 * @return string
-	 *	The captured content.
-	 */
-	public function run(array $parameters = null, bool $capture = false) : ?string;
+	public final function getApplication() : IApplication
+	{
+		return Lightbit::getApplication();
+	}
 }

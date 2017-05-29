@@ -27,81 +27,31 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IElement;
+
 /**
- * IContainer.
+ * IModule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IContainer
+interface IModule extends IContext, IElement
 {
 	/**
-	 * Gets a controller class name.
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The module context.
 	 *
 	 * @param string $id
-	 *	The controller identifier.
+	 *	The module identifier.
 	 *
-	 * @return string
-	 *	The controller class name.
+	 * @param string $path
+	 *	The module path.
+	 *
+	 * @param array $configuration
+	 *	The module configuration.
 	 */
-	public function getControllerClassName(string $id) : string;
-
-	/**
-	 * Gets the layout.
-	 *
-	 * @return string
-	 *	The layout.
-	 */
-	public function getLayout() : ?string;
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public function getLayoutPath() : ?string;
-
-	/**
-	 * Gets the namespace name.
-	 *
-	 * @return string
-	 *	The namespace name.
-	 */
-	public function getNamespaceName() : string;
-
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
-	public function getPath() : string;
-
-	/**
-	 * Gets the views base paths.
-	 *
-	 * @return array
-	 *	The views base paths.
-	 */
-	public function getViewsBasePaths() : array;
-
-	/**
-	 * Checks a controller availability.
-	 *
-	 * @param string $id
-	 *	The controller identifier.
-	 *
-	 * @return bool
-	 *	The check result.
-	 */
-	public function hasController(string $id) : bool;
-
-	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(string $layout) : void;
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
 }

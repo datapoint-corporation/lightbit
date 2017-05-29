@@ -30,12 +30,6 @@ namespace Lightbit\Base;
 use \Lightbit;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\Object;
-use \Lightbit\Data\ISlugManager;
-use \Lightbit\Html\IHtmlAdapter;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpQueryString;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpRouter;
 
 /**
  * Element.
@@ -54,95 +48,5 @@ abstract class Element extends Object implements IElement
 	public final function getApplication() : IApplication
 	{
 		return Lightbit::getApplication();
-	}
-
-	/**
-	 * Gets the html adapter.
-	 *
-	 * @return IHtmlAdapter
-	 *	The html adapter.
-	 */
-	public final function getHtmlAdapter() : IHtmlAdapter
-	{
-		return Lightbit::getApplication()->getHtmlAdapter();
-	}
-
-	/**
-	 * Gets the html document.
-	 *
-	 * @return IHtmlDocument
-	 *	The html document.
-	 */
-	public final function getHtmlDocument() : IHtmlDocument
-	{
-		return Lightbit::getApplication()->getHtmlDocument();
-	}
-
-	/**
-	 * Gets the http query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The http query string.
-	 */
-	public final function getHttpQueryString() : IHttpQueryString
-	{
-		return Lightbit::getApplication()->getHttpQueryString();
-	}
-
-	/**
-	 * Gets the http request.
-	 *
-	 * @return IHttpRequest
-	 *	The http request.
-	 */
-	public final function getHttpRequest() : IHttpRequest
-	{
-		return Lightbit::getApplication()->getHttpRequest();
-	}
-
-	/**
-	 * Gets the http router.
-	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public final function getHttpRouter() : IHttpRouter
-	{
-		return Lightbit::getApplication()->getHttpRouter();
-	}
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public final function getSlugManager() : ISlugManager
-	{
-		return Lightbit::getApplication()->getSlugManager();
-	}
-
-	/**
-	 * Calls a method.
-	 *
-	 * @param string $method
-	 *	The method name.
-	 *
-	 * @param array $arguments
-	 *	The method arguments.
-	 *
-	 * @return mixed
-	 *	The method result.
-	 */
-	public function __call(string $method, array $arguments) // : mixed
-	{
-		$application = Lightbit::getApplication();
-
-		if (method_exists($application, $method))
-		{
-			return $application->{$method}(...$arguments);
-		}
-
-		return parent::__call($method, $arguments);
 	}
 }

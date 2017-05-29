@@ -39,6 +39,24 @@ use \Lightbit\Base\Object;
 final class Action extends Object
 {
 	/**
+	 * The instance.
+	 *
+	 * @type Action
+	 */
+	private static $instance;
+
+	/**
+	 * Gets the instance.
+	 *
+	 * @return Action
+	 *	The instance.
+	 */
+	public static function getInstance() : ?Action
+	{
+		return self::$instance;
+	}
+
+	/**
 	 * The arguments.
 	 *
 	 * @type array
@@ -137,6 +155,10 @@ final class Action extends Object
 	 */
 	public function run() // : mixed
 	{
-		return $this->controller->{$this->controller->getActionMethodName($this->name)}(...array_values($this->arguments));
+		self::$instance = $this;
+		$result = $this->controller->{$this->controller->getActionMethodName($this->name)}(...array_values($this->arguments));
+
+		self::$instance = null;
+		return $result;
 	}
 }

@@ -27,52 +27,60 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Element;
-use \Lightbit\Base\IComponent;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Base\IController;
 
 /**
- * Component.
+ * ICluster.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Component extends Element implements IComponent
+interface ICluster
 {
 	/**
-	 * The identifier.
-	 *
-	 * @type string
-	 */
-	private $id;
-
-	/**
-	 * Constructor.
+	 * Gets a controller.
 	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The controller identifier.
 	 *
-	 * @param array $configuration
-	 *	The configuration.
+	 * @return IController
+	 *	The controller.
 	 */
-	public function __construct(string $id, array $configuration = null)
-	{
-		$this->id = $id;
-
-		if ($configuration)
-		{
-			ObjectHelper::configure($this, $configuration);
-		}
-	}
+	public function getController(string $id) : IController;
 
 	/**
-	 * Gets the identifier.
+	 * Checks a controller availability.
 	 *
-	 * @return string
-	 *	The identifier.
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public final function getID() : string
-	{
-		return $this->id;
-	}
+	public function hasController(string $id) : bool;
+
+	/**
+	 * Sets a controller configuration.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @param array $configuration
+	 *	The controller configuration.
+	 *
+	 * @param bool $merge
+	 *	The controllers configuration merge flag.
+	 */
+	public function setControllerConfiguration(string $id, array $configuration, bool $merge = true) : void;
+
+	/**
+	 * Sets the controllers configuration.
+	 *
+	 * @param array $controllersConfiguration
+	 *	The controllers configuration.
+	 *
+	 * @param bool $merge
+	 *	The controllers configuration merge flag.
+	 */
+	public function setControllersConfiguration(array $controllersConfiguration, bool $merge = true) : void;
 }

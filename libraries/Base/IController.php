@@ -27,130 +27,44 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Action;
-use \Lightbit\Base\IContainer;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IElement;
 
 /**
- * IContainer.
+ * IController.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IController
+interface IController extends IElement
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IContainer $container
-	 *	The container.
+	 * @param IContext $context
+	 *	The controller context.
 	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The controller identifier.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The component configuration.
 	 */
-	public function __construct(IContainer $container, string $id, array $configuration = null);
+	public function __construct(IContext $context, string $id, array $configuration = null);
 
 	/**
-	 * Displays a view.
+	 * Gets the context.
 	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
+	 * @return IContext
+	 *	The context.
 	 */
-	public function display(string $view, array $parameters = null) : void;
+	public function getContext() : IContext;
 
 	/**
-	 * Gets an action method name.
-	 *
-	 * @param string $action
-	 *	The action name.
-	 *
-	 * @return string
-	 *	The action method name.
-	 */
-	public function getActionMethodName(string $action) : string;
-
-	/**
-	 * Gets the container.
-	 *
-	 * @return IContainer
-	 *	The container.
-	 */
-	public function getContainer() : IContainer;
-
-	/**
-	 * Gets the identifier.
+	 * Get the identifier.
 	 *
 	 * @return string
 	 *	The identifier.
 	 */
 	public function getID() : string;
-
-	/**
-	 * Gets the layout.
-	 *
-	 * @return string
-	 *	The layout.
-	 */
-	public function getLayout() : ?string;
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public function getLayoutPath() : ?string;
-
-	/**
-	 * Gets the views base paths.
-	 *
-	 * @return array
-	 *	The views base paths.
-	 */
-	public function getViewsBasePaths() : array;
-
-	/**
-	 * Renders a view.
-	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
-	 *
-	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
-	 *	buffer to capture any generated contents.
-	 *
-	 * @return string
-	 *	The captured content.
-	 */
-	public function render(string $view, array $parameters = null, bool $capture = false) : ?string;
-
-	/**
-	 * Resolves an action.
-	 *
-	 * @param string $name
-	 *	The action name.
-	 *
-	 * @param array $parameters
-	 *	The action parameters.
-	 *
-	 * @return Action
-	 *	The result.
-	 */
-	public function resolve(string $action, array $parameters) : Action;
-
-	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(?string $layout) : void;
 }

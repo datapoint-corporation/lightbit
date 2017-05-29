@@ -28,14 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Action;
-use \Lightbit\Base\IContainer;
-use \Lightbit\Base\IPlugin;
-use \Lightbit\Data\ISlugManager;
-use \Lightbit\Html\IHtmlAdapter;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpQueryString;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Base\IContext;
 
 /**
  * IApplication.
@@ -43,126 +36,21 @@ use \Lightbit\Http\IHttpRouter;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IApplication extends IContainer
+interface IApplication extends IContext
 {
 	/**
 	 * Constructor.
 	 *
 	 * @param string $path
-	 *	The path.
+	 *	The application path.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The application configuration.
 	 */
 	public function __construct(string $path, array $configuration = null);
 
 	/**
-	 * Disposes the application by closing any resources started through it
-	 * in proper order, due to their dependencies.
-	 */
-	public function dispose() : void;
-
-	/**
-	 * Gets the html adapter.
-	 *
-	 * @return IHtmlAdapter
-	 *	The html adapter.
-	 */
-	public function getHtmlAdapter() : IHtmlAdapter;
-
-	/**
-	 * Gets the html document.
-	 *
-	 * @return IHtmlDocument
-	 *	The html document.
-	 */
-	public function getHtmlDocument() : IHtmlDocument;
-
-	/**
-	 * Gets the http query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The http query string.
-	 */
-	public function getHttpQueryString() : IHttpQueryString;
-
-	/**
-	 * Gets the http request.
-	 *
-	 * @return IHttpRequest
-	 *	The http request.
-	 */
-	public function getHttpRequest() : IHttpRequest;
-
-	/**
-	 * Gets the http router.
-	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public function getHttpRouter() : IHttpRouter;
-
-	/**
-	 * Gets the layout.
-	 *
-	 * @return string
-	 *	The layout.
-	 */
-	public function getLayout() : ?string;
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public function getLayoutPath() : ?string;
-
-	/**
-	 * Gets a plugin.
-	 *
-	 * @return IPlugin
-	 *	The plugin.
-	 */
-	public function getPlugin(string $id) : IPlugin;
-
-	/**
-	 * Gets the plugins.
-	 *
-	 * @return array
-	 *	The plugins.
-	 */
-	public function getPlugins() : array;
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public function getSlugManager() : ISlugManager;
-
-	/**
-	 * Checks a component availability.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasComponent(string $id) : bool;
-
-	/**
-	 * Checks a plugin availability.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasPlugin(string $id) : bool;
-
-	/**
-	 * Resolves a route to a controller action.
+	 * Resolves a route.
 	 *
 	 * @param array $route
 	 *	The route to resolve.
@@ -170,31 +58,22 @@ interface IApplication extends IContainer
 	 * @return Action
 	 *	The action.
 	 */
-	public function resolve(array $route = null) : Action;
+	public function resolve(?array $route) : Action;
 
 	/**
 	 * Runs the application.
 	 *
 	 * @return int
-	 *	The status code.
+	 *	The exit status code.
 	 */
 	public function run() : int;
 
 	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(?string $layout) : void;
-
-	/**
-	 * Disposes the application by closing any resources started through it
-	 * in proper order, due to their dependencies, before terminating the
-	 * script execution.
+	 * Safely terminates the script execution after disposing of all
+	 * application elements.
 	 *
 	 * @param int $status
-	 *	The exit status code.
+	 *	The script exit status code.
 	 */
-	public function terminate(int $status) : void;
+	public function terminate(int $status = 0) : void;
 }
