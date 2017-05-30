@@ -25,26 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\ContextException;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\Exception;
 
 /**
- * ParameterRouteException.
- *
- * This exception is thrown when a given route fails to be resolved
- * to an action due to an invalid or missing parameter.
+ * ModuleNotFoundException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ParameterRouteException extends RouteException
+class ModuleNotFoundException extends ContextException
 {
+	/**
+	 * The module identifier.
+	 *
+	 * @type string
+	 */
+	private $moduleID;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param array $route
-	 *	The route.
+	 * @param IContext $context
+	 *	The context.
+	 *
+	 * @param string $moduleID
+	 *	The module identifier.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -52,8 +61,19 @@ class ParameterRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($context, $message, $previous);
+	}
+
+	/**
+	 * Gets the module identifier.
+	 *
+	 * @return string
+	 *	The module identifier.
+	 */
+	public final function getModuleID() : string
+	{
+		return $this->moduleID;
 	}
 }

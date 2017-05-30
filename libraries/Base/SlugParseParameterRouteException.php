@@ -27,29 +27,24 @@
 
 namespace Lightbit;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Exception;
+use \Lightbit\Base\ParameterRouteException;
 
 /**
- * ContextException.
+ * SlugParseParameterRouteException.
+ *
+ * This exception is thrown when a given route fails to be resolved
+ * to an action due to a missing parameter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ContextException extends Exception
+class SlugParseParameterRouteException extends ParameterRouteException
 {
-	/**
-	 * The context.
-	 *
-	 * @type IContext
-	 */
-	private $context;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The context.
+	 * @param array $route
+	 *	The route.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -57,21 +52,8 @@ class ContextException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $message, \Throwable $previous = null)
+	public function __construct(array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
-
-		$this->context = $context;
-	}
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return IContext
-	 *	The context.
-	 */
-	public final function getContext() : IContext
-	{
-		return $this->context;
+		parent::__construct($route, $message, $previous);
 	}
 }

@@ -27,7 +27,7 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
 use \Lightbit\Data\Validation\Filter;

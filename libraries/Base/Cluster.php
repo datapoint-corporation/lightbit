@@ -30,7 +30,7 @@ namespace Lightbit\Base;
 use \Lightbit;
 use \Lightbit\Base\ICluster;
 use \Lightbit\Base\IController;
-use \Lightbit\ControllerNotFoundException;
+use \Lightbit\Base\ControllerNotFoundException;
 
 /**
  * Cluster.

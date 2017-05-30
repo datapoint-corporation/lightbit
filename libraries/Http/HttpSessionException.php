@@ -27,7 +27,7 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 use \Lightbit\Http\IHttpSession;
 
 /**

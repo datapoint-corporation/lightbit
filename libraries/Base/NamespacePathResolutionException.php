@@ -25,23 +25,33 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
- * ModuleNotFoundRouteException.
+ * NamespacePathResolutionException.
+ *
+ * This exception is thrown when a given namespace name fails to be resolved
+ * to a directory absolute path.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ModuleNotFoundRouteException extends RouteException
+class NamespacePathResolutionException extends Exception
 {
+	/**
+	 * The namespace name.
+	 *
+	 * @type string
+	 */
+	private $namespaceName;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param array $route
-	 *	The route.
+	 * @param string $namespaceName
+	 *	The namespace name.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -49,8 +59,21 @@ class ModuleNotFoundRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(string $namespaceName, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($message, $previous);
+
+		$this->namespaceName = $namespaceName;
+	}
+
+	/**
+	 * Gets the namespace name.
+	 *
+	 * @return string
+	 *	The namespace name.
+	 */
+	public final function getNamespaceName() : string
+	{
+		return $this->namespaceName;
 	}
 }

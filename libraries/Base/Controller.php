@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
@@ -36,14 +36,14 @@ use \Lightbit\Base\IView;
 use \Lightbit\Base\View;
 use \Lightbit\Data\Validation\Filter;
 use \Lightbit\Data\Validation\FilterException;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Helpers\TypeHelper;
-use \Lightbit\IllegalParameterRouteException;
+use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\IO\FileSystem\Alias;
-use \Lightbit\MethodNotFoundRouteException;
-use \Lightbit\MissingParameterRouteException;
-use \Lightbit\SlugParseParameterRouteException;
+use \Lightbit\Base\MethodNotFoundRouteException;
+use \Lightbit\Base\MissingParameterRouteException;
+use \Lightbit\Base\SlugParseParameterRouteException;
 
 /**
  * Controller.

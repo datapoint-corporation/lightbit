@@ -25,35 +25,23 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\ContextException;
-use \Lightbit\Base\IContext;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
- * ControllerNotFoundException.
+ * ModuleNotFoundRouteException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ControllerNotFoundException extends ContextException
+class ModuleNotFoundRouteException extends RouteException
 {
-	/**
-	 * The controller identifier.
-	 *
-	 * @type string
-	 */
-	private $controllerID;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param string $controllerID
-	 *	The controller identifier.
+	 * @param array $route
+	 *	The route.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -61,19 +49,8 @@ class ControllerNotFoundException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $controllerID, string $message, \Throwable $previous = null)
+	public function __construct(array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($context, $message, $previous);
-	}
-
-	/**
-	 * Gets the controller identifier.
-	 *
-	 * @return string
-	 *	The controller identifier.
-	 */
-	public final function getControllerID() : string
-	{
-		return $this->controllerID;
+		parent::__construct($route, $message, $previous);
 	}
 }

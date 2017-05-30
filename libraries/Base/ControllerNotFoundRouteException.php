@@ -27,18 +27,18 @@
 
 namespace Lightbit;
 
-use \Lightbit\ParameterRouteException;
+use \Lightbit\Base\Exception;
 
 /**
- * MissingParameterRouteException.
+ * ControllerNotFoundRouteException.
  *
  * This exception is thrown when a given route fails to be resolved
- * to an action due to a missing parameter.
+ * to an action due to missing controller.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MissingParameterRouteException extends ParameterRouteException
+class ControllerNotFoundRouteException extends RouteException
 {
 	/**
 	 * Constructor.

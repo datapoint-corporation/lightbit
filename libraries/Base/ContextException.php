@@ -25,26 +25,25 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\ContextException;
 use \Lightbit\Base\IContext;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
- * ModuleNotFoundException.
+ * ContextException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ModuleNotFoundException extends ContextException
+class ContextException extends Exception
 {
 	/**
-	 * The module identifier.
+	 * The context.
 	 *
-	 * @type string
+	 * @type IContext
 	 */
-	private $moduleID;
+	private $context;
 
 	/**
 	 * Constructor.
@@ -52,28 +51,27 @@ class ModuleNotFoundException extends ContextException
 	 * @param IContext $context
 	 *	The context.
 	 *
-	 * @param string $moduleID
-	 *	The module identifier.
-	 *
 	 * @param string $message
 	 *	The exception message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($context, $message, $previous);
+		parent::__construct($message, $previous);
+
+		$this->context = $context;
 	}
 
 	/**
-	 * Gets the module identifier.
+	 * Gets the context.
 	 *
-	 * @return string
-	 *	The module identifier.
+	 * @return IContext
+	 *	The context.
 	 */
-	public final function getModuleID() : string
+	public final function getContext() : IContext
 	{
-		return $this->moduleID;
+		return $this->context;
 	}
 }

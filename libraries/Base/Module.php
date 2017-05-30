@@ -27,11 +27,11 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IModule;
 use \Lightbit\Base\Context;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
  * Module.

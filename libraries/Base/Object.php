@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 
 /**

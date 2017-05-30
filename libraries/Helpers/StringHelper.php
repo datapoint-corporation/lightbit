@@ -27,7 +27,7 @@
 
 namespace Lightbit\Helpers;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
  * StringHelper.

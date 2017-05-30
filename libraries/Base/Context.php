@@ -28,12 +28,12 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Cluster;
 use \Lightbit\Base\IElement;
-use \Lightbit\ControllerNotFoundException;
+use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Data\ICache;
 use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
@@ -47,9 +47,9 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 use \Lightbit\IO\FileSystem\Alias;
-use \Lightbit\ModuleNotFoundException;
+use \Lightbit\Base\ModuleNotFoundException;
 
 /**
  * Context.

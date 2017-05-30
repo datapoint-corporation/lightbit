@@ -25,20 +25,20 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\ParameterRouteException;
+use \Lightbit\Base\Exception;
 
 /**
- * IllegalParameterRouteException.
+ * MethodNotFoundRouteException.
  *
  * This exception is thrown when a given route fails to be resolved
- * to an action due to a missing parameter.
+ * to an action due to missing controller.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class IllegalParameterRouteException extends ParameterRouteException
+class MethodNotFoundRouteException extends RouteException
 {
 	/**
 	 * Constructor.

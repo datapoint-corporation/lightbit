@@ -25,26 +25,21 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
-
-use \Lightbit\Exception;
+namespace Lightbit\Base;
 
 /**
- * MethodNotFoundRouteException.
+ * Exception.
  *
- * This exception is thrown when a given route fails to be resolved
- * to an action due to missing controller.
+ * This class a base exception type thrown by Lightbit elements, removing
+ * the need to pass on an exception code as a constructor argument.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MethodNotFoundRouteException extends RouteException
+class Exception extends \Exception
 {
 	/**
 	 * Constructor.
-	 *
-	 * @param array $route
-	 *	The route.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -52,8 +47,8 @@ class MethodNotFoundRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($message, 0, $previous);
 	}
 }

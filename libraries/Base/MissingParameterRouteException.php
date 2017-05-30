@@ -27,19 +27,24 @@
 
 namespace Lightbit;
 
+use \Lightbit\Base\ParameterRouteException;
+
 /**
- * Exception.
+ * MissingParameterRouteException.
  *
- * This class a base exception type thrown by Lightbit elements, removing
- * the need to pass on an exception code as a constructor argument.
+ * This exception is thrown when a given route fails to be resolved
+ * to an action due to a missing parameter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Exception extends \Exception
+class MissingParameterRouteException extends ParameterRouteException
 {
 	/**
 	 * Constructor.
+	 *
+	 * @param array $route
+	 *	The route.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -47,8 +52,8 @@ class Exception extends \Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(string $message, \Throwable $previous = null)
+	public function __construct(array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, 0, $previous);
+		parent::__construct($route, $message, $previous);
 	}
 }

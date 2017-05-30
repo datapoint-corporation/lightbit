@@ -25,33 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\ContextException;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\Exception;
 
 /**
- * RouteException.
- *
- * This exception is thrown when a given route fails to be resolved
- * to an action.
+ * ControllerNotFoundException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class RouteException extends Exception
+class ControllerNotFoundException extends ContextException
 {
 	/**
-	 * The route.
+	 * The controller identifier.
 	 *
-	 * @type array
+	 * @type string
 	 */
-	private $route;
+	private $controllerID;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array $route
-	 *	The route.
+	 * @param IContext $context
+	 *	The context.
+	 *
+	 * @param string $controllerID
+	 *	The controller identifier.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -59,21 +61,19 @@ class RouteException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $controllerID, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
-
-		$this->route = $route;
+		parent::__construct($context, $message, $previous);
 	}
 
 	/**
-	 * Gets the route.
+	 * Gets the controller identifier.
 	 *
-	 * @return array
-	 *	The route.
+	 * @return string
+	 *	The controller identifier.
 	 */
-	public final function getRoute() : array
+	public final function getControllerID() : string
 	{
-		return $this->route;
+		return $this->controllerID;
 	}
 }

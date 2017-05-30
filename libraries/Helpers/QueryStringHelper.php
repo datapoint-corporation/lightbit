@@ -29,7 +29,7 @@ namespace Lightbit\Helpers;
 
 use \Lightbit;
 use \Lightbit\Base\Object;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
  * QueryStringHelper.

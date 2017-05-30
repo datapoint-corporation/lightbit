@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IElement;
 use \Lightbit\Data\ICache;

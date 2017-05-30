@@ -25,33 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\ParameterRouteException;
 
 /**
- * NamespacePathResolutionException.
+ * IllegalParameterRouteException.
  *
- * This exception is thrown when a given namespace name fails to be resolved
- * to a directory absolute path.
+ * This exception is thrown when a given route fails to be resolved
+ * to an action due to a missing parameter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class NamespacePathResolutionException extends Exception
+class IllegalParameterRouteException extends ParameterRouteException
 {
-	/**
-	 * The namespace name.
-	 *
-	 * @type string
-	 */
-	private $namespaceName;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param string $namespaceName
-	 *	The namespace name.
+	 * @param array $route
+	 *	The route.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -59,21 +52,8 @@ class NamespacePathResolutionException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(string $namespaceName, string $message, \Throwable $previous = null)
+	public function __construct(array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
-
-		$this->namespaceName = $namespaceName;
-	}
-
-	/**
-	 * Gets the namespace name.
-	 *
-	 * @return string
-	 *	The namespace name.
-	 */
-	public final function getNamespaceName() : string
-	{
-		return $this->namespaceName;
+		parent::__construct($route, $message, $previous);
 	}
 }

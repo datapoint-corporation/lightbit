@@ -25,21 +25,28 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
- * ControllerNotFoundRouteException.
+ * RouteException.
  *
  * This exception is thrown when a given route fails to be resolved
- * to an action due to missing controller.
+ * to an action.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ControllerNotFoundRouteException extends RouteException
+class RouteException extends Exception
 {
+	/**
+	 * The route.
+	 *
+	 * @type array
+	 */
+	private $route;
+
 	/**
 	 * Constructor.
 	 *
@@ -54,6 +61,19 @@ class ControllerNotFoundRouteException extends RouteException
 	 */
 	public function __construct(array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($message, $previous);
+
+		$this->route = $route;
+	}
+
+	/**
+	 * Gets the route.
+	 *
+	 * @return array
+	 *	The route.
+	 */
+	public final function getRoute() : array
+	{
+		return $this->route;
 	}
 }

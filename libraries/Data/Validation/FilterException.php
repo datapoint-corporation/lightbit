@@ -28,7 +28,7 @@
 namespace Lightbit\Data\Validation;
 
 use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Exception;
+use \Lightbit\Base\Exception;
 
 /**
  * FilterException.

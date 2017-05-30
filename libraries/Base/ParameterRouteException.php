@@ -25,20 +25,20 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
-use \Lightbit\ParameterRouteException;
+use \Lightbit\Base\Exception;
 
 /**
- * SlugParseParameterRouteException.
+ * ParameterRouteException.
  *
  * This exception is thrown when a given route fails to be resolved
- * to an action due to a missing parameter.
+ * to an action due to an invalid or missing parameter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SlugParseParameterRouteException extends ParameterRouteException
+class ParameterRouteException extends RouteException
 {
 	/**
 	 * Constructor.

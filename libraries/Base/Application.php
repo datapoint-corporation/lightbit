@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
-use \Lightbit\Action;
+use \Lightbit\Base\Action;
 use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\Context;
@@ -39,8 +39,8 @@ use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\NoCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\SlugManager;
-use \Lightbit\ControllerNotFoundRouteException;
-use \Lightbit\Exception;
+use \Lightbit\Base\ControllerNotFoundRouteException;
+use \Lightbit\Base\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
@@ -55,8 +55,8 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
 use \Lightbit\Http\QueryStringHttpRouter;
-use \Lightbit\ModuleNotFoundException;
-use \Lightbit\ModuleNotFoundRouteException;
+use \Lightbit\Base\ModuleNotFoundException;
+use \Lightbit\Base\ModuleNotFoundRouteException;
 
 /**
  * Application.
