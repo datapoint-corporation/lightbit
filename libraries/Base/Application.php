@@ -46,6 +46,7 @@ use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\HttpAssetManager;
 use \Lightbit\Http\HttpQueryString;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpRequest;
@@ -89,6 +90,7 @@ class Application extends Context implements IApplication
 				'data.slug.manager' => [ '@class' => SlugManager::class ],
 				'html.adapter' => [ '@class' => HtmlAdapter::class ],
 				'html.document' => [ '@class' => HtmlDocument::class ],
+				'http.asset.manager' => [ '@class' => HttpAssetManager::class ],
 				'http.query.string' => [ '@class' => HttpQueryString::class ],
 				'http.request' => [ '@class' => HttpRequest::class ],
 				'http.response' => [ '@class' => HttpRequest::class ],
@@ -197,7 +199,7 @@ class Application extends Context implements IApplication
 			try
 			{
 				$context = $context->getModule($path);
-				$route = $module->getDefaultRoute() + $parameters;
+				$route = $context->getDefaultRoute() + $parameters;
 				goto _resolveContext0;
 			}
 			catch (ModuleNotFoundException $e)
@@ -236,7 +238,8 @@ class Application extends Context implements IApplication
 			throw new ControllerNotFoundRouteException
 			(
 				$context,
-				$route, 
+				$route,
+				$controllerID,
 				sprintf('Controller not found: "%s", at context "%s"', $controllerID, $context->getPrefix())
 			);
 		}

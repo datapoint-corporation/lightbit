@@ -25,49 +25,20 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\IO;
 
-use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\Base\Exception;
 
 /**
- * SlugParseParameterRouteException.
+ * IOException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SlugParseParameterRouteException extends ParameterRouteException
+class IOException extends Exception
 {
 	/**
-	 * The class name.
-	 *
-	 * @type string
-	 */
-	private $className;
-
-	/**
-	 * The slug.
-	 *
-	 * @type string
-	 */
-	private $slug;
-
-	/**
 	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param array $route
-	 *	The route.
-	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @param string $slug
-	 *	The slug content.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -75,33 +46,8 @@ class SlugParseParameterRouteException extends ParameterRouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
+	public function __construct(string $message, \Throwable $previous = null)
 	{
-		parent::__construct($context, $route, $parameterName, $message, $previous);
-
-		$this->className = $className;
-		$this->slug = $slug;
-	}
-
-	/**
-	 * Gets the class name.
-	 *
-	 * @return string
-	 *	The class name.
-	 */
-	public final function getClassName() : string
-	{
-		return $this->className;
-	}
-
-	/**
-	 * Gets the slug.
-	 *
-	 * @return string
-	 *	The slug
-	 */
-	public final function getSlug() : string
-	{
-		return $this->slug;
+		parent::__construct($message, $previous);
 	}
 }

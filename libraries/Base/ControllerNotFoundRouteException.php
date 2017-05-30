@@ -25,10 +25,11 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
 use \Lightbit\Base\Exception;
 use \Lightbit\Base\IContext;
+use \Lightbit\Base\RouteException;
 
 /**
  * ControllerNotFoundRouteException.

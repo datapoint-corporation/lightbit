@@ -25,49 +25,30 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\IO\FileSystem;
 
-use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\IO\IOException;
 
 /**
- * SlugParseParameterRouteException.
+ * FileNotFoundException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SlugParseParameterRouteException extends ParameterRouteException
+class FileNotFoundException extends IOException
 {
 	/**
-	 * The class name.
+	 * The file path.
 	 *
 	 * @type string
 	 */
-	private $className;
-
-	/**
-	 * The slug.
-	 *
-	 * @type string
-	 */
-	private $slug;
+	private $filePath;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param array $route
-	 *	The route.
-	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @param string $slug
-	 *	The slug content.
+	 * @param string $filePath
+	 *	The file path.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -75,33 +56,21 @@ class SlugParseParameterRouteException extends ParameterRouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
+	public function __construct(string $filePath, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($context, $route, $parameterName, $message, $previous);
+		parent::__construct($message, $previous);
 
-		$this->className = $className;
-		$this->slug = $slug;
+		$this->filePath = $filePath;
 	}
 
 	/**
-	 * Gets the class name.
+	 * Gets the file path.
 	 *
 	 * @return string
-	 *	The class name.
+	 *	The file path.
 	 */
-	public final function getClassName() : string
+	public final function getFilePath() : string
 	{
-		return $this->className;
-	}
-
-	/**
-	 * Gets the slug.
-	 *
-	 * @return string
-	 *	The slug
-	 */
-	public final function getSlug() : string
-	{
-		return $this->slug;
+		return $this->filePath;
 	}
 }

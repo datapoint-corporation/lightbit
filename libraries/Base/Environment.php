@@ -27,81 +27,68 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IEnvironment;
 
 /**
- * SlugParseParameterRouteException.
+ * Component.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SlugParseParameterRouteException extends ParameterRouteException
+class Environment extends Component implements IEnvironment
 {
-	/**
-	 * The class name.
-	 *
-	 * @type string
-	 */
-	private $className;
-
-	/**
-	 * The slug.
-	 *
-	 * @type string
-	 */
-	private $slug;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The context.
+	 *	The component context.
 	 *
-	 * @param array $route
-	 *	The route.
+	 * @param string $id
+	 *	The component identifier.
 	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @param string $slug
-	 *	The slug content.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
+	 * @param array $configuration
+	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context, $route, $parameterName, $message, $previous);
-
-		$this->className = $className;
-		$this->slug = $slug;
+		parent::__construct($context, $id, $configuration);
 	}
 
 	/**
-	 * Gets the class name.
+	 * Gets the script base path.
 	 *
 	 * @return string
-	 *	The class name.
+	 *	The script base path.
 	 */
-	public final function getClassName() : string
+	public final function getScriptBasePath() : string
 	{
-		return $this->className;
+		static $scriptBasePath;
+
+		if (!$scriptBasePath)
+		{
+			$scriptBasePath = dirname($_SERVER['SCRIPT_FILENAME']);
+		}
+
+		return $scriptBasePath;
 	}
 
 	/**
-	 * Gets the slug.
+	 * Gets the script path.
 	 *
 	 * @return string
-	 *	The slug
+	 *	The script path.
 	 */
-	public final function getSlug() : string
+	public final function getScriptPath() : string
 	{
-		return $this->slug;
+		static $scriptPath;
+
+		if (!$scriptPath)
+		{
+			$scriptPath = $_SERVER['SCRIPT_FILENAME'];
+		}
+
+		return $scriptPath;
 	}
 }

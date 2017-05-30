@@ -33,16 +33,18 @@ use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Cluster;
 use \Lightbit\Base\IElement;
+use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\ControllerNotFoundException;
+use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Data\ICache;
 use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
 use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
-use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpAssetManager;
 use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
@@ -414,6 +416,17 @@ abstract class Context extends Cluster implements IContext
 	}
 
 	/**
+	 * Gets the environment.
+	 *
+	 * @return IEnvironment
+	 *	The environment.
+	 */
+	public final function getEnvironment() : IEnvironment
+	{
+		return $this->getComponent('environment');
+	}
+
+	/**
 	 * Gets the file cache.
 	 *
 	 * @return IFileCache
@@ -471,6 +484,17 @@ abstract class Context extends Cluster implements IContext
 	public function getHtmlDocument() : IHtmlDocument
 	{
 		return $this->getComponent('html.document');
+	}
+
+	/**
+	 * Gets the http asset manager.
+	 *
+	 * @return IHttpAssetManager
+	 *	The http asset manager.
+	 */
+	public function getHttpAssetManager() : IHttpAssetManager
+	{
+		return $this->getComponent('http.asset.manager');
 	}
 
 	/**

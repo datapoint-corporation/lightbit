@@ -27,81 +27,29 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\Base\IComponent;
 
 /**
- * SlugParseParameterRouteException.
+ * IEnvironment.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SlugParseParameterRouteException extends ParameterRouteException
+interface IEnvironment extends IComponent
 {
 	/**
-	 * The class name.
-	 *
-	 * @type string
-	 */
-	private $className;
-
-	/**
-	 * The slug.
-	 *
-	 * @type string
-	 */
-	private $slug;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param array $route
-	 *	The route.
-	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @param string $slug
-	 *	The slug content.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
-	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
-	{
-		parent::__construct($context, $route, $parameterName, $message, $previous);
-
-		$this->className = $className;
-		$this->slug = $slug;
-	}
-
-	/**
-	 * Gets the class name.
+	 * Gets the script base path.
 	 *
 	 * @return string
-	 *	The class name.
+	 *	The script base path.
 	 */
-	public final function getClassName() : string
-	{
-		return $this->className;
-	}
+	public function getScriptBasePath() : string;
 
 	/**
-	 * Gets the slug.
+	 * Gets the script path.
 	 *
 	 * @return string
-	 *	The slug
+	 *	The script path.
 	 */
-	public final function getSlug() : string
-	{
-		return $this->slug;
-	}
+	public function getScriptPath() : string;
 }

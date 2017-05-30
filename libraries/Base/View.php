@@ -31,6 +31,7 @@ use \Lightbit;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IView;
 use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\IO\FileSystem\Alias;
 
 /**
  * View.

@@ -125,7 +125,7 @@ abstract class Cluster extends Object implements ICluster
 			(
 				$this, 
 				$id, 
-				(isset($this->controllersConfiguration[$id]) ? $configuration : null)
+				(isset($this->controllersConfiguration[$id]) ? $this->controllersConfiguration[$id] : null)
 			);
 		}
 

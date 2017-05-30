@@ -66,7 +66,7 @@ abstract class Component extends Element implements IComponent
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(?IContext $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;

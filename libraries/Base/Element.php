@@ -31,6 +31,7 @@ use \Lightbit;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IElement;
+use \Lightbit\Base\IEnvironment;
 use \Lightbit\Data\ICache;
 use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
@@ -38,6 +39,7 @@ use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpAssetManager;
 use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
@@ -107,6 +109,17 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
+	 * Gets the environment.
+	 *
+	 * @return IEnvironment
+	 *	The environment.
+	 */
+	public function getEnvironment() : IEnvironment
+	{
+		return $this->getContext()->getEnvironment();
+	}
+
+	/**
 	 * Gets the file cache.
 	 *
 	 * @return IFileCache
@@ -137,6 +150,17 @@ abstract class Element extends Object implements IElement
 	public function getHtmlDocument() : IHtmlDocument
 	{
 		return $this->getContext()->getHtmlDocument();
+	}
+
+	/**
+	 * Gets the http asset manager.
+	 *
+	 * @return IHttpAssetManager
+	 *	The http asset manager.
+	 */
+	public function getHttpAssetManager() : IHttpAssetManager
+	{
+		return $this->getContext()->getHttpAssetManager();
 	}
 
 	/**

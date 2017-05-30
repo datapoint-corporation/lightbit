@@ -293,6 +293,7 @@ abstract class Controller extends Element implements IController
 		{
 			throw new MethodNotFoundRouteException
 			(
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
@@ -308,6 +309,7 @@ abstract class Controller extends Element implements IController
 		{
 			throw new MethodNotFoundRouteException
 			(
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
@@ -345,6 +347,7 @@ abstract class Controller extends Element implements IController
 
 			throw new MissingParameterRouteException
 			(
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
@@ -454,6 +457,7 @@ abstract class Controller extends Element implements IController
 			{
 				throw new IllegalParameterRouteException
 				(
+					$this->context,
 					($route = ([ $this->id . '/' . $id ] + $parameters)),
 					sprintf
 					(
@@ -480,6 +484,7 @@ abstract class Controller extends Element implements IController
 				{
 					throw new IllegalParameterRouteException
 					(
+						$this->context,
 						($route = ([ $this->id . '/' . $id ] + $parameters)),
 						$parameterName,
 						sprintf
@@ -499,6 +504,7 @@ abstract class Controller extends Element implements IController
 			{
 				throw new SlugParseParameterRouteException
 				(
+					$this->context,
 					($route = ([ $this->id . '/' . $id ] + $parameters)),
 					$parameterName,
 					$typeName,
@@ -518,6 +524,7 @@ abstract class Controller extends Element implements IController
 
 		throw new IllegalParameterRouteException
 		(
+			$this->context,
 			($route = ([ $this->id . '/' . $id ] + $parameters)),
 			$parameterName,
 			sprintf

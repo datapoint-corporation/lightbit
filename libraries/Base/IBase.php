@@ -35,6 +35,7 @@ use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpAssetManager;
 use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
@@ -69,6 +70,14 @@ interface IBase
 	public function getComponent(string $id) : IComponent;
 
 	/**
+	 * Gets the environment.
+	 *
+	 * @return IEnvironment
+	 *	The environment.
+	 */
+	public function getEnvironment() : IEnvironment;
+
+	/**
 	 * Gets the file cache.
 	 *
 	 * @return IFileCache
@@ -91,6 +100,14 @@ interface IBase
 	 *	The html document.
 	 */
 	public function getHtmlDocument() : IHtmlDocument;
+
+	/**
+	 * Gets the http asset manager.
+	 *
+	 * @return IHttpAssetManager
+	 *	The http asset manager.
+	 */
+	public function getHttpAssetManager() : IHttpAssetManager;
 
 	/**
 	 * Gets the http query string.

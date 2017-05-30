@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+namespace Lightbit\Base;
 
 use \Lightbit\Base\ParameterRouteException;
 

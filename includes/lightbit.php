@@ -45,6 +45,27 @@ use \Lightbit\NamespacePathResolutionException;
 class Lightbit
 {
 	/**
+	 * The version.
+	 *
+	 * @type string
+	 */
+	public const VERSION = '1.0.0';
+
+	/**
+	 * The version build.
+	 *
+	 * @type string
+	 */
+	public const VERSION_BUILD = '201705301323';
+
+	/**
+	 * The version signature.
+	 *
+	 * @type string
+	 */
+	public const VERSION_SIGNATURE = 'Lightbit/1.0.0';
+
+	/**
 	 * The application.
 	 *
 	 * @type IApplication
@@ -372,6 +393,21 @@ class Lightbit
 	 */
 	public static function run(string $className, string $path, string $configuration = null) : int
 	{
+		// The public and private prefixes may be implicitly defined based
+		// on the application path and the current script file name.
+		if (!isset(self::$prefixesPath['public']))
+		{
+			self::$prefixesPath['public']
+				= (isset($_SERVER['SCRIPT_FILENAME']))
+				? dirname($_SERVER['SCRIPT_FILENAME'])
+				: ($path . DIRECTORY_SEPARATOR . 'public');
+		}
+
+		if (!isset(self::$prefixesPath['private']))
+		{
+			self::$prefixesPath['private'] = $path;
+		}
+
 		if ($configuration)
 		{
 			$configuration = self::include($configuration);
