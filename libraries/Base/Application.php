@@ -142,6 +142,8 @@ class Application extends Context implements IApplication
 	 */
 	private function resolveContext(IContext $context, ?array $route) : Action
 	{
+		_resolveContext0:
+
 		if (!isset($route))
 		{
 			$route = $context->getDefaultRoute();
@@ -194,9 +196,9 @@ class Application extends Context implements IApplication
 		{
 			try
 			{
-				$module = $context->getModule($path);
-
-				return $this->resolveContext($module, ($module->getDefaultRoute() + $parameters));
+				$context = $context->getModule($path);
+				$route = $module->getDefaultRoute() + $parameters;
+				goto _resolveContext0;
 			}
 			catch (ModuleNotFoundException $e)
 			{
