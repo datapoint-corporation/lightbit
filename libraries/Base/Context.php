@@ -368,12 +368,12 @@ abstract class Context extends Cluster implements IContext
 					return $this->context->getComponent($id);
 				}
 
-				throw new Exception(sprintf('Component configuration not found: "%s"', $id));
+				throw new ComponentNotFoundException($this, $id, sprintf('Component configuration not found: "%s"', $id));
 			}
 
 			if (!isset($this->componentsConfiguration[$id]['@class']))
 			{
-				throw new Exception(sprintf('Component class name not available: "%s" ("@class")', $id));
+				throw new ComponentConfigurationException($this, $id, sprintf('Component class name is undefined: "%s"', $id));
 			}
 
 			$className = $this->componentsConfiguration[$id]['@class'];
