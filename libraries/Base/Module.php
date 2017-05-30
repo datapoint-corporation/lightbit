@@ -28,10 +28,10 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Action;
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IModule;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\Exception;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IModule;
 
 /**
  * Module.

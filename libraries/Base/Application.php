@@ -128,6 +128,18 @@ class Application extends Context implements IApplication
 		return $this->resolveContext($this, $route);
 	}
 
+	/**
+	 * Resolves through a context.
+	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
+	 * @param array $route
+	 *	The route.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
 	private function resolveContext(IContext $context, ?array $route) : Action
 	{
 		if (!isset($route))
@@ -190,9 +202,10 @@ class Application extends Context implements IApplication
 			{
 				throw new ModuleNotFoundRouteException
 				(
-					$route, 
-					sprintf('Module not found: "%s", at context "%s"', $path, $context->getPrefix()),
-					$e
+					$context,
+					$route,
+					$path,
+					sprintf('Module not found: "%s", at context "%s"', $path, $context->getPrefix())
 				);
 			}
 		}
@@ -220,6 +233,7 @@ class Application extends Context implements IApplication
 		{
 			throw new ControllerNotFoundRouteException
 			(
+				$context,
 				$route, 
 				sprintf('Controller not found: "%s", at context "%s"', $controllerID, $context->getPrefix())
 			);

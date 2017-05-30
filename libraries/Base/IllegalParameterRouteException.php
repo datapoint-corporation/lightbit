@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\ParameterRouteException;
 
 /**
@@ -43,8 +44,14 @@ class IllegalParameterRouteException extends ParameterRouteException
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
 	 * @param array $route
 	 *	The route.
+	 *
+	 * @param string $parameterName
+	 *	The parameter name.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -52,8 +59,8 @@ class IllegalParameterRouteException extends ParameterRouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, array $route, string $parameterName, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($context, $route, $parameterName, $message, $previous);
 	}
 }

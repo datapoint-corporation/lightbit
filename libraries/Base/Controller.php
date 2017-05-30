@@ -33,6 +33,9 @@ use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IView;
+use \Lightbit\Base\MethodNotFoundRouteException;
+use \Lightbit\Base\MissingParameterRouteException;
+use \Lightbit\Base\SlugParseParameterRouteException;
 use \Lightbit\Base\View;
 use \Lightbit\Data\Validation\Filter;
 use \Lightbit\Data\Validation\FilterException;
@@ -41,9 +44,6 @@ use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Helpers\TypeHelper;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\IO\FileSystem\Alias;
-use \Lightbit\Base\MethodNotFoundRouteException;
-use \Lightbit\Base\MissingParameterRouteException;
-use \Lightbit\Base\SlugParseParameterRouteException;
 
 /**
  * Controller.
@@ -424,6 +424,7 @@ abstract class Controller extends Element implements IController
 				throw new IllegalParameterRouteException
 				(
 					($route = ([ $this->id . '/' . $id ] + $parameters)),
+					$parameterName,
 					sprintf
 					(
 						'Action binding failure, not a scalar: "%s", at action, "%s", at controller "%s", at context "%s"', 
@@ -480,9 +481,10 @@ abstract class Controller extends Element implements IController
 					throw new IllegalParameterRouteException
 					(
 						($route = ([ $this->id . '/' . $id ] + $parameters)),
+						$parameterName,
 						sprintf
 						(
-							'Action binding failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+							'Action parameter bind failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
 							$parameterName,
 							$id, 
 							$this->id, 
@@ -495,12 +497,15 @@ abstract class Controller extends Element implements IController
 			}
 			catch (\Throwable $e)
 			{
-				throw new IllegalParameterRouteException
+				throw new SlugParseParameterRouteException
 				(
 					($route = ([ $this->id . '/' . $id ] + $parameters)),
+					$parameterName,
+					$typeName,
+					$value,
 					sprintf
 					(
-						'Action binding failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						'Action parameter bind failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
 						$parameterName,
 						$id, 
 						$this->id, 
@@ -514,9 +519,10 @@ abstract class Controller extends Element implements IController
 		throw new IllegalParameterRouteException
 		(
 			($route = ([ $this->id . '/' . $id ] + $parameters)),
+			$parameterName,
 			sprintf
 			(
-				'Action binding failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+				'Action parameter bind failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
 				$parameterName,
 				$id, 
 				$this->id, 

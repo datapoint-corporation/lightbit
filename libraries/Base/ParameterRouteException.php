@@ -27,7 +27,8 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\RouteException;
 
 /**
  * ParameterRouteException.
@@ -41,10 +42,23 @@ use \Lightbit\Base\Exception;
 class ParameterRouteException extends RouteException
 {
 	/**
+	 * The parameter name.
+	 *
+	 * @type string
+	 */
+	private $parameterName;
+
+	/**
 	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The context.
 	 *
 	 * @param array $route
 	 *	The route.
+	 *
+	 * @param string $parameterName
+	 *	The parameter name.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -52,8 +66,21 @@ class ParameterRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, array $route, string $parameterName, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($context, $route, $message, $previous);
+
+		$this->parameterName = $parameterName;
+	}
+
+	/**
+	 * Gets the parameter name.
+	 *
+	 * @return string
+	 *	The parameter name.
+	 */
+	public final function getParameterName() : string
+	{
+		return $this->parameterName;
 	}
 }

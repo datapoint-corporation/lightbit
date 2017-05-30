@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\ContextException;
+use \Lightbit\Base\ContextException;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Exception;
 
@@ -52,6 +52,9 @@ class ModuleNotFoundException extends ContextException
 	 * @param IContext $context
 	 *	The context.
 	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
 	 * @param string $moduleID
 	 *	The module identifier.
 	 *
@@ -64,6 +67,8 @@ class ModuleNotFoundException extends ContextException
 	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
+
+		$this->moduleID = $moduleID;
 	}
 
 	/**

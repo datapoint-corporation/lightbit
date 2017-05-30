@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\ContextException;
+use \Lightbit\Base\ContextException;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Exception;
 

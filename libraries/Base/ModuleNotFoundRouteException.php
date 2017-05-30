@@ -40,8 +40,14 @@ class ModuleNotFoundRouteException extends RouteException
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
 	 * @param array $route
 	 *	The route.
+	 *
+	 * @param string $moduleID
+	 *	The module identifier.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -49,8 +55,8 @@ class ModuleNotFoundRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, array $route, string $moduleID, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($route, $message, $previous);
+		parent::__construct($context, $route, $message, $previous);
 	}
 }

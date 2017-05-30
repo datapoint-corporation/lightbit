@@ -27,18 +27,16 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Base\ContextException;
+use \Lightbit\Base\IContext;
 
 /**
  * RouteException.
  *
- * This exception is thrown when a given route fails to be resolved
- * to an action.
- *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class RouteException extends Exception
+class RouteException extends ContextException
 {
 	/**
 	 * The route.
@@ -50,6 +48,9 @@ class RouteException extends Exception
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
 	 * @param array $route
 	 *	The route.
 	 *
@@ -59,9 +60,9 @@ class RouteException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(array $route, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, array $route, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
+		parent::__construct($context, $message, $previous);
 
 		$this->route = $route;
 	}

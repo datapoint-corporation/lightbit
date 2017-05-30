@@ -107,7 +107,7 @@ class QueryStringHttpRouter extends HttpRouter
 	{
 		$path = null;
 
-		if (isset($_GET['action']))
+		if (!empty($_GET['action']))
 		{
 			if (!is_string($_GET['action']))
 			{

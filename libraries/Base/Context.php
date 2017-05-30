@@ -39,6 +39,7 @@ use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
 use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
@@ -49,7 +50,6 @@ use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
 use \Lightbit\Base\Exception;
 use \Lightbit\IO\FileSystem\Alias;
-use \Lightbit\Base\ModuleNotFoundException;
 
 /**
  * Context.
