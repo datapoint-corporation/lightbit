@@ -27,8 +27,8 @@
 
 namespace Lightbit\Data\Caching;
 
-use \Lightbit\Exception;
 use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Exception;
 
 /**
  * CacheException.

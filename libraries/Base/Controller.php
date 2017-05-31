@@ -32,6 +32,7 @@ use \Lightbit\Base\Action;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
+use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\IView;
 use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
@@ -42,7 +43,6 @@ use \Lightbit\Data\Validation\FilterException;
 use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Helpers\TypeHelper;
-use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\IO\FileSystem\Alias;
 
 /**

@@ -30,8 +30,8 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IResource;
-use \Lightbit\Http\IHttpSession;
 use \Lightbit\Http\HttpSessionException;
+use \Lightbit\Http\IHttpSession;
 use \Lightbit\Http\KeyNotFoundHttpSessionException;
 
 /**

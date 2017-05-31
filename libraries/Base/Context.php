@@ -29,18 +29,19 @@ namespace Lightbit\Base;
 
 use \Lightbit;
 use \Lightbit\Base\Action;
+use \Lightbit\Base\Cluster;
+use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\Cluster;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
@@ -50,7 +51,6 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
-use \Lightbit\Exception;
 use \Lightbit\IO\FileSystem\Alias;
 
 /**

@@ -27,8 +27,8 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\Base\View;
 use \Lightbit\Base\IView;
+use \Lightbit\Base\View;
 
 /**
  * HtmlView.

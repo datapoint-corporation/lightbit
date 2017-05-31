@@ -28,9 +28,9 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
+use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\ICluster;
 use \Lightbit\Base\IController;
-use \Lightbit\Base\ControllerNotFoundException;
 
 /**
  * Cluster.

@@ -27,9 +27,9 @@
 
 namespace Lightbit\Data\Caching;
 
-use \Lightbit\Exception;
-use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\CacheException;
+use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Exception;
 
 /**
  * KeyNotFoundCacheException.
