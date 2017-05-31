@@ -41,6 +41,7 @@ use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
@@ -384,7 +385,7 @@ abstract class Context extends Cluster implements IContext
 				= $this->components[$id] 
 					= new $className($this, $id, $this->componentsConfiguration[$id]);
 
-			if ($component instanceof IResource)
+			if ($component instanceof IChannel)
 			{
 				$component->start();
 			}
@@ -718,6 +719,17 @@ abstract class Context extends Cluster implements IContext
 	public function getSlugManager() : ISlugManager
 	{
 		return $this->getComponent('data.slug.manager');
+	}
+
+	/**
+	 * Gets the sql connection.
+	 *
+	 * @return ISqlConnection
+	 *	The sql connection.
+	 */
+	public function getSqlConnection() : ISqlConnection
+	{
+		return $this->getComponent('data.sql.connection');
 	}
 
 	/**

@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IResource;
+use \Lightbit\Base\IChannel;
 use \Lightbit\Http\HttpSessionException;
 use \Lightbit\Http\IHttpSession;
 use \Lightbit\Http\KeyNotFoundHttpSessionException;
@@ -40,7 +40,7 @@ use \Lightbit\Http\KeyNotFoundHttpSessionException;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpSession extends Component implements IHttpSession, IResource
+class HttpSession extends Component implements IHttpSession, IChannel
 {
 	/**
 	 * The session name.

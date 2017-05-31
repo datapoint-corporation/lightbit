@@ -37,6 +37,7 @@ use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -249,6 +250,17 @@ abstract class Element extends Object implements IElement
 	public function getSlugManager() : ISlugManager
 	{
 		return $this->getContext()->getSlugManager();
+	}
+
+	/**
+	 * Gets the sql connection.
+	 *
+	 * @return ISqlConnection
+	 *	The sql connection.
+	 */
+	public function getSqlConnection() : ISqlConnection
+	{
+		return $this->getContext()->getSqlConnection();
 	}
 
 	/**

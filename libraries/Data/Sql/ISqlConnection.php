@@ -27,6 +27,7 @@
 
 namespace Lightbit\Data\Sql;
 
+use \Lightbit\Base\IChannel;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
@@ -37,8 +38,32 @@ use \Lightbit\Data\Sql\ISqlStatement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlConnection extends IComponent, IResource
+interface ISqlConnection extends IComponent, IChannel
 {
+	/**
+	 * Gets the last insert row identifier.
+	 *
+	 * @return int
+	 *	The last insert row identifier.
+	 */
+	public function getLastInsertID() : int;
+
+	/**
+	 * Gets the sql connection driver.
+	 *
+	 * @return ISqlDriver
+	 *	The sql connection driver.
+	 */
+	public function getSqlDriver() : ISqlDriver;
+
+	/**
+	 * Gets the user for authentication.
+	 *
+	 * @return string
+	 *	The user for authentication.
+	 */
+	public function getUser() : ?string;
+
 	/**
 	 * Creates, prepares and executes a statement.
 	 *
@@ -54,6 +79,22 @@ interface ISqlConnection extends IComponent, IResource
 	public function execute(string $statement, array $arguments = null) : int;
 
 	/**
+	 * Checks for a password for authentication.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasPassword() : bool;
+
+	/**
+	 * Checks for a user for authentication.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasUser() : bool;
+
+	/**
 	 * Creates, prepares and executes a query statement.
 	 *
 	 * @param string $statement
@@ -66,6 +107,55 @@ interface ISqlConnection extends IComponent, IResource
 	 *	The sql statement.
 	 */
 	public function query(string $statement, array $arguments = null) : ISqlReader;
+
+	/**
+	 * Creates, prepares and executes a scalar query statement.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public function scalar(string $statement, array $arguments = null); // : mixed
+
+	/**
+	 * Sets the driver configuration.
+	 *
+	 * @param array $driverConfiguration
+	 *	The driver configuration.
+	 *
+	 * @param bool $merge
+	 *	The driver configuration merge flag.
+	 */
+	public function setDriverConfiguration(array $driverConfiguration, bool $merge = true) : void;
+
+	/**
+	 * Sets the dsn connection string.
+	 *
+	 * @param string $dsn
+	 *	The dsn connection string.
+	 */
+	public function setDsn(string $dsn) : void;
+
+	/**
+	 * Sets the password for authentication.
+	 *
+	 * @param string $password
+	 *	The password for authentication.
+	 */
+	public function setPassword(?string $password) : void;
+
+	/**
+	 * Sets the user for authentication.
+	 *
+	 * @param string $user
+	 *	The user for authentication.
+	 */
+	public function setUser(?string $user) : void;
 
 	/**
 	 * Creates and prepares a statement.

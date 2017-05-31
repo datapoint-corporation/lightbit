@@ -33,6 +33,7 @@ use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -172,4 +173,12 @@ interface IBase
 	 *	The slug manager.
 	 */
 	public function getSlugManager() : ISlugManager;
+
+	/**
+	 * Gets the sql connection.
+	 *
+	 * @return ISqlConnection
+	 *	The sql connection.
+	 */
+	public function getSqlConnection() : ISqlConnection;
 }

@@ -37,6 +37,7 @@ use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Base\ModuleNotFoundRouteException;
 use \Lightbit\Data\Caching\NoCache;
 use \Lightbit\Data\SlugManager;
+use \Lightbit\Data\Sql\SqlConnection;
 use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\HtmlAdapter;
@@ -77,6 +78,7 @@ class Application extends Context implements IApplication
 				'data.cache.memory' => [ '@class' => NoCache::class ],
 				'data.cache.network' => [ '@class' => NoCache::class ],
 				'data.slug.manager' => [ '@class' => SlugManager::class ],
+				'data.sql.connection' => [ '@class' => SqlConnection::class ],
 				'html.adapter' => [ '@class' => HtmlAdapter::class ],
 				'html.document' => [ '@class' => HtmlDocument::class ],
 				'http.asset.manager' => [ '@class' => HttpAssetManager::class ],

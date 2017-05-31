@@ -29,7 +29,7 @@ namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IResource;
+use \Lightbit\Base\IChannel;
 use \Lightbit\Data\Caching\CacheException;
 use \Lightbit\Data\Caching\ICache;
 
@@ -39,7 +39,7 @@ use \Lightbit\Data\Caching\ICache;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class NoCache extends Component implements ICache, IFileCache, IMemoryCache, INetworkCache, IResource
+final class NoCache extends Component implements ICache, IFileCache, IMemoryCache, INetworkCache, IChannel
 {
 	/**
 	 * The content.
