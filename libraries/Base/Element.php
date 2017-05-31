@@ -56,6 +56,17 @@ use \Lightbit\Http\IHttpSession;
 abstract class Element extends Object implements IElement
 {
 	/**
+	 * Gets the action.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
+	public final function getAction() : Action
+	{
+		return Action::getInstance();
+	}
+
+	/**
 	 * Gets the application.
 	 *
 	 * @return IApplication

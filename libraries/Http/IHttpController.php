@@ -27,51 +27,15 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\Controller;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Html\HtmlView;
-use \Lightbit\Http\IHttpController;
+use \Lightbit\Base\IController;
 
 /**
- * HttpController.
+ * IHttpController.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class HttpController extends Controller implements IHttpController
+interface IHttpController extends IController
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 *
-	 * @param array $configuration
-	 *	The configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new HtmlView($path, $configuration);
-	}
+	
 }

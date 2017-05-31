@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\Action;
 use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IBase;
 use \Lightbit\Base\IContext;
@@ -39,6 +40,14 @@ use \Lightbit\Base\IContext;
  */
 interface IElement extends IBase
 {
+	/**
+	 * Gets the action.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
+	public function getAction() : Action;
+
 	/**
 	 * Gets the application.
 	 *

@@ -159,9 +159,13 @@ class Application extends Context implements IApplication
 
 		else if (strpos($path, '~/') === 0)
 		{
-			$action = Action::getInstance();
+			$action;
 
-			if (!$action)
+			try
+			{
+				$action = Action::getInstance();
+			}
+			catch (\Exception $e)
 			{
 				throw new Exception(sprintf('Route can not be relative, action not available: "%s"', $route[0]));
 			}
@@ -171,12 +175,17 @@ class Application extends Context implements IApplication
 
 		else if (strpos($path, '@/') === 0)
 		{
-			$action = Action::getInstance();
+			$action;
 			$path = substr($path, 2);
-			
-			$context = $action
-				? $action->getController()->getContext()
-				: $context;
+
+			try
+			{
+				$action = Action::getInstance();
+			}
+			catch (\Exception $e)
+			{
+				$action = $context;
+			}
 		}
 
 		_resolveContext1:

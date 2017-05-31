@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Exception;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\Object;
 
@@ -51,8 +52,13 @@ final class Action extends Object
 	 * @return Action
 	 *	The instance.
 	 */
-	public static function getInstance() : ?Action
+	public static function getInstance() : Action
 	{
+		if (!self::$instance)
+		{
+			throw new Exception('Action is not active');
+		}
+
 		return self::$instance;
 	}
 
@@ -71,29 +77,29 @@ final class Action extends Object
 	private $controller;
 
 	/**
-	 * The name.
+	 * The identifier.
 	 *
 	 * @type string
 	 */
-	private $name;
+	private $id;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param IController $controller
-	 *	The controller.
+	 *	The action controller.
 	 *
-	 * @param string $name
-	 *	The name.
+	 * @param string $id
+	 *	The action identifier.
 	 *
 	 * @param array $arguments
-	 *	The arguments.
+	 *	The action arguments.
 	 */
-	public function __construct(IController $controller, string $name, array $arguments)
+	public function __construct(IController $controller, string $id, array $arguments)
 	{
 		$this->arguments = $arguments;
 		$this->controller = $controller;
-		$this->name = $name;
+		$this->id = $id;
 	}
 
 	/**
@@ -130,10 +136,30 @@ final class Action extends Object
 
 		if (!$id)
 		{
-			$id = $this->controller->getID() . '/' . $this->name;
+			$id = $this->controller->getID() . '/' . $this->id;
 		}
 
 		return $id;
+	}
+
+	/**
+	 * Gets the global identifier.
+	 *
+	 * @return string
+	 *	The global identifier.
+	 */
+	public function getGlobalID() : string
+	{
+		static $globalID;
+
+		if (!$globalID)
+		{
+			$globalID = $this->controller->getContext()->getID()
+				. '/' . $this->controller->getID()
+				. '/' . $this->id;
+		}
+
+		return $globalID;
 	}
 
 	/**
@@ -144,7 +170,7 @@ final class Action extends Object
 	 */
 	public function getName() : string
 	{
-		return $this->name;
+		return $this->id;
 	}
 
 	/**
@@ -156,7 +182,7 @@ final class Action extends Object
 	public function run() // : mixed
 	{
 		self::$instance = $this;
-		$result = $this->controller->{$this->controller->getActionMethodName($this->name)}(...array_values($this->arguments));
+		$result = $this->controller->{$this->controller->getActionMethodName($this->id)}(...array_values($this->arguments));
 
 		self::$instance = null;
 		return $result;

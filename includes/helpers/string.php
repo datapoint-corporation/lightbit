@@ -25,53 +25,21 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
-
-use \Lightbit\Base\Controller;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Html\HtmlView;
-use \Lightbit\Http\IHttpController;
+use \Lightbit\Helpers\StringHelper;
 
 /**
- * HttpController.
+ * Creates a content slug.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @param string $content
+ *	The content to create the slug from.
+ *
+ * @param string $delimiter
+ *	The slug delimiter.
+ *
+ * @return string
+ *	The slug.
  */
-abstract class HttpController extends Controller implements IHttpController
+function slug(string $content, string $delimiter = '-') : string
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 *
-	 * @param array $configuration
-	 *	The configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new HtmlView($path, $configuration);
-	}
+	return StringHelper::slug($content, $delimiter);
 }

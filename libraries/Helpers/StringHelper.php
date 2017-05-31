@@ -41,6 +41,27 @@ use \Lightbit\Exception;
 class StringHelper
 {
 	/**
+	 * Creates a content slug.
+	 *
+	 * @param string $content
+	 *	The content to create the slug from.
+	 *
+	 * @param string $delimiter
+	 *	The slug delimiter.
+	 *
+	 * @return string
+	 *	The slug.
+	 */
+	public static function slug(string $content, string $delimiter = '-') : string
+	{
+		return implode
+		(
+			$delimiter, 
+			preg_split('%[^\\w]+%', self::transliteration($content), -1, PREG_SPLIT_NO_EMPTY)
+		);
+	}
+
+	/**
 	 * Creates a content transliteration.
 	 *
 	 * @param string $content
