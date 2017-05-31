@@ -25,16 +25,56 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\IMap;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Data\Sql\ISqlStatement;
 
 /**
- * ICache.
+ * ISqlConnection.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ICache extends IMap
+interface ISqlConnection extends IComponent, IResource
 {
+	/**
+	 * Creates, prepares and executes a statement.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @return int
+	 *	The number of affected rows.
+	 */
+	public function execute(string $statement, array $arguments = null) : int;
+
+	/**
+	 * Creates, prepares and executes a query statement.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @return ISqlStatement
+	 *	The sql statement.
+	 */
+	public function query(string $statement, array $arguments = null) : ISqlReader;
+
+	/**
+	 * Creates and prepares a statement.
+	 *
+	 * @param string $statement
+	 *	The statement to create and prepare, as a string.
+	 *
+	 * @return ISqlStatement
+	 *	The sql statement.
+	 */
+	public function statement(string $statement) : ISqlStatement;
 }

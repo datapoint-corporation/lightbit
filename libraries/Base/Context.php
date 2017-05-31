@@ -36,10 +36,10 @@ use \Lightbit\Base\IElement;
 use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\ModuleNotFoundException;
-use \Lightbit\Data\ICache;
-use \Lightbit\Data\IFileCache;
-use \Lightbit\Data\IMemoryCache;
-use \Lightbit\Data\INetworkCache;
+use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\IFileCache;
+use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
@@ -50,7 +50,7 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 use \Lightbit\IO\FileSystem\Alias;
 
 /**

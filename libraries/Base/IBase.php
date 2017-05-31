@@ -28,10 +28,10 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Data\ICache;
-use \Lightbit\Data\IFileCache;
-use \Lightbit\Data\IMemoryCache;
-use \Lightbit\Data\INetworkCache;
+use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\IFileCache;
+use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;

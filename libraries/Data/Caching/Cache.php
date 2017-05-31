@@ -25,11 +25,11 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
-use \Lightbit\Data\ICache;
+use \Lightbit\Data\Caching\ICache;
 
 /**
  * Cache.

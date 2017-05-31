@@ -25,51 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Caching;
 
-use \Lightbit\Base\Exception;
-use \Lightbit\Data\ICache;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Data\IMap;
 
 /**
- * CacheException.
+ * ICache.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class CacheException extends Exception
+interface ICache extends IComponent, IMap
 {
-	/**
-	 * The cache.
-	 */
-	private $cache;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param ICache $cache
-	 *	The cache.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
-	 */
-	public function __construct(ICache $cache, string $message, \Throwable $previous = null)
-	{
-		parent::__construct($message, $previous);
-
-		$this->cache = $cache;
-	}
-
-	/**
-	 * Gets the cache.
-	 *
-	 * @return ICache
-	 *	The cache.
-	 */
-	public final function getCache() : ICache
-	{
-		return $this->cache;
-	}
 }

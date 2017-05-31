@@ -25,33 +25,30 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 
 /**
- * NamespacePathResolutionException.
- *
- * This exception is thrown when a given namespace name fails to be resolved
- * to a directory absolute path.
+ * ClassNotFoundException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class NamespacePathResolutionException extends Exception
+class ClassNotFoundException extends Exception
 {
 	/**
-	 * The namespace name.
+	 * The class name.
 	 *
 	 * @type string
 	 */
-	private $namespaceName;
+	private $className;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string $namespaceName
-	 *	The namespace name.
+	 * @param string $className
+	 *	The class name.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -59,21 +56,21 @@ class NamespacePathResolutionException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(string $namespaceName, string $message, \Throwable $previous = null)
+	public function __construct(string $className, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 
-		$this->namespaceName = $namespaceName;
+		$this->className = $className;
 	}
 
 	/**
-	 * Gets the namespace name.
+	 * Gets the class name.
 	 *
 	 * @return string
-	 *	The namespace name.
+	 *	The class name.
 	 */
-	public final function getNamespaceName() : string
+	public final function getClassName() : string
 	{
-		return $this->namespaceName;
+		return $this->className;
 	}
 }

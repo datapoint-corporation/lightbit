@@ -29,7 +29,7 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
 use \Lightbit\Base\IPlugin;
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 
 /**
  * Plugin.

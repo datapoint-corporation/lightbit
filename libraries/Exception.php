@@ -25,35 +25,21 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
-
-use \Lightbit\Base\Exception;
-use \Lightbit\Data\ICache;
-use \Lightbit\Data\CacheException;
+namespace Lightbit;
 
 /**
- * KeyNotFoundCacheException.
+ * Exception.
+ *
+ * This class a base exception type thrown by Lightbit elements, removing
+ * the need to pass on an exception code as a constructor argument.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class KeyNotFoundCacheException extends CacheException
+class Exception extends \Exception
 {
 	/**
-	 * The key.
-	 *
-	 * @type string
-	 */
-	private $key;
-
-	/**
 	 * Constructor.
-	 *
-	 * @param ICache $cache
-	 *	The cache.
-	 *
-	 * @param string $key
-	 *	The key.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -61,21 +47,8 @@ class KeyNotFoundCacheException extends CacheException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(ICache $cache, string $key, string $message, \Throwable $previous = null)
+	public function __construct(string $message, \Throwable $previous = null)
 	{
-		parent::__construct($cache, $message, $previous);
-
-		$this->key = $key;
-	}
-
-	/**
-	 * Gets the key.
-	 *
-	 * @return string
-	 *	The key.
-	 */
-	public final function getKey() : string
-	{
-		return $this->key;
+		parent::__construct($message, 0, $previous);
 	}
 }

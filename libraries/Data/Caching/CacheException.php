@@ -25,31 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\Data\Caching;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Exception;
+use \Lightbit\Data\Caching\ICache;
 
 /**
- * ContextException.
+ * CacheException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ContextException extends Exception
+class CacheException extends Exception
 {
 	/**
-	 * The context.
-	 *
-	 * @type IContext
+	 * The cache.
 	 */
-	private $context;
+	private $cache;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The context.
+	 * @param ICache $cache
+	 *	The cache.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -57,21 +55,21 @@ class ContextException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $message, \Throwable $previous = null)
+	public function __construct(ICache $cache, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 
-		$this->context = $context;
+		$this->cache = $cache;
 	}
 
 	/**
-	 * Gets the context.
+	 * Gets the cache.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * @return ICache
+	 *	The cache.
 	 */
-	public final function getContext() : IContext
+	public final function getCache() : ICache
 	{
-		return $this->context;
+		return $this->cache;
 	}
 }

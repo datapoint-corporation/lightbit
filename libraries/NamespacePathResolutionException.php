@@ -25,16 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit;
 
-use \Lightbit\Data\ICache;
+use \Lightbit\Exception;
 
 /**
- * IFileCache.
+ * NamespacePathResolutionException.
+ *
+ * This exception is thrown when a given namespace name fails to be resolved
+ * to a directory absolute path.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IFileCache extends ICache
+class NamespacePathResolutionException extends Exception
 {
+	/**
+	 * The namespace name.
+	 *
+	 * @type string
+	 */
+	private $namespaceName;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $namespaceName
+	 *	The namespace name.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
+	 */
+	public function __construct(string $namespaceName, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+
+		$this->namespaceName = $namespaceName;
+	}
+
+	/**
+	 * Gets the namespace name.
+	 *
+	 * @return string
+	 *	The namespace name.
+	 */
+	public final function getNamespaceName() : string
+	{
+		return $this->namespaceName;
+	}
 }

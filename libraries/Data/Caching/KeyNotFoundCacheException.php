@@ -25,31 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\Data\Caching;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Exception;
+use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\CacheException;
 
 /**
- * ContextException.
+ * KeyNotFoundCacheException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ContextException extends Exception
+class KeyNotFoundCacheException extends CacheException
 {
 	/**
-	 * The context.
+	 * The key.
 	 *
-	 * @type IContext
+	 * @type string
 	 */
-	private $context;
+	private $key;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The context.
+	 * @param ICache $cache
+	 *	The cache.
+	 *
+	 * @param string $key
+	 *	The key.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -57,21 +61,21 @@ class ContextException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $message, \Throwable $previous = null)
+	public function __construct(ICache $cache, string $key, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
+		parent::__construct($cache, $message, $previous);
 
-		$this->context = $context;
+		$this->key = $key;
 	}
 
 	/**
-	 * Gets the context.
+	 * Gets the key.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * @return string
+	 *	The key.
 	 */
-	public final function getContext() : IContext
+	public final function getKey() : string
 	{
-		return $this->context;
+		return $this->key;
 	}
 }

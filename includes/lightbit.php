@@ -26,10 +26,12 @@
 // -----------------------------------------------------------------------------
 
 use \Lightbit\Base\IApplication;
+use \Lightbit\ClassNotFoundException;
 use \Lightbit\ClassPathResolutionException;
 use \Lightbit\Html\HtmlView;
 use \Lightbit\Http\HttpException;
 use \Lightbit\IO\FileSystem\Alias;
+use \Lightbit\IO\FileSystem\FileNotFoundException;
 use \Lightbit\NamespacePathResolutionException;
 
 /**
@@ -144,11 +146,18 @@ class Lightbit
 
 		if ($i = strrpos($className, '\\'))
 		{
-			return self::$classesPath[$className]
-				= self::getNamespacePath(substr($className, 0, $i))
-				. DIRECTORY_SEPARATOR
-				. strtr(substr($className, $i + 1), '\\', DIRECTORY_SEPARATOR)
-				. '.php';
+			try
+			{
+				return self::$classesPath[$className]
+					= self::getNamespacePath(substr($className, 0, $i))
+					. DIRECTORY_SEPARATOR
+					. strtr(substr($className, $i + 1), '\\', DIRECTORY_SEPARATOR)
+					. '.php';
+			}
+			catch (NamespacePathResolutionException $e)
+			{
+				throw new ClassPathResolutionException($className, sprintf('Class path resolution failure: "%s"', $className), $e);
+			}
 		}
 
 		return $className . '.php';
@@ -368,7 +377,25 @@ class Lightbit
 	 */
 	public static function loadClass(string $className) : void
 	{
-		self::inclusion()(self::getClassPath($className));
+		try
+		{
+			$classPath = self::getClassPath($className);
+
+			if (!file_exists($classPath))
+			{
+				throw new FileNotFoundException($classPath, sprintf('Class file not found: "%s"', $classPath));
+			}
+
+			self::inclusion()(self::getClassPath($className));
+		}
+		catch (ClassPathResolutionException $e)
+		{
+			throw new ClassNotFoundException($className, sprintf('Class not found, path resolution failure: "%s"', $className), $e);	
+		}
+		catch (FileNotFoundException $e)
+		{
+			throw new ClassNotFoundException($className, sprintf('Class not found, file does not exist: "%s"', $className), $e);
+		}
 	}
 
 	/**

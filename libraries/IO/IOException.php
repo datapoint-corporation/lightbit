@@ -27,7 +27,7 @@
 
 namespace Lightbit\IO;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 
 /**
  * IOException.

@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 
 /**
  * ModuleNotFoundRouteException.

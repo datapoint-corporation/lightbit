@@ -27,7 +27,7 @@
 
 namespace Lightbit\Data;
 
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 use \Lightbit\Data\IMap;
 
 /**

@@ -25,16 +25,16 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Caching;
 
-use \Lightbit\Data\ICache;
+use \Lightbit\Data\Caching\ICache;
 
 /**
- * IMemoryCache.
+ * INetworkCache.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IMemoryCache extends ICache
+interface INetworkCache extends ICache
 {
 }

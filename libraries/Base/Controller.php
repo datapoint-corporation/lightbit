@@ -39,7 +39,7 @@ use \Lightbit\Base\SlugParseParameterRouteException;
 use \Lightbit\Base\View;
 use \Lightbit\Data\Validation\Filter;
 use \Lightbit\Data\Validation\FilterException;
-use \Lightbit\Base\Exception;
+use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Helpers\TypeHelper;
 use \Lightbit\Base\IllegalParameterRouteException;

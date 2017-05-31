@@ -25,16 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit;
 
-use \Lightbit\Data\ICache;
+use \Lightbit\Exception;
 
 /**
- * INetworkCache.
+ * ClassPathResolutionException.
+ *
+ * This exception is thrown when a given class name fails to be resolved
+ * to an absolute path.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface INetworkCache extends ICache
+class ClassPathResolutionException extends Exception
 {
+	/**
+	 * The class name.
+	 *
+	 * @type string
+	 */
+	private $className;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $className
+	 *	The class name.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
+	 */
+	public function __construct(string $className, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+
+		$this->className = $className;
+	}
+
+	/**
+	 * Gets the class name.
+	 *
+	 * @return string
+	 *	The class name.
+	 */
+	public final function getClassName() : string
+	{
+		return $this->className;
+	}
 }
