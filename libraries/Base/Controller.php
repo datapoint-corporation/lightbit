@@ -213,7 +213,7 @@ abstract class Controller extends Element implements IController
 		{
 			if (!$this->layout)
 			{
-				return $this->getApplication()->getLayoutPath();
+				return $this->getContext()->getLayoutPath();
 			}
 
 			$this->layoutPath = (new Alias($this->layout))

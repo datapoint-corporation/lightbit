@@ -102,7 +102,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 */
 	private function copyDirectory(string $asset, string $source, string $destination) : void
 	{
-		if (!mkdir($destination))
+		if (!mkdir($destination, 0775, true))
 		{
 			throw new IOException
 			(
@@ -180,9 +180,12 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 				. $hash
 				. $privatePathSuffix;
 
+			$publishUrlSuffix = ((file_exists($privatePath) && is_dir($privatePath)) ? '/' : '');
+
 			$publishUrl = $this->getPublishDirectoryUrl()
 				. $hash
-				. $privatePathSuffix;
+				. $privatePathSuffix
+				. $publishUrlSuffix;
 
 			return $results[$asset] = 
 			[ 
@@ -301,7 +304,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 		{
 			$publishDirectoryPath = $this->getPublishDirectoryPath();
 
-			if (!file_exists($publishDirectoryPath) && !mkdir($publishDirectoryPath, true))
+			if (!file_exists($publishDirectoryPath) && !mkdir($publishDirectoryPath, 0775, true))
 			{
 				throw new IOException
 				(
