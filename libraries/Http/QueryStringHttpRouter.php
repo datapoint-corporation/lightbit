@@ -159,7 +159,7 @@ class QueryStringHttpRouter extends HttpRouter
 
 		$result = '' . $this->getScriptName();
 
-		$arguments = [ 'action' => strtr($action->getID(), '/-', '._') ]
+		$arguments = [ 'action' => strtr($action->getGlobalID(), '/-', '._') ]
 			+ $action->getArguments() 
 			+ $route;
 

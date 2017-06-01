@@ -180,12 +180,9 @@ class Application extends Context implements IApplication
 
 			try
 			{
-				$action = Action::getInstance();
+				$context = Action::getInstance()->getController()->getContext();
 			}
-			catch (\Exception $e)
-			{
-				$action = $context;
-			}
+			catch (\Exception $e) {}
 		}
 
 		_resolveContext1:
