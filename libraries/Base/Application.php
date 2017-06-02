@@ -116,7 +116,7 @@ class Application extends Context implements IApplication
 	 * @return Action
 	 *	The action.
 	 */
-	public function resolve(?array $route) : Action
+	public final function resolve(?array $route) : Action
 	{
 		return $this->resolveContext($this, $route);
 	}

@@ -275,6 +275,37 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
+	 * Sets an event listener.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param Closure $closure
+	 *	The event listener callback.
+	 *
+	 * @return int
+	 *	The event listener queue position.
+	 */
+	public function on(string $id, \Closure $closure) : int
+	{
+		return $this->getContext()->on($id, $closure);
+	}
+
+	/**
+	 * Raises an event.
+	 *
+	 * @param IEvent $event
+	 *	The event to raise.
+	 *
+	 * @return int
+	 *	The event listener call count.
+	 */
+	public function raise(IEvent $event) : int
+	{
+		return $this->getContext()->raise($event);
+	}
+
+	/**
 	 * Calls a method.
 	 *
 	 * @param string $method

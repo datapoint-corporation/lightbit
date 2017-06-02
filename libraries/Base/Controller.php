@@ -264,6 +264,8 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
 	{
+		$this->raise(new Event($this, 'base.controller.render'));
+
 		return $this->view((new Alias($view))->lookup('php', $this->getViewsBasePaths()))
 			->run($parameters, $capture);
 	}

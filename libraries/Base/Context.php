@@ -84,6 +84,13 @@ abstract class Context extends Cluster implements IContext
 	private $context;
 
 	/**
+	 * The event listeners.
+	 *
+	 * @type array
+	 */
+	private $eventListeners;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -171,6 +178,8 @@ abstract class Context extends Cluster implements IContext
 
 		$this->components = [];
 		$this->componentsConfiguration = [];
+
+		$this->eventListeners = [];
 
 		$this->modules = [];
 		$this->modulesConfiguration = [];
@@ -776,6 +785,54 @@ abstract class Context extends Cluster implements IContext
 	public final function hasModule(string $id) : string
 	{
 		return isset($this->modules[$id]);
+	}
+
+	/**
+	 * Sets an event listener.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param Closure $closure
+	 *	The event listener callback.
+	 *
+	 * @return int
+	 *	The event listener queue position.
+	 */
+	public final function on(string $id, \Closure $closure) : int
+	{
+		return count($this->eventListeners[$id][] = $closure);
+	}
+
+	/**
+	 * Raises an event.
+	 *
+	 * @param IEvent $event
+	 *	The event to raise.
+	 *
+	 * @return int
+	 *	The event listener call count.
+	 */
+	public final function raise(IEvent $event) : int
+	{
+		$eventListenerCallCount = 0;
+		$id = $event->getID();
+
+		if (isset($this->eventListeners[$id]))
+		{
+			foreach ($this->eventListeners[$id] as $i => $closure)
+			{
+				$closure($event);
+				++$eventListenerCallCount;
+			}
+		}
+
+		if ($this->context)
+		{
+			$eventListenerCallCount += $this->context->raise($event);
+		}
+
+		return $eventListenerCallCount;
 	}
 
 	/**
