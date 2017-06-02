@@ -129,6 +129,8 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function display(string $view, array $parameters = null) : void
 	{
+		$this->onDisplay();
+
 		$layoutPath = $this->getLayoutPath();
 
 		if ($layoutPath)
@@ -140,6 +142,8 @@ abstract class Controller extends Element implements IController
 		{
 			$this->render($view, $parameters, false);
 		}
+
+		$this->onAfterDisplay();
 	}
 
 	/**
@@ -264,10 +268,14 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
 	{
-		$this->raise(new Event($this, 'base.controller.render'));
+		$this->onRender();
 
-		return $this->view((new Alias($view))->lookup('php', $this->getViewsBasePaths()))
+		$result = $this->view((new Alias($view))->lookup('php', $this->getViewsBasePaths()))
 			->run($parameters, $capture);
+
+		$this->onAfterRender();
+
+		return $result;
 	}
 
 	/**
@@ -538,5 +546,41 @@ abstract class Controller extends Element implements IController
 				$this->getContext()->getPrefix()
 			)
 		);
+	}
+
+	/**
+	 * Called during the controller display procedure, after the view is
+	 * resolved, constructed and executed.
+	 */
+	protected function onAfterDisplay() : void
+	{
+		$this->raise(new Event($this, 'base.controller.display.after'));
+	}
+
+	/**
+	 * Called during the controller render procedure, after the view is
+	 * resolved, constructed and executed.
+	 */
+	protected function onAfterRender() : void
+	{
+		$this->raise(new Event($this, 'base.controller.render.after'));
+	}
+
+	/**
+	 * Called during the controller display procedure, before the view is
+	 * resolved, constructed and executed.
+	 */
+	protected function onDisplay() : void
+	{
+		$this->raise(new Event($this, 'base.controller.display'));
+	}
+
+	/**
+	 * Called during the controller render procedure, before the view is
+	 * resolved, constructed and executed.
+	 */
+	protected function onRender() : void
+	{
+		$this->raise(new Event($this, 'base.controller.render'));
 	}
 }
