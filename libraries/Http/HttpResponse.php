@@ -30,15 +30,15 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
 use \Lightbit\Helpers\ObjectHelper;
-use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
 
 /**
- * HttpRequest.
+ * HttpResponse.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpRequest extends Component implements IHttpRequest
+class HttpResponse extends Component implements IHttpResponse
 {
 	/**
 	 * Constructor.
@@ -65,22 +65,14 @@ class HttpRequest extends Component implements IHttpRequest
 	 */
 	public final function getHeadersCollection() : array
 	{
-		static $headersCollection;
+		$headersCollection = [];
 
-		if (!isset($headersCollection))
+		foreach (headers_list() as $header => $content)
 		{
-			$headersCollection = [];
-
-			foreach ($_SERVER as $attribute => $value)
-			{
-				if (strpos($attribute, 'HTTP_') === 0)
-				{
-					$headersCollection[strtr(ucwords(strtolower(strtr(substr($attribute, 5), [ '_' => ' ' ]))), [ ' ' => '-' ])]
-						= is_array($value)
-						? $value
-						: [ $value ];
-				}
-			}
+			$headersCollection[strtr(ucwords(strtolower(strtr($attribute, [ '_' => ' ', '-' => ' ' ]))), [ ' ' => '-' ])]
+				= is_array($content)
+				? $content
+				: [ $content ];
 		}
 
 		return $headersCollection;
@@ -143,16 +135,30 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
-	 * Checks the request method for a match.
+	 * Sets an header content.
 	 *
-	 * @param string $method
-	 *	The method to match against.
+	 * @param string $header
+	 *	The header name.
 	 *
-	 * @return bool
-	 *	The result.
+	 * @param string $content
+	 *	The header content.
+	 *
+	 * @param bool $replace
+	 *	The header replace flag.
 	 */
-	public final function isOfMethod(string $method) : bool
+	public final function setHeader(string $header, string $content, bool $replace = true) : void
 	{
-		return $_SERVER['REQUEST_METHOD'] === $method;
+		header((strtr($header, [ ':' => '' ]) . ': ' . strtr($content, [ "\n" => '', "\r" => '' ])), $replace);
+	}
+
+	/**
+	 * Sets the status code.
+	 *
+	 * @param int $statusCode
+	 *	The status code.
+	 */
+	public final function setStatusCode(int $statusCode) : void
+	{
+		http_response_code($statusCode);
 	}
 }

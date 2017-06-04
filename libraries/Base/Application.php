@@ -84,7 +84,7 @@ class Application extends Context implements IApplication
 				'http.asset.manager' => [ '@class' => HttpAssetManager::class ],
 				'http.query.string' => [ '@class' => HttpQueryString::class ],
 				'http.request' => [ '@class' => HttpRequest::class ],
-				'http.response' => [ '@class' => HttpRequest::class ],
+				'http.response' => [ '@class' => HttpResponse::class ],
 				'http.router' => [ '@class' => QueryStringHttpRouter::class ],
 				'http.session' => [ '@class' => HttpSession::class ]
 			]

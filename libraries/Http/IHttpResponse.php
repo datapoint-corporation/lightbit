@@ -27,78 +27,35 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\Controller;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Html\HtmlView;
-use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\IHttpMessage;
 
 /**
- * HttpController.
+ * IHttpResponse.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class HttpController extends Controller implements IHttpController
+interface IHttpResponse extends IHttpMessage
 {
 	/**
-	 * Constructor.
+	 * Sets an header content.
 	 *
-	 * @param IContext $context
-	 *	The context.
+	 * @param string $header
+	 *	The header name.
 	 *
-	 * @param string $id
-	 *	The identifier.
+	 * @param string $content
+	 *	The header content.
 	 *
-	 * @param array $configuration
-	 *	The configuration.
+	 * @param bool $replace
+	 *	The header replace flag.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
+	public function setHeader(string $header, string $content, bool $replace = true) : void;
 
 	/**
-	 * Sets a response redirection.
-	 *
-	 * @param array $route
-	 *	The response redirection route.
+	 * Sets the status code.
 	 *
 	 * @param int $statusCode
-	 *	The response redirection status code.
+	 *	The status code.
 	 */
-	public final function redirect(array $route, int $statusCode = 303) : void
-	{
-		$response = $this->getHttpResponse();
-		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
-		$response->setStatusCode($statusCode);
-	}
-
-	/**
-	 * Validates the current http request.
-	 *
-	 * @param string $method
-	 *	The http request method name.
-	 */
-	public final function validate(string $method) : bool
-	{
-		return $this->getHttpRequest()->isOfMethod($method);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new HtmlView($path, $configuration);
-	}
+	public function setStatusCode(int $statusCode) : void;
 }

@@ -28,6 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\IComponent;
+use \Lightbit\Http\IHttpMessage;
 
 /**
  * IHttpRequest.
@@ -35,35 +36,16 @@ use \Lightbit\Base\IComponent;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRequest extends IComponent
+interface IHttpRequest extends IHttpMessage
 {
 	/**
-	 * Gets the headers.
+	 * Checks the request method for a match.
 	 *
-	 * @return array
-	 *	The headers.
+	 * @param string $method
+	 *	The method to match against.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function getHeaders() : array;
-
-	/**
-	 * Gets a header.
-	 *
-	 * @param string $header
-	 *	The header name.
-	 *
-	 * @return string
-	 *	The header content.
-	 */
-	public function getHeader(string $header) : ?string;
-
-	/**
-	 * Gets a header collection.
-	 *
-	 * @param string $header
-	 *	The header name.
-	 *
-	 * @return string
-	 *	The header collection.
-	 */
-	public function getHeaderCollection(string $header) : array;
+	public function isOfMethod(string $method) : bool;
 }

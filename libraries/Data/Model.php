@@ -68,6 +68,13 @@ abstract class Model extends Element implements IModel
 	private $scenario;
 
 	/**
+	 * The snapshot.
+	 *
+	 * @type array
+	 */
+	private $snapshot;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $scenario
@@ -95,6 +102,44 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Commits any changes to the model attributes.
+	 *
+	 * @return array
+	 *	The commit attributes snapshot.
+	 */
+	protected final function commit() : array
+	{
+		return $this->snapshot = $this->getAttributes();
+	}
+
+	/**
+	 * Calculates the difference from the current state to the last commit,
+	 * returning any attributes that have changed in between.
+	 *
+	 * @return array
+	 *	The attributes that have changed in between.
+	 */
+	protected final function difference() : array
+	{
+		if (!$this->snapshot)
+		{
+			return $this->getAttributes();
+		}
+
+		$result = [];
+
+		foreach ($this->getAttributes() as $attribute => $value)
+		{
+			if ($value !== $this->snapshot[$attribute])
+			{
+				$result[$attribute] = $value;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
@@ -102,14 +147,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function getAttributes() : array
 	{
-		$result = [];
-
-		foreach ($this->getAttributesName() as $i => $attribute)
-		{
-			$result[$attribute] = ObjectHelper::getAttribute($this, $attribute);
-		}
-
-		return $result;
+		return ObjectHelper::getAttributes($this, $this->getAttributesName());
 	}
 
 	/**
@@ -128,7 +166,7 @@ abstract class Model extends Element implements IModel
 			{
 				if ($property->isPublic() && !$property->isStatic())
 				{
-					self::$attributesName[static::class][] = $attributesName;
+					self::$attributesName[static::class][] = $property->getName();
 				}
 			}
 		}
@@ -181,6 +219,20 @@ abstract class Model extends Element implements IModel
 		}
 
 		return false;
+	}
+
+	/**
+	 * Performs a rollback operation on any changes from the last commit until
+	 * the current state, regarding attributes.
+	 */
+	protected final function rollback() : void
+	{
+		if (!$this->snapshot)
+		{
+			throw Exception(sprintf('Can not rollback, commit not found: "%s"', static::class));
+		}
+
+		ObjectHelper::setAttributes($this, $this->snapshot);
 	}
 
 	/**

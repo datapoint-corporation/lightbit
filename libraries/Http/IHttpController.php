@@ -37,5 +37,22 @@ use \Lightbit\Base\IController;
  */
 interface IHttpController extends IController
 {
-	
+	/**
+	 * Sets a response redirection.
+	 *
+	 * @param array $route
+	 *	The response redirection route.
+	 *
+	 * @param int $statusCode
+	 *	The response redirection status code.
+	 */
+	public function redirect(array $route, int $statusCode = 303) : void;
+
+	/**
+	 * Validates the current http request.
+	 *
+	 * @param string $method
+	 *	The http request method name.
+	 */
+	public function validate(string $method) : bool;
 }

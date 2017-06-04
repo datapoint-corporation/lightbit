@@ -105,6 +105,43 @@ class ObjectHelper
 	}
 
 	/**
+	 * Gets an object attributes.
+	 *
+	 * @param Object $object
+	 *	The object.
+	 *
+	 * @param array $properties
+	 *	The properties name.
+	 *
+	 * @return array
+	 *	The attributes.
+	 */
+	public static function getAttributes(Object $object, array $properties = null) : array
+	{
+		$result = [];
+
+		if (!$properties)
+		{
+			foreach ((new \ReflectionClass($object))->getProperties() as $i => $property)
+			{
+				if ($property->isPublic() && !$property->isStatic())
+				{
+					$result[$property->getName()] = $object->{$property->getName()};
+				}
+			}
+
+			return $result;
+		}
+
+		foreach ($properties as $i => $property)
+		{
+			$result[$property] = $object->{$property};
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Checks if an object attribute is set.
 	 *
 	 * @param Object $object

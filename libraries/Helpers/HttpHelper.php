@@ -28,6 +28,7 @@
 namespace Lightbit\Helpers;
 
 use \Lightbit\Exception;
+use \Lightbit\Helpers\StringHelper;
 
 /**
  * HttpHelper.

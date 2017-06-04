@@ -25,43 +25,56 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\Http;
 
-use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Base\IComponent;
 
 /**
- * HttpMessage.
+ * IHttpMessage.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class HttpMessage extends Component
+interface IHttpMessage extends IComponent
 {
 	/**
-	 * Gets the headers.
+	 * Gets the headers collection.
 	 *
 	 * @return array
-	 *	The headers.
+	 *	The headers collection.
 	 */
-	abstract public function getHeaders() : array;
+	public function getHeadersCollection() : array;
 
 	/**
-	 * Constructor.
+	 * Gets an header.
 	 *
-	 * @param IContext $context
-	 *	The component context.
+	 * @param string $header
+	 *	The header name.
 	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
+	 * @return string
+	 *	The header content.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
+	public function getHeader(string $header) : ?string;
 
+	/**
+	 * Gets an header collection.
+	 *
+	 * @param string $header
+	 *	The header name.
+	 *
+	 * @return array
+	 *	The header collection.
+	 */
+	public function getHeaderCollection(string $header) : array;
+
+	/**
+	 * Checks if an header is defined.
+	 *
+	 * @param string $header
+	 *	The header name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasHeader(string $header) : bool;
 }
