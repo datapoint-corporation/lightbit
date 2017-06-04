@@ -432,6 +432,27 @@ class SqlConnection extends Component implements ISqlConnection
 	}
 
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * a single result.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public final function single(string $statement, array $arguments = null, bool $numeric = false) : ?array
+	{
+		return $this->statement($statement)->single($arguments, $numeric);
+	}
+
+	/**
 	 * Creates and prepares a statement.
 	 *
 	 * @param string $statement

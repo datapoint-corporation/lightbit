@@ -214,6 +214,23 @@ class SqlStatement extends Object implements ISqlStatement
 	}
 
 	/**
+	 * Executes the statement as a query that's meant to fetch a single result.
+	 *
+	 * @param array $arguments
+	 *	The arguments.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public final function single(array $arguments = null, bool $numeric = false) : ?array
+	{
+		return $this->query($arguments)->single($numeric);
+	}
+
+	/**
 	 * Executes the statement as a query.
 	 *
 	 * @param array $arguments

@@ -88,6 +88,74 @@ class ObjectHelper
 	}
 
 	/**
+	 * Gets an object attribute.
+	 *
+	 * @param Object $object
+	 *	The object.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public static function getAttribute(Object $object, string $property) // : mixed
+	{
+		return $object->{$property};
+	}
+
+	/**
+	 * Checks if an object attribute is set.
+	 *
+	 * @param Object $object
+	 *	The object.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public static function hasAttribute(Object $object, string $property) : bool
+	{
+		return isset($object->{$property});
+	}
+
+	/**
+	 * Sets an object attribute.
+	 *
+	 * @param Object $object
+	 *	The object.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param mixed $attribute
+	 *	The value.
+	 */
+	public static function setAttribute(Object $object, string $property, $value) : void
+	{
+		$object->{$property} = $value;
+	}
+
+	/**
+	 * Sets an object attributes.
+	 *
+	 * @param Object $object
+	 *	The object.
+	 *
+	 * @param array $attributes
+	 *	The attributes.
+	 */
+	public static function setAttributes(Object $object, array $attributes) : void
+	{
+		foreach ($attributes as $property => $value)
+		{
+			$object->{$property} = $value;
+		}
+	}
+
+	/**
 	 * Constructor.
 	 */
 	private function __construct()

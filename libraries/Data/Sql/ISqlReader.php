@@ -98,10 +98,23 @@ interface ISqlReader
 	public function next(bool $numeric = false) : ?array;
 
 	/**
-	 * Fetches the first cell of the next result in the current result set.
+	 * Fetches the next cell in the current result set and returns it, 
+	 * disposing all remaining resulsts by closing.
 	 *
 	 * @return mixed
 	 *	The result.
 	 */
 	public function scalar(); // : mixed
+
+	/**
+	 * Fetches the next result in the current result set and returns it, 
+	 * disposing all remaining resulsts by closing.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public function single(bool $numeric = false) : ?array;
 }

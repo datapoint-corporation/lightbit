@@ -27,82 +27,83 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Base\Element;
+use \Lightbit\Data\Model;
+use \Lightbit\Data\Sql\ISqlModel;
 
 /**
- * ISqlStatement.
+ * SqlModel.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlStatement
+abstract class SqlModel extends Model implements ISqlModel
 {
 	/**
-	 * Closes the statement.
+	 * Constructor.
+	 *
+	 * @param string $scenario
+	 *	The model scenario.
+	 *
+	 * @param array $attributes
+	 *	The model attributes.
+	 *
+	 * @param array $configuration
+	 *	The model configuration.
 	 */
-	public function close() : void;
+	public function __construct(string $scenario, array $attributes = null, array $configuration = null)
+	{
+		parent::__construct($scenario, $attributes, $configuration);
+	}
 
 	/**
-	 * Executes the statement.
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * a single result as an instance of this model.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
 	 *
 	 * @param array $arguments
-	 *	The arguments.
+	 *	The statement arguments.
 	 *
-	 * @return int
-	 *	The number of affected rows.
-	 */
-	public function execute(array $arguments = null) : int;
-
-	/**
-	 * Gets the sql connection.
-	 *
-	 * @return ISqlConnection
-	 *	The sql connection.
-	 */
-	public function getSqlConnection() : ISqlConnection;
-
-	/**
-	 * Checks the statement status.
-	 *
-	 * @return bool
-	 *	The statement status.
-	 */
-	public function isClosed() : bool;
-
-	/**
-	 * Executes the statement as a scalar query.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return mixed
+	 * @return ISqlModel
 	 *	The result.
 	 */
-	public function scalar(array $arguments = null); // : mixed;
+	public final function single(string $statement, array $arguments = null) : ?ISqlModel
+	{
+		$attributes = $this->getSqlConnection()->single($statement, $arguments);
+
+		if ($attributes)
+		{
+			return new static('default', $attributes);
+		}
+
+		return null;
+	}
 
 	/**
-	 * Executes the statement as a query that's meant to fetch a single result.
+	 * Creates, prepares and executes a query statement to fetch all results
+	 * as instances of this model.
+	 *
+	 * @param string $statement
+	 *	The statement to prepare, execute and read from.
 	 *
 	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 *	The statement arguments.
 	 *
 	 * @return array
-	 *	The result.
+	 *	The results.
 	 */
-	public function single(array $arguments = null, bool $numeric = false) : ?array;
+	public final function query(string $statement, array $arguments = null) : array
+	{
+		$reader = $this->getSqlConnection()->query($statement, $arguments);
+		$results = [];
 
-	/**
-	 * Executes the statement as a query.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return ISqlReader
-	 *	The sql reader.
-	 */
-	public function query(array $arguments = null) : ISqlReader;
+		while ($attributes = $reader->next())
+		{
+			$results[] = new static('default', $attributes);
+		}
+
+		return $results;
+	}
 }

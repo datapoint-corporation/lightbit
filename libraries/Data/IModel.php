@@ -25,84 +25,94 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Base\IElement;
 
 /**
- * ISqlStatement.
+ * IModel.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlStatement
+interface IModel extends IElement
 {
 	/**
-	 * Closes the statement.
+	 * Constructor.
+	 *
+	 * @param string $scenario
+	 *	The model scenario.
+	 *
+	 * @param array $attributes
+	 *	The model attributes.
+	 *
+	 * @param array $configuration
+	 *	The model configuration.
 	 */
-	public function close() : void;
+	public function __construct(string $scenario, array $attributes = null, array $configuration = null);
 
 	/**
-	 * Executes the statement.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return int
-	 *	The number of affected rows.
-	 */
-	public function execute(array $arguments = null) : int;
-
-	/**
-	 * Gets the sql connection.
-	 *
-	 * @return ISqlConnection
-	 *	The sql connection.
-	 */
-	public function getSqlConnection() : ISqlConnection;
-
-	/**
-	 * Checks the statement status.
-	 *
-	 * @return bool
-	 *	The statement status.
-	 */
-	public function isClosed() : bool;
-
-	/**
-	 * Executes the statement as a scalar query.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function scalar(array $arguments = null); // : mixed;
-
-	/**
-	 * Executes the statement as a query that's meant to fetch a single result.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 * Gets the attributes.
 	 *
 	 * @return array
-	 *	The result.
+	 *	The attributes.
 	 */
-	public function single(array $arguments = null, bool $numeric = false) : ?array;
+	public function getAttributes() : array;
 
 	/**
-	 * Executes the statement as a query.
+	 * Gets the attributes name.
 	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return ISqlReader
-	 *	The sql reader.
+	 * @return array
+	 *	The attributes name.
 	 */
-	public function query(array $arguments = null) : ISqlReader;
+	public function getAttributesName() : array;
+
+	/**
+	 * Gets the scenario.
+	 *
+	 * @return string
+	 *	The scenario.
+	 */
+	public function getScenario() : string;
+
+	/**
+	 * Checks if an attribute is set.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttribute(string $attribute) : bool;
+
+	/**
+	 * Checks the scenario.
+	 *
+	 * @param string $scenario
+	 *	The scenarios to match against.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isScenario(string ...$scenario) : bool;
+
+	/**
+	 * Sets an attribute.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param mixed $value
+	 *	The attribute value.
+	 */
+	public function setAttribute(string $attribute, $value) : void;
+
+	/**
+	 * Sets the attributes.
+	 *
+	 * @param array $attributes
+	 *	The attributes.
+	 */
+	public function setAttributes(array $attributes) : void;
 }

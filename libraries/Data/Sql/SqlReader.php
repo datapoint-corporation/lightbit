@@ -257,25 +257,37 @@ class SqlReader extends Object implements ISqlReader
 	}
 
 	/**
-	 * Fetches the first cell of the next result in the current result set.
+	 * Fetches the next cell in the current result set and returns it, 
+	 * disposing all remaining resulsts by closing.
 	 *
 	 * @return mixed
 	 *	The result.
 	 */
 	public final function scalar() // : mixed
 	{
-		$result = $this->fetch(true);
+		$result = $this->next(true);
 
-		if (!$result)
-		{
-			throw new SqlReaderException
-			(
-				$this,
-				'Can not fetch scalar result: no result available',
-				$e
-			);
-		}
+		$this->close();
 
 		return $result[0];
+	}
+
+	/**
+	 * Fetches the next result in the current result set and returns it, 
+	 * disposing all remaining resulsts by closing.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public final function single(bool $numeric = false) : ?array
+	{
+		$result = $this->next($numeric);
+
+		$this->close();
+		
+		return $result;
 	}
 }
