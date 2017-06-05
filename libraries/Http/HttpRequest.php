@@ -129,6 +129,17 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
+	 * Exports to a model.
+	 *
+	 * @param IModel $model
+	 *	The model to export to.
+	 */
+	public final function export(IModel $model) : void
+	{
+
+	}
+
+	/**
 	 * Checks if an header is defined.
 	 *
 	 * @param string $header

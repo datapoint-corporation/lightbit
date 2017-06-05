@@ -175,6 +175,17 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Gets the safe attributes name.
+	 *
+	 * @return array
+	 *	The safe attributes name.
+	 */
+	public final function getSafeAttributesName() : array
+	{
+
+	}
+
+	/**
 	 * Gets the scenario.
 	 *
 	 * @return string

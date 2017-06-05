@@ -35,6 +35,7 @@ define('LIGHTBIT', microtime(true));
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
 require __DIR__ . '/includes/lightbit.php';
+require __DIR__ . '/includes/helpers/string.php';
 
 // Register the Lightbit namespace and file system alias prefix path as
 // required by the framework.

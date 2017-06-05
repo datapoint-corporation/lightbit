@@ -25,39 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Validation;
 
 use \Lightbit\Base\IElement;
+use \Lightbit\Data\IModel;
 
 /**
- * IModel.
+ * IRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModel extends IElement
+interface IRule extends IElement
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $scenario
-	 *	The model scenario.
+	 * @param IModel $model
+	 *	The rule model.
 	 *
-	 * @param array $attributes
-	 *	The model attributes.
+	 * @param string $id
+	 *	The rule identifier.
 	 *
 	 * @param array $configuration
-	 *	The model configuration.
+	 *	The rule configuration.
 	 */
-	public function __construct(string $scenario, array $attributes = null, array $configuration = null);
+	public function __construct(IModel $model, string $id, array $configuration = null);
 
 	/**
-	 * Gets the attributes.
+	 * Exports attributes.
 	 *
-	 * @return array
+	 * @param array $attributes
 	 *	The attributes.
 	 */
-	public function getAttributes() : array;
+	public function export(array $attributes) : void;
 
 	/**
 	 * Gets the attributes name.
@@ -68,59 +69,66 @@ interface IModel extends IElement
 	public function getAttributesName() : array;
 
 	/**
-	 * Gets the safe attributes name.
-	 *
-	 * @return array
-	 *	The safe attributes name.
-	 */
-	public function getSafeAttributesName() : array;
-
-	/**
-	 * Gets the scenario.
+	 * Gets the identifier.
 	 *
 	 * @return string
-	 *	The scenario.
+	 *	The identifier.
 	 */
-	public function getScenario() : string;
+	public function getID() : string;
 
 	/**
-	 * Checks if an attribute is set.
+	 * Gets the model.
+	 *
+	 * @return IModel
+	 *	The model.
+	 */
+	public function getModel() : IModel;
+
+	/**
+	 * Checks for an attribute applicability.
 	 *
 	 * @param string $attribute
 	 *	The attribute name.
-	 *
-	 * @return bool
-	 *	The result.
 	 */
 	public function hasAttribute(string $attribute) : bool;
 
 	/**
-	 * Checks the scenario.
+	 * Checks for an scenario applicability.
 	 *
 	 * @param string $scenario
-	 *	The scenarios to match against.
+	 *	The scenario.
+	 */
+	public function hasScenario(string $scenario) : bool;
+
+	/**
+	 * Checks the rule safe flag.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function isScenario(string ...$scenario) : bool;
+	public function isSafe() : bool;
 
 	/**
-	 * Sets an attribute.
+	 * Sets the attributes name.
 	 *
-	 * @param string $attribute
-	 *	The attribute name.
-	 *
-	 * @param mixed $value
-	 *	The attribute value.
+	 * @return array
+	 *	The attributes name.
 	 */
-	public function setAttribute(string $attribute, $value) : void;
+	public function setAttributesName(?array $attributes) : void;
 
 	/**
-	 * Sets the attributes.
+	 * Sets the scenarios.
 	 *
-	 * @param array $attributes
-	 *	The attributes.
+	 * @param array $scenarios
+	 *	The scenarios.
 	 */
-	public function setAttributes(array $attributes) : void;
+	public function setScenarios(?array $scenarios) : void;
+
+	/**
+	 * Runs the validation procedure.
+	 *
+	 * @return bool
+	 *	The validation result.
+	 */
+	public function validate() : bool;
 }

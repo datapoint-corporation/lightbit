@@ -39,6 +39,14 @@ use \Lightbit\Http\IHttpMessage;
 interface IHttpRequest extends IHttpMessage
 {
 	/**
+	 * Exports to a model.
+	 *
+	 * @param IModel $model
+	 *	The model to export to.
+	 */
+	public function export(IModel $model) : void;
+	
+	/**
 	 * Checks the request method for a match.
 	 *
 	 * @param string $method
