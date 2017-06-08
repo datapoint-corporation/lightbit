@@ -795,44 +795,52 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param Closure $closure
 	 *	The event listener callback.
-	 *
-	 * @return int
-	 *	The event listener queue position.
 	 */
-	public final function on(string $id, \Closure $closure) : int
+	public final function on(string $id, \Closure $closure) : void
 	{
-		return count($this->eventListeners[$id][] = $closure);
+		$this->eventListeners[$id][] = $closure;
 	}
 
 	/**
 	 * Raises an event.
 	 *
-	 * @param IEvent $event
-	 *	The event to raise.
+	 * @param string $id
+	 *	The event identifier.
 	 *
-	 * @return int
-	 *	The event listener call count.
+	 * @param mixed $arguments
+	 *	The event arguments.
+	 *
+	 * @return array
+	 *	The event results.
 	 */
-	public final function raise(IEvent $event) : int
+	public function raise(string $id, ...$arguments) : array
 	{
-		$eventListenerCallCount = 0;
-		$id = $event->getID();
+		$results = [];
 
 		if (isset($this->eventListeners[$id]))
 		{
 			foreach ($this->eventListeners[$id] as $i => $closure)
 			{
-				$closure($event);
-				++$eventListenerCallCount;
+				$result = $closure(...$arguments);
+
+				if (isset($result))
+				{
+					$results[] = $result;
+				}
 			}
 		}
 
 		if ($this->context)
 		{
-			$eventListenerCallCount += $this->context->raise($event);
+			$propagation = $this->context->raise($event);
+
+			if ($propagation)
+			{
+				$results = ($results ? $propagation : array_merge($results, $propagation));
+			}
 		}
 
-		return $eventListenerCallCount;
+		return $results;
 	}
 
 	/**

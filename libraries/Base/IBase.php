@@ -28,7 +28,6 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IEvent;
 use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
@@ -191,20 +190,20 @@ interface IBase
 	 *
 	 * @param Closure $closure
 	 *	The event listener callback.
-	 *
-	 * @return int
-	 *	The event listener queue position.
 	 */
-	public function on(string $id, \Closure $closure) : int;
+	public function on(string $id, \Closure $closure) : void;
 
 	/**
 	 * Raises an event.
 	 *
-	 * @param IEvent $event
-	 *	The event to raise.
+	 * @param string $id
+	 *	The event identifier.
 	 *
-	 * @return int
-	 *	The event listener call count.
+	 * @param mixed $arguments
+	 *	The event arguments.
+	 *
+	 * @return array
+	 *	The event results.
 	 */
-	public function raise(IEvent $event) : int;
+	public function raise(string $id, ...$arguments) : array;
 }

@@ -554,7 +554,7 @@ abstract class Controller extends Element implements IController
 	 */
 	protected function onAfterDisplay() : void
 	{
-		$this->raise(new Event($this, 'base.controller.display.after'));
+		$this->raise('base.controller.display.after');
 	}
 
 	/**
@@ -563,7 +563,7 @@ abstract class Controller extends Element implements IController
 	 */
 	protected function onAfterRender() : void
 	{
-		$this->raise(new Event($this, 'base.controller.render.after'));
+		$this->raise('base.controller.render.after');
 	}
 
 	/**
@@ -572,7 +572,7 @@ abstract class Controller extends Element implements IController
 	 */
 	protected function onDisplay() : void
 	{
-		$this->raise(new Event($this, 'base.controller.display'));
+		$this->raise('base.controller.display');
 	}
 
 	/**
@@ -581,6 +581,6 @@ abstract class Controller extends Element implements IController
 	 */
 	protected function onRender() : void
 	{
-		$this->raise(new Event($this, 'base.controller.render'));
+		$this->raise('base.controller.render');
 	}
 }
