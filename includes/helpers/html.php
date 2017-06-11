@@ -25,4 +25,18 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-require (__DIR__ . DIRECTORY_SEPARATOR . 'string.php');
+use \Lightbit\Helpers\HtmlHelper;
+
+/**
+ * Encodes the content.
+ *
+ * @param string $content
+ *	The content to encode.
+ *
+ * @return string
+ *	The result.
+ */
+function html(string $content) : string
+{
+	return HtmlHelper::encode($content);
+}

@@ -30,6 +30,7 @@ namespace Lightbit\Http;
 use \Lightbit;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
+use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Http\IHttpAssetManager;
 use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
@@ -59,6 +60,8 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 
 	/**
 	 * The publish directory url.
+	 *
+	 * @type string
 	 */
 	private $publishDirectoryUrl;
 
@@ -68,6 +71,13 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 * @type string
 	 */
 	private $publishUrl;
+
+	/**
+	 * The refresh flag.
+	 *
+	 * @type bool
+	 */
+	private $refresh;
 
 	/**
 	 * Constructor.
@@ -83,9 +93,15 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context, $id, $configuration);
+		parent::__construct($context, $id);
 
 		$this->publishDirectory = 'public://assets';
+		$this->refresh = false;
+
+		if ($configuration)
+		{
+			ObjectHelper::configure($this, $configuration);
+		}
 	}
 
 	/**
@@ -102,7 +118,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 */
 	private function copyDirectory(string $asset, string $source, string $destination) : void
 	{
-		if (!mkdir($destination, 0775, true))
+		if (!file_exists($destination) && !mkdir($destination, 0775, true))
 		{
 			throw new IOException
 			(
@@ -273,6 +289,17 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	}
 
 	/**
+	 * Gets the refresh flag.
+	 *
+	 * @return bool
+	 *	The refresh flag.
+	 */
+	public final function getRefresh() : bool
+	{
+		return $this->refresh;
+	}
+
+	/**
 	 * Checks an asset publish status.
 	 *
 	 * @param string $resource
@@ -292,32 +319,19 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 * @param string $asset
 	 *	The asset file system alias.
 	 *
+	 * @param bool $refresh
+	 *	The refresh flag.
+	 *
 	 * @return string
 	 *	The asset published url.
 	 */
-	public final function publish(string $asset) : string
+	public final function publish(string $asset, bool $refresh = false) : string
 	{
 		$resolution = $this->resolve($asset);
 		$publishPath = $resolution['publish-path'];
 
-		if (!file_exists($publishPath))
+		if ($refresh || $this->refresh || !file_exists($publishPath))
 		{
-			$publishDirectoryPath = $this->getPublishDirectoryPath();
-
-			if (!file_exists($publishDirectoryPath) && !mkdir($publishDirectoryPath, 0775, true))
-			{
-				throw new IOException
-				(
-					sprintf
-					(
-						'Can not publish asset, publish path creation failure: "%s", expected at file "%s", at context "%s"', 
-						$asset, 
-						$privatePath,
-						$this->getContext()->getPrefix()
-					)
-				);
-			}
-
 			$privatePath = $resolution['private-path'];
 
 			if (!file_exists($privatePath))
@@ -337,6 +351,20 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 
 			if (is_file($privatePath))
 			{
+				if (!file_exists($publishDirectoryPath) && !mkdir($publishDirectoryPath, 0775, true))
+				{
+					throw new IOException
+					(
+						sprintf
+						(
+							'Can not publish asset, publish path creation failure: "%s", at file "%s", at context "%s"', 
+							$asset, 
+							$publishDirectoryPath,
+							$this->getContext()->getPrefix()
+						)
+					);
+				}
+
 				if (!copy($privatePath, $publishPath))
 				{
 					throw new IOException
@@ -383,5 +411,16 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	public final function setPublishUrl(string $publishUrl) : void
 	{
 		$this->publishUrl = $publishUrl;
+	}
+
+	/**
+	 * Sets the refresh flag.
+	 *
+	 * @param array $refresh
+	 *	The refresh flag.
+	 */
+	public final function setRefresh(bool $refresh) : void
+	{
+		$this->refresh = $refresh;
 	}
 }

@@ -832,7 +832,7 @@ abstract class Context extends Cluster implements IContext
 
 		if ($this->context)
 		{
-			$propagation = $this->context->raise($event);
+			$propagation = $this->context->raise($id, ...$arguments);
 
 			if ($propagation)
 			{

@@ -84,6 +84,14 @@ interface IHttpAssetManager extends IComponent
 	public function getPublishUrl(string $asset) : string;
 
 	/**
+	 * Gets the refresh flag.
+	 *
+	 * @return bool
+	 *	The refresh flag.
+	 */
+	public function getRefresh() : bool;
+
+	/**
 	 * Checks an asset publish status.
 	 *
 	 * @param string $resource
@@ -100,10 +108,13 @@ interface IHttpAssetManager extends IComponent
 	 * @param string $asset
 	 *	The asset file system alias.
 	 *
+	 * @param bool $refresh
+	 *	The refresh flag.
+	 *
 	 * @return string
 	 *	The asset published url.
 	 */
-	public function publish(string $asset) : string;
+	public function publish(string $asset, bool $refresh = false) : string;
 
 	/**
 	 * Sets the publish directory.
@@ -120,4 +131,12 @@ interface IHttpAssetManager extends IComponent
 	 *	The publish url.
 	 */
 	public function setPublishUrl(string $publishUrl) : void;
+
+	/**
+	 * Sets the refresh flag.
+	 *
+	 * @param array $refresh
+	 *	The refresh flag.
+	 */
+	public function setRefresh(bool $refresh) : void;
 }
