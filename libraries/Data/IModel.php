@@ -49,7 +49,18 @@ interface IModel extends IElement
 	 * @param array $configuration
 	 *	The model configuration.
 	 */
-	public function __construct(string $scenario, array $attributes = null, array $configuration = null);
+	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null);
+
+	/**
+	 * Gets an attribute.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function getAttribute(string $attribute); // : mixed
 
 	/**
 	 * Gets the attributes.
@@ -66,6 +77,14 @@ interface IModel extends IElement
 	 *	The attributes name.
 	 */
 	public function getAttributesName() : array;
+
+	/**
+	 * Gets the rules.
+	 *
+	 * @return array
+	 *	The rules.
+	 */
+	public function getRules() : array;
 
 	/**
 	 * Gets the safe attributes name.
@@ -93,6 +112,14 @@ interface IModel extends IElement
 	 *	The result.
 	 */
 	public function hasAttribute(string $attribute) : bool;
+
+	/**
+	 * Imports the attributes.
+	 *
+	 * @param array $attributes
+	 *	The attributes to import.
+	 */
+	public function import(array $attributes) : void;
 
 	/**
 	 * Checks the scenario.
@@ -123,4 +150,15 @@ interface IModel extends IElement
 	 *	The attributes.
 	 */
 	public function setAttributes(array $attributes) : void;
+
+	/**
+	 * Validates the model according to the applicable rules.
+	 *
+	 * If an attribute requires transformation, the new value is set once
+	 * the original passes validation.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function validate() : bool;
 }

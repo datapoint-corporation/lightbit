@@ -92,24 +92,14 @@ abstract class Rule extends Element implements IRule
 	}
 
 	/**
-	 * Assigns an attribute value.
-	 *
-	 * @param string $attribute
-	 *	The attribute name.
-	 *
-	 * @param mixed $value
-	 *	The attribute value.
-	 */
-	protected function assign(string $attribute, $value) : void
-	{
-		$this->validateAttribute($attribute, $value);
-	}
-
-	/**
 	 * Exports attributes.
 	 *
+	 * If the rule matches the model scenario, each attribute that it applies 
+	 * to, if present, will be assigned to the model before validation and any
+	 * encountered errors will be reported for proper action.
+	 *
 	 * @param array $attributes
-	 *	The attributes.
+	 *	The attributes to export.
 	 */
 	public final function export(array $attributes) : void
 	{
@@ -119,7 +109,9 @@ abstract class Rule extends Element implements IRule
 			{
 				if ($this->isSafe() && $this->hasAttribute($attribute))
 				{
-					$this->assign($attribute, $value);
+					$this->model->setAttribute($attribute, $value);
+					
+					$this->validateAttribute($this->model, $attribute);
 				}
 			}
 		}
@@ -135,10 +127,10 @@ abstract class Rule extends Element implements IRule
 	{
 		if (!isset($this->attributesName))
 		{
-			return $this->attributesName;
+			return $this->model->getAttributesName();
 		}
 
-		return $this->model->getAttributesName();
+		return $this->attributesName;		
 	}
 
 	/**
@@ -204,12 +196,11 @@ abstract class Rule extends Element implements IRule
 	 * @return array
 	 *	The attributes name.
 	 */
-	public final function setAttributesName(?array $attributes) : void
+	public final function setAttributesName(?array $attributesName) : void
 	{
-		$this->attributes = isset($attributes)
-			? array_intersect($this->model->getAttributesName(), $attributes)
-			: $this->model->getAttributesName();
-
+		$this->attributesName = isset($attributesName)
+			? array_intersect($this->model->getAttributesName(), $attributesName)
+			: null;
 	}
 
 	/**
@@ -224,10 +215,17 @@ abstract class Rule extends Element implements IRule
 	}
 
 	/**
-	 * Runs the validation procedure.
+	 * Validates the model.
+	 *
+	 * If the rule matches the model scenario, each attribute that it applies 
+	 * to will be validated and any encountered errors will be reported for
+	 * proper action.
+	 *
+	 * If an attribute requires transformation, the new value must be set once
+	 * the original passes validation.
 	 *
 	 * @return bool
-	 *	The validation result.
+	 *	The result.
 	 */
 	public final function validate() : bool
 	{
@@ -237,7 +235,7 @@ abstract class Rule extends Element implements IRule
 		{
 			foreach ($this->getAttributesName() as $i => $attribute)
 			{
-				if (!$this->validateAttribute($attribute, $model->getAttribute($attribute)))
+				if (!$this->validateAttribute($this->model, $attribute))
 				{
 					$result = false;
 				}
@@ -248,18 +246,19 @@ abstract class Rule extends Element implements IRule
 	}
 
 	/**
-	 * Runs the validation procedure on a single attribute.
+	 * Validates a single attribute.
 	 *
-	 * @param string $attribute
-	 *	The attribute name.
+	 * By the time this method is called, the rule is confirmed to apply to
+	 * the given model and attribute as this method is meant only to validate
+	 * and, if necessary, report any encountered errors.
 	 *
-	 * @param mixed $value
-	 *	The attribute value.
+	 * If the attribute requires transformation, the new value must be set once
+	 * the original passes validation.
 	 *
 	 * @return bool
-	 *	The validation result.
+	 *	The result.
 	 */
-	protected function validateAttribute(string $attribute, $value) : bool
+	protected function validateAttribute(IModel $model, string $attribute) : bool
 	{
 		return true;
 	}

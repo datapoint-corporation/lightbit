@@ -55,8 +55,12 @@ interface IRule extends IElement
 	/**
 	 * Exports attributes.
 	 *
+	 * If the rule matches the model scenario, each attribute that it applies 
+	 * to, if present, will be assigned to the model before validation and any
+	 * encountered errors will be reported for proper action.
+	 *
 	 * @param array $attributes
-	 *	The attributes.
+	 *	The attributes to export.
 	 */
 	public function export(array $attributes) : void;
 
@@ -125,10 +129,17 @@ interface IRule extends IElement
 	public function setScenarios(?array $scenarios) : void;
 
 	/**
-	 * Runs the validation procedure.
+	 * Validates the model.
+	 *
+	 * If the rule matches the model scenario, each attribute that it applies 
+	 * to will be validated and any encountered errors will be reported for
+	 * proper action.
+	 *
+	 * If an attribute requires transformation, the new value must be set once
+	 * the original passes validation.
 	 *
 	 * @return bool
-	 *	The validation result.
+	 *	The result.
 	 */
 	public function validate() : bool;
 }

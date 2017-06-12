@@ -29,6 +29,7 @@ namespace Lightbit\Data;
 
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
+use \Lightbit\Data\Validation\SafeRule;
 use \Lightbit\Helpers\ObjectHelper;
 
 /**
@@ -40,11 +41,14 @@ use \Lightbit\Helpers\ObjectHelper;
 abstract class Model extends Element implements IModel
 {
 	/**
-	 * The attributes name.
+	 * The rules class name.
 	 *
 	 * @type array
 	 */
-	private static $attributesName = [];
+	private static $rulesClassName = 
+	[
+		'safe' => SafeRule::class
+	];
 
 	/**
 	 * Creates a model instance.
@@ -86,7 +90,7 @@ abstract class Model extends Element implements IModel
 	 * @param array $configuration
 	 *	The model configuration.
 	 */
-	public function __construct(string $scenario, array $attributes = null, array $configuration = null)
+	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null)
 	{
 		$this->scenario = $scenario;
 
@@ -140,6 +144,20 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Gets an attribute.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function getAttribute(string $attribute) // : mixed
+	{
+		return ObjectHelper::getAttribute($this, $attribute);
+	}
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
@@ -158,20 +176,58 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function getAttributesName() : array
 	{
-		if (!isset(self::$attributesName[static::class]))
+		static $attributesName;
+
+		if (!isset($attributesName))
 		{
-			self::$attributesName[static::class] = [];
+			$attributesName = [];
 
 			foreach ((new \ReflectionClass(static::class))->getProperties() as $i => $property)
 			{
 				if ($property->isPublic() && !$property->isStatic())
 				{
-					self::$attributesName[static::class][] = $property->getName();
+					$attributesName[] = $property->getName();
 				}
 			}
 		}
 
-		return self::$attributesName[static::class];
+		return $attributesName;
+	}
+
+	/**
+	 * Gets the rules.
+	 *
+	 * @return array
+	 *	The rules.
+	 */
+	public final function getRules() : array
+	{
+		static $rules;
+
+		if (!isset($rules))
+		{
+			$rules = [];
+			$schema = $this->getSchema();
+
+			if (isset($schema['rules']))
+			{
+				foreach ($schema['rules'] as $i => $rule)
+				{
+					if (!isset($rule['@class']))
+					{
+						throw new Exception(sprintf('Model schema parse failure, rule class is missing: at rule "%s", property "@class"', $i));
+					}
+
+					$ruleClassName = isset(self::$rulesClassName[$rule['@class']])
+						? self::$rulesClassName[$rule['@class']]
+						: $rule['@class'];
+
+					$rules[] = new $ruleClassName($this, $i, $rule);
+				}
+			}
+		}
+
+		return $rules;
 	}
 
 	/**
@@ -182,7 +238,24 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function getSafeAttributesName() : array
 	{
+		static $safeAttributesName;
 
+		if (!isset($safeAttributesName[$this->scenario]))
+		{
+			$matches = [];
+
+			foreach ($this->getRules() as $i => $rule)
+			{
+				if ($rule->hasScenario($this->scenario) && $rule->isSafe())
+				{
+					$matches[] = $rule->getAttributesName();
+				}
+			}
+
+			$safeAttributesName[$this->scenario] = array_unique(array_merge(...$matches));
+		}
+
+		return $safeAttributesName[$this->scenario];
 	}
 
 	/**
@@ -194,6 +267,24 @@ abstract class Model extends Element implements IModel
 	public final function getScenario() : string
 	{
 		return $this->scenario;
+	}
+
+	/**
+	 * Gets the schema.
+	 *
+	 * @return array
+	 *	The schema.
+	 */
+	protected final function getSchema() : array
+	{
+		static $schema;
+
+		if (!isset($schema))
+		{
+			$schema = $this->schema();
+		}
+
+		return $schema;
 	}
 
 	/**
@@ -211,6 +302,25 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Imports the attributes.
+	 *
+	 * @param array $attributes
+	 *	The attributes to import.
+	 */
+	public function import(array $attributes) : void
+	{
+		$this->onImport($attributes);
+
+		foreach ($this->getRules() as $i => $rule)
+		{
+			$rule->export($attributes);
+		}
+
+		$this->onAfterValidate();
+		$this->onAfterImport($attributes);
+	}
+
+	/**
 	 * Checks the scenario.
 	 *
 	 * @param string $scenario
@@ -221,15 +331,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public function isScenario(string ...$scenario) : bool
 	{
-		foreach ($scenario as $i => $subject)
-		{
-			if ($subject == $this->scenario)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return in_array($this->scenario, ...$scenario);
 	}
 
 	/**
@@ -244,6 +346,20 @@ abstract class Model extends Element implements IModel
 		}
 
 		ObjectHelper::setAttributes($this, $this->snapshot);
+	}
+
+	/**
+	 * Creates the schema.
+	 *
+	 * Please note this method must be deterministic as its result is meant to
+	 * be processed for use throughout multiple instances.
+	 *
+	 * @return array
+	 *	The schema.
+	 */
+	protected function schema() : array
+	{
+		return [];
 	}
 
 	/**
@@ -269,5 +385,77 @@ abstract class Model extends Element implements IModel
 	public final function setAttributes(array $attributes) : void
 	{
 		ObjectHelper::setAttribute($this, $attributes);
+	}
+
+	/**
+	 * Validates the model according to the applicable rules.
+	 *
+	 * If an attribute requires transformation, the new value is set once
+	 * the original passes validation.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function validate() : bool
+	{
+		$result = true;
+
+		foreach ($this->getRules() as $i => $rule)
+		{
+			if (!$rule->validate())
+			{
+				$result = false;
+			}
+		}
+	}
+
+	/**
+	 * On After Import.
+	 *
+	 * This method is called during the import procedure, after the rules
+	 * export procedures complete.
+	 *
+	 * @param array $attributes
+	 *	The attributes to import.
+	 */
+	protected function onAfterImport(array $attributes) : void
+	{
+		$this->raise('data.model.import.after', $this, $attributes);
+	}
+
+	/**
+	 * On After Validate.
+	 *
+	 * This method is called during the validation procedure, after the rules
+	 * validation procedures complete.
+	 */
+	protected function onAfterValidate() : void
+	{
+		$this->raise('data.model.validate.after', $this);
+	}
+
+	/**
+	 * On Import.
+	 *
+	 * This method is called during the import procedure, before the rules
+	 * export procedures complete.
+	 *
+	 * @param array $attributes
+	 *	The attributes to import.
+	 */
+	protected function onImport(array $attributes) : void
+	{
+		$this->raise('data.model.import', $this, $attributes);
+	}
+
+	/**
+	 * On Validate.
+	 *
+	 * This method is called during the validation procedure, before the rules
+	 * validation procedures complete.
+	 */
+	protected function onValidate() : void
+	{
+		$this->raise('data.model.validate', $this);
 	}
 }
