@@ -52,6 +52,28 @@ interface IModel extends IElement
 	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null);
 
 	/**
+	 * Adds an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $message
+	 *	The attribute error message.
+	 */
+	public function addAttributeError(string $attribute, string $message) : void;
+
+	/**
+	 * Adds an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param array $messages
+	 *	The attribute error messages.
+	 */
+	public function addAttributeErrors(string $attribute, array $messages) : void;
+
+	/**
 	 * Gets an attribute.
 	 *
 	 * @param string $attribute
@@ -63,12 +85,31 @@ interface IModel extends IElement
 	public function getAttribute(string $attribute); // : mixed
 
 	/**
+	 * Gets the attribute errors.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return array
+	 *	The attribute errors.
+	 */
+	public function getAttributeErrors(string $attribute) : array;
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
 	 *	The attributes.
 	 */
 	public function getAttributes() : array;
+
+	/**
+	 * Gets the attributes errors.
+	 *
+	 * @return array
+	 *	The attributes errors.
+	 */
+	public function getAttributesErrors() : array;
 
 	/**
 	 * Gets the attributes name.
@@ -114,6 +155,17 @@ interface IModel extends IElement
 	public function hasAttribute(string $attribute) : bool;
 
 	/**
+	 * Checks if an attribute has an error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributeError(string $attribute) : bool;
+
+	/**
 	 * Imports the attributes.
 	 *
 	 * @param array $attributes
@@ -144,12 +196,48 @@ interface IModel extends IElement
 	public function setAttribute(string $attribute, $value) : void;
 
 	/**
+	 * Sets an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $message
+	 *	The attribute error message.
+	 *
+	 * @param bool $merge
+	 *	The attribute error merge flag.
+	 */
+	public function setAttributeError(string $attribute, string $message) : void;
+
+	/**
 	 * Sets the attributes.
 	 *
 	 * @param array $attributes
 	 *	The attributes.
 	 */
 	public function setAttributes(array $attributes) : void;
+
+	/**
+	 * Sets an attributes error.
+	 *
+	 * @param array $attributesError
+	 *	The attributes error.
+	 *
+	 * @param bool $merge
+	 *	The attributes error merge flag.
+	 */
+	public function setAttributesError(array $attributesError, bool $merge = true) : void;
+
+	/**
+	 * Sets an attributes errors.
+	 *
+	 * @param array $attributesErrors
+	 *	The attributes errors.
+	 *
+	 * @param bool $merge
+	 *	The attributes errors merge flag.
+	 */
+	public function setAttributesErrors(array $attributesErrors, bool $merge = true) : void;
 
 	/**
 	 * Validates the model according to the applicable rules.

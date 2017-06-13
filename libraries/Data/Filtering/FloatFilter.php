@@ -25,26 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Helpers\TypeHelper;
 
 /**
- * TypeFilter.
+ * FloatFilter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @version 1.0.0
  */
-class TypeFilter extends Filter
+class FloatFilter extends Filter
 {
 	/**
-	 * The type name.
+	 * The unsigned flag.
 	 *
-	 * @type string
+	 * @type bool
 	 */
-	private $typeName;
+	private $unsigned = false;
 
 	/**
 	 * Constructor.
@@ -55,8 +55,6 @@ class TypeFilter extends Filter
 	public function __construct(array $configuration = null)
 	{
 		parent::__construct($configuration);
-
-		$this->typeName = Object::class;
 	}
 
 	/**
@@ -65,55 +63,47 @@ class TypeFilter extends Filter
 	 * @param mixed $value
 	 *	The value to run the filter on.
 	 *
-	 * @return mixed
+	 * @return float
 	 *	The value.
 	 */
-	public function run($value) // : mixed
+	public function run($value) : float
 	{
-		if (!isset($value))
+		while (!is_float($value))
 		{
-			if ($this->typeName[0] != '?')
+			if (is_int($value))
 			{
-				throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $this->typeName, 'NULL'));
+				$value = floatval($value);
+				break;
 			}
 
-			return $value;
-		}
-
-		$typeName = $this->typeName[0] == '?'
-			? substr($this->typeName, 1)
-			: $this->typeName;
-
-		if (TypeHelper::isBasicTypeName($typeName))
-		{
-			if (TypeHelper::getNameOf($value) == $typeName)
+			if (is_string($value))
 			{
-				return true;
+				if (preg_match('%^(\\-|\\+)?(\\d+|((\\d+)?\\.\\d+))$%', $value))
+				{
+					$value = floatval($value);
+					break;
+				}
 			}
+
+			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'float', TypeHelper::getNameOf($value)));
 		}
-		else if ($value instanceof Object)
+
+		if ($this->unsigned && $value < 0)
 		{
-			$class = new ReflectionClass($value);
-
-			if ($class->getName() == $typeName 
-				|| $class->isSubclassOf($typeName)
-				|| $class->implemets($typeName))
-			{
-				return $value;
-			}
+			throw new FilterException($this, sprintf('Out of range value: expecting unsigned float, got signed float instead.'));
 		}
 
-		throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $typeName, TypeHelper::getNameOf($value)));
+		return $value;
 	}
 
 	/**
-	 * Sets the type name.
+	 * Defines the unsigned flag.
 	 *
-	 * @param string $typeName
-	 *	The type name.
+	 * @param bool $unsigned
+	 *	The unsigned flag value.
 	 */
-	public final function setTypeName(string $typeName) : void
+	public final function setUnsigned(bool $unsigned) : void
 	{
-		$this->typeName = $typeName;
+		$this->unsigned = $unsigned;
 	}
 }

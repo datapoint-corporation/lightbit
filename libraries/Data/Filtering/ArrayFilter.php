@@ -25,26 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Helpers\TypeHelper;
 
 /**
- * IntegerFilter.
+ * ArrayFilter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @version 1.0.0
  */
-class IntegerFilter extends Filter
+class ArrayFilter extends Filter
 {
 	/**
-	 * The unsigned flag.
+	 * The filter value type name.
 	 *
-	 * @type bool
+	 * @type string
 	 */
-	private $unsigned = false;
+	private $typeName;
 
 	/**
 	 * Constructor.
@@ -63,41 +63,49 @@ class IntegerFilter extends Filter
 	 * @param mixed $value
 	 *	The value to run the filter on.
 	 *
-	 * @return int
+	 * @return array
 	 *	The value.
 	 */
-	public function run($value) : int
+	public function run($value) : array
 	{
-		while (!is_int($value))
+		if (!is_array($value))
 		{
-			if (is_string($value))
-			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
-				{
-					$value = intval($value);
-					break;
-				}
-			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', TypeHelper::getNameOf($value)));
+			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'array', TypeHelper::getNameOf($value)));
 		}
 
-		if ($this->unsigned && $value < 0)
+		if ($this->typeName)
 		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
+			foreach ($value as $i => $subject)
+			{
+				if (TypeHelper::getNameOf($subject) !== $this->typeName)
+				{
+					throw new FilterException($this, sprintf('Bad array value data type: expecting %s at position %s, got %s', $this->typeName, $i, TypeHelper::getNameOf($subject)));
+				}
+			}
 		}
 
 		return $value;
 	}
 
 	/**
-	 * Defines the unsigned flag.
+	 * Returns the filter object class.
 	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
+	 * @return string
+	 *	The filter object class.
 	 */
-	public final function setUnsigned(bool $unsigned) : void
+	public final function getTypeName() : ?string
 	{
-		$this->unsigned = $unsigned;
+		return $this->typeName;
+	}
+
+	/**
+	 * Defines the filter value type name.
+	 *
+	 * @param array $type
+	 *	The filter value type name.
+	 */
+	public final function setTypeName(?string $type) : void
+	{
+		$this->typeName = $type;
 	}
 }

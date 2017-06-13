@@ -25,85 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
-use \Lightbit\Helpers\TypeHelper;
+use \Lightbit\Base\IElement;
 
 /**
- * FloatFilter.
+ * IFilter.
+ *
+ * This defines the base interface for a validation filter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
+ * @since 1.0.0
  */
-class FloatFilter extends Filter
+interface IFilter extends IElement
 {
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
-
 	/**
 	 * Constructor.
 	 *
 	 * @param array $configuration
 	 *	The filter configuration.
 	 */
-	public function __construct(array $configuration = null)
-	{
-		parent::__construct($configuration);
-	}
+	public function __construct(array $configuration = null);
 
 	/**
-	 * Runs the filter.
+	 * Filters the given value.
 	 *
 	 * @param mixed $value
-	 *	The value to run the filter on.
+	 *	The value to filter.
 	 *
-	 * @return float
+	 * @return mixed
 	 *	The value.
 	 */
-	public function run($value) : float
-	{
-		while (!is_float($value))
-		{
-			if (is_int($value))
-			{
-				$value = floatval($value);
-				break;
-			}
-
-			if (is_string($value))
-			{
-				if (preg_match('%^(\\-|\\+)?(\\d+|((\\d+)?\\.\\d+))$%', $value))
-				{
-					$value = floatval($value);
-					break;
-				}
-			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'float', TypeHelper::getNameOf($value)));
-		}
-
-		if ($this->unsigned && $value < 0)
-		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned float, got signed float instead.'));
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
-	{
-		$this->unsigned = $unsigned;
-	}
+	public function run($value); // : mixed
 }

@@ -25,10 +25,10 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Helpers\TypeHelper;
 
 /**

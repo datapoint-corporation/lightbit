@@ -29,7 +29,7 @@ namespace Lightbit\Data;
 
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
-use \Lightbit\Data\Validation\SafeRule;
+use \Lightbit\Data\Validation\Rule;
 use \Lightbit\Helpers\ObjectHelper;
 
 /**
@@ -40,16 +40,6 @@ use \Lightbit\Helpers\ObjectHelper;
  */
 abstract class Model extends Element implements IModel
 {
-	/**
-	 * The rules class name.
-	 *
-	 * @type array
-	 */
-	private static $rulesClassName = 
-	[
-		'safe' => SafeRule::class
-	];
-
 	/**
 	 * Creates a model instance.
 	 *
@@ -63,6 +53,13 @@ abstract class Model extends Element implements IModel
 	{
 		return new static($scenario);
 	}
+
+	/**
+	 * The attributes errors.
+	 *
+	 * @type array
+	 */
+	private $attributesErrors;
 
 	/**
 	 * The scenario.
@@ -92,6 +89,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null)
 	{
+		$this->attributesErrors = [];
 		$this->scenario = $scenario;
 
 		if ($configuration)
@@ -103,6 +101,36 @@ abstract class Model extends Element implements IModel
 		{
 			ObjectHelper::setAttributes($this, $attributes);
 		}
+	}
+
+	/**
+	 * Adds an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $message
+	 *	The attribute error message.
+	 */
+	public final function addAttributeError(string $attribute, string $message) : void
+	{
+		$this->attributesErrors[$attribute][] = $message;
+	}
+
+	/**
+	 * Adds an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param array $messages
+	 *	The attribute error messages.
+	 */
+	public final function addAttributeErrors(string $attribute, array $messages) : void
+	{
+		$this->attributesErrors[$attribute] = isset($this->attributesErrors[$attribute])
+			? array_merge($this->attributesErrors[$attribute], $messages)
+			: $messages;
 	}
 
 	/**
@@ -158,6 +186,25 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Gets the attribute errors.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return array
+	 *	The attribute errors.
+	 */
+	public final function getAttributeErrors(string $attribute) : array
+	{
+		if (isset($this->attributesErrors[$attribute]))
+		{
+			return $this->attributesErrors[$attribute];
+		}
+
+		return [];
+	}
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
@@ -166,6 +213,17 @@ abstract class Model extends Element implements IModel
 	public final function getAttributes() : array
 	{
 		return ObjectHelper::getAttributes($this, $this->getAttributesName());
+	}
+
+	/**
+	 * Gets the attributes errors.
+	 *
+	 * @return array
+	 *	The attributes errors.
+	 */
+	public final function getAttributesErrors() : array
+	{
+		return $this->attributesErrors;
 	}
 
 	/**
@@ -211,18 +269,9 @@ abstract class Model extends Element implements IModel
 
 			if (isset($schema['rules']))
 			{
-				foreach ($schema['rules'] as $i => $rule)
+				foreach ($schema['rules'] as $id => $rule)
 				{
-					if (!isset($rule['@class']))
-					{
-						throw new Exception(sprintf('Model schema parse failure, rule class is missing: at rule "%s", property "@class"', $i));
-					}
-
-					$ruleClassName = isset(self::$rulesClassName[$rule['@class']])
-						? self::$rulesClassName[$rule['@class']]
-						: $rule['@class'];
-
-					$rules[] = new $ruleClassName($this, $i, $rule);
+					$rules[] = Rule::create($this, $id, $rule);
 				}
 			}
 		}
@@ -251,8 +300,10 @@ abstract class Model extends Element implements IModel
 					$matches[] = $rule->getAttributesName();
 				}
 			}
-
-			$safeAttributesName[$this->scenario] = array_unique(array_merge(...$matches));
+			
+			$safeAttributesName[$this->scenario] = $matches 
+				? array_unique(array_merge(...$matches))
+				: [];
 		}
 
 		return $safeAttributesName[$this->scenario];
@@ -285,6 +336,20 @@ abstract class Model extends Element implements IModel
 		}
 
 		return $schema;
+	}
+
+	/**
+	 * Checks if an attribute has an error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasAttributeError(string $attribute) : bool
+	{
+		return isset($this->attributesErrors[$attribute]);
 	}
 
 	/**
@@ -377,6 +442,30 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Sets an attribute error.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $message
+	 *	The attribute error message.
+	 *
+	 * @param bool $merge
+	 *	The attribute error merge flag.
+	 */
+	public final function setAttributeError(string $attribute, string $message, bool $merge = true) : void
+	{
+		if ($merge)
+		{
+			$this->attributesErrors[$attribute][] = $message;
+		}
+		else
+		{
+			$this->attributesErrors[$attribute] = [ $message ];
+		}
+	}
+
+	/**
 	 * Sets the attributes.
 	 *
 	 * @param array $attributes
@@ -385,6 +474,50 @@ abstract class Model extends Element implements IModel
 	public final function setAttributes(array $attributes) : void
 	{
 		ObjectHelper::setAttribute($this, $attributes);
+	}
+
+	/**
+	 * Sets an attributes error.
+	 *
+	 * @param array $attributesError
+	 *	The attributes error.
+	 *
+	 * @param bool $merge
+	 *	The attributes error merge flag.
+	 */
+	public function setAttributesError(array $attributesError, bool $merge = true) : void
+	{
+		if (!$merge)
+		{
+			$this->attributesErrors = [];
+		}
+
+		foreach ($attributesErrors as $attribute => $message)
+		{
+			$this->addAttributeError($attribute, $message);
+		}
+	}
+
+	/**
+	 * Sets an attributes errors.
+	 *
+	 * @param array $attributesErrors
+	 *	The attributes errors.
+	 *
+	 * @param bool $merge
+	 *	The attributes errors merge flag.
+	 */
+	public function setAttributesErrors(array $attributesErrors, bool $merge = true) : void
+	{
+		if (!$merge)
+		{
+			$this->attributesErrors = [];
+		}
+
+		foreach ($attributesErrors as $attribute => $messages)
+		{
+			$this->addAttributeErrors($attribute, $messages);
+		}
 	}
 
 	/**

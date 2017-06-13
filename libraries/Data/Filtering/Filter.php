@@ -25,36 +25,79 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Base\IElement;
+use \Lightbit\Base\Element;
+use \Lightbit\Data\Filtering\ArrayFilter;
+use \Lightbit\Data\Filtering\IFilter;
+use \Lightbit\Data\Filtering\IntegerFilter;
+use \Lightbit\Data\Filtering\StringFilter;
+use \Lightbit\Data\Filtering\TypeFilter;
+use \Lightbit\Helpers\ObjectHelper;
 
 /**
- * IFilter.
+ * Filter.
  *
- * This defines the base interface for a validation filter.
+ * This defines the base implementation for a validation filter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IFilter extends IElement
+abstract class Filter extends Element implements IFilter
 {
+	/**
+	 * Runs the filter.
+	 *
+	 * @param mixed $value
+	 *	The value to run the filter on.
+	 *
+	 * @return mixed
+	 *	The value.
+	 */
+	abstract public function run($value); // : mixed
+
+	/**
+	 * Creates a filter.
+	 *
+	 * @param string $className
+	 *	The filter class name or alias.
+	 *
+	 * @param array $configuration
+	 *	The filter configuration.
+	 *
+	 * @return IFilter
+	 *	The filter.
+	 */
+	public static function create(string $className, array $configuration = null) : IFilter
+	{
+		static $filtersClassName =
+		[
+			'array' => ArrayFilter::class,
+			'float' => FloatFilter::class,
+			'int' => IntegerFilter::class,
+			'string' => StringFilter::class,
+			'type' => TypeFilter::class
+		];
+
+		if (isset($filtersClassName[$className]))
+		{
+			$className = $filtersClassName[$className];
+		}
+
+		return new $className($configuration);
+	}
+
 	/**
 	 * Constructor.
 	 *
 	 * @param array $configuration
 	 *	The filter configuration.
 	 */
-	public function __construct(array $configuration = null);
-
-	/**
-	 * Filters the given value.
-	 *
-	 * @param mixed $value
-	 *	The value to filter.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	public function run($value); // : mixed
+	public function __construct(array $configuration = null)
+	{
+		if ($configuration)
+		{
+			ObjectHelper::configure($this, $configuration);
+		}
+	}
 }

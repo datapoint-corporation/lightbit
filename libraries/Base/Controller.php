@@ -38,8 +38,8 @@ use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\SlugParseParameterRouteException;
 use \Lightbit\Base\View;
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Exception;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Helpers\TypeHelper;
@@ -359,6 +359,7 @@ abstract class Controller extends Element implements IController
 			(
 				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
+				$parameterName,
 				sprintf
 				(
 					'Action binding failure, missing parameter: "%s", at action, "%s", at controller "%s", at context "%s"', 

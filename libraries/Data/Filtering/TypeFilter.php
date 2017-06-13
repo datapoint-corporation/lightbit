@@ -25,22 +25,22 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Data\Validation\FilterException;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Helpers\TypeHelper;
 
 /**
- * ArrayFilter.
+ * TypeFilter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @version 1.0.0
  */
-class ArrayFilter extends Filter
+class TypeFilter extends Filter
 {
 	/**
-	 * The filter value type name.
+	 * The type name.
 	 *
 	 * @type string
 	 */
@@ -55,6 +55,8 @@ class ArrayFilter extends Filter
 	public function __construct(array $configuration = null)
 	{
 		parent::__construct($configuration);
+
+		$this->typeName = Object::class;
 	}
 
 	/**
@@ -63,49 +65,55 @@ class ArrayFilter extends Filter
 	 * @param mixed $value
 	 *	The value to run the filter on.
 	 *
-	 * @return array
+	 * @return mixed
 	 *	The value.
 	 */
-	public function run($value) : array
+	public function run($value) // : mixed
 	{
-		if (!is_array($value))
+		if (!isset($value))
 		{
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'array', TypeHelper::getNameOf($value)));
+			if ($this->typeName[0] != '?')
+			{
+				throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $this->typeName, 'NULL'));
+			}
+
+			return $value;
 		}
 
-		if ($this->typeName)
+		$typeName = $this->typeName[0] == '?'
+			? substr($this->typeName, 1)
+			: $this->typeName;
+
+		if (TypeHelper::isBasicTypeName($typeName))
 		{
-			foreach ($value as $i => $subject)
+			if (TypeHelper::getNameOf($value) == $typeName)
 			{
-				if (TypeHelper::getNameOf($subject) !== $this->typeName)
-				{
-					throw new FilterException($this, sprintf('Bad array value data type: expecting %s at position %s, got %s', $this->typeName, $i, TypeHelper::getNameOf($subject)));
-				}
+				return true;
+			}
+		}
+		else if ($value instanceof Object)
+		{
+			$class = new ReflectionClass($value);
+
+			if ($class->getName() == $typeName 
+				|| $class->isSubclassOf($typeName)
+				|| $class->implemets($typeName))
+			{
+				return $value;
 			}
 		}
 
-		return $value;
+		throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $typeName, TypeHelper::getNameOf($value)));
 	}
 
 	/**
-	 * Returns the filter object class.
+	 * Sets the type name.
 	 *
-	 * @return string
-	 *	The filter object class.
+	 * @param string $typeName
+	 *	The type name.
 	 */
-	public final function getTypeName() : ?string
+	public final function setTypeName(string $typeName) : void
 	{
-		return $this->typeName;
-	}
-
-	/**
-	 * Defines the filter value type name.
-	 *
-	 * @param array $type
-	 *	The filter value type name.
-	 */
-	public final function setTypeName(?string $type) : void
-	{
-		$this->typeName = $type;
+		$this->typeName = $typeName;
 	}
 }

@@ -29,8 +29,11 @@ namespace Lightbit\Data\Validation;
 
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
+use \Lightbit\Data\Validation\EmailAddressRule;
 use \Lightbit\Data\Validation\IRule;
+use \Lightbit\Data\Validation\SafeRule;
 use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Exception;
 
 /**
  * Rule.
@@ -40,6 +43,41 @@ use \Lightbit\Helpers\ObjectHelper;
  */
 abstract class Rule extends Element implements IRule
 {
+	/**
+	 * Creates a new rule.
+	 *
+	 * @param IModel $model
+	 *	The rule model.
+	 *
+	 * @param string $id
+	 *	The rule identifier.
+	 *
+	 * @param array $configuration
+	 *	The rule configuration.
+	 *
+	 * @return IRule
+	 *	The rule.
+	 */
+	public static function create(IModel $model, string $id, array $configuration) : IRule
+	{
+		static $rulesClassName = 
+		[
+			'email-address' => EmailAddressRule::class,
+			'safe' => SafeRule::class
+		];
+
+		if (!isset($configuration['@class']))
+		{
+			throw new Exception(sprintf('Bad validation rule configuration, missing class name: "%s", at model "%s"', $id, get_class($model)));
+		}
+
+		$ruleClassName = isset($rulesClassName[$configuration['@class']])
+			? $rulesClassName[$configuration['@class']]
+			: $configuration['@class'];
+
+		return new $ruleClassName($model, $id, $configuration);
+	}
+
 	/**
 	 * The attributes name.
 	 *
@@ -55,11 +93,32 @@ abstract class Rule extends Element implements IRule
 	private $id;
 
 	/**
+	 * The messages.
+	 *
+	 * @type array
+	 */
+	private $messages;
+
+	/**
 	 * The model.
 	 *
 	 * @type string
 	 */
 	private $model;
+
+	/**
+	 * The required flag.
+	 *
+	 * @type bool
+	 */
+	private $required;
+
+	/**
+	 * The safe flag.
+	 *
+	 * @type bool
+	 */
+	private $safe;
 
 	/**
 	 * The scenarios.
@@ -84,6 +143,13 @@ abstract class Rule extends Element implements IRule
 	{
 		$this->model = $model;
 		$this->id = $id;
+		$this->required = false;
+		$this->safe = true;
+
+		$this->messages = 
+		[
+			'empty' => 'Value of "{attribute}" must not be empty.'
+		];
 
 		if ($configuration)
 		{
@@ -105,13 +171,25 @@ abstract class Rule extends Element implements IRule
 	{
 		if ($this->hasScenario($this->model->getScenario()))
 		{
-			foreach ($attributes as $attribute => $value)
+			foreach ($attributes as $attribute => $subject)
 			{
 				if ($this->isSafe() && $this->hasAttribute($attribute))
 				{
-					$this->model->setAttribute($attribute, $value);
-					
-					$this->validateAttribute($this->model, $attribute);
+					$this->model->setAttribute($attribute, $subject);
+
+					if ($subject)
+					{
+						if (!$this->validateAttribute($this->model, $attribute, $subject))
+						{
+							$result = false;
+						}
+					}
+
+					else if ($required)
+					{
+						$this->report('empty', $attribute);
+						$result = false;
+					}
 				}
 			}
 		}
@@ -180,14 +258,48 @@ abstract class Rule extends Element implements IRule
 	}
 
 	/**
-	 * Checks the rule safe flag.
+	 * Checks the required flag.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function isSafe() : bool
+	public final function isRequired() : bool
 	{
-		return true;
+		return $this->required;
+	}
+
+	/**
+	 * Checks the safe flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isSafe() : bool
+	{
+		return $this->safe;
+	}
+
+	/**
+	 * Reports an attribute error message.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $message
+	 *	The message content or identifier.
+	 *
+	 * @param array $arguments
+	 *	The message arguments.
+	 */
+	protected final function report(string $attribute, string $message, array $arguments = null) : void
+	{
+		if (isset($this->messages[$message]))
+		{
+			$message = $this->messages[$message];
+		}
+
+		// TODO message formatting
+		$this->model->addAttributeError($attribute, $message);
 	}
 
 	/**
@@ -201,6 +313,58 @@ abstract class Rule extends Element implements IRule
 		$this->attributesName = isset($attributesName)
 			? array_intersect($this->model->getAttributesName(), $attributesName)
 			: null;
+	}
+
+	/**
+	 * Sets a validation message.
+	 *
+	 * @param string $id
+	 *	The message identifier.
+	 *
+	 * @param string $content
+	 *	The message content.
+	 */
+	public final function setMessage(string $id, string $message) : void
+	{
+		$this->messages[$id] = $message;
+	}
+
+	/**
+	 * Sets validation messages.
+	 *
+	 * @param array $messages
+	 *	The messages.
+	 *
+	 * @param bool $merge
+	 *	The message merge flag.
+	 */
+	public final function setMessages(array $messages, bool $merge = true) : void
+	{
+		$this->messages = ($merge && $this->messages)
+			? $messages + $this->messages
+			: $messages;
+	}
+
+	/**
+	 * Sets the required flag.
+	 *
+	 * @param bool $required
+	 *	The required flag.
+	 */
+	public final function setRequired(bool $required) : void
+	{
+		$this->required = $required;
+	}
+
+	/**
+	 * Sets the safe flag.
+	 *
+	 * @param bool $safe
+	 *	The safe flag.
+	 */
+	public final function setSafe(bool $safe) : void
+	{
+		$this->safe = $safe;
 	}
 
 	/**
@@ -235,8 +399,19 @@ abstract class Rule extends Element implements IRule
 		{
 			foreach ($this->getAttributesName() as $i => $attribute)
 			{
-				if (!$this->validateAttribute($this->model, $attribute))
+				$subject = $this->model->getAttribute($attribute);
+
+				if ($subject)
 				{
+					if (!$this->validateAttribute($this->model, $attribute, $subject))
+					{
+						$result = false;
+					}
+				}
+
+				else if ($required)
+				{
+					$this->report('empty', $attribute);
 					$result = false;
 				}
 			}
@@ -255,10 +430,19 @@ abstract class Rule extends Element implements IRule
 	 * If the attribute requires transformation, the new value must be set once
 	 * the original passes validation.
 	 *
+	 * @param IModel $model
+	 *	The model.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $subject
+	 *	The attribute.
+	 *
 	 * @return bool
 	 *	The result.
 	 */
-	protected function validateAttribute(IModel $model, string $attribute) : bool
+	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
 		return true;
 	}

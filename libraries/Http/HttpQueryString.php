@@ -30,7 +30,7 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
-use \Lightbit\Data\Validation\Filter;
+use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Http\HttpQueryStringParameterNotFoundException;
 use \Lightbit\Http\IHttpQueryString;
 

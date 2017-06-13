@@ -105,7 +105,15 @@ interface IRule extends IElement
 	public function hasScenario(string $scenario) : bool;
 
 	/**
-	 * Checks the rule safe flag.
+	 * Checks the required flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isRequired() : bool;
+
+	/**
+	 * Checks the safe flag.
 	 *
 	 * @return bool
 	 *	The result.
@@ -121,12 +129,26 @@ interface IRule extends IElement
 	public function setAttributesName(?array $attributes) : void;
 
 	/**
-	 * Sets the scenarios.
+	 * Sets a validation message.
 	 *
-	 * @param array $scenarios
-	 *	The scenarios.
+	 * @param string $id
+	 *	The message identifier.
+	 *
+	 * @param string $content
+	 *	The message content.
 	 */
-	public function setScenarios(?array $scenarios) : void;
+	public function setMessage(string $id, string $message) : void;
+
+	/**
+	 * Sets validation messages.
+	 *
+	 * @param array $messages
+	 *	The messages.
+	 *
+	 * @param bool $merge
+	 *	The message merge flag.
+	 */
+	public function setMessages(array $messages, bool $merge = true) : void;
 
 	/**
 	 * Validates the model.

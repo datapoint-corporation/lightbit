@@ -31,13 +31,20 @@ use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 
 /**
- * SafeRule.
+ * EmailAddressRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SafeRule extends Rule
+class EmailAddressRule extends Rule
 {
+	/**
+	 * The normalization flag.
+	 *
+	 * @type bool
+	 */
+	private $lowerCase;
+
 	/**
 	 * Constructor.
 	 *
@@ -54,12 +61,24 @@ class SafeRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->setSafe(true);
+		$this->setMessage('format', 'Value of "{attribute-label}" is not an acceptable email address.');
+		$this->lowerCase = true;
 
 		if ($configuration)
 		{
 			$this->configure($configuration);
 		}
+	}
+
+	/**
+	 * Sets the lower case flag.
+	 *
+	 * @param string $lowerCase
+	 *	The lower case flag.
+	 */
+	public final function setLowerCase(bool $lowerCase) : void
+	{
+		$this->lowerCase = $lowerCase;
 	}
 
 	/**
@@ -86,6 +105,18 @@ class SafeRule extends Rule
 	 */
 	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		return true;
+		if (!is_string($subject) || !preg_match('%^.+@.+\\.[a-z]{2,}$%', $subject))
+		{
+			$this->report($attribute, 'format');
+			return false;
+		}
+
+		if ($this->lowerCase)
+		{
+			$i = strpos($subject, '@');
+			$subject = substr($subject, 0, $i + 1) . strtolower(substr($subject, $i + 1));
+		}
+
+		$model->setAttribute($attribute, $subject);
 	}
 }

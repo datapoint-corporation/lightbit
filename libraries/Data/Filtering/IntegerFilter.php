@@ -25,42 +25,79 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Validation\Filter;
-use \Lightbit\Exception;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Data\Filtering\FilterException;
+use \Lightbit\Helpers\TypeHelper;
 
 /**
- * FilterException.
+ * IntegerFilter.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @version 1.0.0
  */
-class FilterException extends Exception
+class IntegerFilter extends Filter
 {
 	/**
-	 * The filter.
+	 * The unsigned flag.
 	 *
-	 * @type IFilter
+	 * @type bool
 	 */
-	private $filter;
+	private $unsigned = false;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IFilter $filter
-	 *	The filter.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
+	 * @param array $configuration
+	 *	The filter configuration.
 	 */
-	public function __construct(IFilter $filter, string $message, \Throwable $previous = null)
+	public function __construct(array $configuration = null)
 	{
-		parent::__construct($message, $previous);
+		parent::__construct($configuration);
+	}
 
-		$this->filter = $filter;
+	/**
+	 * Runs the filter.
+	 *
+	 * @param mixed $value
+	 *	The value to run the filter on.
+	 *
+	 * @return int
+	 *	The value.
+	 */
+	public function run($value) : int
+	{
+		while (!is_int($value))
+		{
+			if (is_string($value))
+			{
+				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
+				{
+					$value = intval($value);
+					break;
+				}
+			}
+
+			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', TypeHelper::getNameOf($value)));
+		}
+
+		if ($this->unsigned && $value < 0)
+		{
+			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Defines the unsigned flag.
+	 *
+	 * @param bool $unsigned
+	 *	The unsigned flag value.
+	 */
+	public final function setUnsigned(bool $unsigned) : void
+	{
+		$this->unsigned = $unsigned;
 	}
 }

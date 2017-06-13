@@ -25,79 +25,42 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Validation;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Base\Element;
-use \Lightbit\Data\Validation\ArrayFilter;
-use \Lightbit\Data\Validation\IFilter;
-use \Lightbit\Data\Validation\IntegerFilter;
-use \Lightbit\Data\Validation\StringFilter;
-use \Lightbit\Data\Validation\TypeFilter;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Data\Filtering\Filter;
+use \Lightbit\Exception;
 
 /**
- * Filter.
- *
- * This defines the base implementation for a validation filter.
+ * FilterException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @version 1.0.0
  */
-abstract class Filter extends Element implements IFilter
+class FilterException extends Exception
 {
 	/**
-	 * Runs the filter.
+	 * The filter.
 	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
-	 *
-	 * @return mixed
-	 *	The value.
+	 * @type IFilter
 	 */
-	abstract public function run($value); // : mixed
-
-	/**
-	 * Creates a filter.
-	 *
-	 * @param string $className
-	 *	The filter class name or alias.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 *
-	 * @return IFilter
-	 *	The filter.
-	 */
-	public static function create(string $className, array $configuration = null) : IFilter
-	{
-		static $filtersClassName =
-		[
-			'array' => ArrayFilter::class,
-			'float' => FloatFilter::class,
-			'int' => IntegerFilter::class,
-			'string' => StringFilter::class,
-			'type' => TypeFilter::class
-		];
-
-		if (isset($filtersClassName[$className]))
-		{
-			$className = $filtersClassName[$className];
-		}
-
-		return new $className($configuration);
-	}
+	private $filter;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array $configuration
-	 *	The filter configuration.
+	 * @param IFilter $filter
+	 *	The filter.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function __construct(array $configuration = null)
+	public function __construct(IFilter $filter, string $message, \Throwable $previous = null)
 	{
-		if ($configuration)
-		{
-			ObjectHelper::configure($this, $configuration);
-		}
+		parent::__construct($message, $previous);
+
+		$this->filter = $filter;
 	}
 }
