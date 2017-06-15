@@ -25,51 +25,54 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Base;
 
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Base\View;
+use \Lightbit\Base\IWidget;
 
 /**
- * HtmlView.
+ * IWidget.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HtmlView extends View
+class Widget extends Element implements IWidget
 {
+	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The view context.
-	 *
-	 * @param string $path
-	 *	The view path.
+	 *	The html widget context.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The html widget configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
+	public function __construct(IContext $context, array $configuration = null)
 	{
-		parent::__construct($context, $path, $configuration);
+		$this->context = $context;
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
 	}
 
 	/**
-	 * Creates a view.
+	 * Gets the context.
 	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
+	 * @return IContext
+	 *	The context.
 	 */
-	protected function view(string $path, array $configuration = null) : IView
+	public final function getContext() : IContext
 	{
-		return new HtmlView($this->getContext(), $path, $configuration);
+		return $this->context;
 	}
 }

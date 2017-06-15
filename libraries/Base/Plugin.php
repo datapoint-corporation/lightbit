@@ -27,9 +27,27 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Context;
+use \Lightbit\Base\Action;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IElement;
+use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\IPlugin;
+use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\IFileCache;
+use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Data\ISlugManager;
+use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
+use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpAssetManager;
+use \Lightbit\Http\IHttpQueryString;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\IHttpSession;
 
 /**
  * Plugin.
@@ -39,6 +57,13 @@ use \Lightbit\Exception;
  */
 class Plugin extends Cluster implements IPlugin
 {
+	/**
+	 * The plugin identifier.
+	 *
+	 * @type string
+	 */
+	private $id;
+
 	/**
 	 * Constructor.
 	 *
@@ -56,7 +81,25 @@ class Plugin extends Cluster implements IPlugin
 	 */
 	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
 	{
-		parent::__construct($context, $configuration);
+		parent::__construct($context, $path);
+
+		$this->id = $id;
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
+	}
+
+	/**
+	 * Gets the action.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
+	public final function getAction() : Action
+	{
+		return Action::getInstance();
 	}
 
 	/**
@@ -68,5 +111,278 @@ class Plugin extends Cluster implements IPlugin
 	public final function getApplication() : IApplication
 	{
 		return Lightbit::getApplication();
+	}
+
+	/**
+	 * Gets the cache.
+	 *
+	 * @return ICache
+	 *	The cache.
+	 */
+	public function getCache() : ICache
+	{
+		return $this->getContext()->getCache();
+	}
+
+	/**
+	 * Gets a component.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @return IComponent
+	 *	The component.
+	 */
+	public final function getComponent(string $id) : IComponent
+	{
+		return $this->getContext()->getComponent($id);
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		$action = Action::getInstance();
+
+		if ($action)
+		{
+			return $action->getController()->getContext();
+		}
+
+		return Lightbit::getApplication();
+	}
+
+	/**
+	 * Gets the environment.
+	 *
+	 * @return IEnvironment
+	 *	The environment.
+	 */
+	public function getEnvironment() : IEnvironment
+	{
+		return $this->getContext()->getEnvironment();
+	}
+
+	/**
+	 * Gets the file cache.
+	 *
+	 * @return IFileCache
+	 *	The file cache.
+	 */
+	public function getFileCache() : IFileCache
+	{
+		return $this->getContext()->getFileCache();
+	}
+
+	/**
+	 * Gets the html adapter.
+	 *
+	 * @return IHtmlAdapter
+	 *	The html adapter.
+	 */
+	public function getHtmlAdapter() : IHtmlAdapter
+	{
+		return $this->getContext()->getHtmlAdapter();
+	}
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument
+	{
+		return $this->getContext()->getHtmlDocument();
+	}
+
+	/**
+	 * Gets the http asset manager.
+	 *
+	 * @return IHttpAssetManager
+	 *	The http asset manager.
+	 */
+	public function getHttpAssetManager() : IHttpAssetManager
+	{
+		return $this->getContext()->getHttpAssetManager();
+	}
+
+	/**
+	 * Gets the http query string.
+	 *
+	 * @return IHttpQueryString
+	 *	The http query string.
+	 */
+	public function getHttpQueryString() : IHttpQueryString
+	{
+		return $this->getContext()->getHttpQueryString();
+	}
+
+	/**
+	 * Gets the http request component.
+	 *
+	 * @param IHttpRequest
+	 *	The http request component.
+	 */
+	public function getHttpRequest() : IHttpRequest
+	{
+		return $this->getContext()->getHttpRequest();
+	}
+
+	/**
+	 * Gets the http response component.
+	 *
+	 * @param IHttpResponse
+	 *	The http response component.
+	 */
+	public function getHttpResponse() : IHttpResponse
+	{
+		return $this->getContext()->getHttpResponse();
+	}
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public function getHttpRouter() : IHttpRouter
+	{
+		return $this->getContext()->getHttpRouter();
+	}
+
+	/**
+	 * Gets the http session.
+	 *
+	 * @return IHttpSession
+	 *	The http session.
+	 */
+	public function getHttpSession() : IHttpSession
+	{
+		return $this->getContext()->getHttpSession();
+	}
+
+	/**
+	 * Gets the plugin identifier.
+	 *
+	 * @return string
+	 *	The plugin identifier.
+	 */
+	public final function getID() : string
+	{
+		return $this->id;
+	}
+
+	/**
+	 * Gets the memory cache.
+	 *
+	 * @return IMemoryCache
+	 *	The memory cache.
+	 */
+	public function getMemoryCache() : IMemoryCache
+	{
+		return $this->getContext()->getMemoryCache();
+	}
+
+	/**
+	 * Gets the network cache.
+	 *
+	 * @return INetworkCache
+	 *	The network cache.
+	 */
+	public function getNetworkCache() : INetworkCache
+	{
+		return $this->getContext()->getNetworkCache();
+	}
+
+	/**
+	 * Gets the slug manager.
+	 *
+	 * @return ISlugManager
+	 *	The slug manager.
+	 */
+	public function getSlugManager() : ISlugManager
+	{
+		return $this->getContext()->getSlugManager();
+	}
+
+	/**
+	 * Gets the sql connection.
+	 *
+	 * @return ISqlConnection
+	 *	The sql connection.
+	 */
+	public function getSqlConnection() : ISqlConnection
+	{
+		return $this->getContext()->getSqlConnection();
+	}
+
+	/**
+	 * Sets an event listener.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param Closure $closure
+	 *	The event listener callback.
+	 */
+	public function on(string $id, \Closure $closure) : void
+	{
+		$this->getContext()->on($id, $closure);
+	}
+
+	/**
+	 * Raises an event.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param mixed $arguments
+	 *	The event arguments.
+	 *
+	 * @return array
+	 *	The event results.
+	 */
+	public function raise(string $id, ...$arguments) : array
+	{
+		return $this->getContext()->raise($id, ...$arguments);
+	}
+
+	/**
+	 * Calls a method.
+	 *
+	 * @param string $method
+	 *	The method name.
+	 *
+	 * @param array $arguments
+	 *	The method arguments.
+	 *
+	 * @return mixed
+	 *	The method result.
+	 */
+	public function __call(string $method, array $arguments) // : mixed
+	{
+		$context = $this->getContext();
+
+		if (method_exists($context, $method))
+		{
+			return $context->{$method}(...$arguments);
+		}
+
+		if (!($context instanceof IApplication))
+		{
+			$context = $this->getApplication();
+
+			if (method_exists($context, $method))
+			{
+				return $context->{$method}(...$arguments);
+			}
+		}
+
+		return parent::__call($method, $arguments);
 	}
 }

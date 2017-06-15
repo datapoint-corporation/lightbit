@@ -25,51 +25,33 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\UI;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Base\View;
+use \Lightbit\Data\IModel;
+use \Lightbit\Html\IHtmlWidget;
 
 /**
- * HtmlView.
+ * IActiveFormHtmlWidget.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HtmlView extends View
+interface IActiveFormHtmlWidget extends IHtmlWidget
 {
 	/**
-	 * Constructor.
+	 * Creates a text input.
 	 *
-	 * @param IContext $context
-	 *	The view context.
+	 * @param IModel $model
+	 *	The input model.
 	 *
-	 * @param string $path
-	 *	The view path.
+	 * @param string $attribute
+	 *	The input attribute name.
 	 *
-	 * @param array $configuration
-	 *	The configuration.
+	 * @param array $attributes
+	 *	The input attributes.
+	 *
+	 * @return string
+	 *	The input markup.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
-	{
-		parent::__construct($context, $path, $configuration);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new HtmlView($this->getContext(), $path, $configuration);
-	}
+	public function text(IModel $model, string $attribute, array $attributes = null) : string;
 }

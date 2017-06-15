@@ -25,51 +25,66 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\UI;
 
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Base\View;
+use \Lightbit\Html\HtmlWidget;
+use \Lightbit\Html\IHtmlAdapter;
 
 /**
- * HtmlView.
+ * IFormHtmlWidget.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HtmlView extends View
+class FormHtmlWidget extends HtmlWidget
 {
+	/**
+	 * The html adapter.
+	 *
+	 * @type IHtmlAdapter
+	 */
+	private $html;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The view context.
-	 *
-	 * @param string $path
-	 *	The view path.
+	 *	The html widget context.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The html widget configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
+	public function __construct(IContext $context, array $configuration = null)
 	{
-		parent::__construct($context, $path, $configuration);
+		parent::__construct($context, $configuration);
+
+		$this->html = $this->getHtmlAdapter();
 	}
 
 	/**
-	 * Creates a view.
+	 * Creates a text input.
 	 *
-	 * @param string $path
-	 *	The view path.
+	 * @param string $name
+	 *	The input name.
 	 *
-	 * @param array $configuration
-	 *	The view configuration.
+	 * @param array $attributes
+	 *	The input attributes.
 	 *
-	 * @return IView
-	 *	The view.
+	 * @return string
+	 *	The input markup.
 	 */
-	protected function view(string $path, array $configuration = null) : IView
+	public function text(string $name, array $attributes = null) : string
 	{
-		return new HtmlView($this->getContext(), $path, $configuration);
+		return $this->html->element
+		(
+			'input',
+			$this->html->merge
+			(
+				[ 'type' => 'text' ],
+				$attributes,
+				[ 'name' => $name ]
+			)
+		);
 	}
 }

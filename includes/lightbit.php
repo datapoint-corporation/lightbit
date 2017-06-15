@@ -256,7 +256,7 @@ class Lightbit
 					$throwable = new HttpException(500, $throwable->getMessage(), $throwable);
 				}
 
-				(new HtmlView((new Alias('lightbit://views/http/throwable'))->resolve('php')))
+				(new HtmlView(null, (new Alias('lightbit://views/http/throwable'))->resolve('php')))
 					->run([ 'throwable' => $throwable ]);
 			}
 

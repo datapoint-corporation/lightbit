@@ -135,8 +135,7 @@ abstract class Controller extends Element implements IController
 
 		if ($layoutPath)
 		{
-			(new View($layoutPath))
-				->run([ 'content' => $this->render($view, $parameters, true) ]);
+			$this->view($layoutPath)->run([ 'content' => $this->render($view, $parameters, true) ]);
 		}
 		else
 		{
@@ -400,7 +399,7 @@ abstract class Controller extends Element implements IController
 	 */
 	protected function view(string $path, array $configuration = null) : IView
 	{
-		return new View($path, $configuration);
+		return new View($this->context, $path, $configuration);
 	}
 
 	/**

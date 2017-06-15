@@ -123,6 +123,6 @@ abstract class HttpController extends Controller implements IHttpController
 	 */
 	protected function view(string $path, array $configuration = null) : IView
 	{
-		return new HtmlView($path, $configuration);
+		return new HtmlView($this->getContext(), $path, $configuration);
 	}
 }

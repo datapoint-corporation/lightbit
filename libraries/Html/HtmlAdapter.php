@@ -424,7 +424,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 
 		if ($classNames)
 		{
-			$result['class'] = array_unique($classNames);
+			$result['class'] = implode(' ', array_unique($classNames));
 		}
 
 		return $result;

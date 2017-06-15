@@ -54,4 +54,12 @@ interface IPlugin extends ICluster, IElement
 	 *	The plugin configuration.
 	 */
 	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+
+	/**
+	 * Gets the plugin identifier.
+	 *
+	 * @return string
+	 *	The plugin identifier.
+	 */
+	public function getID() : string;
 }

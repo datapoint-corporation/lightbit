@@ -27,49 +27,15 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IView;
-use \Lightbit\Base\View;
+use \Lightbit\Base\IWidget;
 
 /**
- * HtmlView.
+ * IHtmlWidget.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HtmlView extends View
+interface IHtmlWidget extends IWidget
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The view context.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The configuration.
-	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
-	{
-		parent::__construct($context, $path, $configuration);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new HtmlView($this->getContext(), $path, $configuration);
-	}
+	
 }

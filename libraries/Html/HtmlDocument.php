@@ -332,7 +332,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 					(
 						'style', 
 						$html->merge([ 'type' => 'text/css' ], $style['attributes']), 
-						(new View((new Alias($style['style']))->resolve('php')))->run(null, true),
+						(new View($this->getContext(), (new Alias($style['style']))->resolve('php')))->run(null, true),
 						false
 					)
 
@@ -376,7 +376,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 					(
 						'script', 
 						$html->merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']), 
-						(new View((new Alias($script['script']))->resolve('php')))->run(null, true),
+						(new View($this->getContext(), (new Alias($script['script']))->resolve('php')))->run(null, true),
 						false
 					)
 

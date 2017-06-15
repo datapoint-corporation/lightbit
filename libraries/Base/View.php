@@ -29,6 +29,7 @@ namespace Lightbit\Base;
 
 use \Lightbit;
 use \Lightbit\Base\Element;
+use \Lightbit\Base\IWidget;
 use \Lightbit\Base\IView;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\IO\FileSystem\Alias;
@@ -42,6 +43,13 @@ use \Lightbit\IO\FileSystem\Alias;
 class View extends Element implements IView
 {
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
 	 * The path.
 	 *
 	 * @type string
@@ -51,14 +59,18 @@ class View extends Element implements IView
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The view context.
+	 *
 	 * @param string $path
-	 *	The path.
+	 *	The view path.
 	 *
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(string $path, array $configuration = null)
+	public function __construct(?IContext $context, string $path, array $configuration = null)
 	{
+		$this->context = $context;
 		$this->path = $path;
 
 		if ($configuration)
@@ -83,6 +95,22 @@ class View extends Element implements IView
 		}
 
 		return $basePath;
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public final function getContext() : IContext
+	{
+		if ($this->context)
+		{
+			return $this->context;
+		}
+
+		return parent::getContext();
 	}
 
 	/**
@@ -160,6 +188,23 @@ class View extends Element implements IView
 		}
 
 		return null;
+	}
+
+	/**
+	 * Creates a widget.
+	 *
+	 * @param string $className
+	 *	The widget class name.
+	 *
+	 * @param array $configuration
+	 *	The widget configuration.
+	 *
+	 * @return IWidget
+	 *	The widget.
+	 */
+	public function widget(string $className, array $configuration = null) : IWidget
+	{
+		return new $className($this->getContext(), $configuration);
 	}
 
 	/**

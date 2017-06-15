@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
 /**
@@ -40,13 +41,16 @@ interface IView extends IElement
 	/**
 	 * Constructor.
 	 *
+	 * @param IContext $context
+	 *	The view context.
+	 *
 	 * @param string $path
-	 *	The path.
+	 *	The view path.
 	 *
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(string $path, array $configuration = null);
+	public function __construct(?IContext $context, string $path, array $configuration = null);
 
 	/**
 	 * Gets the base path.
