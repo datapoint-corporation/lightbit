@@ -27,9 +27,11 @@
 
 namespace Lightbit\Html;
 
+use \Lightbit;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\Object;
+use \Lightbit\Data\IModel;
 use \Lightbit\Helpers\TypeHelper;
 use \Lightbit\Html\IHtmlAdapter;
 
@@ -56,6 +58,66 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
+	}
+
+	/**
+	 * Creates an active input name.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input name.
+	 */
+	protected function activeInputName(IModel $model, string $attribute) : string
+	{
+		$session = $this->getHttpSession();
+
+		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
+		$id = 'lightbit.html.adapter.input.' . $hash;
+
+		$result = $session->fetch($id);
+
+		if (!$result)
+		{
+			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getGuid()))));
+			$session->write($id, $result);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Creates an active input identifier.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input identifier.
+	 */
+	protected function activeInputID(IModel $model, string $attribute) : string
+	{
+		$session = $this->getHttpSession();
+
+		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
+		$id = 'lightbit.html.adapter.input.' . $hash . 'id';
+
+		$result = $session->fetch($id);
+
+		if (!$result)
+		{
+			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getGuid() . '/id'))));
+			$session->write($id, $result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -235,6 +297,68 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	public function escape(string $content) : string
 	{
 		return htmlspecialchars($content);
+	}
+
+	/**
+	 * Gets an active input identifier.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input identifier.
+	 */
+	public final function getActiveInputID(IModel $model, string $attribute) : string
+	{
+		static $activeInputsID = [];
+
+		$className = get_class($model);
+
+		if (!isset($activeInputsID[$className][$attribute]))
+		{
+			if (!isset($activeInputsID[$className]))
+			{
+				$activeInputsID[$className] = [];
+			}
+
+			$activeInputsID[$className][$attribute] = $this->activeInputsID($model, $attribute);
+		}
+
+		return $activeInputsID[$className][$attribute];
+	}
+
+	/**
+	 * Gets an active input name.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input name.
+	 */
+	public final function getActiveInputName(IModel $model, string $attribute) : string
+	{
+		static $activeInputsName = [];
+
+		$className = get_class($model);
+
+		if (!isset($activeInputsName[$className][$attribute]))
+		{
+			if (!isset($activeInputsName[$className]))
+			{
+				$activeInputsName[$className] = [];
+			}
+
+			$activeInputsName[$className][$attribute] = $this->activeInputName($model, $attribute);
+		}
+
+		return $activeInputsName[$className][$attribute];
 	}
 
 	/**

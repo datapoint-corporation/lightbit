@@ -58,6 +58,50 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
+	 * Exports to a model.
+	 *
+	 * @param IModel $model
+	 *	The http request model.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function export(IModel $model) : bool
+	{
+		return $model->export($this->getContentData());
+	}
+
+	/**
+	 * Gets the request content data.
+	 *
+	 * @return array
+	 *	The request content data.
+	 */
+	public final function getContentData() : array
+	{
+		static $contentData;
+
+		if (!isset($contentData))
+		{
+			switch ($_SERVER['REQUEST_METHOD'])
+			{
+				case 'GET':
+					$contentData = $_GET;
+					break;
+
+				case 'POST':
+					$contentData = $_POST;
+					break;
+
+				default:
+					$contentData = [];
+			}
+		}
+
+		return $contentData;		
+	}
+
+	/**
 	 * Gets the headers collection.
 	 *
 	 * @return array
@@ -126,17 +170,6 @@ class HttpRequest extends Component implements IHttpRequest
 		}
 
 		return [];
-	}
-
-	/**
-	 * Exports to a model.
-	 *
-	 * @param IModel $model
-	 *	The model to export to.
-	 */
-	public final function export(IModel $model) : void
-	{
-
 	}
 
 	/**

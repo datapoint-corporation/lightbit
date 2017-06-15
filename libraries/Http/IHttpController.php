@@ -28,6 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\IController;
+use \Lightbit\Data\IModel;
 
 /**
  * IHttpController.
@@ -38,6 +39,17 @@ use \Lightbit\Base\IController;
 interface IHttpController extends IController
 {
 	/**
+	 * Exports the current http request.
+	 *
+	 * @param string $method
+	 *	The http request method.
+	 *
+	 * @param IModel $model
+	 *	The http request model.
+	 */
+	public function export(string $method, IModel ...$model) : bool;
+
+	/**
 	 * Sets a response redirection.
 	 *
 	 * @param array $route
@@ -47,12 +59,4 @@ interface IHttpController extends IController
 	 *	The response redirection status code.
 	 */
 	public function redirect(array $route, int $statusCode = 303) : void;
-
-	/**
-	 * Validates the current http request.
-	 *
-	 * @param string $method
-	 *	The http request method name.
-	 */
-	public function validate(string $method) : bool;
 }

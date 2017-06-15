@@ -30,6 +30,7 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Controller;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IView;
+use \Lightbit\Data\IModel;
 use \Lightbit\Html\HtmlView;
 use \Lightbit\Http\IHttpController;
 
@@ -59,6 +60,40 @@ abstract class HttpController extends Controller implements IHttpController
 	}
 
 	/**
+	 * Exports the current http request.
+	 *
+	 * @param string $method
+	 *	The http request method.
+	 *
+	 * @param IModel $model
+	 *	The http request model.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function export(string $method, IModel ...$model) : bool
+	{
+		$request = $this->getHttpRequest();
+
+		if ($request->isOfMethod($method))
+		{
+			$result = true;
+
+			foreach ($model as $i => $subject)
+			{
+				if (!$request->export($subject))
+				{
+					$result = false;
+				}
+			}
+
+			return $result;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sets a response redirection.
 	 *
 	 * @param array $route
@@ -72,17 +107,6 @@ abstract class HttpController extends Controller implements IHttpController
 		$response = $this->getHttpResponse();
 		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
 		$response->setStatusCode($statusCode);
-	}
-
-	/**
-	 * Validates the current http request.
-	 *
-	 * @param string $method
-	 *	The http request method name.
-	 */
-	public final function validate(string $method) : bool
-	{
-		return $this->getHttpRequest()->isOfMethod($method);
 	}
 
 	/**

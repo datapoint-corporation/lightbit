@@ -28,6 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\IComponent;
+use \Lightbit\Data\IModel;
 
 /**
  * IHtmlAdapter.
@@ -129,6 +130,34 @@ interface IHtmlAdapter extends IComponent
 	 *	The result.
 	 */
 	public function escape(string $content) : string;
+
+	/**
+	 * Gets an active input identifier.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input identifier.
+	 */
+	public function getActiveInputID(IModel $model, string $attribute) : string;
+
+	/**
+	 * Gets an active input name.
+	 *
+	 * @param IModel $model
+	 *	The active input model.
+	 *
+	 * @param string $attribute
+	 *	The active input attribute name.
+	 *
+	 * @return string
+	 *	The active input name.
+	 */
+	public function getActiveInputName(IModel $model, string $attribute) : string;
 
 	/**
 	 * Merges attributes.

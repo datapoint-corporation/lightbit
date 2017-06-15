@@ -103,9 +103,20 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 */
 	public function fetch($key, $default = null) // : mixed
 	{
-		return (!isset($_SESSION[$key]) && !array_key_exists($key, $_SESSION))
+		return (isset($_SESSION[$key]) || array_key_exists($key, $_SESSION))
 			? $_SESSION[$key]
 			: $default;
+	}
+
+	/**
+	 * Gets the session global unique identifier.
+	 *
+	 * @return string
+	 *	The session global unique identifier.
+	 */
+	public function getGuid() : string
+	{
+		return session_id();
 	}
 
 	/**

@@ -42,9 +42,20 @@ interface IHttpRequest extends IHttpMessage
 	 * Exports to a model.
 	 *
 	 * @param IModel $model
-	 *	The model to export to.
+	 *	The http request model.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function export(IModel $model) : void;
+	public function export(IModel $model) : bool;
+
+	/**
+	 * Gets the request content.
+	 *
+	 * @return array
+	 *	The request content.
+	 */
+	public function getContentData() : array;
 	
 	/**
 	 * Checks the request method for a match.

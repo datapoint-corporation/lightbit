@@ -99,7 +99,7 @@ abstract class Component extends Element implements IComponent
 	 * @return string
 	 *	The identifier.
 	 */
-	public function getID() : string
+	public final function getID() : string
 	{
 		return $this->id;
 	}
