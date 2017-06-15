@@ -114,7 +114,7 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return string
 	 *	The session global unique identifier.
 	 */
-	public function getGuid() : string
+	public final function getGuid() : string
 	{
 		return session_id();
 	}

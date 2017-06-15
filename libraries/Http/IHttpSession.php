@@ -39,5 +39,19 @@ use \Lightbit\Data\IMap;
  */
 interface IHttpSession extends IComponent, IMap
 {
+	/**
+	 * Gets the session global unique identifier.
+	 *
+	 * @return string
+	 *	The session global unique identifier.
+	 */
+	public function getGuid() : string;
 
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public function getName() : string;
 }
