@@ -154,12 +154,12 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	{
 		if ($this->isClosed())
 		{
-			throw new HttpSessionException($this, sprintf('Bad cache resource status: resource is closed'));
+			throw new HttpSessionException($this, sprintf('Http session status error: resource is closed'));
 		}
 
 		if (!isset($_SESSION[$key]) && !array_key_exists($key, $_SESSION))
 		{
-			throw new KeyNotFoundHttpSessionException($this, sprintf('HttpSession key not found: "%s"', $key));
+			throw new KeyNotFoundHttpSessionException($this, sprintf('Http session key not found: "%s"', $key));
 		}
 
 		return $_SESSION[$key];
@@ -203,11 +203,16 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 */
 	public function start() : void
 	{
+		if (!$this->isClosed())
+		{
+			throw new HttpSessionException($this, sprintf('Http session start failure: already active'));
+		}
+
 		session_name($this->name);
 
 		if (!session_start())
 		{
-			throw new HttpSessionException($this, sprintf('Session can not start: unknown error'));
+			throw new HttpSessionException($this, sprintf('Http session start failure: unknown error'));
 		}
 	}
 	

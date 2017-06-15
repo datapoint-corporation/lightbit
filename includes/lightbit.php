@@ -326,6 +326,8 @@ class Lightbit
 				{
 					foreach ($__DATA__ as $__K__ => $__V__)
 					{
+						$__K__ = lcfirst(strtr(ucwords(strtr($__K__, [ '-' => ' ' ])), [ ' ' => '' ]));
+
 						${$__K__} = $__V__;
 						unset($__K__);
 						unset($__V__);

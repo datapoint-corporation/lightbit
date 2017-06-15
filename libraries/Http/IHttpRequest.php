@@ -28,6 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\IComponent;
+use \Lightbit\Data\IModel;
 use \Lightbit\Http\IHttpMessage;
 
 /**

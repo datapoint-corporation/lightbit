@@ -28,6 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
+use \Lightbit\Exception;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IWidget;
 use \Lightbit\Base\IView;
@@ -122,6 +123,40 @@ class View extends Element implements IView
 	public final function getPath() : string
 	{
 		return $this->path;
+	}
+
+	/**
+	 * Imports a variable.
+	 *
+	 * @param mixed $variable
+	 *	The variable to import.
+	 *
+	 * @param mixed $default
+	 *	The variable default value.
+	 *
+	 * @param Closure $closure
+	 *	The variable validation closure.
+	 */
+	public final function import(&$variable, \Closure $closure = null) : void
+	{
+		if ($closure)
+		{
+			$result = false;
+
+			try
+			{
+				$result = ($closure($variable) === true);
+			}
+			catch (\Throwable $e)
+			{
+				throw new Exception(sprintf('View variable validation failure, %s: "%s", at context "%s"', lcfirst($e->getMessage()), $this->path, $this->getContext()->getPrefix()));
+			}
+
+			if (!$result)
+			{
+				throw new Exception(sprintf('View variable validation failure: "%s", at context "%s"', $this->path, $this->getContext()->getPrefix()));
+			}
+		}
 	}
 
 	/**

@@ -118,5 +118,6 @@ class EmailAddressRule extends Rule
 		}
 
 		$model->setAttribute($attribute, $subject);
+		return true;
 	}
 }

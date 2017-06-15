@@ -185,9 +185,9 @@ abstract class Rule extends Element implements IRule
 						}
 					}
 
-					else if ($required)
+					else if ($this->required)
 					{
-						$this->report('empty', $attribute);
+						$this->report($attribute, 'empty');
 						$result = false;
 					}
 				}

@@ -85,11 +85,6 @@ abstract class Component extends Element implements IComponent
 	 */
 	public final function getContext() : IContext
 	{
-		if (!$this->context)
-		{
-			$this->context = parent::getContext();
-		}
-
 		return $this->context;
 	}
 

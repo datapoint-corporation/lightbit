@@ -371,8 +371,11 @@ abstract class Model extends Element implements IModel
 	 *
 	 * @param array $attributes
 	 *	The attributes to import.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function import(array $attributes) : void
+	public function import(array $attributes) : bool
 	{
 		$this->onImport($attributes);
 
@@ -383,6 +386,22 @@ abstract class Model extends Element implements IModel
 
 		$this->onAfterValidate();
 		$this->onAfterImport($attributes);
+
+		return !$this->attributesErrors;
+	}
+
+	/**
+	 * Checks if an attribute is available.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isAttributeAvailable(string $attribute) : bool
+	{
+		return in_array($attribute, $this->getAttributesName());
 	}
 
 	/**
@@ -394,7 +413,7 @@ abstract class Model extends Element implements IModel
 	 * @return bool
 	 *	The result.
 	 */
-	public function isScenario(string ...$scenario) : bool
+	public final function isScenario(string ...$scenario) : bool
 	{
 		return in_array($this->scenario, ...$scenario);
 	}

@@ -29,6 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\IContext;
+use \Lightbit\Data\IModel;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Http\IHttpRequest;
 
@@ -68,7 +69,21 @@ class HttpRequest extends Component implements IHttpRequest
 	 */
 	public final function export(IModel $model) : bool
 	{
-		return $model->export($this->getContentData());
+		$attributes = [];
+		$content = $this->getContentData();
+		$html = $this->getHtmlAdapter();
+
+		foreach ($model->getAttributesName() as $i => $attribute)
+		{
+			$input = $html->getActiveInputName($model, $attribute);
+
+			if (isset($content[$input]))
+			{
+				$attributes[$attribute] = $content[$input];
+			}
+		}
+
+		return $model->import($attributes);
 	}
 
 	/**

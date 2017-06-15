@@ -170,8 +170,22 @@ interface IModel extends IElement
 	 *
 	 * @param array $attributes
 	 *	The attributes to import.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function import(array $attributes) : void;
+	public function import(array $attributes) : bool;
+
+	/**
+	 * Checks if an attribute is available.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isAttributeAvailable(string $attribute) : bool;
 
 	/**
 	 * Checks the scenario.

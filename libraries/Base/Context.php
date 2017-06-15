@@ -296,7 +296,7 @@ abstract class Context extends Cluster implements IContext
 				= $this->components[$id] 
 					= new $className($this, $id, $this->componentsConfiguration[$id]);
 
-			if ($component instanceof IChannel)
+			if (($component instanceof IChannel) && $component->isClosed())
 			{
 				$component->start();
 			}

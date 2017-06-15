@@ -134,26 +134,31 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	public function attribute(string $attribute, $value) : string
 	{
-		$typeName = TypeHelper::getNameOf($value);
-
-		if ($typeName === 'bool')
+		if (isset($value))
 		{
-			if ($value)
+			$typeName = TypeHelper::getNameOf($value);
+
+			if ($typeName === 'bool')
 			{
-				return strtr($this->escape($attribute), [ ' ' => '-' ]);
+				if ($value)
+				{
+					return strtr($this->escape($attribute), [ ' ' => '-' ]);
+				}
+
+				return '';
 			}
 
-			return '';
+			if ($typeName !== 'string')
+			{
+				$value = ($value instanceof Object)
+					? $this->getSlugManager()->compose($value)
+					: TypeHelper::toString($value);
+			}
+		
+			return strtr($this->escape($attribute), [ ' ' => '-' ]) . '="' . $this->escape($value) . '"';
 		}
 
-		if ($typeName !== 'string')
-		{
-			$value = ($value instanceof Object)
-				? $this->getSlugManager()->compose($value)
-				: TypeHelper::toString($value);
-		}
-		
-		return strtr($this->escape($attribute), [ ' ' => '-' ]) . '="' . $this->escape($value) . '"';
+		return '';
 	}
 
 	/**
@@ -324,7 +329,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 				$activeInputsID[$className] = [];
 			}
 
-			$activeInputsID[$className][$attribute] = $this->activeInputsID($model, $attribute);
+			$activeInputsID[$className][$attribute] = $this->activeInputID($model, $attribute);
 		}
 
 		return $activeInputsID[$className][$attribute];
