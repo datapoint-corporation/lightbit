@@ -119,7 +119,7 @@ abstract class Context extends Cluster implements IContext
 	private $modules;
 
 	/**
-	 * The modules path.
+	 * The modules base path.
 	 *
 	 * @type string
 	 */
@@ -154,13 +154,6 @@ abstract class Context extends Cluster implements IContext
 	private $pluginsConfiguration;
 
 	/**
-	 * The plugins requirements.
-	 *
-	 * @type array
-	 */
-	private $pluginsRequirements;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param string $path
@@ -187,96 +180,33 @@ abstract class Context extends Cluster implements IContext
 		$this->plugins = [];
 		$this->pluginsConfiguration = [];
 
-		$pluginsBasePath = $this->getPluginsBasePath();
-		$pluginsPath = [];
-
-		if (file_exists($pluginsBasePath))
-		{
-			foreach (scandir($pluginsBasePath) as $i => $id)
-			{
-				if ($id[0] == '.')
-				{
-					continue;
-				}
-
-				$pluginPath = $pluginsBasePath . DIRECTORY_SEPARATOR . $id;
-
-				if (!is_dir($pluginPath))
-				{
-					continue;
-				}
-
-				$pluginRequirementsPath = $pluginPath . DIRECTORY_SEPARATOR . 'requirements.php';
-
-				if (file_exists($pluginRequirementsPath))
-				{
-					$pluginRequirements = Lightbit::inclusion()($pluginRequirements);
-
-					if (!is_array($pluginRequirements))
-					{
-						throw new Exception(sprintf('Plugin requirements script is not valid: "%s"', $id));
-					}
-
-					$this->pluginRequirements[$id] = $pluginRequirements;
-				}
-
-				$pluginConfigurationPath = $pluginPath . DIRECTORY_SEPARATOR . 'plugin.php';
-
-				if (!file_exists($pluginConfigurationPath))
-				{
-					throw new Exception(sprintf('Plugin configuration script not found: "%s"', $id));
-				}
-
-				$pluginConfiguration = Lightbit::inclusion()($pluginConfigurationPath);
-
-				$this->pluginsConfiguration[$id] = is_array($pluginConfiguration)
-					? $pluginConfiguration
-					: [];
-
-				if (!isset($this->pluginsConfiguration[$id]['@class']))
-				{
-					$this->pluginsConfiguration[$id]['@class'] = Plugin::class;	
-				}
-
-				$pluginsPath[$id] = $pluginPath;
-			}
-		}
-
 		$modulesBasePath = $this->getModulesBasePath();
-		$modulesPath = [];
 
 		if (file_exists($modulesBasePath))
 		{
 			foreach (scandir($modulesBasePath) as $i => $id)
 			{
-				if ($id[0] == '.')
+				if ($id[0] === '.' || $id[0] === '_')
 				{
 					continue;
 				}
 
-				$modulePath = $modulesBasePath . DIRECTORY_SEPARATOR . $id;
+				$this->getModule($id);
+			}
+		}
 
-				if (!is_dir($modulePath))
+		$pluginsBasePath = $this->getPluginsBasePath();
+
+		if (file_exists($pluginsBasePath))
+		{
+			foreach (scandir($pluginsBasePath) as $i => $id)
+			{
+				if ($id[0] === '.' || $id[0] === '_')
 				{
 					continue;
 				}
 
-				$moduleConfigurationPath = $modulePath . DIRECTORY_SEPARATOR . 'module.php';
-
-				if (!file_exists($moduleConfigurationPath))
-				{
-					throw new Exception(sprintf('Module configuration script not found: "%s"', $id));
-				}
-
-				$moduleConfiguration = Lightbit::inclusion()($moduleConfigurationPath);
-				
-				if (!is_array($moduleConfiguration) || !isset($moduleConfiguration['@class']))
-				{
-					throw new Exception(sprintf('Module configuration script is not valid: "%s"', $id));
-				}
-
-				$this->modulesConfiguration[$id] = $moduleConfiguration;
-				$modulesPath[$id] = $modulePath;
+				$this->getPlugin($id);
 			}
 		}
 
@@ -284,56 +214,28 @@ abstract class Context extends Cluster implements IContext
 		{
 			ObjectHelper::configure($this, $configuration);
 		}
-
-		foreach ($pluginsPath as $id => $pluginPath)
-		{
-			$this->plugin($pluginsBasePath, $pluginPath, $id);
-		}
-
-		foreach ($this->modulesConfiguration as $id => $configuration)
-		{
-			$this->modules[$id] 
-				= new $configuration['@class']
-					($this, $id, $modulesPath[$id], $configuration);
-		}
 	}
 
-	/**
-	 * Loads a plugin recursively.
-	 *
-	 * @param string $pluginsBasePath
-	 *	The plugins base path.
-	 *
-	 * @param string $pluginPath
-	 *	The plugin path.
-	 *
-	 * @param string $id
-	 *	The plugin identifier.
-	 *
-	 * @return IPlugin
-	 *	The plugin.
-	 */
-	private function plugin(string $pluginsBasePath, string $pluginPath, string $id) : IPlugin
+	private function _dependencies(array $requirements) : void
 	{
-		if (!isset($this->plugins[$id]))
+		foreach ($requirements as $class => $subjects)
 		{
-			if (isset($this->pluginsRequirements[$id]))
+			if ($class === 'modules')
 			{
-				if (isset($this->pluginsRequirements[$id]['plugins']))
+				foreach ($subjects as $i => $module)
 				{
-					foreach ($plugins as $i => $requiredPluginID)
-					{
-						$this->plugin($pluginsBasePath, $pluginPath, $requiredPluginID);
-					}
+					$this->getModule($module);
 				}
 			}
 
-			return $this->plugins[$id] 
-				= new $this->pluginsConfiguration[$id]['@class']
-					($this, $id, $pluginPath, $this->pluginsConfiguration[$id]);
+			if ($class === 'plugins')
+			{
+				foreach ($subjects as $i => $plugin)
+				{
+					$this->getPlugin($plugin);
+				}
+			}
 		}
-
-		return $this->plugins[$id];
 	}
 
 	/**
@@ -635,7 +537,41 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->modules[$id]))
 		{
-			throw new ModuleNotFoundException($this, $id, sprintf('Module not found: "%s", at context "%s"', $id, $this->getPrefix()));
+			$modulePath = $this->getModulesBasePath() . DIRECTORY_SEPARATOR . $id;
+
+			if (!file_exists($modulePath))
+			{
+				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, not available: "%s", at context "%s"', $id, $this->getPrefix()));
+			}
+
+			$moduleConfigurationPath = $modulePath . DIRECTORY_SEPARATOR . 'module.php';
+
+			if (!file_exists($moduleConfigurationPath))
+			{
+				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, configuration script is missing: "%s", at context "%s"', $id, $this->getPrefix())); 
+			}
+
+			$moduleRequirementPath = $modulePath . DIRECTORY_SEPARATOR . 'module-dependencies.php';
+
+			if (file_exists($moduleRequirementPath))
+			{
+				$moduleRequirement = Lightbit::inclusion()($moduleRequirementPath);
+
+				if (is_array($moduleRequirement))
+				{
+					$this->_dependencies($moduleRequirement);
+				}
+			}
+
+			$moduleConfiguration = Lightbit::inclusion()($moduleConfigurationPath);
+
+			if (!isset($moduleConfiguration['@class']))
+			{
+				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, configuration script is invalid: "%s", at context "%s"', $id, $this->getPrefix())); 
+			}
+
+			$className = $moduleConfiguration['@class'];
+			return $this->modules[$id] = new $className($this, $id, $modulePath, $moduleConfiguration);
 		}
 
 		return $this->modules[$id];
@@ -670,7 +606,41 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->plugins[$id]))
 		{
-			throw new Exception(sprintf('Plugin is not available: "%s"', $id));
+			$pluginPath = $this->getPluginsBasePath() . DIRECTORY_SEPARATOR . $id;
+
+			if (!file_exists($pluginPath))
+			{
+				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, not available: "%s", at context "%s"', $id, $this->getPrefix()));
+			}
+
+			$pluginConfigurationPath = $pluginPath . DIRECTORY_SEPARATOR . 'plugin.php';
+
+			if (!file_exists($pluginConfigurationPath))
+			{
+				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, configuration script is missing: "%s", at context "%s"', $id, $this->getPrefix())); 
+			}
+
+			$pluginRequirementPath = $pluginPath . DIRECTORY_SEPARATOR . 'plugin-dependencies.php';
+
+			if (file_exists($pluginRequirementPath))
+			{
+				$pluginRequirement = Lightbit::inclusion()($pluginRequirementPath);
+
+				if (is_array($pluginRequirement))
+				{
+					$this->_dependencies($pluginRequirement);
+				}
+			}
+
+			$pluginConfiguration = Lightbit::inclusion()($pluginConfigurationPath);
+
+			if (!isset($pluginConfiguration['@class']))
+			{
+				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, configuration script is invalid: "%s", at context "%s"', $id, $this->getPrefix())); 
+			}
+
+			$className = $pluginConfiguration['@class'];
+			return $this->plugins[$id] = new $className($this, $id, $pluginPath, $pluginConfiguration);
 		}
 
 		return $this->plugins[$id];
