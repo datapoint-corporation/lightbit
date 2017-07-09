@@ -25,51 +25,44 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-/**
- * The Lightbit main script execution micro timestamp.
- *
- * @type float
- */
-define('LIGHTBIT', microtime(true));
+namespace Lightbit\Helpers;
+
+use \Lightbit\Base\Action;
 
 /**
- * The Lightbit math fixed point precision.
+ * GlobalizationHelper.
  *
- * @type int
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @since 1.0.0
  */
-defined('LIGHTBIT_PRECISION') ||
-	define('LIGHTBIT_PRECISION', 6);
-
-// Include the Lightbit class file manually to enable path resolution,
-// autoloading and other core features.
-require __DIR__ . '/includes/lightbit.php';
-require __DIR__ . '/includes/helpers/globalization.php';
-require __DIR__ . '/includes/helpers/html.php';
-require __DIR__ . '/includes/helpers/math.php';
-require __DIR__ . '/includes/helpers/string.php';
-
-// Register the Lightbit namespace and file system alias prefix path as
-// required by the framework.
-Lightbit::setNamespacePath('Lightbit', __DIR__ . '/libraries');
-Lightbit::setPrefixPath('lightbit', __DIR__);
-
-// Register the lightbit autoloader, exception and error handler
-// to enable the expected core behaviours.
-spl_autoload_register
-(
-	function(string $className)
+class GlobalizationHelper
+{
+	/**
+	 * Reads a message.
+	 *
+	 * If the message is not available at the source, the original message
+	 * is returned as a fail safe.
+	 *
+	 * @param string $category
+	 *	The message category.
+	 *
+	 * @param string $message
+	 *	The message to read.
+	 *
+	 * @return string
+	 *	The message.
+	 */
+	public static function message(string $category, string $message) : string
 	{
-		Lightbit::loadClass($className);
-	},
-	true,
-	true
-);
-
-set_exception_handler
-(
-	function(\Throwable $e)
-	{
-		Lightbit::handleThrowable($e);
+		return Action::getInstance()->getContext()->getMessageSource()->read(null, $category, $message);
 	}
-);
 
+	/**
+	 * Constructor.
+	 */
+	private function __construct()
+	{
+		trigger_error(sprintf('Class does not support construction: "%s"', __CLASS__), E_USER_ERROR);
+		exit(1);
+	}
+}

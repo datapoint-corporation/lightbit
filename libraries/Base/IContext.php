@@ -29,6 +29,8 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IController;
+use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\IMessageSource;
 
 /**
  * IContext.
@@ -112,6 +114,14 @@ interface IContext
 	 *	The layout path.
 	 */
 	public function getLayoutPath() : ?string;
+
+	/**
+	 * Gets the locale.
+	 *
+	 * @return ILocale
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale;
 
 	/**
 	 * Gets a module.
@@ -232,6 +242,14 @@ interface IContext
 	 *	The layout.
 	 */
 	public function setLayout(?string $layout) : void;
+
+	/**
+	 * Sets the locale.
+	 *
+	 * @param string $id
+	 *	The locale identifier.
+	 */
+	public function setLocale(string $id) : void;
 
 	/**
 	 * Sets a module configuration.

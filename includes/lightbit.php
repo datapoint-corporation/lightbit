@@ -104,7 +104,7 @@ class Lightbit
 	 * @return IApplication
 	 *	The the application.
 	 */
-	public static function getApplication() : ?IApplication
+	public static function getApplication() : IApplication
 	{
 		return self::$application;
 	}

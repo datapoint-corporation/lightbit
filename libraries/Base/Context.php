@@ -43,6 +43,9 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
+use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\IMessageSource;
+use \Lightbit\Globalization\Locale;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
@@ -110,6 +113,13 @@ abstract class Context extends Cluster implements IContext
 	 * @type string
 	 */
 	private $layoutPath;
+
+	/**
+	 * The context locale.
+	 *
+	 * @type ILocale
+	 */
+	private $locale;
 
 	/**
 	 * The modules.
@@ -503,6 +513,27 @@ abstract class Context extends Cluster implements IContext
 	}
 
 	/**
+	 * Gets the locale.
+	 *
+	 * @return Locale
+	 *	The locale.
+	 */
+	public final function getLocale() : ILocale
+	{
+		if ($this->locale)
+		{
+			return $this->locale;
+		}
+
+		if ($this->context)
+		{
+			return $this->context->getLocale();
+		}
+
+		throw new Exception(sprintf('Locale is not defined for base context: "%s"', $this->getPrefix));
+	}
+
+	/**
 	 * Gets the memory cache.
 	 *
 	 * @return IMemoryCache
@@ -511,6 +542,17 @@ abstract class Context extends Cluster implements IContext
 	public function getMemoryCache() : IMemoryCache
 	{
 		return $this->getComponent('data.cache.memory');
+	}
+
+	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource
+	{
+		return $this->getComponent('globalization.message.source');
 	}
 
 	/**
@@ -860,6 +902,17 @@ abstract class Context extends Cluster implements IContext
 	{
 		$this->layout = $layout;
 		$this->layoutPath = null;
+	}
+
+	/**
+	 * Sets the locale.
+	 *
+	 * @param string $id
+	 *	The locale identifier.
+	 */
+	public final function setLocale(string $id) : void
+	{
+		$this->locale = Locale::getLocale($id);
 	}
 
 	/**

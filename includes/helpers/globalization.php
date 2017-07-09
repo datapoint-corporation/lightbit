@@ -25,51 +25,24 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-/**
- * The Lightbit main script execution micro timestamp.
- *
- * @type float
- */
-define('LIGHTBIT', microtime(true));
+use \Lightbit\Helpers\GlobalizationHelper;
 
 /**
- * The Lightbit math fixed point precision.
+ * Reads a message.
  *
- * @type int
+ * If the message is not available at the source, the original message
+ * is returned as a fail safe.
+ *
+ * @param string $category
+ *	The message category.
+ *
+ * @param string $message
+ *	The message to read.
+ *
+ * @return string
+ *	The message.
  */
-defined('LIGHTBIT_PRECISION') ||
-	define('LIGHTBIT_PRECISION', 6);
-
-// Include the Lightbit class file manually to enable path resolution,
-// autoloading and other core features.
-require __DIR__ . '/includes/lightbit.php';
-require __DIR__ . '/includes/helpers/globalization.php';
-require __DIR__ . '/includes/helpers/html.php';
-require __DIR__ . '/includes/helpers/math.php';
-require __DIR__ . '/includes/helpers/string.php';
-
-// Register the Lightbit namespace and file system alias prefix path as
-// required by the framework.
-Lightbit::setNamespacePath('Lightbit', __DIR__ . '/libraries');
-Lightbit::setPrefixPath('lightbit', __DIR__);
-
-// Register the lightbit autoloader, exception and error handler
-// to enable the expected core behaviours.
-spl_autoload_register
-(
-	function(string $className)
-	{
-		Lightbit::loadClass($className);
-	},
-	true,
-	true
-);
-
-set_exception_handler
-(
-	function(\Throwable $e)
-	{
-		Lightbit::handleThrowable($e);
-	}
-);
-
+function lbmessage(string $category, string $message) : string
+{
+	return GlobalizationHelper::message($category, $message);
+}

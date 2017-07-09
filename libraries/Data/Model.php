@@ -339,6 +339,20 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Checks if an attribute is set.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasAttribute(string $attribute) : bool
+	{
+		return ObjectHelper::hasAttribute($this, $attribute);
+	}
+
+	/**
 	 * Checks if an attribute has an error.
 	 *
 	 * @param string $attribute
@@ -353,17 +367,26 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Checks if an attribute is set.
+	 * Checks for attributes errors.
 	 *
-	 * @param string $attribute
-	 *	The attribute name.
+	 * @param array $attributes
+	 *	The attributes names.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public final function hasAttribute(string $attribute) : bool
+	public final function hasAttributesErrors(string $attributes = null) : bool
 	{
-		return ObjectHelper::hasAttribute($this, $attribute);
+		if (isset($attributes))
+		{
+			return !!array_intersect
+			(
+				$attributes,
+				array_keys($this->attributesErrors)
+			);
+		}
+
+		return !!$this->attributesErrors;
 	}
 
 	/**

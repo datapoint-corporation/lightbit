@@ -54,11 +54,6 @@ final class Action extends Object
 	 */
 	public static function getInstance() : Action
 	{
-		if (!self::$instance)
-		{
-			throw new Exception('Action is not active');
-		}
-
 		return self::$instance;
 	}
 
@@ -68,6 +63,13 @@ final class Action extends Object
 	 * @type array
 	 */
 	private $arguments;
+
+	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
 
 	/**
 	 * The controller.
@@ -111,6 +113,17 @@ final class Action extends Object
 	public function getArguments() : array
 	{
 		return $this->arguments;
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->controller->getContext();	
 	}
 
 	/**

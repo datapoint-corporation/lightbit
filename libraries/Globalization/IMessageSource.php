@@ -1,7 +1,7 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Lightbit
+// Lightbit Content Management System
 //
 // Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
@@ -25,51 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-/**
- * The Lightbit main script execution micro timestamp.
- *
- * @type float
- */
-define('LIGHTBIT', microtime(true));
+namespace Lightbit\Globalization;
+
+use \Lightbit\Base\IComponent;
+use \Lightbit\Globalization\ILocale;
 
 /**
- * The Lightbit math fixed point precision.
+ * IMessageSource.
  *
- * @type int
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @since 1.0.0
  */
-defined('LIGHTBIT_PRECISION') ||
-	define('LIGHTBIT_PRECISION', 6);
-
-// Include the Lightbit class file manually to enable path resolution,
-// autoloading and other core features.
-require __DIR__ . '/includes/lightbit.php';
-require __DIR__ . '/includes/helpers/globalization.php';
-require __DIR__ . '/includes/helpers/html.php';
-require __DIR__ . '/includes/helpers/math.php';
-require __DIR__ . '/includes/helpers/string.php';
-
-// Register the Lightbit namespace and file system alias prefix path as
-// required by the framework.
-Lightbit::setNamespacePath('Lightbit', __DIR__ . '/libraries');
-Lightbit::setPrefixPath('lightbit', __DIR__);
-
-// Register the lightbit autoloader, exception and error handler
-// to enable the expected core behaviours.
-spl_autoload_register
-(
-	function(string $className)
-	{
-		Lightbit::loadClass($className);
-	},
-	true,
-	true
-);
-
-set_exception_handler
-(
-	function(\Throwable $e)
-	{
-		Lightbit::handleThrowable($e);
-	}
-);
-
+interface IMessageSource extends IComponent
+{
+	/**
+	 * Reads a message.
+	 *
+	 * If the message is not available at the source, the original message
+	 * is returned as a fail safe.
+	 *
+	 * @param ILocale $locale
+	 *	The message locale.
+	 *
+	 * @param string $category
+	 *	The message category.
+	 *
+	 * @param string $message
+	 *	The message to read.
+	 *
+	 * @return string
+	 *	The message.
+	 */
+	public function read(?ILocale $locale, string $category, string $message) : string;
+}

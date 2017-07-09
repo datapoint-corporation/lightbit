@@ -38,6 +38,8 @@ use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -231,6 +233,17 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
+	 * Gets the locale.
+	 *
+	 * @return Locale
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale
+	{
+		return $this->getContext()->getLocale();
+	}
+
+	/**
 	 * Gets the memory cache.
 	 *
 	 * @return IMemoryCache
@@ -239,6 +252,17 @@ abstract class Element extends Object implements IElement
 	public function getMemoryCache() : IMemoryCache
 	{
 		return $this->getContext()->getMemoryCache();
+	}
+
+	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource
+	{
+		return $this->getContext()->getMessageSource();
 	}
 
 	/**

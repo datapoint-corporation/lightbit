@@ -166,6 +166,17 @@ interface IModel extends IElement
 	public function hasAttributeError(string $attribute) : bool;
 
 	/**
+	 * Checks for attributes errors.
+	 *
+	 * @param array $attributes
+	 *	The attributes names.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributesErrors(string $attributes = null) : bool;
+
+	/**
 	 * Imports the attributes.
 	 *
 	 * @param array $attributes

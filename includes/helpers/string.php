@@ -39,7 +39,7 @@ use \Lightbit\Helpers\StringHelper;
  * @return string
  *	The slug.
  */
-function slug(string $content, string $delimiter = '-') : string
+function lbslug(string $content, string $delimiter = '-') : string
 {
 	return StringHelper::slug($content, $delimiter);
 }

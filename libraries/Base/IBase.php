@@ -34,6 +34,8 @@ use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -151,12 +153,28 @@ interface IBase
 	public function getHttpSession() : IHttpSession;
 
 	/**
+	 * Gets the locale.
+	 *
+	 * @return Locale
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale;
+
+	/**
 	 * Gets the memory cache.
 	 *
 	 * @return IMemoryCache
 	 *	The memory cache.
 	 */
 	public function getMemoryCache() : IMemoryCache;
+
+	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource;
 
 	/**
 	 * Gets the network cache.

@@ -36,7 +36,7 @@ use \Lightbit\Helpers\HtmlHelper;
  * @return string
  *	The result.
  */
-function html(string $content) : string
+function lbhtml(string $content) : string
 {
 	return HtmlHelper::encode($content);
 }

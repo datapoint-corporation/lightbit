@@ -51,7 +51,7 @@ abstract class SqlModel extends Model implements ISqlModel
 	 * @param array $configuration
 	 *	The model configuration.
 	 */
-	public function __construct(string $scenario, array $attributes = null, array $configuration = null)
+	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null)
 	{
 		parent::__construct($scenario, $attributes, $configuration);
 	}
