@@ -31,12 +31,12 @@ use \Lightbit\Exception;
 use \Lightbit\Helpers\HttpHelper;
 
 /**
- * HttpException.
+ * HttpStatusException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpException extends Exception
+class HttpStatusException extends Exception
 {
 	/**
 	 * The status code.

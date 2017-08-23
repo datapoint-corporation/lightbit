@@ -111,12 +111,12 @@ class QueryStringHttpRouter extends HttpRouter
 		{
 			if (!is_string($_GET['action']))
 			{
-				throw new HttpException(400, sprintf('Bad data type for query string parameter: "%s"', 'action'));
+				throw new HttpStatusException(400, sprintf('Bad data type for query string parameter: "%s"', 'action'));
 			}
 
 			if (!preg_match('%^\\w+(\\.\\w+)*$%', $_GET['action']))
 			{
-				throw new HttpException(404, sprintf('Bad format for query string parameter: "%s"', 'action'));
+				throw new HttpStatusException(404, sprintf('Bad format for query string parameter: "%s"', 'action'));
 			}
 
 			$path = '/' . strtr($_GET['action'], [ '.' => '/', '_' => '-' ]);
@@ -128,15 +128,15 @@ class QueryStringHttpRouter extends HttpRouter
 		}
 		catch (IllegalParameterRouteException $e)
 		{
-			throw new HttpException(400, $e->getMessage(), $e);
+			throw new HttpStatusException(400, $e->getMessage(), $e);
 		}
 		catch (MissingParameterRouteException $e)
 		{
-			throw new HttpException(400, $e->getMessage(), $e);
+			throw new HttpStatusException(400, $e->getMessage(), $e);
 		}
 		catch (RouteException $e)
 		{
-			throw new HttpException(404, $e->getMessage(), $e);
+			throw new HttpStatusException(404, $e->getMessage(), $e);
 		}
 	}
 

@@ -44,6 +44,7 @@ use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
 use \Lightbit\Http\HttpAssetManager;
+use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\HttpQueryString;
 use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
@@ -59,6 +60,13 @@ use \Lightbit\Http\QueryStringHttpRouter;
 class Application extends Context implements IApplication
 {
 	/**
+	 * The debug flag.
+	 *
+	 * @type bool
+	 */
+	private $debug;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $path
@@ -70,6 +78,8 @@ class Application extends Context implements IApplication
 	public function __construct(string $path, array $configuration = null)
 	{
 		parent::__construct(null, 'application', $path, null);
+
+		$this->debug = false;
 
 		$this->setComponentsConfiguration
 		(
@@ -109,6 +119,17 @@ class Application extends Context implements IApplication
 	public function getDefaultRoute() : array
 	{
 		return [ '/site/index' ];
+	}
+
+	/**
+	 * Checks the debug flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isDebug() : bool
+	{
+		return $this->debug;
 	}
 
 	/**
@@ -265,10 +286,30 @@ class Application extends Context implements IApplication
 		}
 		else
 		{
-			$result = $this->getHttpRouter()->resolve()->run();
+			try
+			{
+				$result = $this->getHttpRouter()->resolve()->run();
+			}
+			catch (\Throwable $e)
+			{
+				throw $e;
+				$this->httpErrorResponse((($e instanceof HttpStatusException) ? $e->getStatusCode() : 500), $e);
+				return 0;
+			}
 		}
 
 		return (is_int($result) ? $result : 0);
+	}
+
+	/**
+	 * Sets the debug flag.
+	 *
+	 * @param bool $debug
+	 *	The debug flag.
+	 */
+	public final function setDebug(bool $debug) : void
+	{
+		$this->debug = $debug;
 	}
 
 	/**
@@ -282,5 +323,19 @@ class Application extends Context implements IApplication
 	{
 		$this->dispose();
 		exit($status);
+	}
+
+	/**
+	 * This method is invoked when a status exception is caught
+	 *
+	 * @param int $httpStatusCode
+	 *	The HTTP status code.
+	 *
+	 * @param Throwable $throwable
+	 *	The throwable object.
+	 */
+	protected function onHttpException(int $httpStatusCode, \Throwable $throwable) : void
+	{
+		
 	}
 }

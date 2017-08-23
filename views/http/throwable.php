@@ -29,7 +29,7 @@ $counter = 0;
 
 $title = '500 Internal Server Error';
 
-if ($throwable instanceof Lightbit\Http\HttpException)
+if ($throwable instanceof Lightbit\Http\HttpStatusException)
 {
 	$title = $throwable->getStatusCode() . ' ' . $throwable->getStatusMessage();
 }
@@ -64,6 +64,10 @@ if ($throwable instanceof Lightbit\Http\HttpException)
 
 			h1, h2{
 				margin: 2em 0 1em 0;
+			}
+
+			body &gt; h1:first-child {
+				margin-top: 1em;
 			}
 
 			h1 {

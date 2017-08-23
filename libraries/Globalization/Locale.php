@@ -124,23 +124,23 @@ final class Locale extends Object implements ILocale
 	}
 
 	/**
-	 * Gets the language.
+	 * Gets the language code.
 	 *
 	 * @return string
-	 *	The language.
+	 *	The language code.
 	 */
-	public function getLanguage() : string
+	public function getLanguageCode() : string
 	{
 		return strtolower(\Locale::getPrimaryLanguage($this->id));
 	}
 
 	/**
-	 * Gets the region.
+	 * Gets the region code.
 	 *
 	 * @return string
-	 *	The region.
+	 *	The region code.
 	 */
-	public function getRegion() : string
+	public function getRegionCode() : string
 	{
 		return strtoupper(\Locale::getRegion($this->id));
 	}

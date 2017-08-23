@@ -61,20 +61,20 @@ interface ILocale
 	public function getID() : string;
 
 	/**
-	 * Gets the language.
+	 * Gets the language code.
 	 *
 	 * @return string
-	 *	The language.
+	 *	The language code.
 	 */
-	public function getLanguage() : string;
+	public function getLanguageCode() : string;
 
 	/**
-	 * Gets the region.
+	 * Gets the region code.
 	 *
 	 * @return string
-	 *	The region.
+	 *	The region code.
 	 */
-	public function getRegion() : string;
+	public function getRegionCode() : string;
 
 	/**
 	 * Formats a message.

@@ -28,8 +28,10 @@
 use \Lightbit\Base\IApplication;
 use \Lightbit\ClassNotFoundException;
 use \Lightbit\ClassPathResolutionException;
+use \Lightbit\Exception;
+use \Lightbit\Helpers\TypeHelper;
 use \Lightbit\Html\HtmlView;
-use \Lightbit\Http\HttpException;
+use \Lightbit\Http\HttpStatusException;
 use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
 use \Lightbit\NamespacePathResolutionException;
@@ -221,11 +223,9 @@ class Lightbit
 	 * @param Throwable $throwable
 	 *	The throwable.
 	 */
-	public static function handleThrowable(\Throwable $throwable) : void
+	public static function throwable(\Throwable $throwable) : void
 	{
 		static $throwing;
-
-		throw $throwable;
 
 		if (!isset($throwing))
 		{
@@ -251,9 +251,9 @@ class Lightbit
 
 			else
 			{
-				if (!($throwable instanceof HttpException))
+				if (!($throwable instanceof HttpStatusException))
 				{
-					$throwable = new HttpException(500, $throwable->getMessage(), $throwable);
+					$throwable = new HttpStatusException(500, $throwable->getMessage(), $throwable);
 				}
 
 				(new HtmlView(null, (new Alias('lightbit://views/http/throwable'))->resolve('php')))
@@ -364,11 +364,22 @@ class Lightbit
 	}
 
 	/**
+	 * Checks the debug flag.
 	 *
+	 * @return bool
+	 *	The result.
 	 */
 	public static function isDebug() : bool
 	{
-		return true;
+		if (!defined('LIGHTBIT_DEBUG'))
+		{
+			if (isset(self::$application))
+			{
+				return self::$application->isDebug();
+			}
+		}
+
+		return (LIGHTBIT_DEBUG === true);
 	}
 	
 	/**
@@ -401,64 +412,46 @@ class Lightbit
 	}
 
 	/**
-	 * Creates, registers and runs a new application of the given class
-	 * according to the current runtime environment.
+	 * Creates, registers and runs an application.
 	 *
-	 * At the end of the application execution, it will be unregistered
-	 * and all Lightbit resources will be properly disposed of in preparation
-	 * for the next request, as applicable.
+	 * @param string $private
+	 *	The application private install path.
+	 *
+	 * @param string $public
+	 *	The application public install path.
 	 *
 	 * @param string $className
 	 *	The application class name.
 	 *
-	 * @param string $path
-	 *	The application path.
-	 *
 	 * @param string $configuration
-	 *	The application configuration file system alias.
+	 *	The application configuration script file system alias.
 	 *
 	 * @return int
-	 *	The result.
+	 *	The application exit status.
 	 */
-	public static function run(string $className, string $path, string $configuration = null) : int
+	public static function run(string $private, string $public, string $className, string $configuration = null) : int
 	{
-		// The public and private prefixes may be implicitly defined based
-		// on the application path and the current script file name.
-		if (!isset(self::$prefixesPath['public']))
-		{
-			self::$prefixesPath['public']
-				= (isset($_SERVER['SCRIPT_FILENAME']))
-				? dirname($_SERVER['SCRIPT_FILENAME'])
-				: ($path . DIRECTORY_SEPARATOR . 'public');
-		}
+		self::setPrefixPath('private', $private);
+		self::setPrefixPath('public', $public);
 
-		if (!isset(self::$prefixesPath['private']))
-		{
-			self::$prefixesPath['private'] = $path;
-		}
+		$express = null;
 
 		if ($configuration)
 		{
-			$configuration = self::include($configuration);
+			$configurationPath;
+			$express = self::inclusion()($configurationPath = (new Alias($configuration))->resolve('php', $private));
+
+			if (isset($express) && !is_array($express))
+			{
+				throw new Exception(sprintf('Configuration script file error: "%s", script path "%s", returns %s', $configuration, $configurationPath, TypeHelper::getNameOf($express)));
+			}
 		}
 
-		self::$application = new $className(strtr($path, [ '/' => DIRECTORY_SEPARATOR ]), $configuration);
-		$result = self::$application->run();
+		$result = (self::$application = new $className($private, $express))->run();
 		self::$application->dispose();
 		self::$application = null;
 
 		return $result;
-	}
-
-	/**
-	 * Sets the application.
-	 *
-	 * @param IApplication $application
-	 *	The application.
-	 */
-	public static function setApplication(?IApplication $application) : void
-	{
-		self::$application = $application;
 	}
 
 	/**

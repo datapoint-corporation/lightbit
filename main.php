@@ -57,19 +57,30 @@ Lightbit::setPrefixPath('lightbit', __DIR__);
 // to enable the expected core behaviours.
 spl_autoload_register
 (
-	function(string $className)
+	function(string $className) : bool
 	{
 		Lightbit::loadClass($className);
+		return true;
 	},
 	true,
 	true
+);
+
+set_error_handler
+(
+	function(int $code, string $message, string $filePath, int $line) : bool
+	{
+		throw new \Lightbit\Exception(sprintf('%s (%d) at %s, line %d', $message, $code, $filePath, $line));
+		return true;
+	},
+	E_ALL
 );
 
 set_exception_handler
 (
 	function(\Throwable $e)
 	{
-		Lightbit::handleThrowable($e);
+		Lightbit::throwable($e);
 	}
 );
 
