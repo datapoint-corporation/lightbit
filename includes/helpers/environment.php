@@ -25,64 +25,22 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
-
-use \Lightbit\Base\Action;
-use \Lightbit\Base\IContext;
-
 /**
- * IApplication.
+ * Checks the debug flag.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @param bool $debug
+ *	The flag value, if applicable.
+ *
+ * @return bool
+ *	The result.
  */
-interface IApplication extends IContext
+function lbdebug(bool $debug = null) : bool
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param string $path
-	 *	The application path.
-	 *
-	 * @param array $configuration
-	 *	The application configuration.
-	 */
-	public function __construct(string $path, array $configuration = null);
+	if (isset($debug))
+	{
+		Lightbit::setDebug($debug);
+		return $debug;
+	}
 
-	/**
-	 * Resolves a route.
-	 *
-	 * @param array $route
-	 *	The route to resolve.
-	 *
-	 * @return Action
-	 *	The action.
-	 */
-	public function resolve(?array $route) : Action;
-
-	/**
-	 * Runs the application.
-	 *
-	 * @return int
-	 *	The exit status code.
-	 */
-	public function run() : int;
-
-	/**
-	 * Safely terminates the script execution after disposing of all
-	 * application elements.
-	 *
-	 * @param int $status
-	 *	The script exit status code.
-	 */
-	public function terminate(int $status = 0) : void;
-
-	/**
-	 * Safely terminates the script execution after disposing of all
-	 * application elements when an uncaught throwable object is found.
-	 *
-	 * @param Throwable $throwable
-	 *	The throwable object.
-	 */
-	public function throwable(\Throwable $throwable) : void;
+	return Lightbit::isDebug();
 }

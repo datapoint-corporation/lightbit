@@ -33,16 +33,23 @@
 define('LIGHTBIT', microtime(true));
 
 /**
+ * The Lightbit install path.
+ *
+ * @type string
+ */
+define('LIGHTBIT_PATH', __DIR__);
+
+/**
  * The Lightbit math fixed point precision.
  *
  * @type int
  */
-defined('LIGHTBIT_PRECISION') ||
-	define('LIGHTBIT_PRECISION', 6);
+defined('LIGHTBIT_PRECISION') || define('LIGHTBIT_PRECISION', 6);
 
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
 require __DIR__ . '/includes/lightbit.php';
+require __DIR__ . '/includes/helpers/environment.php';
 require __DIR__ . '/includes/helpers/globalization.php';
 require __DIR__ . '/includes/helpers/html.php';
 require __DIR__ . '/includes/helpers/math.php';

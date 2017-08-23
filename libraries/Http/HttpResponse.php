@@ -135,6 +135,30 @@ class HttpResponse extends Component implements IHttpResponse
 	}
 
 	/**
+	 * Clears the active output buffers, headers and status code.
+	 *
+	 * If content has already been sent and, as such, the response can not
+	 * be reset, an exception is thrown.
+	 */
+	public function reset() : void
+	{
+		if (headers_sent() || ob_get_level() < 1)
+		{
+			throw new Exception('Can not reset HTTP response.');
+		}
+
+		header_remove();
+		http_response_code(200);
+
+		while (ob_get_level() > 1)
+		{
+			ob_end_clean();
+		}
+
+		ob_clean();
+	}
+
+	/**
 	 * Sets an header content.
 	 *
 	 * @param string $header

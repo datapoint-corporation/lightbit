@@ -50,6 +50,7 @@ use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpSession;
 use \Lightbit\Http\QueryStringHttpRouter;
+use \Lightbit\IO\FileSystem\Alias;
 
 /**
  * Application.
@@ -60,11 +61,11 @@ use \Lightbit\Http\QueryStringHttpRouter;
 class Application extends Context implements IApplication
 {
 	/**
-	 * The debug flag.
+	 * The HTTP error documents.
 	 *
-	 * @type bool
+	 * @type array
 	 */
-	private $debug;
+	private $httpErrorDocuments;
 
 	/**
 	 * Constructor.
@@ -79,7 +80,7 @@ class Application extends Context implements IApplication
 	{
 		parent::__construct(null, 'application', $path, null);
 
-		$this->debug = false;
+		$this->httpErrorDocuments = [ 'error-documents/default' ];
 
 		$this->setComponentsConfiguration
 		(
@@ -121,6 +122,20 @@ class Application extends Context implements IApplication
 		return [ '/site/index' ];
 	}
 
+	public final function getHttpErrorDocumentPath(string $httpStatusCode) : string
+	{
+		if (!isset($this->httpErrorDocuments[$httpStatusCode]))
+		{
+			$httpStatusCode = 0;
+		}
+
+		return (new Alias($this->httpErrorDocuments[$httpStatusCode]))->lookup
+		(
+			'php', 
+			array_merge($this->getViewsBasePaths(), [ LIGHTBIT_PATH . '/views/http' ])
+		);
+	}
+
 	/**
 	 * Checks the debug flag.
 	 *
@@ -129,7 +144,7 @@ class Application extends Context implements IApplication
 	 */
 	public final function isDebug() : bool
 	{
-		return $this->debug;
+		return Lightbit::isDebug();
 	}
 
 	/**
@@ -280,25 +295,25 @@ class Application extends Context implements IApplication
 	{
 		$result;
 
-		if (Lightbit::isCli())
+		try
 		{
-			$result = $this->resolve($this->getDefaultRoute())->run();
-		}
-		else
-		{
-			try
+			if (Lightbit::isCli())
+			{
+				$result = $this->resolve($this->getDefaultRoute())->run();
+			}
+			else
 			{
 				$result = $this->getHttpRouter()->resolve()->run();
 			}
-			catch (\Throwable $e)
-			{
-				throw $e;
-				$this->httpErrorResponse((($e instanceof HttpStatusException) ? $e->getStatusCode() : 500), $e);
-				return 0;
-			}
+
+			return (is_int($result) ? $result : 0);
+		}
+		catch (\Throwable $e)
+		{
+			$this->throwable($e);
 		}
 
-		return (is_int($result) ? $result : 0);
+		return 1;
 	}
 
 	/**
@@ -309,7 +324,36 @@ class Application extends Context implements IApplication
 	 */
 	public final function setDebug(bool $debug) : void
 	{
-		$this->debug = $debug;
+		Lightbit::setDebug($debug);
+	}
+
+	/**
+	 * Sets the http error document.
+	 *
+	 * @param string $httpStatusCode
+	 *	The http status code.
+	 *
+	 * @param string $httpErrorDocument
+	 *	The http error document script file system alias.
+	 */
+	public final function setHttpErrorDocument(int $httpStatusCode, string $httpErrorDocument) : void
+	{
+		$this->httpErrorDocuments[$httpStatusCode] = $httpErrorDocument;
+	}
+
+	/**
+	 * Sets the http error documents.
+	 *
+	 * @param array $httpErrorDocuments
+	 *	The http error documents script file system alias, indexed by http
+	 *	status code.
+	 */
+	public final function setHttpErrorDocuments(array $httpErrorDocuments) : void
+	{
+		foreach ($httpErrorDocuments as $httpStatusCode => $httpErrorDocument)
+		{
+			$this->setHttpErrorDocument($httpStatusCode, $httpErrorDocument);
+		}
 	}
 
 	/**
@@ -326,7 +370,56 @@ class Application extends Context implements IApplication
 	}
 
 	/**
-	 * This method is invoked when a status exception is caught
+	 * Safely terminates the script execution after disposing of all
+	 * application elements when an uncaught throwable object is found.
+	 *
+	 * @param Throwable $throwable
+	 *	The throwable object.
+	 */
+	public final function throwable(\Throwable $throwable) : void
+	{
+
+		if (Lightbit::isCli())
+		{
+			// For Command Line Interfaces (CLI), output formatting is not supported
+			// and the stack trace is simply dumped to the screen.
+			do
+			{
+				echo get_class($throwable), ': ', $throwable->getMessage(), PHP_EOL;
+				echo $throwable->getTraceAsString(), PHP_EOL;
+				echo PHP_EOL;
+
+				$throwable = $throwable->getPrevious();
+			}
+			while ($throwable);
+		}
+		else
+		{
+			// For HTTP environments, the applicable error response needs to be
+			// generated according to the status code.
+			$this->onHttpErrorResponse
+			(
+				(($throwable instanceof HttpStatusException) ? $throwable->getStatusCode() : 500), 
+				$throwable
+			);
+		}
+
+		try
+		{
+			$this->terminate(1);
+		}
+		catch (\Throwable $e)
+		{
+			exit(1);
+		}
+	}
+
+	/**
+	 * This method is invoked when an uncaught throwable is thrown after the
+	 * application has been registered.
+	 *
+	 * The base implementation generates the applicable error response
+	 * according to the current configuration.
 	 *
 	 * @param int $httpStatusCode
 	 *	The HTTP status code.
@@ -334,8 +427,15 @@ class Application extends Context implements IApplication
 	 * @param Throwable $throwable
 	 *	The throwable object.
 	 */
-	protected function onHttpException(int $httpStatusCode, \Throwable $throwable) : void
+	protected function onHttpErrorResponse(int $httpStatusCode, \Throwable $throwable) : void
 	{
+		$document = $this->getHtmlDocument();
+		$document->reset();
 		
+		$response = $this->getHttpResponse();
+		$response->reset();
+		$response->setStatusCode($httpStatusCode);
+
+		(new View($this, $this->getHttpErrorDocumentPath($httpStatusCode)))->run([ 'throwable' => $throwable ]);
 	}
 }

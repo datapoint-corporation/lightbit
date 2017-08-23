@@ -38,6 +38,14 @@ use \Lightbit\Http\IHttpMessage;
 interface IHttpResponse extends IHttpMessage
 {
 	/**
+	 * Clears the active output buffers, headers and status code.
+	 *
+	 * If content has already been sent and, as such, the response can not
+	 * be reset, an exception is thrown.
+	 */
+	public function reset() : void;
+
+	/**
 	 * Sets an header content.
 	 *
 	 * @param string $header

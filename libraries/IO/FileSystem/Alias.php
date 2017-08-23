@@ -139,7 +139,7 @@ class Alias extends Object
 			return $candidate;
 		}
 
-		return LIGHTBIT_PATH_PRIVATE . DIRECTORY_SEPARATOR . $result;
+		return Lightbit::getPrefixPath('private') . DIRECTORY_SEPARATOR . $result;
 	}
 
 	/**
@@ -173,6 +173,6 @@ class Alias extends Object
 			return $context . DIRECTORY_SEPARATOR . $result;
 		}
 
-		return LIGHTBIT_PATH_PRIVATE . DIRECTORY_SEPARATOR . $result;
+		return Lightbit::getPrefixPath('private') . DIRECTORY_SEPARATOR . $result;
 	}
 }

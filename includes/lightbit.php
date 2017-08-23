@@ -87,6 +87,13 @@ class Lightbit
 	];
 
 	/**
+	 * The debug flag.
+	 *
+	 * @type bool
+	 */
+	private static $debug = false;
+
+	/**
 	 * The namespaces path.
 	 *
 	 * @type array
@@ -231,12 +238,11 @@ class Lightbit
 		{
 			$throwing = true;
 
-			while (ob_get_level() > 0)
+			if (isset(self::$application))
 			{
-				ob_end_clean();
+				self::$application->throwable($throwable);
 			}
-
-			if(self::isCli())
+			else
 			{
 				do
 				{
@@ -247,22 +253,6 @@ class Lightbit
 					$throwable = $throwable->getPrevious();
 				}
 				while ($throwable);
-			}
-
-			else
-			{
-				if (!($throwable instanceof HttpStatusException))
-				{
-					$throwable = new HttpStatusException(500, $throwable->getMessage(), $throwable);
-				}
-
-				(new HtmlView(null, (new Alias('lightbit://views/http/throwable'))->resolve('php')))
-					->run([ 'throwable' => $throwable ]);
-			}
-
-			if (self::$application)
-			{
-				self::$application->terminate(1);
 			}
 		}
 		
@@ -371,15 +361,7 @@ class Lightbit
 	 */
 	public static function isDebug() : bool
 	{
-		if (!defined('LIGHTBIT_DEBUG'))
-		{
-			if (isset(self::$application))
-			{
-				return self::$application->isDebug();
-			}
-		}
-
-		return (LIGHTBIT_DEBUG === true);
+		return self::$debug;
 	}
 	
 	/**
@@ -466,6 +448,17 @@ class Lightbit
 	public static function setClassPath(string $className, string $path) : void
 	{
 		self::$classesPath[$className] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
+	}
+
+	/**
+	 * Sets the debug flag.
+	 *
+	 * @param bool $debug
+	 *	The debug flag.
+	 */
+	public static function setDebug(bool $debug) : void
+	{
+		self::$debug = $debug;
 	}
 
 	/**
