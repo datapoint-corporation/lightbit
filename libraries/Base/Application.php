@@ -436,6 +436,6 @@ class Application extends Context implements IApplication
 		$response->reset();
 		$response->setStatusCode($httpStatusCode);
 
-		(new View($this, $this->getHttpErrorDocumentPath($httpStatusCode)))->run([ 'throwable' => $throwable ]);
+		(new View($this, $this->getHttpErrorDocumentPath($httpStatusCode)))->run([ 'httpStatusCode' => $httpStatusCode, 'throwable' => $throwable ]);
 	}
 }
