@@ -54,6 +54,11 @@ final class Action extends Object
 	 */
 	public static function getInstance() : Action
 	{
+		if (!self::$instance)
+		{
+			throw new Exception('Action is not available within context.');
+		}
+
 		return self::$instance;
 	}
 

@@ -89,6 +89,14 @@ interface IHtmlAdapter extends IComponent
 	public function comment(string $content) : string;
 
 	/**
+	 * Inflates the doctype declaration.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function doctype() : string;
+
+	/**
 	 * Inflates an element.
 	 *
 	 * @param string $tag

@@ -1031,6 +1031,15 @@ abstract class Context extends Cluster implements IContext
 	 */
 	protected function viewsBasePaths() : array
 	{
-		return [ $this->getPath() . DIRECTORY_SEPARATOR . 'views' ];
+		$result = [ $this->getPath() . DIRECTORY_SEPARATOR . 'views' ];
+
+		$layoutPath = $this->getLayoutPath();
+
+		if ($layoutPath)
+		{
+			array_unshift($result, dirname($layoutPath) . DIRECTORY_SEPARATOR . 'views');
+		}
+
+		return $result;
 	}
 }

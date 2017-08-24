@@ -231,6 +231,17 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	}
 
 	/**
+	 * Inflates the doctype declaration.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function doctype() : string
+	{
+		return '<!DOCTYPE html>';
+	}
+
+	/**
 	 * Inflates an element.
 	 *
 	 * @param string $tag

@@ -256,6 +256,6 @@ class View extends Element implements IView
 	 */
 	protected function view(string $path, array $configuration = null) : IView
 	{
-		return new View($path, $configuration);
+		return new View($this->context, $path, $configuration);
 	}
 }

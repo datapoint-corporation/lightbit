@@ -122,7 +122,16 @@ class Application extends Context implements IApplication
 		return [ '/site/index' ];
 	}
 
-	public final function getHttpErrorDocumentPath(string $httpStatusCode) : string
+	/**
+	 * Gets the http error document path.
+	 *
+	 * @param int $httpStatusCode
+	 *	The http status code.
+	 *
+	 * @return string
+	 *	The http error document path.
+	 */
+	public final function getHttpErrorDocumentPath(int $httpStatusCode) : string
 	{
 		if (!isset($this->httpErrorDocuments[$httpStatusCode]))
 		{
