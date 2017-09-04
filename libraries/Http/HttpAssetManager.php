@@ -96,7 +96,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 		parent::__construct($context, $id);
 
 		$this->publishDirectory = 'public://assets';
-		$this->refresh = false;
+		$this->refresh = Lightbit::isDebug();
 
 		if ($configuration)
 		{

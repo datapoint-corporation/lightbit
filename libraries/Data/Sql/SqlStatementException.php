@@ -61,7 +61,7 @@ class SqlStatementException extends SqlConnectionException
 	 */
 	public function __construct(ISqlStatement $sqlStatement, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($reader->getSqlConnection(), $message, $previous);
+		parent::__construct($sqlStatement->getSqlConnection(), $message, $previous);
 
 		$this->sqlStatement = $sqlStatement;
 	}

@@ -27,81 +27,12 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlDatabase;
-use \Lightbit\Data\Sql\ISqlStatement;
-
 /**
- * ISqlDriver.
+ * ISqlObject.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDriver
+interface ISqlObject
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql driver connection.
-	 *
-	 * @param array $configuration
-	 *	The sql driver configuration.
-	 */
-	public function __construct(ISqlConnection $connection, array $configuration = null);
-
-	/**
-	 * Gets the database.
-	 *
-	 * @return ISqlDatabase
-	 *	The database.
-	 */
-	public function getDatabase() : ISqlDatabase;
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
-
-	/**
-	 * Gets the last insert row identifier.
-	 *
-	 * @return int
-	 *	The last insert row identifier.
-	 */
-	public function getLastInsertID() : int;
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection;
-
-	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
-	 *
-	 * @param string $statement
-	 *	The statement to quote.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public function quote(string $statement) : string;
-
-	/**
-	 * Creates and prepares a statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
-	 *
-	 * @return ISqlStatement
-	 *	The sql statement.
-	 */
-	public function statement(string $statement) : ISqlStatement;
 }

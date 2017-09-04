@@ -41,6 +41,24 @@ use \Lightbit\Data\Sql\ISqlStatement;
 interface ISqlConnection extends IComponent, IChannel
 {
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * all results.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The results.
+	 */
+	public function all(string $statement, array $arguments = null, bool $numeric = false) : array;
+
+	/**
 	 * Gets the last insert row identifier.
 	 *
 	 * @return int
@@ -49,12 +67,20 @@ interface ISqlConnection extends IComponent, IChannel
 	public function getLastInsertID() : int;
 
 	/**
+	 * Gets the database.
+	 *
+	 * @return ISqlDatabase
+	 *	The database.
+	 */
+	public function getDatabase() : ISqlDatabase;
+
+	/**
 	 * Gets the sql connection driver.
 	 *
 	 * @return ISqlDriver
 	 *	The sql connection driver.
 	 */
-	public function getSqlDriver() : ISqlDriver;
+	public function getDriver() : ISqlDriver;
 
 	/**
 	 * Gets the user for authentication.

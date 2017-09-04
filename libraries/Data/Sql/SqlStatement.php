@@ -30,6 +30,7 @@ namespace Lightbit\Data\Sql;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Data\Sql\SqlStatementException;
 use \Lightbit\Helpers\ObjectHelper;
 
 /**
@@ -84,7 +85,7 @@ class SqlStatement extends Object implements ISqlStatement
 		}
 		catch (\PDOException $e)
 		{
-			throw new StatementException
+			throw new SqlStatementException
 			(
 				$this,
 				sprintf('Can not prepare statement for execution: %s', lcfirst($e->getMessage())),
@@ -119,7 +120,7 @@ class SqlStatement extends Object implements ISqlStatement
 	{
 		if (!$this->pdoStatement)
 		{
-			throw new StatementException
+			throw new SqlStatementException
 			(
 				$this,
 				'Statement execution failure: statement is closed'
@@ -132,7 +133,7 @@ class SqlStatement extends Object implements ISqlStatement
 			{
 				foreach ($arguments as $position => $value)
 				{
-					$this->pdoStatement->bindParam($position, $value, $this->getPdoParamDataType($value));
+					$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
 				}
 			}
 
@@ -140,7 +141,7 @@ class SqlStatement extends Object implements ISqlStatement
 		}
 		catch (\PDOException $e)
 		{
-			throw new StatementException
+			throw new SqlStatementException
 			(
 				$this,
 				sprintf('Statement execution failure: %s', lcfirst($e->getMessage())),
@@ -247,12 +248,12 @@ class SqlStatement extends Object implements ISqlStatement
 			{
 				foreach ($arguments as $position => $value)
 				{
-					$this->pdoStatement->bindParam($position, $value, $this->getPdoParamDataType($value));
+					$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
 				}
 			}
 			catch (\PDOException $e)
 			{
-				throw new StatementException
+				throw new SqlStatementException
 				(
 					$this,
 					sprintf('Statement execution failure: %s', lcfirst($e->getMessage())),

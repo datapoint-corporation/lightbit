@@ -154,6 +154,27 @@ class SqlConnection extends Component implements ISqlConnection
 	}
 
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * all results.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @param bool $numeric
+	 *	The fetch as a numeric array flag.
+	 *
+	 * @return array
+	 *	The results.
+	 */
+	public function all(string $statement, array $arguments = null, bool $numeric = false) : array
+	{
+		return $this->statement($statement)->query($arguments)->all($numeric);
+	}
+
+	/**
 	 * Closes the channel.
 	 */
 	public final function close() : void
@@ -220,7 +241,18 @@ class SqlConnection extends Component implements ISqlConnection
 
 		$this->driver = $driver;
 		$this->pdo = $pdo;
+	}
 
+	/**
+	 * Gets the database.
+	 *
+	 * @return ISqlDatabase
+	 *	The database.
+	 *
+	 */
+	public final function getDatabase() : ISqlDatabase
+	{
+		return $this->getDriver()->getDatabase();
 	}
 
 	/**
@@ -279,7 +311,7 @@ class SqlConnection extends Component implements ISqlConnection
 	 * @return ISqlDriver
 	 *	The sql connection driver.
 	 */
-	public final function getSqlDriver() : ISqlDriver
+	public final function getDriver() : ISqlDriver
 	{
 		if (!$this->pdo)
 		{

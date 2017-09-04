@@ -27,81 +27,54 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlDatabase;
-use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Data\Sql\ISqlColumn;
+use \Lightbit\Data\Sql\ISqlObject;
 
 /**
- * ISqlDriver.
+ * ISqlTable.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDriver
+interface ISqlTable extends ISqlObject
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql driver connection.
-	 *
-	 * @param array $configuration
-	 *	The sql driver configuration.
-	 */
-	public function __construct(ISqlConnection $connection, array $configuration = null);
-
-	/**
-	 * Gets the database.
-	 *
-	 * @return ISqlDatabase
-	 *	The database.
-	 */
-	public function getDatabase() : ISqlDatabase;
-
-	/**
-	 * Gets the identifier.
+	 * Gets the default character set.
 	 *
 	 * @return string
-	 *	The identifier.
+	 *	The default character set.
 	 */
-	public function getID() : string;
+	public function getDefaultCharacterSet() : ?string;
 
 	/**
-	 * Gets the last insert row identifier.
-	 *
-	 * @return int
-	 *	The last insert row identifier.
-	 */
-	public function getLastInsertID() : int;
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection;
-
-	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
-	 *
-	 * @param string $statement
-	 *	The statement to quote.
+	 * Gets the default collation.
 	 *
 	 * @return string
+	 *	The default collation.
+	 */
+	public function getDefaultCollation() : ?string;
+
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public function getName() : string;
+
+	/**
+	 * Gets the column.
+	 *
+	 * @return ISqlColumn
+	 *	The column.
+	 */
+	public function getColumn(string $column) : ISqlColumn;
+
+	/**
+	 * Checks for a column availability.
+	 *
+	 * @return bool
 	 *	The result.
 	 */
-	public function quote(string $statement) : string;
-
-	/**
-	 * Creates and prepares a statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
-	 *
-	 * @return ISqlStatement
-	 *	The sql statement.
-	 */
-	public function statement(string $statement) : ISqlStatement;
+	public function hasColumn(string $column) : bool;
 }

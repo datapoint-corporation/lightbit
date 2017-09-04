@@ -25,83 +25,121 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data\Sql\MySql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlDatabase;
-use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Base\Object;
+use \Lightbit\Data\Sql\ISqlColumn;
 
 /**
- * ISqlDriver.
+ * ISqlColumn.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDriver
+class MySqlSqlColumn extends Object implements ISqlColumn
 {
+	/**
+	 * The character set.
+	 *
+	 * @type array
+	 */
+	private $characterSet;
+
+	/**
+	 * The collation.
+	 *
+	 * @type string
+	 */
+	private $collation;
+
+	/**
+	 * The name.
+	 *
+	 * @type string
+	 */
+	private $name;
+
+	/**
+	 * The nullable.
+	 *
+	 * @type bool
+	 */
+	private $nullable;
+
+	/**
+	 * The type name.
+	 *
+	 * @type string
+	 */
+	private $typeName;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql driver connection.
-	 *
-	 * @param array $configuration
-	 *	The sql driver configuration.
+	 * @param array $column
+	 *	The column schema.
 	 */
-	public function __construct(ISqlConnection $connection, array $configuration = null);
+	public function __construct(array $column)
+	{
+		$this->characterSet = $column['CHARACTER_SET_NAME'];
+		$this->collation = $column['COLLATION_NAME'];
+		$this->name = $column['COLUMN_NAME'];
+		$this->nullable = $column['IS_NULLABLE'] === 'YES';
+		$this->typeName = $column['DATA_TYPE'];
+	}
 
 	/**
-	 * Gets the database.
-	 *
-	 * @return ISqlDatabase
-	 *	The database.
-	 */
-	public function getDatabase() : ISqlDatabase;
-
-	/**
-	 * Gets the identifier.
+	 * Gets the character set.
 	 *
 	 * @return string
-	 *	The identifier.
+	 *	The character set.
 	 */
-	public function getID() : string;
+	public function getCharacterSet() : ?string
+	{
+		return $this->characterSet;
+	}
 
 	/**
-	 * Gets the last insert row identifier.
-	 *
-	 * @return int
-	 *	The last insert row identifier.
-	 */
-	public function getLastInsertID() : int;
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection;
-
-	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
-	 *
-	 * @param string $statement
-	 *	The statement to quote.
+	 * Gets the collation.
 	 *
 	 * @return string
+	 *	The collation.
+	 */
+	public function getCollation() : ?string
+	{
+		return $this->collation;
+	}
+
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public function getName() : string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Gets the type name.
+	 *
+	 * @return string
+	 *	The type name.
+	 */
+	public function getTypeName() : string
+	{
+		return $this->typeName;
+	}
+
+	/**
+	 * Checks if is nullable.
+	 *
+	 * @return bool
 	 *	The result.
 	 */
-	public function quote(string $statement) : string;
-
-	/**
-	 * Creates and prepares a statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
-	 *
-	 * @return ISqlStatement
-	 *	The sql statement.
-	 */
-	public function statement(string $statement) : ISqlStatement;
+	public function isNullable() : bool
+	{
+		return $this->nullable;
+	}
 }

@@ -29,6 +29,7 @@ namespace Lightbit\Data\Sql\MySql;
 
 use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\SqlDriver;
 use \Lightbit\Data\Sql\SqlStatement;
@@ -42,6 +43,13 @@ use \Lightbit\Data\Sql\SqlStatement;
 class MySqlSqlDriver extends SqlDriver
 {
 	/**
+	 * The database.
+	 *
+	 * @type ISqlDatabase
+	 */
+	private $database;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param ISqlConnection $sqlConnection
@@ -53,6 +61,60 @@ class MySqlSqlDriver extends SqlDriver
 	public function __construct(ISqlConnection $sqlConnection, array $configuration = null)
 	{
 		parent::__construct($sqlConnection, $configuration);
+	}
+
+	/**
+	 * Gets the database.
+	 *
+	 * @return ISqlDatabase
+	 *	The database.
+	 */
+	public function getDatabase() : ISqlDatabase
+	{
+		if (!$this->database)
+		{
+			$sql = $this->getConnection();
+
+			// Database schema.
+			$database = $sql->single
+			(
+				'SELECT S.CATALOG_NAME, S.SCHEMA_NAME, S.DEFAULT_CHARACTER_SET_NAME, S.DEFAULT_COLLATION_NAME
+				FROM INFORMATION_SCHEMA.SCHEMATA S
+				WHERE S.CATALOG_NAME = ? AND S.SCHEMA_NAME = ?
+				LIMIT 1',
+				[ 1 => 'def', 2 => 'information_schema' ]
+			);
+
+			// Tables.
+			$tables = $sql->all
+			(
+				'SELECT S.TABLE_CATALOG, S.TABLE_SCHEMA, S.TABLE_NAME, S.TABLE_COLLATION
+				FROM INFORMATION_SCHEMA.TABLES S
+				WHERE S.TABLE_CATALOG = ?
+				ORDER BY S.TABLE_CATALOG ASC, S.TABLE_NAME ASC',
+				[
+					1 => $database['CATALOG_NAME'],
+					2 => $database['SCHEMA_NAME']
+				]
+			);
+
+			// Columns.
+			$columns = $sql->all
+			(
+				'SELECT S.TABLE_CATALOG, S.TABLE_SCHEMA, S.TABLE_NAME, S.COLUMN_NAME, S.IS_NULLABLE, S.DATA_TYPE, S.CHARACTER_SET_NAME, S.COLLATION_NAME
+				FROM INFORMATION_SCHEMA.COLUMNS S
+				WHERE S.TABLE_CATALOG = ? AND S.TABLE_SCHEMA = ?
+				ORDER BY S.TABLE_NAME ASC, S.COLUMN_NAME ASC',
+				[
+					1 => $database['CATALOG_NAME'],
+					2 => $database['SCHEMA_NAME']
+				]
+			);
+
+			$this->database = new MySqlSqlDatabase($database, $tables, $columns);
+		}
+
+		return $this->database;
 	}
 
 	/**
@@ -74,7 +136,7 @@ class MySqlSqlDriver extends SqlDriver
 	 */
 	public function getLastInsertID() : int
 	{
-		return $this->getSqlConnection()->scalar('SELECT LAST_INSERT_ID()');
+		return $this->getConnection()->scalar('SELECT LAST_INSERT_ID()');
 	}
 
 	/**

@@ -95,12 +95,12 @@ abstract class SqlDriver extends Object implements ISqlDriver
 	}
 
 	/**
-	 * Gets the sql connection.
+	 * Gets the connection.
 	 *
 	 * @return ISqlConnection
-	 *	The sql connection.
+	 *	The connection.
 	 */
-	public final function getSqlConnection() : ISqlConnection
+	public final function getConnection() : ISqlConnection
 	{
 		return $this->sqlConnection;
 	}

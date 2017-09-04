@@ -27,81 +27,93 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlDatabase;
-use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Data\Sql\ISqlCriteria;
 
 /**
- * ISqlDriver.
+ * ISqlSelectCriteria.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDriver
+interface ISqlSelectCriteria extends ISqlCriteria
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql driver connection.
-	 *
 	 * @param array $configuration
-	 *	The sql driver configuration.
+	 *	The SQL criteria configuration.
 	 */
-	public function __construct(ISqlConnection $connection, array $configuration = null);
+	public function __construct(array $configuration = null);
 
 	/**
-	 * Gets the database.
-	 *
-	 * @return ISqlDatabase
-	 *	The database.
-	 */
-	public function getDatabase() : ISqlDatabase;
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
-
-	/**
-	 * Gets the last insert row identifier.
+	 * Gets the limit.
 	 *
 	 * @return int
-	 *	The last insert row identifier.
+	 *	The limit.
 	 */
-	public function getLastInsertID() : int;
+	public function getLimit() : ?int;
 
 	/**
-	 * Gets the connection.
+	 * Gets the offset.
 	 *
-	 * @return ISqlConnection
-	 *	The connection.
+	 * @return int
+	 *	The offset.
 	 */
-	public function getConnection() : ISqlConnection;
+	public function getOffset() : ?int;
 
 	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
-	 *
-	 * @param string $statement
-	 *	The statement to quote.
+	 * Gets the sort.
 	 *
 	 * @return string
-	 *	The result.
+	 *	The sort.
 	 */
-	public function quote(string $statement) : string;
+	public function getSort() : ?string;
 
 	/**
-	 * Creates and prepares a statement.
+	 * Checks the limit.
 	 *
-	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
-	 *
-	 * @return ISqlStatement
-	 *	The sql statement.
+	 * @return bool
+	 *	The result.
 	 */
-	public function statement(string $statement) : ISqlStatement;
+	public function hasLimit() : bool;
+
+	/**
+	 * Checks the offset.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasOffset() : bool;
+
+	/**
+	 * Checks the sort.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasSort() : bool;
+
+	/**
+	 * Sets the limit.
+	 *
+	 * @param int $limit
+	 *	The limit.
+	 */
+	public function setLimit(?int $limit) : void;
+
+	/**
+	 * Sets the offset.
+	 *
+	 * @param int $offset.
+	 *	The offset.
+	 */
+	public function setOffset(?int $offset) : void;
+
+	/**
+	 * Sets the sort.
+	 *
+	 * @param string $sort
+	 *	The sort.
+	 */
+	public function setSort(?string $sort) : void;
 }

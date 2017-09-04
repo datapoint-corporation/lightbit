@@ -38,6 +38,20 @@ use \Lightbit\Data\IModel;
 interface ISqlModel extends IModel
 {
 	/**
+	 * Constructor.
+	 *
+	 * @param string $scenario
+	 *	The model scenario.
+	 *
+	 * @param array $attributes
+	 *	The model attributes.
+	 *
+	 * @param array $configuration
+	 *	The model configuration.
+	 */
+	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null);
+	
+	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
 	 * a single result as an instance of this model.
 	 *
