@@ -44,7 +44,7 @@ class SqlCriteria extends Object implements ISqlCriteria
 	 * @type string
 	 */
 	private $alias;
-
+	
 	/**
 	 * The join.
 	 *
@@ -116,10 +116,10 @@ class SqlCriteria extends Object implements ISqlCriteria
 	/**
 	 * Gets the parameters.
 	 *
-	 * @return string
+	 * @return array
 	 *	The parameters.
 	 */
-	public function getParameters() : ?string
+	public function getParameters() : ?array
 	{
 		return $this->parameters;
 	}
@@ -225,6 +225,17 @@ class SqlCriteria extends Object implements ISqlCriteria
 	public function setJoin(?string $join) : void
 	{
 		$this->join = $join;
+	}
+
+	/**
+	 * Sets the parameters.
+	 *
+	 * @param array $parameters
+	 *	The parameters.
+	 */
+	public function setParameters(?array $parameters) : void
+	{
+		$this->parameters = $parameters;
 	}
 
 	/**

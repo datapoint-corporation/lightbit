@@ -83,6 +83,14 @@ interface ISqlConnection extends IComponent, IChannel
 	public function getDriver() : ISqlDriver;
 
 	/**
+	 * Gets the sql statement factory.
+	 *
+	 * @return ISqlStatementFactory
+	 *	The sql statement factory.
+	 */
+	public function getStatementFactory() : ISqlStatementFactory;
+
+	/**
 	 * Gets the user for authentication.
 	 *
 	 * @return string

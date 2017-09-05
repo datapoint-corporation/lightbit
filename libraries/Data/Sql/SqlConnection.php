@@ -121,6 +121,13 @@ class SqlConnection extends Component implements ISqlConnection
 	private $pdo;
 
 	/**
+	 * The statement factory.
+	 *
+	 * @type ISqlStatementFactory
+	 */
+	private $statementFactory;
+
+	/**
 	 * The user for authentication.
 	 *
 	 * @type string
@@ -328,6 +335,22 @@ class SqlConnection extends Component implements ISqlConnection
 		}
 
 		return $this->driver;
+	}
+
+	/**
+	 * Gets the sql statement factory.
+	 *
+	 * @return ISqlStatementFactory
+	 *	The sql statement factory.
+	 */
+	public function getStatementFactory() : ISqlStatementFactory
+	{
+		if (!$this->statementFactory)
+		{
+			$this->statementFactory = $this->getDriver()->statementFactory();
+		}
+
+		return $this->statementFactory;
 	}
 
 	/**

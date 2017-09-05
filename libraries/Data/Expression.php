@@ -25,92 +25,45 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Base\Object;
+use \Lightbit\Data\IExpression;
 
 /**
- * ISqlStatement.
+ * Expression.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlStatement
+class Expression extends Object implements IExpression
 {
 	/**
-	 * Closes the statement.
+	 * The expression.
+	 *
+	 * @type string
 	 */
-	public function close() : void;
+	private $expression;
 
 	/**
-	 * Executes the statement.
+	 * Constructor.
 	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return int
-	 *	The number of affected rows.
+	 * @param string $expression
+	 *	The expression.
 	 */
-	public function execute(array $arguments = null) : int;
+	public function __construct(string $expression)
+	{
+		$this->expression = $expression;
+	}
 
 	/**
-	 * Gets the sql connection.
+	 * Converts the expression to a string.
 	 *
-	 * @return ISqlConnection
-	 *	The sql connection.
-	 */
-	public function getSqlConnection() : ISqlConnection;
-
-	/**
-	 * Checks the statement status.
-	 *
-	 * @return bool
-	 *	The statement status.
-	 */
-	public function isClosed() : bool;
-
-	/**
-	 * Executes the statement as a scalar query.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return mixed
+	 * @return string
 	 *	The result.
 	 */
-	public function scalar(array $arguments = null); // : mixed;
-	
-	/**
-	 * Sets the arguments.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 */
-	public function setArguments(array $arguments) : void;
-
-	/**
-	 * Executes the statement as a query that's meant to fetch a single result.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
-	 *
-	 * @return array
-	 *	The result.
-	 */
-	public function single(array $arguments = null, bool $numeric = false) : ?array;
-
-	/**
-	 * Executes the statement as a query.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @return ISqlReader
-	 *	The sql reader.
-	 */
-	public function query(array $arguments = null) : ISqlReader;
+	public function toString() : string
+	{
+		return $this->expression;
+	}
 }

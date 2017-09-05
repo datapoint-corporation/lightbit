@@ -46,6 +46,22 @@ interface ISqlSelectCriteria extends ISqlCriteria
 	public function __construct(array $configuration = null);
 
 	/**
+	 * Gets the from.
+	 *
+	 * @return string
+	 *	The from.
+	 */
+	public function getFrom() : ?string;
+
+	/**
+	 * Gets the group.
+	 *
+	 * @return string
+	 *	The group.
+	 */
+	public function getGroup() : ?string;
+
+	/**
 	 * Gets the limit.
 	 *
 	 * @return int
@@ -62,12 +78,36 @@ interface ISqlSelectCriteria extends ISqlCriteria
 	public function getOffset() : ?int;
 
 	/**
+	 * Gets the select.
+	 *
+	 * @return string
+	 *	The select.
+	 */
+	public function getSelect() : ?string;
+
+	/**
 	 * Gets the sort.
 	 *
 	 * @return string
 	 *	The sort.
 	 */
 	public function getSort() : ?string;
+
+	/**
+	 * Checks the from.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasFrom() : bool;
+
+	/**
+	 * Checks the group.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasGroup() : bool;
 
 	/**
 	 * Checks the limit.
@@ -86,12 +126,52 @@ interface ISqlSelectCriteria extends ISqlCriteria
 	public function hasOffset() : bool;
 
 	/**
+	 * Checks the select.
+	 *
+	 * @return bool
+	 *	The select.
+	 */
+	public function hasSelect() : bool;
+
+	/**
 	 * Checks the sort.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
 	public function hasSort() : bool;
+
+	/**
+	 * Checks the distinct flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isDistinct() : bool;
+
+	/**
+	 * Sets the distinct flag.
+	 *
+	 * @param bool $distinct
+	 *	The distinct flag.
+	 */
+	public function setDistinct(bool $distinct) : void;
+
+	/**
+	 * Sets the from.
+	 *
+	 * @param string $from
+	 *	The from.
+	 */
+	public function setFrom(?string $from) : void;
+
+	/**
+	 * Sets the group.
+	 *
+	 * @param bool $group
+	 *	The group.
+	 */
+	public function setGroup(?string $group) : void;
 
 	/**
 	 * Sets the limit.
@@ -108,6 +188,14 @@ interface ISqlSelectCriteria extends ISqlCriteria
 	 *	The offset.
 	 */
 	public function setOffset(?int $offset) : void;
+
+	/**
+	 * Sets the select.
+	 *
+	 * @param string $select
+	 *	The select.
+	 */
+	public function setSelect(?string $select) : void;
 
 	/**
 	 * Sets the sort.

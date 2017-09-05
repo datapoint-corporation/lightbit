@@ -30,43 +30,74 @@ namespace Lightbit\Data\Sql;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlStatement;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Data\Sql\ISqlStatementFactory;
 
 /**
- * SqlDriver.
+ * SqlStatementFactory.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class SqlDriver extends Object implements ISqlDriver
+abstract class SqlStatementFactory extends Object implements ISqlStatementFactory
 {
 	/**
-	 * Gets the identifier.
+	 * Creates a delete statement.
 	 *
-	 * @return string
-	 *	The identifier.
+	 * @param array $table
+	 *	The table name.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The delete criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
 	 */
-	abstract public function getID() : string;
+	abstract public function delete(string $table, ?ISqlCriteria $criteria) : ISqlStatement;
 
 	/**
-	 * Gets the last insert row identifier.
+	 * Creates an insert statement.
 	 *
-	 * @return int
-	 *	The last insert row identifier.
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param array $values
+	 *	The values, indexed by field name.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
 	 */
-	abstract public function getLastInsertID() : int;
+	abstract public function insert(string $table, array $values) : ISqlStatement;
 
 	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
+	 * Creates a select statement.
 	 *
-	 * @param string $statement
-	 *	The statement to quote.
+	 * @param string $table
+	 *	The table names.
 	 *
-	 * @return string
-	 *	The result.
+	 * @param ISqlCriteria $criteria
+	 *	The select criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
 	 */
-	abstract public function quote(string $statement) : string;
+	abstract public function select(string $table, ?ISqlCriteria $criteria) : ISqlStatement;
+
+	/**
+	 * Creates an update statement.
+	 *
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param array $values
+	 *	The values, indexed by field name.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The update criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
+	 */
+	abstract public function update(string $table, array $values, ?ISqlCriteria $criteria) : ISqlStatement;
 
 	/**
 	 * The sql connection.
@@ -106,16 +137,40 @@ abstract class SqlDriver extends Object implements ISqlDriver
 	}
 
 	/**
-	 * Creates and prepares a statement.
+	 * Quotes an identifier.
+	 *
+	 * @param string $identifier
+	 *	The identifier to quote.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	protected function quote(string $identifier) : string
+	{
+		return '"' . strtr($identifier, [ '.' => '"."' ]) . '"';
+	}
+
+	/**
+	 * Prepares a statement.
 	 *
 	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
+	 *	The statement.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
 	 *
 	 * @return ISqlStatement
-	 *	The sql statement.
+	 *	The statement.
 	 */
-	public function statement(string $statement) : ISqlStatement
+	protected function statement(string $statement, array $arguments = null) : ISqlStatement
 	{
-		return new SqlStatement($this->sqlConnection, $this->quote($statement));
+		$result = $this->getConnection()->statement($statement);
+
+		if ($arguments)
+		{
+			$result->setArguments($arguments);
+		}
+
+		return $result;
 	}
 }

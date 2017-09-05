@@ -70,10 +70,10 @@ interface ISqlCriteria
 	/**
 	 * Gets the parameters.
 	 *
-	 * @return string
+	 * @return array
 	 *	The parameters.
 	 */
-	public function getParameters() : ?string;
+	public function getParameters() : ?array;
 
 	/**
 	 * Gets the condition.

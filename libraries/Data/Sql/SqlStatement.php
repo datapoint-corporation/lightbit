@@ -127,16 +127,13 @@ class SqlStatement extends Object implements ISqlStatement
 			);
 		}
 
+		if ($arguments)
+		{
+			$this->setArguments($arguments);
+		}
+
 		try
 		{
-			if ($arguments)
-			{
-				foreach ($arguments as $position => $value)
-				{
-					$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
-				}
-			}
-
 			return $this->pdoStatement->execute();
 		}
 		catch (\PDOException $e)
@@ -144,7 +141,7 @@ class SqlStatement extends Object implements ISqlStatement
 			throw new SqlStatementException
 			(
 				$this,
-				sprintf('Statement execution failure: %s', lcfirst($e->getMessage())),
+					sprintf('Statement argument can not be set: %s', lcfirst($e->getMessage())),
 				$e
 			);
 		}
@@ -213,6 +210,32 @@ class SqlStatement extends Object implements ISqlStatement
 	{
 		return $this->query($arguments)->scalar();
 	}
+	
+	/**
+	 * Sets the arguments.
+	 *
+	 * @param array $arguments
+	 *	The arguments.
+	 */
+	public final function setArguments(array $arguments) : void
+	{
+		try
+		{
+			foreach ($arguments as $position => $value)
+			{
+				$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
+			}
+		}
+		catch (\PDOException $e)
+		{
+			throw new SqlStatementException
+			(
+				$this,
+				sprintf('Statement argument can not be set: %s', lcfirst($e->getMessage())),
+				$e
+			);
+		}
+	}
 
 	/**
 	 * Executes the statement as a query that's meant to fetch a single result.
@@ -244,22 +267,7 @@ class SqlStatement extends Object implements ISqlStatement
 	{
 		if ($arguments)
 		{
-			try
-			{
-				foreach ($arguments as $position => $value)
-				{
-					$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
-				}
-			}
-			catch (\PDOException $e)
-			{
-				throw new SqlStatementException
-				(
-					$this,
-					sprintf('Statement execution failure: %s', lcfirst($e->getMessage())),
-					$e
-				);
-			}
+			$this->setArguments($arguments);
 		}
 
 		return new SqlReader($this);

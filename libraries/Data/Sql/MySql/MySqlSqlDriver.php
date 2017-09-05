@@ -31,6 +31,9 @@ use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Data\Sql\ISqlStatementFactory;
+use \Lightbit\Data\Sql\MySql\MySqlSqlDatabase;
+use \Lightbit\Data\Sql\MySql\MySqlSqlStatementFactory;
 use \Lightbit\Data\Sql\SqlDriver;
 use \Lightbit\Data\Sql\SqlStatement;
 
@@ -166,5 +169,16 @@ class MySqlSqlDriver extends SqlDriver
 	public function quote(string $statement) : string
 	{
 		return strtr($statement, [ '"' => '`' ]);
+	}
+
+	/**
+	 * Creates a sql statement factory.
+	 *
+	 * @return ISqlStatementFactory
+	 *	The sql statement factory.
+	 */
+	public function statementFactory() : ISqlStatementFactory
+	{
+		return new MySqlSqlStatementFactory($this->getConnection());
 	}
 }

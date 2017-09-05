@@ -28,89 +28,74 @@
 namespace Lightbit\Data\Sql;
 
 use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlDatabase;
+use \Lightbit\Data\Sql\ISqlCriteria;
+use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
-use \Lightbit\Data\Sql\ISqlStatementFactory;
 
 /**
- * ISqlDriver.
+ * ISqlStatementFactory.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDriver
+interface ISqlStatementFactory
 {
 	/**
-	 * Constructor.
+	 * Creates a delete statement.
 	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql driver connection.
+	 * @param array $table
+	 *	The table name.
 	 *
-	 * @param array $configuration
-	 *	The sql driver configuration.
-	 */
-	public function __construct(ISqlConnection $connection, array $configuration = null);
-
-	/**
-	 * Gets the database.
-	 *
-	 * @return ISqlDatabase
-	 *	The database.
-	 */
-	public function getDatabase() : ISqlDatabase;
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
-
-	/**
-	 * Gets the last insert row identifier.
-	 *
-	 * @return int
-	 *	The last insert row identifier.
-	 */
-	public function getLastInsertID() : int;
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection;
-
-	/**
-	 * Quotes a statement by replacing the ANSI double quotes with the
-	 * proper quote character sequence.
-	 *
-	 * @param string $statement
-	 *	The statement to quote.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public function quote(string $statement) : string;
-
-	/**
-	 * Creates and prepares a statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
+	 * @param ISqlCriteria $criteria
+	 *	The delete criteria.
 	 *
 	 * @return ISqlStatement
-	 *	The sql statement.
+	 *	The statement.
 	 */
-	public function statement(string $statement) : ISqlStatement;
+	public function delete(string $table, ?ISqlCriteria $criteria) : ISqlStatement;
 
 	/**
-	 * Creates a sql statement factory.
+	 * Creates an insert statement.
 	 *
-	 * @return ISqlStatementFactory
-	 *	The sql statement factory.
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param array $values
+	 *	The values, indexed by field name.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
 	 */
-	public function statementFactory() : ISqlStatementFactory;
+	public function insert(string $table, array $values) : ISqlStatement;
+
+	/**
+	 * Creates a select statement.
+	 *
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The select criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
+	 */
+	public function select(string $table, ?ISqlCriteria $criteria) : ISqlStatement;
+
+	/**
+	 * Creates an update statement.
+	 *
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param array $values
+	 *	The values, indexed by field name.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The update criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
+	 */
+	public function update(string $table, array $values, ?ISqlCriteria $criteria) : ISqlStatement;
 }
