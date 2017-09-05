@@ -27,17 +27,56 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlModel;
+use \Lightbit\Exception;
+use \Lightbit\Data\Sql\ISqlActiveRecord;
+use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Sql\SqlModel;
 
 /**
- * ISqlActiveRecord.
+ * SqlActiveRecord.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlActiveRecord extends ISqlModel
+abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 {
+	/**
+	 * The schema.
+	 *
+	 * @type array
+	 */
+	private static $schema = [];
+
+	/**
+	 * The identity.
+	 *
+	 * @type array
+	 */
+	private $id;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $scenario
+	 *	The model scenario.
+	 *
+	 * @param array $attributes
+	 *	The model attributes.
+	 *
+	 * @param array $configuration
+	 *	The model configuration.
+	 */
+	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null)
+	{
+		parent::__construct($scenario, $attributes, $configuration);
+
+		if (!isset(self::$schema[static::class]))
+		{
+			self::$schema[static::class] = [];
+		}
+	}
+
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
 	 * all results as an instance of this model, optionally based on a given
@@ -49,7 +88,10 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return array
 	 *	The result.
 	 */
-	public function all(array $criteria = null) : array;
+	public function all(array $criteria = null) : array
+	{
+		return [];
+	}
 
 	/**
 	 * Creates, prepares and executes a delete statement matching the
@@ -58,7 +100,10 @@ interface ISqlActiveRecord extends ISqlModel
 	 * If the instance is new (see: isNew), this method performs 
 	 * no action at all.
 	 */
-	public function delete() : void;
+	public function delete() : void
+	{
+
+	}
 
 	/**
 	 * Gets the identity.
@@ -66,7 +111,15 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return array
 	 *	The identity.
 	 */
-	public function getID() : array;
+	public function getID() : array
+	{
+		if (!$this->id)
+		{
+			throw new Exception(sprintf('Active record identity is not available: instance of %s is new', static::class));
+		}
+
+		return $this->id;
+	}
 
 	/**
 	 * Gets the primary key.
@@ -74,7 +127,22 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return array
 	 *	The primary key.
 	 */
-	public function getPrimaryKey() : array;
+	public function getPrimaryKey() : array
+	{
+		if (!isset(self::$schema[static::class]['primary-key']))
+		{
+			$primaryKey = $this->getTable()->getPrimaryKey();
+
+			if (!$primaryKey)
+			{
+				throw new Exception(sprintf('Active record primary key is not available: "%s"', static::class));
+			}
+
+			self::$schema[static::class]['primary-key'] = $primaryKey;
+		}
+		
+		return self::$schema[static::class]['primary-key'];
+	}
 
 	/**
 	 * Gets the table.
@@ -82,7 +150,15 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return ISqlTable
 	 *	The table.
 	 */
-	public function getTable() : ISqlTable;
+	public function getTable() : ISqlTable
+	{
+		if (!isset(self::$schema[static::class]['table']))
+		{
+			self::$schema[static::class]['table'] = $this->getSqlConnection()->getDatabase()->getTable($this->getTableName());
+		}
+
+		return self::$schema[static::class]['table'];
+	}
 
 	/**
 	 * Gets the table name.
@@ -90,7 +166,15 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return string
 	 *	The table name.
 	 */
-	public function getTableName() : string;
+	public function getTableName() : string
+	{
+		if (!isset(self::$schema[static::class]['table-name']))
+		{
+			self::$schema[static::class]['table-name'] = $this->tableName();
+		}
+
+		return self::$schema[static::class]['table-name'];
+	}
 
 	/**
 	 * Checks if it is new.
@@ -98,7 +182,10 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return bool
 	 *	The result.
 	 */
-	public function isNew() : bool;
+	public function isNew() : bool
+	{
+		return !isset($this->id);
+	}
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
@@ -111,7 +198,10 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return ISqlModel
 	 *	The result.
 	 */
-	public function match(array $attributes) : ?ISqlModel;
+	public function match(array $attributes) : ?ISqlModel
+	{
+		return null;
+	}
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
@@ -124,7 +214,10 @@ interface ISqlActiveRecord extends ISqlModel
 	 * @return ISqlModel
 	 *	The result.
 	 */
-	public function one(array $criteria = null) : ?ISqlModel;
+	public function one(array $criteria = null) : ?ISqlModel
+	{
+		return null;
+	}
 
 	/**
 	 * Creates, prepares and executes a insert or update statement matching
@@ -137,5 +230,29 @@ interface ISqlActiveRecord extends ISqlModel
 	 * The model identity (see: getID) will be updated if necessary
 	 * at the end of this procedure.
 	 */
-	public function save() : void;
+	public function save() : void
+	{
+
+	}
+
+	/**
+	 * Creates the table name.
+	 *
+	 * The default implementation creates the table name based on the active
+	 * record class name.
+	 *
+	 * @return string
+	 *	The active record table name.
+	 */
+	protected function tableName() : string
+	{
+		$className = static::class;
+
+		if ($i = strrpos($className, '\\'))
+		{
+			return substr($className, $i + 1);
+		}
+
+		return $className;
+	}
 }

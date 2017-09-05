@@ -70,7 +70,15 @@ interface ISqlColumn extends ISqlObject
 	public function getTypeName() : string;
 
 	/**
-	 * Checks if is nullable.
+	 * Checks if it is auto incrementable.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isAutoIncrementable() : bool;
+
+	/**
+	 * Checks if it is nullable.
 	 *
 	 * @return bool
 	 *	The result.

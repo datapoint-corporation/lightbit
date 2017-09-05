@@ -80,9 +80,9 @@ class MySqlSqlDriver extends SqlDriver
 			(
 				'SELECT S.CATALOG_NAME, S.SCHEMA_NAME, S.DEFAULT_CHARACTER_SET_NAME, S.DEFAULT_COLLATION_NAME
 				FROM INFORMATION_SCHEMA.SCHEMATA S
-				WHERE S.CATALOG_NAME = ? AND S.SCHEMA_NAME = ?
+				WHERE S.CATALOG_NAME = ? AND S.SCHEMA_NAME = SCHEMA()
 				LIMIT 1',
-				[ 1 => 'def', 2 => 'information_schema' ]
+				[ 1 => 'def' ]
 			);
 
 			// Tables.
@@ -101,7 +101,7 @@ class MySqlSqlDriver extends SqlDriver
 			// Columns.
 			$columns = $sql->all
 			(
-				'SELECT S.TABLE_CATALOG, S.TABLE_SCHEMA, S.TABLE_NAME, S.COLUMN_NAME, S.IS_NULLABLE, S.DATA_TYPE, S.CHARACTER_SET_NAME, S.COLLATION_NAME
+				'SELECT S.TABLE_CATALOG, S.TABLE_SCHEMA, S.TABLE_NAME, S.COLUMN_NAME, S.IS_NULLABLE, S.DATA_TYPE, S.CHARACTER_SET_NAME, S.COLLATION_NAME, S.EXTRA
 				FROM INFORMATION_SCHEMA.COLUMNS S
 				WHERE S.TABLE_CATALOG = ? AND S.TABLE_SCHEMA = ?
 				ORDER BY S.TABLE_NAME ASC, S.COLUMN_NAME ASC',
@@ -111,7 +111,21 @@ class MySqlSqlDriver extends SqlDriver
 				]
 			);
 
-			$this->database = new MySqlSqlDatabase($database, $tables, $columns);
+			// Keys.
+			$keys = $sql->all
+			(
+				'SELECT S.CONSTRAINT_CATALOG, S.CONSTRAINT_SCHEMA, S.TABLE_CATALOG, S.TABLE_SCHEMA, S.TABLE_NAME, S.COLUMN_NAME, S.CONSTRAINT_NAME
+				FROM information_schema.KEY_COLUMN_USAGE S
+				WHERE S.CONSTRAINT_CATALOG = ? AND S.CONSTRAINT_SCHEMA = ? AND S.TABLE_CATALOG = ? AND S.TABLE_SCHEMA = ?',
+				[
+					1 => $database['CATALOG_NAME'],
+					2 => $database['SCHEMA_NAME'],
+					3 => $database['CATALOG_NAME'],
+					4 => $database['SCHEMA_NAME']
+				]
+			);
+
+			$this->database = new MySqlSqlDatabase($database, $tables, $columns, $keys);
 		}
 
 		return $this->database;

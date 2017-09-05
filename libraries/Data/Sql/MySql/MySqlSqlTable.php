@@ -77,6 +77,13 @@ class MySqlSqlTable extends Object implements ISqlTable
 	private $name;
 
 	/**
+	 * The primary key.
+	 *
+	 * @type array
+	 */
+	private $primaryKey;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param array $table
@@ -84,14 +91,18 @@ class MySqlSqlTable extends Object implements ISqlTable
 	 *
 	 * @param array $columns
 	 *	The columns schema.
+	 *
+	 * @param array $keys
+	 *	The keys usage schema.
 	 */
-	public function __construct(array $table, array $columns)
+	public function __construct(array $table, array $columns, array $keys)
 	{
 		$this->catalog = $table['TABLE_CATALOG'];
 		$this->defaultCollation = $table['TABLE_COLLATION'];
 		$this->name = $table['TABLE_NAME'];
 
 		$this->columns = [];
+
 		foreach ($columns as $i => $column)
 		{
 			if ($column['TABLE_NAME'] === $this->name && $column['TABLE_CATALOG'] === $this->catalog)
@@ -99,6 +110,36 @@ class MySqlSqlTable extends Object implements ISqlTable
 				$this->columns[$column['COLUMN_NAME']] = new MySqlSqlColumn($column);
 			}
 		}
+
+		foreach ($keys as $i => $key)
+		{
+			if ($key['CONSTRAINT_CATALOG'] === $table['TABLE_CATALOG']
+				&& $key['CONSTRAINT_SCHEMA'] === $table['TABLE_SCHEMA']
+				&& $key['TABLE_SCHEMA'] === $table['TABLE_SCHEMA']
+				&& $key['TABLE_NAME'] === $table['TABLE_NAME'])
+			{
+				if ($key['CONSTRAINT_NAME'] === 'PRIMARY')
+				{
+					$this->primaryKey[] = $key['COLUMN_NAME'];
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets the column.
+	 *
+	 * @return ISqlColumn
+	 *	The column.
+	 */
+	public function getColumn(string $column) : ISqlColumn
+	{
+		if (!isset($this->columns[$column]))
+		{
+			throw new Exception(sprintf('Column is not defined: table "%s", column "%s"', $this->name, $column));
+		}
+
+		return $this->columns[$column];
 	}
 
 	/**
@@ -135,19 +176,14 @@ class MySqlSqlTable extends Object implements ISqlTable
 	}
 
 	/**
-	 * Gets the column.
+	 * Gets the primary key.
 	 *
-	 * @return ISqlColumn
-	 *	The column.
+	 * @return array
+	 * 	The primary key.
 	 */
-	public function getColumn(string $column) : ISqlColumn
+	public function getPrimaryKey() : ?array
 	{
-		if (!isset($this->columns[$column]))
-		{
-			throw new Exception(sprintf('Column is not defined: table "%s", column "%s"', $this->name, $column));
-		}
-
-		return $this->columns[$column];
+		return $this->primaryKey;
 	}
 
 	/**

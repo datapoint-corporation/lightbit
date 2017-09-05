@@ -63,6 +63,14 @@ interface ISqlTable extends ISqlObject
 	public function getName() : string;
 
 	/**
+	 * Gets the primary key.
+	 *
+	 * @return array
+	 * 	The primary key.
+	 */
+	public function getPrimaryKey() : ?array;
+
+	/**
 	 * Gets the column.
 	 *
 	 * @return ISqlColumn

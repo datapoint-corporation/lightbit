@@ -39,6 +39,13 @@ use \Lightbit\Data\Sql\ISqlColumn;
 class MySqlSqlColumn extends Object implements ISqlColumn
 {
 	/**
+	 * The auto incrementable flag.
+	 *
+	 * @type bool
+	 */
+	private $autoIncrementable;
+
+	/**
 	 * The character set.
 	 *
 	 * @type array
@@ -81,6 +88,9 @@ class MySqlSqlColumn extends Object implements ISqlColumn
 	 */
 	public function __construct(array $column)
 	{
+		$extras = explode(',', $column['EXTRA']);
+
+		$this->autoIncrementable = in_array('auto_increment', $extras);
 		$this->characterSet = $column['CHARACTER_SET_NAME'];
 		$this->collation = $column['COLLATION_NAME'];
 		$this->name = $column['COLUMN_NAME'];
@@ -130,6 +140,17 @@ class MySqlSqlColumn extends Object implements ISqlColumn
 	public function getTypeName() : string
 	{
 		return $this->typeName;
+	}
+
+	/**
+	 * Checks if it is auto incrementable.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isAutoIncrementable() : bool
+	{
+		return $this->autoIncrementable;
 	}
 
 	/**

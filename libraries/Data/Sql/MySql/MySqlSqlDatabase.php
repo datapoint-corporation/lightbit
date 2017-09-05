@@ -79,8 +79,11 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 	 *
 	 * @param array $columns
 	 *	The columns schema.
+	 *
+	 * @param array $keys
+	 *	The keys usage schema.
 	 */
-	public function __construct(array $database, array $tables, array $columns)
+	public function __construct(array $database, array $tables, array $columns, array $keys)
 	{
 		$this->defaultCharacterSet = $database['DEFAULT_CHARACTER_SET_NAME'];
 		$this->defaultCollation = $database['DEFAULT_COLLATION_NAME'];
@@ -90,7 +93,7 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 
 		foreach ($tables as $i => $table)
 		{
-			$this->tables[$table['TABLE_NAME']] = new MySqlSqlTable($table, $columns);
+			$this->tables[$table['TABLE_NAME']] = new MySqlSqlTable($table, $columns, $keys);
 		}
 	}
 
