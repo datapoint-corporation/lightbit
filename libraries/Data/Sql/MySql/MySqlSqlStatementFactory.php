@@ -102,7 +102,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= ' WHERE ' . $criteria->getCondition();
 			}
 
-			return $this->statement($statement, $criteria->getParameters());
+			return $this->statement($statement, $criteria->getArguments());
 		}
 
 		return $this->statement('DELETE FROM ' . $this->quote($table));
@@ -227,7 +227,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				}
 			}
 
-			return $this->statement($statement, $criteria->getParameters());
+			return $this->statement($statement, $criteria->getArguments());
 		}
 
 		return $this->statement('SELECT * FROM ' . $this->quote($table));
@@ -307,11 +307,11 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= ' WHERE ' . $criteria->getCondition();
 			}
 
-			if ($criteria->hasParameters())
+			if ($criteria->hasArguments())
 			{
-				$parameters += $criteria->getParameters();
+				$parameters += $criteria->getArguments();
 			}
-
+			
 			return $this->statement($statement, $parameters);
 		}
 

@@ -220,11 +220,13 @@ class SqlStatement extends Object implements ISqlStatement
 	 */
 	public final function setArguments(array $arguments) : void
 	{
+		$parameter;
+
 		try
 		{
-			foreach ($arguments as $position => $value)
+			foreach ($arguments as $parameter => $argument)
 			{
-				$this->pdoStatement->bindValue($position, $value, $this->getPdoParamDataType($value));
+				$this->pdoStatement->bindValue($parameter, $argument, $this->getPdoParamDataType($argument));
 			}
 		}
 		catch (\PDOException $e)
@@ -232,7 +234,7 @@ class SqlStatement extends Object implements ISqlStatement
 			throw new SqlStatementException
 			(
 				$this,
-				sprintf('Statement argument can not be set: %s', lcfirst($e->getMessage())),
+				sprintf('Statement argument can not be set: parameter "%s", because %s', $parameter, lcfirst($e->getMessage())),
 				$e
 			);
 		}
