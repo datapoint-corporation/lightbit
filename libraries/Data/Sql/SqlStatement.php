@@ -88,7 +88,7 @@ class SqlStatement extends Object implements ISqlStatement
 			throw new SqlStatementException
 			(
 				$this,
-				sprintf('Can not prepare statement for execution: %s', lcfirst($e->getMessage())),
+				sprintf('Can not prepare statement for execution: statement "%s"', $statement),
 				$e
 			);
 		}
@@ -134,14 +134,15 @@ class SqlStatement extends Object implements ISqlStatement
 
 		try
 		{
-			return $this->pdoStatement->execute();
+			$this->pdoStatement->execute();
+			return $this->pdoStatement->rowCount();
 		}
 		catch (\PDOException $e)
 		{
 			throw new SqlStatementException
 			(
 				$this,
-					sprintf('Statement argument can not be set: %s', lcfirst($e->getMessage())),
+					sprintf('Statement execution error: %s', lcfirst($e->getMessage())),
 				$e
 			);
 		}

@@ -125,6 +125,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 		$fields = [];
 		$placeholders = [];
 		$parameters = [];
+		$position = 0;
 
 		foreach ($values as $field => $value)
 		{
@@ -136,8 +137,9 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$placeholders[] = '?';
-				$parameters[] = $value;
+				$parameter = ':lb' . ++$position;
+				$placeholders[] = $parameter;
+				$parameters[$parameter] = $value;
 			}
 		}
 
@@ -248,6 +250,71 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 	 */
 	public function update(string $table, array $values, ?ISqlCriteria $criteria) : ISqlStatement
 	{
+		$parameters = [];
+		$assignments = [];
+		$position = 0;
 		
+		foreach ($values as $field => $value)
+		{
+			$assignment = $this->quote($field) . ' = ';
+
+			if ($value instanceof IExpression)
+			{
+				$assignment .= $value->toString();
+			}
+			else
+			{
+				$parameter = ':lb' . ++$position;
+				$assignment .= $parameter;
+				$parameters[$parameter] = $value;
+			}
+
+			$assignments[] = $assignment;
+		}
+
+		$assignments = implode(', ', $assignments);
+
+		if ($criteria)
+		{
+			$statement = 'UPDATE';
+
+			if ($criteria->hasAlias())
+			{
+				$statement .= ' ' . $criteria->getAlias()
+					. ' FROM ' . $this->quote($table) 
+					. ' ' . $this->quote($criteria->getAlias());
+
+				if ($criteria->hasJoin())
+				{
+					$statement .= ' ' . $criteria->getJoin();
+				}
+			}
+
+			else if ($criteria->hasJoin())
+			{
+				throw new Exception(sprintf('Can not use join without table alias for delete statement: table "%s", join "%s"', $table, $criteria->getJoin()));
+			}
+
+			else
+			{
+				$statement .= ' ' . $this->quote($table);
+			}
+
+			$statement .= ' SET ' . $assignments;
+
+			if ($criteria->hasCondition())
+			{
+				$statement .= ' WHERE ' . $criteria->getCondition();
+			}
+
+			if ($criteria->hasParameters())
+			{
+				$parameters += $criteria->getParameters();
+			}
+
+			return $this->statement($statement, $parameters);
+		}
+
+		return $this->statement(('UPDATE ' . $this->quote($table) . ' SET ' . $assignments), $parameters);
 	}
 }
