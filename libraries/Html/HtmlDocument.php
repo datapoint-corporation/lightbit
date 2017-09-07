@@ -291,6 +291,8 @@ class HtmlDocument extends Component implements IHtmlDocument
 
 		if ($position === 'head')
 		{
+			$result .= $html->element('base', [ 'href' => $this->getHttpRouter()->getBaseUrl() ]);
+
 			foreach ($this->tags as $i => $tag)
 			{
 				$result .= $html->element($tag['tag'], $tag['attributes']) . PHP_EOL;
