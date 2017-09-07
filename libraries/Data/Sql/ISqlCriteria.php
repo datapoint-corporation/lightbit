@@ -44,6 +44,26 @@ interface ISqlCriteria
 	public function __construct(array $configuration = null);
 
 	/**
+	 * Adds a comparison.
+	 *
+	 * @param string $subject
+	 *	The subject field name.
+	 *
+	 * @param mixed $candidate
+	 *	The candidate.
+	 */
+	public function addComparison(string $subject, $candidate) : void;
+
+	/**
+	 * Adds comparisons.
+	 *
+	 * @param array $comparisons
+	 *	The comparisons to add, as an associative array containing the
+	 *	candidates indexed by subject field name.
+	 */
+	public function addComparisons(array $comparisons) : void;
+
+	/**
 	 * Gets the alias.
 	 *
 	 * @return string
@@ -140,8 +160,11 @@ interface ISqlCriteria
 	 *
 	 * @param array $arguments
 	 *	The arguments.
+	 *
+	 * @param bool $dispose
+	 *	When set, the existing arguments will be disposed.
 	 */
-	public function setArguments(?array $arguments) : void;
+	public function setArguments(?array $arguments, bool $dispose = false) : void;
 
 	/**
 	 * Sets the condition.

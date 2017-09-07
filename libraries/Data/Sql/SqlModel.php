@@ -69,7 +69,7 @@ abstract class SqlModel extends Model implements ISqlModel
 	 * @return ISqlModel
 	 *	The result.
 	 */
-	public final function single(string $statement, array $arguments = null) : ?ISqlModel
+	public function single(string $statement, array $arguments = null) : ?ISqlModel
 	{
 		$attributes = $this->getSqlConnection()->single($statement, $arguments);
 
@@ -94,7 +94,7 @@ abstract class SqlModel extends Model implements ISqlModel
 	 * @return array
 	 *	The results.
 	 */
-	public final function query(string $statement, array $arguments = null) : array
+	public function query(string $statement, array $arguments = null) : array
 	{
 		$reader = $this->getSqlConnection()->query($statement, $arguments);
 		$results = [];

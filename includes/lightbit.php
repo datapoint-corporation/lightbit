@@ -108,6 +108,13 @@ class Lightbit
 	private static $prefixesPath = [];
 
 	/**
+	 * The last identifier.
+	 *
+	 * @type int
+	 */
+	private static $lastID = -1;
+
+	/**
 	 * Gets the application.
 	 *
 	 * @return IApplication
@@ -203,6 +210,17 @@ class Lightbit
 		}
 
 		throw new NamespacePathResolutionException($namespaceName, sprintf('Namespace path is not available: "%s"', $namespaceName));
+	}
+
+	/**
+	 * Creates the next identifier.
+	 *
+	 * @return int
+	 *	The next identifier.
+	 */
+	public static function getNextID() : int
+	{
+		return ++self::$lastID;
 	}
 
 	/**

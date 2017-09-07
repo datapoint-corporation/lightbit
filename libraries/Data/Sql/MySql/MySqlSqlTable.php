@@ -143,6 +143,28 @@ class MySqlSqlTable extends Object implements ISqlTable
 	}
 
 	/**
+	 * Gets the columns.
+	 *
+	 * @return array
+	 *	The columns.
+	 */
+	public function getColumns() : array
+	{
+		return $this->columns;
+	}
+
+	/**
+	 * Gets the columns name.
+	 *
+	 * @return array
+	 *	The columns name.
+	 */
+	public function getColumnsName() : array
+	{
+		return array_keys($this->columns);
+	}
+
+	/**
 	 * Gets the default character set.
 	 *
 	 * @return string

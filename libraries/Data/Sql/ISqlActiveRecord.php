@@ -61,6 +61,18 @@ interface ISqlActiveRecord extends ISqlModel
 	public function delete() : void;
 
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * all results matching the given attributes as an instance of this model.
+	 *
+	 * @param array $attributes
+	 *	The attributes to match.
+	 *
+	 * @return array
+	 *	The results.
+	 */
+	public function filter(array $attributes) : array;
+
+	/**
 	 * Gets the identity.
 	 *
 	 * @return array

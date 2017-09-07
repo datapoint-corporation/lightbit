@@ -79,6 +79,22 @@ interface ISqlTable extends ISqlObject
 	public function getColumn(string $column) : ISqlColumn;
 
 	/**
+	 * Gets the columns.
+	 *
+	 * @return array
+	 *	The columns.
+	 */
+	public function getColumns() : array;
+
+	/**
+	 * Gets the columns name.
+	 *
+	 * @return array
+	 *	The columns name.
+	 */
+	public function getColumnsName() : array;
+
+	/**
 	 * Checks for a column availability.
 	 *
 	 * @return bool

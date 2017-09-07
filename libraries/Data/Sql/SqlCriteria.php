@@ -27,7 +27,9 @@
 
 namespace Lightbit\Data\Sql;
 
+use \Lightbit;
 use \Lightbit\Base\Object;
+use \Lightbit\Data\IExpression;
 use \Lightbit\Data\Sql\ISqlCriteria;
 
 /**
@@ -77,6 +79,56 @@ class SqlCriteria extends Object implements ISqlCriteria
 		if ($configuration)
 		{
 			$this->configure($configuration);
+		}
+	}
+
+	/**
+	 * Adds a comparison.
+	 *
+	 * @param string $subject
+	 *	The subject field name.
+	 *
+	 * @param mixed $candidate
+	 *	The candidate.
+	 */
+	public function addComparison(string $subject, $candidate) : void
+	{
+		$comparison = '"' . strtr($subject, [ '.' => '"."' ]) . '" ';
+
+		if (isset($candidate))
+		{
+			if ($candidate instanceof IExpression)
+			{
+				$comparison .= '= ' . $candidate->toString();
+			}
+			else
+			{
+				$parameter = ':lb' . Lightbit::getNextID();
+				$comparison .= '= ' . $parameter;
+				$this->setArguments([ $parameter => $candidate ]);
+			}
+		}
+		else
+		{
+			$comparison .= 'IS NULL';
+		}
+
+		$this->condition = $this->condition ?
+			($this->condition . ' AND ' . $comparison) : $comparison;
+	}
+
+	/**
+	 * Adds comparisons.
+	 *
+	 * @param array $comparisons
+	 *	The comparisons to add, as an associative array containing the
+	 *	candidates indexed by subject field name.
+	 */
+	public function addComparisons(array $comparisons) : void
+	{
+		foreach ($comparisons as $subject => $candidate)
+		{
+			$this->addComparison($subject, $candidate);
 		}
 	}
 
@@ -210,10 +262,14 @@ class SqlCriteria extends Object implements ISqlCriteria
 	 *
 	 * @param array $arguments
 	 *	The arguments.
+	 *
+	 * @param bool $dispose
+	 *	When set, the existing arguments will be disposed.
 	 */
-	public function setArguments(?array $arguments) : void
+	public function setArguments(?array $arguments, bool $dispose = false) : void
 	{
-		$this->arguments = $arguments;
+		$this->arguments = (!$this->arguments || $dispose) ?
+			$arguments : ($arguments + $this->arguments);
 	}
 
 	/**

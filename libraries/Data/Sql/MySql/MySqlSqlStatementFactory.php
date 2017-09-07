@@ -27,6 +27,7 @@
 
 namespace Lightbit\Data\Sql\MySql;
 
+use \Lightbit;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\IExpression;
 use \Lightbit\Data\Sql\ISqlConnection;
@@ -125,7 +126,6 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 		$fields = [];
 		$placeholders = [];
 		$parameters = [];
-		$position = 0;
 
 		foreach ($values as $field => $value)
 		{
@@ -137,7 +137,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . ++$position;
+				$parameter = ':lb' . Lightbit::getNextID();
 				$placeholders[] = $parameter;
 				$parameters[$parameter] = $value;
 			}
@@ -252,7 +252,6 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 	{
 		$parameters = [];
 		$assignments = [];
-		$position = 0;
 		
 		foreach ($values as $field => $value)
 		{
@@ -264,7 +263,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . ++$position;
+				$parameter = ':lb' . Lightbit::getNextID();
 				$assignment .= $parameter;
 				$parameters[$parameter] = $value;
 			}

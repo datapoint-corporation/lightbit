@@ -55,6 +55,13 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * The attributes.
+	 *
+	 * @type array
+	 */
+	private $attributes;
+
+	/**
 	 * The attributes errors.
 	 *
 	 * @type array
@@ -67,13 +74,6 @@ abstract class Model extends Element implements IModel
 	 * @type string
 	 */
 	private $scenario;
-
-	/**
-	 * The snapshot.
-	 *
-	 * @type array
-	 */
-	private $snapshot;
 
 	/**
 	 * Constructor.
@@ -94,7 +94,7 @@ abstract class Model extends Element implements IModel
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			$this->configure($configuration);
 		}
 
 		if ($attributes)
@@ -134,41 +134,11 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Commits any changes to the model attributes.
-	 *
-	 * @return array
-	 *	The commit attributes snapshot.
+	 * Performs a commit.
 	 */
-	protected final function commit() : array
+	public function commit() : void
 	{
-		return $this->snapshot = $this->getAttributes();
-	}
-
-	/**
-	 * Calculates the difference from the current state to the last commit,
-	 * returning any attributes that have changed in between.
-	 *
-	 * @return array
-	 *	The attributes that have changed in between.
-	 */
-	protected final function difference() : array
-	{
-		if (!$this->snapshot)
-		{
-			return $this->getAttributes();
-		}
-
-		$result = [];
-
-		foreach ($this->getAttributes() as $attribute => $value)
-		{
-			if ($value !== $this->snapshot[$attribute])
-			{
-				$result[$attribute] = $value;
-			}
-		}
-
-		return $result;
+		$this->attributes = $this->getAttributes();
 	}
 
 	/**
@@ -213,6 +183,53 @@ abstract class Model extends Element implements IModel
 	public final function getAttributes() : array
 	{
 		return ObjectHelper::getAttributes($this, $this->getAttributesName());
+	}
+
+	/**
+	 * Gets the attributes with update.
+	 *
+	 * If a commit was performed prior to invoking this function, the
+	 * attributes that have been modified since then will be returned as an
+	 * associative array. However, if a commit was not performed, all
+	 * attributes will be returned instead.
+	 *
+	 * @param bool $inverse
+	 *	When set, the original attributes are returned instead.
+	 *
+	 * @return array
+	 *	The difference.
+	 */
+	public final function getAttributesWithUpdate(bool $inverse = false) : array
+	{
+		if (isset($this->attributes))
+		{
+			$result = [];
+
+			if ($inverse)
+			{
+				foreach ($this->getAttributes() as $attribute => $value)
+				{
+					if ($value !== $this->attributes[$attribute])
+					{
+						$result[$attribute] = $this->attributes[$attribute];
+					}
+				}
+			}
+			else
+			{
+				foreach ($this->getAttributes() as $attribute => $value)
+				{
+					if ($value !== $this->attributes[$attribute])
+					{
+						$result[$attribute] = $value;
+					}
+				}
+			}
+
+			return $result;
+		}
+
+		return $this->getAttributes();
 	}
 
 	/**
@@ -442,17 +459,16 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Performs a rollback operation on any changes from the last commit until
-	 * the current state, regarding attributes.
+	 * Performs a rollback.
 	 */
-	protected final function rollback() : void
+	public function rollback() : void
 	{
-		if (!$this->snapshot)
+		if (!isset($this->attributes))
 		{
-			throw Exception(sprintf('Can not rollback, commit not found: "%s"', static::class));
+			throw Exception(sprintf('Can not rollback, no commit: class "%s"', static::class));
 		}
 
-		ObjectHelper::setAttributes($this, $this->snapshot);
+		ObjectHelper::setAttributes($this, $this->attributes);
 	}
 
 	/**
@@ -515,7 +531,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function setAttributes(array $attributes) : void
 	{
-		ObjectHelper::setAttribute($this, $attributes);
+		ObjectHelper::setAttributes($this, $attributes);
 	}
 
 	/**

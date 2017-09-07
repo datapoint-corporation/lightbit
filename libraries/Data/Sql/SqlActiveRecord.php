@@ -31,6 +31,7 @@ use \Lightbit\Exception;
 use \Lightbit\Data\Sql\ISqlActiveRecord;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Sql\SqlCriteria;
 use \Lightbit\Data\Sql\SqlModel;
 
 /**
@@ -90,7 +91,57 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function all(array $criteria = null) : array
 	{
-		return [];
+		if (isset($criteria))
+		{
+			$criteria = new SqlSelectCriteria($criteria);
+		}
+
+		$results = $this->getSqlConnection()
+			->getStatementFactory()
+				->select($this->getTableName(), $criteria)
+					->query()
+						->all();
+
+		foreach ($results as $i => $result)
+		{
+			$results[$i] = $this->construct($result);
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Performs a commit.
+	 */
+	public function commit() : void
+	{
+		parent::commit();
+
+		$primaryKey = $this->getPrimaryKey();
+		$this->id = [];
+
+		foreach ($primaryKey as $i => $attribute)
+		{
+			$this->id[$attribute] = $this->getAttribute($attribute);
+		}
+	}
+
+	/**
+	 * Constructs a new instance for update.
+	 *
+	 * @param array $attributes
+	 *	The instance attributes.
+	 *
+	 * @return ISqlActiveRecord
+	 *	The instance.
+	 */
+	private function construct(array $attributes) : ISqlActiveRecord
+	{
+		$instance = static::model('update');
+		$instance->setAttributes($attributes);
+		$instance->commit();
+
+		return $instance;
 	}
 
 	/**
@@ -102,7 +153,49 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function delete() : void
 	{
+		if ($this->id)
+		{
+			$criteria = new SqlCriteria();
+			$criteria->addComparisons($this->id);
 
+			$statement = $this->getSqlConnection()->getStatementFactory()->delete
+			(
+				$this->getTableName(),
+				$criteria
+			);
+
+			$statement->execute();
+			$this->id = null;
+		}
+	}
+
+	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * all results matching the given attributes as an instance of this model.
+	 *
+	 * @param array $attributes
+	 *	The attributes to match.
+	 *
+	 * @return array
+	 *	The results.
+	 */
+	public function filter(array $attributes) : array
+	{
+		$criteria = new SqlCriteria();
+		$criteria->addComparisons($attributes);
+
+		$results = $this->getSqlConnection()
+			->getStatementFactory()
+				->select($this->getTableName(), $criteria)
+					->query()
+						->all();
+
+		foreach ($results as $i => $result)
+		{
+			$results[$i] = $this->construct($result);
+		}
+
+		return $results;
 	}
 
 	/**
@@ -115,7 +208,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	{
 		if (!$this->id)
 		{
-			throw new Exception(sprintf('Active record identity is not available: instance of %s is new', static::class));
+			throw new Exception(sprintf('Active record identity is not available: instance is new, class "%s"', static::class));
 		}
 
 		return $this->id;
@@ -184,7 +277,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function isNew() : bool
 	{
-		return !isset($this->id);
+		return !$this->id;
 	}
 
 	/**
@@ -200,7 +293,20 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function match(array $attributes) : ?ISqlModel
 	{
-		return null;
+		$criteria = new SqlCriteria();
+		$criteria->addComparisons($attributes);
+
+		$result = $this->getSqlConnection()
+			->getStatementFactory()
+				->select($this->getTableName(), $criteria)
+					->single();
+
+		if ($result)
+		{
+			$result = $this->construct($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -216,7 +322,22 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function one(array $criteria = null) : ?ISqlModel
 	{
-		return null;
+		if (isset($criteria))
+		{
+			$criteria = new SqlSelectCriteria($criteria);
+		}
+
+		$result = $this->getSqlConnection()
+			->getStatementFactory()
+				->select($this->getTableName(), $criteria)
+					->single();
+
+		if ($result)
+		{
+			$result = $this->construct($result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -232,7 +353,91 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function save() : void
 	{
+		// Get the table columns and limit the attributes to those matching
+		// existing columns for this active record.
+		$columns = $this->getTable()->getColumns();
+		$attributes = array_intersect_key($this->getAttributesWithUpdate(), $columns);
 
+		if ($attributes)
+		{
+			if ($this->id)
+			{
+				$criteria = new SqlCriteria();
+				$criteria->addComparisons($this->id);
+
+				$this->getSqlConnection()
+					->getStatementFactory()
+						->update($this->getTableName(), $attributes, $criteria)
+							->execute();
+			}
+			else
+			{
+				$sql = $this->getSqlConnection();
+				$sql->getStatementFactory()
+					->insert($this->getTableName(), $attributes)
+						->execute();
+
+				$primaryKey = $this->getPrimaryKey();
+
+				if (!isset($primaryKey[1]) && ($columns[$primaryKey[0]])->isAutoIncrementable())
+				{
+					$this->setAttribute($primaryKey[0], $sql->getLastInsertID());
+				}
+			}
+
+			$this->commit();
+		}
+
+		else if ($this->id)
+		{
+			throw new Exception(sprintf('Active record can not be saved: insufficient number of properties, class "%s"', static::class));
+		}
+	}
+
+	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * a single result as an instance of this model.
+	 *
+	 * @param string $statement
+	 *	The statement to create, prepare and execute, as a string.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @return ISqlModel
+	 *	The result.
+	 */
+	public function single(string $statement, array $arguments = null) : ?ISqlModel
+	{
+		$instance = parent::single($statement, $arguments);
+		$instance->commit();
+
+		return $instance;
+	}
+
+	/**
+	 * Creates, prepares and executes a query statement to fetch all results
+	 * as instances of this model.
+	 *
+	 * @param string $statement
+	 *	The statement to prepare, execute and read from.
+	 *
+	 * @param array $arguments
+	 *	The statement arguments.
+	 *
+	 * @return array
+	 *	The results.
+	 */
+	public function query(string $statement, array $arguments = null) : array
+	{
+		$instances = parent::query($statement, $arguments);
+
+		foreach ($instances as $i => $instance)
+		{
+			$instance->commit();
+		}
+
+		return $instances;
 	}
 
 	/**
