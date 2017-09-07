@@ -117,12 +117,21 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	{
 		parent::commit();
 
-		$primaryKey = $this->getPrimaryKey();
+		// Update the current active record identity, requiring all primary
+		// key attributes to be set.
 		$this->id = [];
 
-		foreach ($primaryKey as $i => $attribute)
+		foreach ($this->getPrimaryKey() as $i => $attribute)
 		{
-			$this->id[$attribute] = $this->getAttribute($attribute);
+			$identity = $this->getAttribute($attribute);
+
+			if (!$identity)
+			{
+				$this->id = null;
+				break;			
+			}
+
+			$this->id[$attribute] = $identity;
 		}
 	}
 
@@ -151,8 +160,10 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * If the instance is new (see: isNew), this method performs 
 	 * no action at all.
 	 */
-	public function delete() : void
+	public final function delete() : void
 	{
+		$this->onDelete();
+
 		if ($this->id)
 		{
 			$criteria = new SqlCriteria();
@@ -165,8 +176,10 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 			);
 
 			$statement->execute();
-			$this->id = null;
+			$this->commit();
 		}
+
+		$this->onAfterDelete();
 	}
 
 	/**
@@ -351,8 +364,10 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * The model identity (see: getID) will be updated if necessary
 	 * at the end of this procedure.
 	 */
-	public function save() : void
+	public final function save() : void
 	{
+		$this->onSave();
+
 		// Get the table columns and limit the attributes to those matching
 		// existing columns for this active record.
 		$columns = $this->getTable()->getColumns();
@@ -384,14 +399,16 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 					$this->setAttribute($primaryKey[0], $sql->getLastInsertID());
 				}
 			}
-
+		
 			$this->commit();
 		}
 
-		else if ($this->id)
+		else if (!$this->id)
 		{
 			throw new Exception(sprintf('Active record can not be saved: insufficient number of properties, class "%s"', static::class));
 		}
+
+		$this->onAfterSave();
 	}
 
 	/**
@@ -459,5 +476,85 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		return $className;
+	}
+
+	/**
+	 * After Delete.
+	 *
+	 * This method is invoked at the end of the active record delete procedure
+	 * (see: delete), before any validation takes place and the changes are 
+	 * written to the database.
+	 *
+	 * The default implementation raises the global and generic 
+	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterDelete" event, in addition to a 
+	 * global and dynamic event based on the class name (e.g.:
+	 * "MyNamespace.MyClassName.AfterDelete").
+	 */
+	protected function onAfterDelete() : void
+	{
+		$dynamic = strtr(static::class, [ '\\' => '.' ]) . '.AfterDelete';
+
+		$this->raise('Lightbit.Data.Sql.ActiveRecord.AfterDelete', $this);
+		$this->raise($dynamic, $this);
+	}
+
+	/**
+	 * After Save.
+	 *
+	 * This method is invoked at the end of the active record save procedure
+	 * (see: save), before any validation takes place and the changes are 
+	 * written to the database.
+	 *
+	 * The default implementation raises the global and generic 
+	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterSave" event, in addition to a 
+	 * global and dynamic event based on the class name (e.g.:
+	 * "MyNamespace.MyClassName.AfterSave").
+	 */
+	protected function onAfterSave() : void
+	{
+		$dynamic = strtr(static::class, [ '\\' => '.' ]) . '.AfterSave';
+
+		$this->raise('Lightbit.Data.Sql.ActiveRecord.AfterSave', $this);
+		$this->raise($dynamic, $this);
+	}
+
+	/**
+	 * Delete.
+	 *
+	 * This method is invoked at the beginning of the active record save 
+	 * procedure (see: save), before any validation takes place and the changes
+	 * are written to the database.
+	 *
+	 * The default implementation raises the global and generic 
+	 * "Lightbit.Data.Sql.SqlActiveRecord.Delete" event, in addition to a 
+	 * global and dynamic event based on the class name (e.g.:
+	 * "MyNamespace.MyClassName.Delete").
+	 */
+	protected function onDelete() : void
+	{
+		$dynamic = strtr(static::class, [ '\\' => '.' ]) . '.Delete';
+
+		$this->raise('Lightbit.Data.Sql.ActiveRecord.Delete', $this);
+		$this->raise($dynamic, $this);
+	}
+
+	/**
+	 * Save.
+	 *
+	 * This method is invoked at the beginning of the active record save 
+	 * procedure (see: save), before any validation takes place and the changes
+	 * are written to the database.
+	 *
+	 * The default implementation raises the global and generic 
+	 * "Lightbit.Data.Sql.SqlActiveRecord.Save" event, in addition to a 
+	 * global and dynamic event based on the class name (e.g.:
+	 * "MyNamespace.MyClassName.Save").
+	 */
+	protected function onSave() : void
+	{
+		$dynamic = strtr(static::class, [ '\\' => '.' ]) . '.Save';
+
+		$this->raise('Lightbit.Data.Sql.ActiveRecord.Save', $this);
+		$this->raise($dynamic, $this);
 	}
 }
