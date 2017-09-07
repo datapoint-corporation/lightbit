@@ -195,8 +195,10 @@ class Lightbit
 			return self::$namespacesPath[$namespaceName];
 		}
 
-		$i = -1;
-		while ($i = strpos($namespaceName, '\\', ++$i))
+		$i;
+		$parentNamespaceName = $namespaceName;
+		
+		while (($i = strrpos($parentNamespaceName, '\\')) !== false)
 		{
 			$parentNamespaceName = substr($namespaceName, 0, $i);
 
@@ -205,7 +207,7 @@ class Lightbit
 				return self::$namespacesPath[$namespaceName]
 					= self::$namespacesPath[$parentNamespaceName]
 					. DIRECTORY_SEPARATOR
-					. strtr(substr($namespaceName, $i + 1), '\\', DIRECTORY_SEPARATOR);
+					. strtr(substr($namespaceName, $i + 1), [ '\\' => DIRECTORY_SEPARATOR ]);
 			}
 		}
 
@@ -447,7 +449,7 @@ class Lightbit
 			}
 		}
 
-		$result = (self::$application = new $className($private, $express))->run();
+		$result = (self::$application = new $className(self::$prefixesPath['private'], $express))->run();
 		self::$application->dispose();
 		self::$application = null;
 
