@@ -51,6 +51,7 @@ use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpSession;
 use \Lightbit\Http\QueryStringHttpRouter;
 use \Lightbit\IO\FileSystem\Alias;
+use \Lightbit\Security\Cryptography\PasswordDigest;
 
 /**
  * Application.
@@ -99,7 +100,8 @@ class Application extends Context implements IApplication
 				'http.request' => [ '@class' => HttpRequest::class ],
 				'http.response' => [ '@class' => HttpResponse::class ],
 				'http.router' => [ '@class' => QueryStringHttpRouter::class ],
-				'http.session' => [ '@class' => HttpSession::class ]
+				'http.session' => [ '@class' => HttpSession::class ],
+				'security.cryptography.password.digest' => [ '@class' => PasswordDigest::class ],
 			]
 		);
 

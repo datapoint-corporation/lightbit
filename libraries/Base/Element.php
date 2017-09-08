@@ -48,6 +48,7 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
+use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * Element.
@@ -274,6 +275,17 @@ abstract class Element extends Object implements IElement
 	public function getNetworkCache() : INetworkCache
 	{
 		return $this->getContext()->getNetworkCache();
+	}
+
+	/**
+	 * Gets the password digest.
+	 *
+	 * @return IPasswordDigest
+	 *	The password digest.
+	 */
+	public function getPasswordDigest() : IPasswordDigest
+	{
+		return $this->getContext()->getPasswordDigest();
 	}
 
 	/**

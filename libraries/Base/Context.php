@@ -56,6 +56,7 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
 use \Lightbit\IO\FileSystem\Alias;
+use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * Context.
@@ -633,6 +634,17 @@ abstract class Context extends Cluster implements IContext
 		}
 
 		return $this->modulesBasePath;
+	}
+
+	/**
+	 * Gets the password digest.
+	 *
+	 * @return IPasswordDigest
+	 *	The password digest.
+	 */
+	public function getPasswordDigest() : IPasswordDigest
+	{
+		return $this->getComponent('security.cryptography.password.digest');
 	}
 
 	/**
