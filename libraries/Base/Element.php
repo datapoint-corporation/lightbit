@@ -38,6 +38,7 @@ use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;

@@ -56,13 +56,13 @@ interface IController extends IElement
 	/**
 	 * Gets an action method name.
 	 *
-	 * @param string $id
-	 *	The action identifier.
+	 * @param string $action
+	 *	The action name.
 	 *
 	 * @return string
 	 *	The action method name.
 	 */
-	public function getActionMethodName(string $id) : string;
+	public function getActionMethodName(string $action) : string;
 
 	/**
 	 * Gets the context.
@@ -73,7 +73,15 @@ interface IController extends IElement
 	public function getContext() : IContext;
 
 	/**
-	 * Get the identifier.
+	 * Gets the global identifier.
+	 *
+	 * @return string
+	 *	The global identifier.
+	 */
+	public function getGlobalID() : string;
+
+	/**
+	 * Gets the identifier.
 	 *
 	 * @return string
 	 *	The identifier.

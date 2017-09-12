@@ -57,7 +57,7 @@ class StringHelper
 		return implode
 		(
 			$delimiter, 
-			preg_split('%[^\\w]+%', self::transliteration($content), -1, PREG_SPLIT_NO_EMPTY)
+			preg_split('%([^\\w]+|_+)%', self::transliteration($content), -1, PREG_SPLIT_NO_EMPTY)
 		);
 	}
 
@@ -92,6 +92,20 @@ class StringHelper
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Extracts words from the given content.
+	 *
+	 * @param string $content
+	 *	The content.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public static function words(string $content) : array
+	{
+		return preg_split('%([^\\w]+|_+)%', $content, -1, PREG_SPLIT_NO_EMPTY);
 	}
 
 	/**

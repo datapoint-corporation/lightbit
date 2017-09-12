@@ -1,0 +1,120 @@
+<?php
+
+// -----------------------------------------------------------------------------
+// Lightbit
+//
+// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// https://www.datapoint.pt/
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// -----------------------------------------------------------------------------
+
+namespace Lightbit\Data\Sql\MySql;
+
+use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Data\Sql\SqlTransaction;
+use \Lightbit\Data\Sql\SqlTransactionException;
+
+/**
+ * MySqlSqlTransaction.
+ *
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @since 1.0.0
+ */
+class MySqlSqlTransaction extends SqlTransaction
+{
+	/**
+	 * The status.
+	 *
+	 * @type bool
+	 */
+	private $closed;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ISqlConnection $connection
+	 *	The connection.
+	 */
+	public function __construct(ISqlConnection $connection)
+	{
+		parent::__construct($connection);
+
+		$this->closed = true;
+	}
+
+	/**
+	 * Performs a commit, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function commit() : void
+	{
+		if ($this->closed)
+		{
+			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is closed, transaction "%s"', $this->getID()));
+		}
+
+		$this->getConnection()->run('COMMIT');
+		$this->closed = true;
+	}
+
+	/**
+	 * Checks if the transaction is closed.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isClosed() : bool
+	{
+		return $this->closed;
+	}
+
+	/**
+	 * Performs a rollback, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function rollback() : void
+	{
+		if ($this->closed)
+		{
+			throw new SqlTransactionException($this, sprintf('Can not rollback transaction: transaction is closed, transaction "%s"', $this->getID()));
+		}
+
+		$this->getConnection()->run('ROLLBACK');
+		$this->closed = true;
+	}
+
+	/**
+	 * Starts the transaction.
+	 */
+	public function start() : void
+	{
+		if (!$this->closed)
+		{
+			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is active, transaction "%s"', $this->getID()));
+		}
+
+		$this->getConnection()->run('START TRANSACTION');
+		$this->closed = false;
+	}
+}

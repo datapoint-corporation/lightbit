@@ -113,4 +113,12 @@ interface ISqlDriver
 	 *	The sql statement factory.
 	 */
 	public function statementFactory() : ISqlStatementFactory;
+
+	/**
+	 * Creates a transaction.
+	 *
+	 * @return ISqlTransaction
+	 *	The transaction.
+	 */
+	public function transaction() : ISqlTransaction;
 }

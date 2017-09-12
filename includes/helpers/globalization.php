@@ -46,3 +46,26 @@ function lbmessage(string $category, string $message) : string
 {
 	return GlobalizationHelper::message($category, $message);
 }
+
+/**
+ * Inflates a message.
+ *
+ * This function is context aware: the message is read through the 
+ * message source and formatted through the locale.
+ *
+ * @param string $category
+ *	The message category.
+ *
+ * @param string $message
+ *	The message.
+ *
+ * @param array $arguments
+ *	The message arguments.
+ *
+ * @return string
+ *	The result.
+ */
+function __(string $category, string $message, array $arguments = null) : string
+{
+	return GlobalizationHelper::inflate($category, $message, $arguments);
+}

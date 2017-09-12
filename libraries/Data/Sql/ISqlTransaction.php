@@ -25,17 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\IWidget;
+use \Lightbit\Data\Sql\ISqlConnection;
 
 /**
- * IHtmlWidget.
+ * ISqlTransaction.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHtmlWidget extends IWidget
+interface ISqlTransaction
 {
 	/**
 	 * Gets the identifier.
@@ -44,4 +44,41 @@ interface IHtmlWidget extends IWidget
 	 *	The identifier.
 	 */
 	public function getID() : string;
+
+	/**
+	 * Gets the connection.
+	 *
+	 * @return ISqlConnection
+	 *	The connection.
+	 */
+	public function getConnection() : ISqlConnection;
+
+	/**
+	 * Performs a commit, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function commit() : void;
+
+	/**
+	 * Checks if the transaction is closed.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isClosed() : bool;
+
+	/**
+	 * Performs a rollback, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function rollback() : void;
+
+	/**
+	 * Starts the transaction.
+	 */
+	public function start() : void;
 }

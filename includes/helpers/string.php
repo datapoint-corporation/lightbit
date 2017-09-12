@@ -43,3 +43,17 @@ function lbslug(string $content, string $delimiter = '-') : string
 {
 	return StringHelper::slug($content, $delimiter);
 }
+
+/**
+ * Extracts words from the given content.
+ *
+ * @param string $content
+ *	The content.
+ *
+ * @return array
+ *	The result.
+ */
+function lbwords(string $content) : array
+{
+	return StringHelper::words($content);
+}

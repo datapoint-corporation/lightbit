@@ -25,21 +25,28 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Data\Sql;
 
 use \Lightbit;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\Widget;
-use \Lightbit\Helpers\ObjectHelper;
+use \Lightbit\Base\Object;
+use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Data\Sql\ISqlTransaction;
 
 /**
- * HtmlWidget.
+ * SqlTransaction.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class HtmlWidget extends Widget implements IHtmlWidget
+class SqlTransaction extends Object implements ISqlTransaction
 {
+	/**
+	 * The connection.
+	 *
+	 * @type ISqlConnection
+	 */
+	private $connection;
+
 	/**
 	 * The identifier.
 	 *
@@ -50,15 +57,12 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The html widget context.
-	 *
-	 * @param array $configuration
-	 *	The html widget configuration.
+	 * @param ISqlConnection $connection
+	 *	The connection.
 	 */
-	public function __construct(IContext $context, array $configuration = null)
+	public function __construct(ISqlConnection $connection)
 	{
-		parent::__construct($context, $configuration);
+		$this->connection = $connection;
 	}
 
 	/**
@@ -67,7 +71,7 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	 * @return string
 	 *	The identifier.
 	 */
-	public final function getID() : string
+	public function getID() : string
 	{
 		if (!$this->id)
 		{
@@ -78,18 +82,42 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	}
 
 	/**
-	 * Sets the identifier.
+	 * Gets the connection.
 	 *
-	 * @param string $id
-	 *	The identifier.
+	 * @return ISqlConnection
+	 *	The connection.
 	 */
-	public final function setID(string $id) : string
+	public function getConnection() : ISqlConnection
 	{
-		if ($this->id)
-		{
-			throw new Exception(sprintf('Widget identifier is already set: current "%s", next "%s", class "%s"', $this->id, $id, static::class));
-		}
-
-		$this->id = $id;
+		return $this->connection;
 	}
+
+	/**
+	 * Performs a commit, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function commit() : void;
+
+	/**
+	 * Checks if the transaction is closed.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isClosed() : bool;
+
+	/**
+	 * Performs a rollback, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	public function rollback() : void;
+
+	/**
+	 * Starts the transaction.
+	 */
+	public function start() : void;
 }

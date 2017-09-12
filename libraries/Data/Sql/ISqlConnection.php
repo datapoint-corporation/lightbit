@@ -143,6 +143,23 @@ interface ISqlConnection extends IComponent, IChannel
 	public function query(string $statement, array $arguments = null) : ISqlReader;
 
 	/**
+	 * Runs a command.
+	 *
+	 * Please beaware that this function does not perform any kind of escape
+	 * procedures on the given command.
+	 *
+	 * For security reasons, you should never use this function with user
+	 * input, even after validation.
+	 *
+	 * @param string $command
+	 *	The command.
+	 *
+	 * @return int
+	 *	The number of affected rows.
+	 */
+	public function run(string $command) : int;
+
+	/**
 	 * Creates, prepares and executes a scalar query statement.
 	 *
 	 * @param string $statement
@@ -210,6 +227,14 @@ interface ISqlConnection extends IComponent, IChannel
 	public function single(string $statement, array $arguments = null, bool $numeric = false) : ?array;
 
 	/**
+	 * Starts a transaction.
+	 *
+	 * @return ISqlTransaction
+	 *	The transaction.
+	 */
+	public function startTransaction() : ISqlTransaction;
+
+	/**
 	 * Creates and prepares a statement.
 	 *
 	 * @param string $statement
@@ -219,4 +244,15 @@ interface ISqlConnection extends IComponent, IChannel
 	 *	The sql statement.
 	 */
 	public function statement(string $statement) : ISqlStatement;
+
+	/**
+	 * Executes a transaction.
+	 *
+	 * @param \Closure $closure
+	 *	The transaction closure.
+	 *
+	 * @return array
+	 *	The transaction result.
+	 */
+	public function transaction(\Closure $closure) : ?array;
 }

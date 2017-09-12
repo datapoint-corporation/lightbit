@@ -146,7 +146,7 @@ class MessageSource extends Component implements IMessageSource
 				. strtr($category, [ '/' => DIRECTORY_SEPARATOR ])
 				. '.php';
 
-			foreach ([ $locale->getID(), $locale->getLanguage() ] as $i => $token)
+			foreach ([ $locale->getLanguageCode(), $locale->getID() ] as $i => $token)
 			{
 				$filePath = $filePathPrefix . $token . $filePathSuffix;
 

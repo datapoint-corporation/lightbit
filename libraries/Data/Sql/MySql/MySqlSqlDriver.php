@@ -32,8 +32,10 @@ use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\ISqlStatementFactory;
+use \Lightbit\Data\Sql\ISqlTransaction;
 use \Lightbit\Data\Sql\MySql\MySqlSqlDatabase;
 use \Lightbit\Data\Sql\MySql\MySqlSqlStatementFactory;
+use \Lightbit\Data\Sql\MySql\MySqlSqlTransaction;
 use \Lightbit\Data\Sql\SqlDriver;
 use \Lightbit\Data\Sql\SqlStatement;
 
@@ -180,5 +182,16 @@ class MySqlSqlDriver extends SqlDriver
 	public function statementFactory() : ISqlStatementFactory
 	{
 		return new MySqlSqlStatementFactory($this->getConnection());
+	}
+
+	/**
+	 * Creates a transaction.
+	 *
+	 * @return ISqlTransaction
+	 *	The transaction.
+	 */
+	public function transaction() : ISqlTransaction
+	{
+		return new MySqlSqlTransaction($this->getConnection());
 	}
 }

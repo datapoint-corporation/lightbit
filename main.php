@@ -52,6 +52,7 @@ require __DIR__ . '/includes/lightbit.php';
 require __DIR__ . '/includes/helpers/environment.php';
 require __DIR__ . '/includes/helpers/globalization.php';
 require __DIR__ . '/includes/helpers/html.php';
+require __DIR__ . '/includes/helpers/http.php';
 require __DIR__ . '/includes/helpers/math.php';
 require __DIR__ . '/includes/helpers/string.php';
 

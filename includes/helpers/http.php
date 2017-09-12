@@ -25,23 +25,22 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
-
-use \Lightbit\Base\IWidget;
+use \Lightbit\Base\Action;
 
 /**
- * IHtmlWidget.
+ * Creates an url.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @param array $route
+ *	The route to resolve to.
+ *
+ * @param bool $absolute
+ *	The absolute flag which, when set, will cause the url to be
+ *	created as an absolute url.
+ *
+ * @return string
+ *	The result.
  */
-interface IHtmlWidget extends IWidget
+function lburl(array $route, bool $absolute = false) : string
 {
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
+	return Action::getInstance()->getContext()->getHttpRouter()->url($route, $absolute);
 }

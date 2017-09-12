@@ -134,11 +134,14 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Performs a commit.
+	 * Creates the attributes label schema.
+	 *
+	 * @return array
+	 *	The attributes label schema.
 	 */
-	public function commit() : void
+	protected function attributesLabel() : array
 	{
-		$this->attributes = $this->getAttributes();
+		return [];
 	}
 
 	/**
@@ -153,6 +156,27 @@ abstract class Model extends Element implements IModel
 	public function getAttribute(string $attribute) // : mixed
 	{
 		return ObjectHelper::getAttribute($this, $attribute);
+	}
+
+	/**
+	 * Gets the attribute label.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return string
+	 *	The attribute label.
+	 */
+	public function getAttributeLabel(string $attribute) : string
+	{
+		$labels = $this->getAttributesLabel();
+
+		if (isset($labels[$attribute]))
+		{
+			return $labels[$attribute];
+		}
+
+		return ucwords(implode(' ', lbwords($attribute)));
 	}
 
 	/**
@@ -186,50 +210,31 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Gets the attributes with update.
-	 *
-	 * If a commit was performed prior to invoking this function, the
-	 * attributes that have been modified since then will be returned as an
-	 * associative array. However, if a commit was not performed, all
-	 * attributes will be returned instead.
-	 *
-	 * @param bool $inverse
-	 *	When set, the original attributes are returned instead.
+	 * Gets the attributes label.
 	 *
 	 * @return array
-	 *	The difference.
+	 *	The attributes label.
 	 */
-	public final function getAttributesWithUpdate(bool $inverse = false) : array
+	public function getAttributesLabel() : array
 	{
-		if (isset($this->attributes))
+		static $attributesLabel = [];
+
+		$locale = $this->getLocale()->getID();
+
+		if (!isset($attributesLabel[$locale]))
 		{
-			$result = [];
+			$attributesLabel[$locale] = $this->attributesLabel();
 
-			if ($inverse)
+			foreach ($this->getAttributesName() as $i => $attribute)
 			{
-				foreach ($this->getAttributes() as $attribute => $value)
+				if (!isset($attributesLabel[$locale][$attribute]))
 				{
-					if ($value !== $this->attributes[$attribute])
-					{
-						$result[$attribute] = $this->attributes[$attribute];
-					}
+					$attributesLabel[$locale][$attribute] = ucwords(strtolower(implode(' ', lbwords($attribute))));
 				}
 			}
-			else
-			{
-				foreach ($this->getAttributes() as $attribute => $value)
-				{
-					if ($value !== $this->attributes[$attribute])
-					{
-						$result[$attribute] = $value;
-					}
-				}
-			}
-
-			return $result;
 		}
 
-		return $this->getAttributes();
+		return $attributesLabel[$locale];
 	}
 
 	/**
@@ -277,23 +282,21 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function getRules() : array
 	{
-		static $rules;
+		static $rules = [];
 
-		if (!isset($rules))
+		$locale = $this->getLocale()->getID();
+
+		if (!isset($rules[$locale]))
 		{
-			$rules = [];
-			$schema = $this->getSchema();
+			$rules[$locale] = [];
 
-			if (isset($schema['rules']))
+			foreach ($this->rules() as $id => $rule)
 			{
-				foreach ($schema['rules'] as $id => $rule)
-				{
-					$rules[] = Rule::create($this, $id, $rule);
-				}
+				$rules[$locale][$id] = Rule::create($this, $id, $rule);
 			}
 		}
 
-		return $rules;
+		return $rules[$locale];
 	}
 
 	/**
@@ -335,24 +338,6 @@ abstract class Model extends Element implements IModel
 	public final function getScenario() : string
 	{
 		return $this->scenario;
-	}
-
-	/**
-	 * Gets the schema.
-	 *
-	 * @return array
-	 *	The schema.
-	 */
-	protected final function getSchema() : array
-	{
-		static $schema;
-
-		if (!isset($schema))
-		{
-			$schema = $this->schema();
-		}
-
-		return $schema;
 	}
 
 	/**
@@ -445,6 +430,28 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Checks if an attribute is required.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isAttributeRequired(string $attribute) : bool
+	{
+		foreach ($this->getRules() as $i => $rule)
+		{
+			if ($rule->hasScenario($this->scenario) && $rule->hasAttribute($attribute) && $rule->isRequired())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Checks the scenario.
 	 *
 	 * @param string $scenario
@@ -459,28 +466,12 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * Performs a rollback.
-	 */
-	public function rollback() : void
-	{
-		if (!isset($this->attributes))
-		{
-			throw Exception(sprintf('Can not rollback, no commit: class "%s"', static::class));
-		}
-
-		ObjectHelper::setAttributes($this, $this->attributes);
-	}
-
-	/**
-	 * Creates the schema.
-	 *
-	 * Please note this method must be deterministic as its result is meant to
-	 * be processed for use throughout multiple instances.
+	 * Creates the rules schema.
 	 *
 	 * @return array
-	 *	The schema.
+	 *	The rules schema.
 	 */
-	protected function schema() : array
+	protected function rules() : array
 	{
 		return [];
 	}

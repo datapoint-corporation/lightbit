@@ -38,6 +38,36 @@ use \Lightbit\Base\Action;
 class GlobalizationHelper
 {
 	/**
+	 * Inflates a message.
+	 *
+	 * This function is context aware: the message is read through the 
+	 * message source and formatted through the locale.
+	 *
+	 * @param string $category
+	 *	The message category.
+	 *
+	 * @param string $message
+	 *	The message.
+	 *
+	 * @param array $arguments
+	 *	The message arguments.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public static function inflate(string $category, string $message, array $arguments = null) : string
+	{
+		$context = Action::getInstance()->getContext();
+		$locale = $context->getLocale();
+
+		return $locale->message
+		(
+			$context->getMessageSource()->read($locale, $category, $message),
+			$arguments
+		);
+	}
+
+	/**
 	 * Reads a message.
 	 *
 	 * If the message is not available at the source, the original message

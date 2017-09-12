@@ -50,6 +50,13 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	private static $schema = [];
 
 	/**
+	 * The attributes.
+	 *
+	 * @type array
+	 */
+	private $attributes;
+
+	/**
 	 * The identity.
 	 *
 	 * @type array
@@ -115,7 +122,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function commit() : void
 	{
-		parent::commit();
+		$this->attributes = $this->getAttributes();
 
 		// Update the current active record identity, requiring all primary
 		// key attributes to be set.
@@ -209,6 +216,53 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Gets the attributes with update.
+	 *
+	 * If a commit was performed prior to invoking this function, the
+	 * attributes that have been modified since then will be returned as an
+	 * associative array. However, if a commit was not performed, all
+	 * attributes will be returned instead.
+	 *
+	 * @param bool $inverse
+	 *	When set, the original attributes are returned instead.
+	 *
+	 * @return array
+	 *	The difference.
+	 */
+	public final function getAttributesWithUpdate(bool $inverse = false) : array
+	{
+		if (isset($this->attributes))
+		{
+			$result = [];
+
+			if ($inverse)
+			{
+				foreach ($this->getAttributes() as $attribute => $value)
+				{
+					if ($value !== $this->attributes[$attribute])
+					{
+						$result[$attribute] = $this->attributes[$attribute];
+					}
+				}
+			}
+			else
+			{
+				foreach ($this->getAttributes() as $attribute => $value)
+				{
+					if ($value !== $this->attributes[$attribute])
+					{
+						$result[$attribute] = $value;
+					}
+				}
+			}
+
+			return $result;
+		}
+
+		return $this->getAttributes();
 	}
 
 	/**
@@ -354,6 +408,19 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
+	 * Performs a rollback.
+	 */
+	public function rollback() : void
+	{
+		if (!isset($this->attributes))
+		{
+			throw Exception(sprintf('Can not rollback, no commit: class "%s"', static::class));
+		}
+
+		$this->setAttributes($this->attributes);
+	}
+
+	/**
 	 * Creates, prepares and executes a insert or update statement matching
 	 * the changes made to the model attributes.
 	 *
@@ -426,10 +493,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function single(string $statement, array $arguments = null) : ?ISqlModel
 	{
-		$instance = parent::single($statement, $arguments);
-		$instance->commit();
-
-		return $instance;
+		return parent::single($statement, $arguments);
 	}
 
 	/**
@@ -447,14 +511,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function query(string $statement, array $arguments = null) : array
 	{
-		$instances = parent::query($statement, $arguments);
-
-		foreach ($instances as $i => $instance)
-		{
-			$instance->commit();
-		}
-
-		return $instances;
+		return parent::query($statement, $arguments);
 	}
 
 	/**

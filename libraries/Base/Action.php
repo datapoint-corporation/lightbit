@@ -84,6 +84,13 @@ final class Action extends Object
 	private $controller;
 
 	/**
+	 * The global identifier.
+	 *
+	 * @type string
+	 */
+	private $globalID;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -91,22 +98,29 @@ final class Action extends Object
 	private $id;
 
 	/**
+	 * The name.
+	 *
+	 * @type string
+	 */
+	private $name;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IController $controller
 	 *	The action controller.
 	 *
-	 * @param string $id
-	 *	The action identifier.
+	 * @param string $name
+	 *	The action name.
 	 *
 	 * @param array $arguments
 	 *	The action arguments.
 	 */
-	public function __construct(IController $controller, string $id, array $arguments)
+	public function __construct(IController $controller, string $name, array $arguments)
 	{
 		$this->arguments = $arguments;
 		$this->controller = $controller;
-		$this->id = $id;
+		$this->name = $name;
 	}
 
 	/**
@@ -150,14 +164,12 @@ final class Action extends Object
 	 */
 	public function getID() : string
 	{
-		static $id;
-
-		if (!$id)
+		if (!$this->id)
 		{
-			$id = $this->controller->getID() . '/' . $this->id;
+			$this->id = $this->controller->getID() . '/' . $this->name;
 		}
 
-		return $id;
+		return $this->id;
 	}
 
 	/**
@@ -168,16 +180,14 @@ final class Action extends Object
 	 */
 	public function getGlobalID() : string
 	{
-		static $globalID;
-
-		if (!$globalID)
+		if (!$this->globalID)
 		{
-			$globalID = $this->controller->getContext()->getID()
+			$this->globalID = $this->controller->getContext()->getID()
 				. '/' . $this->controller->getID()
-				. '/' . $this->id;
+				. '/' . $this->name;
 		}
 
-		return $globalID;
+		return $this->globalID;
 	}
 
 	/**
@@ -188,7 +198,7 @@ final class Action extends Object
 	 */
 	public function getName() : string
 	{
-		return $this->id;
+		return $this->name;
 	}
 
 	/**
@@ -200,7 +210,7 @@ final class Action extends Object
 	public function run() // : mixed
 	{
 		self::$instance = $this;
-		$result = $this->controller->{$this->controller->getActionMethodName($this->id)}(...array_values($this->arguments));
+		$result = $this->controller->{$this->controller->getActionMethodName($this->name)}(...array_values($this->arguments));
 
 		self::$instance = null;
 		return $result;

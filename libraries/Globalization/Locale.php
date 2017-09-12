@@ -28,6 +28,7 @@
 namespace Lightbit\Globalization;
 
 use \Lightbit\Base\Object;
+use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Helpers\MathHelper;
 
@@ -180,7 +181,14 @@ final class Locale extends Object implements ILocale
 	{
 		if ($arguments)
 		{
-			return \MessageFormatter::formatMessage($this->id, $message, $arguments);
+			$result = \MessageFormatter::formatMessage($this->id, $message, $arguments);
+
+			if ($result === false)
+			{
+				throw new Exception(sprintf('Can not format message: locale "%s", message "%s"', $this->id, $message));
+			}
+
+			return $result;
 		}
 
 		return $message;

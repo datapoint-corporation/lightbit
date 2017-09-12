@@ -107,8 +107,8 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Creates a default action method name.
 	 *
-	 * @param string $id
-	 *	The action identifier.
+	 * @param string $action
+	 *	The action name.
 	 *
 	 * @return string
 	 *	The default action method name.
@@ -175,6 +175,17 @@ abstract class Controller extends Element implements IController
 	public final function getContext() : IContext
 	{
 		return $this->context;
+	}
+
+	/**
+	 * Gets the global identifier.
+	 *
+	 * @return string
+	 *	The global identifier.
+	 */
+	public function getGlobalID() : string
+	{
+		return $this->context->getGlobalID() . '/' . $this->id;
 	}
 
 	/**

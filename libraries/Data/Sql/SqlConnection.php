@@ -251,6 +251,20 @@ class SqlConnection extends Component implements ISqlConnection
 	}
 
 	/**
+	 * Starts a transaction.
+	 *
+	 * @return ISqlTransaction
+	 *	The transaction.
+	 */
+	public function startTransaction() : ISqlTransaction
+	{
+		$transaction = $this->getDriver()->transaction();
+		$transaction->start();
+
+		return $transaction;
+	}
+
+	/**
 	 * Gets the database.
 	 *
 	 * @return ISqlDatabase
@@ -421,6 +435,47 @@ class SqlConnection extends Component implements ISqlConnection
 	}
 
 	/**
+	 * Runs a command.
+	 *
+	 * Please beaware that this function does not perform any kind of escape
+	 * procedures on the given command.
+	 *
+	 * For security reasons, you should never use this function with user
+	 * input, even after validation.
+	 *
+	 * @param string $command
+	 *	The command.
+	 *
+	 * @return int
+	 *	The number of affected rows.
+	 */
+	public function run(string $command) : int
+	{
+		if (!$this->pdo)
+		{
+			throw new SqlConnectionException
+			(
+				$this, 
+				sprintf
+				(
+					'Bad SQL connection status, closed: "%s", at context "%s"', 
+					$this->getID(), 
+					$this->getContext()->getPrefix()
+				)
+			);
+		}
+
+		try
+		{
+			return $this->pdo->exec($command);
+		}
+		catch (\PDOException $e)
+		{
+			throw new SqlException($this, sprintf('Can not run SQL command: %s', lcfirst($e->getMessage())), $e);
+		}
+	}
+
+	/**
 	 * Creates, prepares and executes a scalar query statement.
 	 *
 	 * @param string $statement
@@ -533,5 +588,44 @@ class SqlConnection extends Component implements ISqlConnection
 		}
 
 		return $this->driver->statement($statement);
+	}
+
+	/**
+	 * Executes a transaction.
+	 *
+	 * @param \Closure $closure
+	 *	The transaction closure.
+	 *
+	 * @return array
+	 *	The transaction result.
+	 */
+	public final function transaction(\Closure $closure) : ?array
+	{
+		$transaction = null;
+
+		try
+		{
+			$transaction = $this->getDriver()->transaction();
+			$result = $closure($this);
+			$transaction->commit();
+
+			return (is_array($result) ? $result : [ $result ]);
+		}
+		catch (\Throwable $e)
+		{
+			if ($transaction && !$transaction->isClosed())
+			{
+				try
+				{
+					$transaction->rollback();
+				}
+				catch (\Throwable $e2)
+				{
+					throw new SqlException($this, sprintf('Can not rollback transaction with error: %s', lcfirst($e->getMessage())), $e2);
+				}
+			}
+
+			throw new SqlException($this, sprintf('Can not complete transaction, rollback issued: %s', lcfirst($e->getMessage())), $e);
+		}
 	}
 }

@@ -25,23 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\IWidget;
+use \Lightbit\Base\ContextException;
+use \Lightbit\Data\Sql\ISqlTransaction;
+use \Lightbit\Data\Sql\SqlConnectionException;
+use \Lightbit\Exception;
 
 /**
- * IHtmlWidget.
+ * SqlTransactionException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHtmlWidget extends IWidget
+class SqlTransactionException extends SqlConnectionException
 {
 	/**
-	 * Gets the identifier.
+	 * The sql transaction.
 	 *
-	 * @return string
-	 *	The identifier.
+	 * @type ISqlTransaction
 	 */
-	public function getID() : string;
+	private $sqlTransaction;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param ISqlTransactionException $sqlConnection
+	 *	The sql transaction.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
+	 */
+	public function __construct(ISqlTransaction $sqlTransaction, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($sqlTransaction->getConnection(), $message, $previous);
+
+		$this->sqlTransaction = $sqlTransaction;
+	}
+
+	/**
+	 * Gets the sql transaction.
+	 *
+	 * @return ISqlTransaction
+	 *	The sql transaction.
+	 */
+	public final function getSqlTransaction() : ISqlTransaction
+	{
+		return $this->sqlTransaction;
+	}
 }

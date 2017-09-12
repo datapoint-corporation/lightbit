@@ -52,6 +52,11 @@ interface ISqlActiveRecord extends ISqlModel
 	public function all(array $criteria = null) : array;
 
 	/**
+	 * Performs a commit.
+	 */
+	public function commit() : void;
+
+	/**
 	 * Creates, prepares and executes a delete statement matching the
 	 * model instance identity.
 	 *
@@ -71,6 +76,22 @@ interface ISqlActiveRecord extends ISqlModel
 	 *	The results.
 	 */
 	public function filter(array $attributes) : array;
+
+	/**
+	 * Gets the attributes with update.
+	 *
+	 * If a commit was performed prior to invoking this function, the
+	 * attributes that have been modified since then will be returned as an
+	 * associative array. However, if a commit was not performed, all
+	 * attributes will be returned instead.
+	 *
+	 * @param bool $inverse
+	 *	When set, the original attributes are returned instead.
+	 *
+	 * @return array
+	 *	The difference.
+	 */
+	public function getAttributesWithUpdate(bool $inverse = false) : array;
 
 	/**
 	 * Gets the identity.
@@ -137,6 +158,11 @@ interface ISqlActiveRecord extends ISqlModel
 	 *	The result.
 	 */
 	public function one(array $criteria = null) : ?ISqlModel;
+
+	/**
+	 * Performs a rollback.
+	 */
+	public function rollback() : void;
 
 	/**
 	 * Creates, prepares and executes a insert or update statement matching

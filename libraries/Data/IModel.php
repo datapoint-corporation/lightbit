@@ -96,6 +96,17 @@ interface IModel extends IElement
 	public function getAttributeErrors(string $attribute) : array;
 
 	/**
+	 * Gets the attribute label.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return string
+	 *	The attribute label.
+	 */
+	public function getAttributeLabel(string $attribute) : string;
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
@@ -110,6 +121,14 @@ interface IModel extends IElement
 	 *	The attributes errors.
 	 */
 	public function getAttributesErrors() : array;
+
+	/**
+	 * Gets the attributes label.
+	 *
+	 * @return array
+	 *	The attributes label.
+	 */
+	public function getAttributesLabel() : array;
 
 	/**
 	 * Gets the attributes name.
@@ -197,6 +216,17 @@ interface IModel extends IElement
 	 *	The result.
 	 */
 	public function isAttributeAvailable(string $attribute) : bool;
+
+	/**
+	 * Checks if an attribute is required.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isAttributeRequired(string $attribute) : bool;
 
 	/**
 	 * Checks the scenario.
