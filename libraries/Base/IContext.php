@@ -263,23 +263,4 @@ interface IContext
 	 *	The modules configuration.
 	 */
 	public function setModulesConfiguration(array $modulesConfiguration) : void;
-
-	/**
-	 * Sets a plugin configuration.
-	 *
-	 * @param string $id
-	 *	The plugin identifier.
-	 *
-	 * @param array $configuration
-	 *	The plugin configuration.
-	 */
-	public function setPluginConfiguration(string $id, array $configuration) : void;
-
-	/**
-	 * Sets the plugins configuration.
-	 *
-	 * @param array $modulesConfiguration
-	 *	The plugins configuration.
-	 */
-	public function setPluginsConfiguration(array $modulesConfiguration) : void;
 }

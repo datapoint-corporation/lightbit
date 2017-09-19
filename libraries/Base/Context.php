@@ -29,7 +29,6 @@ namespace Lightbit\Base;
 
 use \Lightbit;
 use \Lightbit\Base\Action;
-use \Lightbit\Base\Cluster;
 use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
@@ -64,7 +63,7 @@ use \Lightbit\Security\Cryptography\IPasswordDigest;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Context extends Cluster implements IContext
+abstract class Context extends Object implements IContext
 {
 	/**
 	 * The components.
@@ -86,6 +85,13 @@ abstract class Context extends Cluster implements IContext
 	 * @type IContext
 	 */
 	private $context;
+
+	/**
+	 * The controllers.
+	 *
+	 * @type array
+	 */
+	private $controllers;
 
 	/**
 	 * The event listeners.
@@ -144,6 +150,13 @@ abstract class Context extends Cluster implements IContext
 	private $modulesConfiguration;
 
 	/**
+	 * The path.
+	 *
+	 * @type string
+	 */
+	private $path;
+
+	/**
 	 * The plugins.
 	 *
 	 * @type array
@@ -175,13 +188,13 @@ abstract class Context extends Cluster implements IContext
 	 */
 	protected function __construct(?IContext $context, string $id, string $path, array $configuration = null)
 	{
-		parent::__construct($this, $path);
-
 		$this->context = $context;
 		$this->id = $id;
+		$this->path = $path;
 
 		$this->components = [];
 		$this->componentsConfiguration = [];
+		$this->controllers = [];
 		$this->eventListeners = [];
 		$this->modules = [];
 		$this->plugins = [];
@@ -252,6 +265,23 @@ abstract class Context extends Cluster implements IContext
 				}
 			}
 		}
+	}
+
+	/**
+	 * Creates a controller default class name.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return string
+	 *	The controller class name.
+	 */
+	protected function controllerClassName(string $id) : string
+	{
+		return $this->getNamespaceName()
+			. '\\Controllers\\' 
+			. strtr(ucwords(strtr($id, [ '/' => ' \\ ', '-' => ' ' ])), [ ' ' => '' ])
+			. 'Controller';
 	}
 
 	/**
@@ -330,6 +360,52 @@ abstract class Context extends Cluster implements IContext
 	public final function getContext() : ?IContext
 	{
 		return $this->context;
+	}
+
+	/**
+	 * Gets a controller.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return IController
+	 *	The controller.
+	 */
+	public final function getController(string $id) : IController
+	{
+		if (!isset($this->controllers[$id]))
+		{
+			if (!$this->hasController($id))
+			{
+				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: "%s", at context "%s"', $id, $this->context->getPrefix()));
+			}
+
+			$className = $this->getControllerClassName($id);
+			return $this->controllers[$id] = new $className($this, $id, null);
+		}
+
+		return $this->controllers[$id];
+	}
+
+	/**
+	 * Gets a controller class name.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return string
+	 *	The controller class name.
+	 */
+	public final function getControllerClassName(string $id) : string
+	{
+		static $results = [];
+
+		if (!isset($results[$id]))
+		{
+			$results[$id] = $this->controllerClassName($id);
+		}
+
+		return $results[$id];
 	}
 
 	/**
@@ -562,6 +638,24 @@ abstract class Context extends Cluster implements IContext
 	}
 
 	/**
+	 * Gets the namespace name.
+	 *
+	 * @return string
+	 *	The namespace name.
+	 */
+	public final function getNamespaceName() : string
+	{
+		static $result;
+
+		if (!$result)
+		{
+			$result = Lightbit::getClassNamespaceName(static::class);
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Gets the network cache.
 	 *
 	 * @return INetworkCache
@@ -684,6 +778,17 @@ abstract class Context extends Cluster implements IContext
 	public function getPasswordDigest() : IPasswordDigest
 	{
 		return $this->getComponent('security.cryptography.password.digest');
+	}
+
+	/**
+	 * Gets the path.
+	 *
+	 * @return string
+	 *	The path.
+	 */
+	public final function getPath() : string
+	{
+		return $this->path;
 	}
 
 	/**
@@ -868,6 +973,27 @@ abstract class Context extends Cluster implements IContext
 	public final function hasComponent(string $id) : bool
 	{
 		return (isset($this->components[$id]) || isset($this->componentsConfiguration[$id]['@class']));
+	}
+
+	/**
+	 * Checks a controller availability.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasController(string $id) : bool
+	{
+		static $results = [];
+
+		if (!isset($results[$id]))
+		{
+			return $results[$id] = Lightbit::hasClass($this->getControllerClassName($id));
+		}
+
+		return $results[$id];
 	}
 
 	/**
