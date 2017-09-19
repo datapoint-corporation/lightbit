@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IElement;
 
 /**
@@ -41,11 +41,11 @@ interface IWidget extends IElement
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The html widget context.
 	 *
 	 * @param array $configuration
 	 *	The html widget configuration.
 	 */
-	public function __construct(IContext $context, array $configuration = null);
+	public function __construct(Context $context, array $configuration = null);
 }

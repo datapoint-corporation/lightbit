@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\ParameterRouteException;
@@ -56,7 +56,7 @@ class QueryStringHttpRouter extends HttpRouter
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -65,7 +65,7 @@ class QueryStringHttpRouter extends HttpRouter
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 
@@ -155,7 +155,7 @@ class QueryStringHttpRouter extends HttpRouter
 	 */
 	public function url(array $route, bool $absolute = false) : string
 	{
-		$action = $this->getApplication()->resolve($route);
+		$action = $this->getContext()->resolve($route);
 
 		$result = '' . $this->getScriptName();
 

@@ -30,7 +30,7 @@ namespace Lightbit\Globalization;
 use \Lightbit;
 use \Lightbit\Exception;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\IO\FileSystem\Alias;
@@ -67,7 +67,7 @@ class MessageSource extends Component implements IMessageSource
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -76,7 +76,7 @@ class MessageSource extends Component implements IMessageSource
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, null);
 

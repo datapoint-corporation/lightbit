@@ -33,12 +33,12 @@ use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 
 /**
- * IContext.
+ * Context.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IContext
+interface Context
 {
 	/**
 	 * Disposes the context.
@@ -59,10 +59,10 @@ interface IContext
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : ?IContext;
+	public function getContext() : ?Context;
 
 	/**
 	 * Gets a controller.
@@ -129,10 +129,10 @@ interface IContext
 	 * @param string $id
 	 *	The module identifier.
 	 *
-	 * @return IModule
+	 * @return Module
 	 *	The module.
 	 */
-	public function getModule(string $id) : IModule;
+	public function getModule(string $id) : Module;
 
 	/**
 	 * Gets the namespace name.

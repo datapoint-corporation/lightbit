@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\Object;
 use \Lightbit\Http\IHttpRouter;
 
@@ -74,7 +74,7 @@ abstract class HttpRouter extends Component implements IHttpRouter
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -83,7 +83,7 @@ abstract class HttpRouter extends Component implements IHttpRouter
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

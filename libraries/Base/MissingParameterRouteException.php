@@ -43,7 +43,7 @@ class MissingParameterRouteException extends ParameterRouteException
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param array $route
@@ -58,7 +58,7 @@ class MissingParameterRouteException extends ParameterRouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, array $route, string $parameterName, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $route, $parameterName, $message, $previous);
 	}

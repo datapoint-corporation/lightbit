@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Element;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IWidget;
 
 /**
@@ -42,20 +42,20 @@ class Widget extends Element implements IWidget
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The html widget context.
 	 *
 	 * @param array $configuration
 	 *	The html widget configuration.
 	 */
-	public function __construct(IContext $context, array $configuration = null)
+	public function __construct(Context $context, array $configuration = null)
 	{
 		$this->context = $context;
 
@@ -68,10 +68,10 @@ class Widget extends Element implements IWidget
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : IContext
+	public final function getContext() : Context
 	{
 		return $this->context;
 	}

@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\ContextException;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 
 /**
  * RouteException.
@@ -48,7 +48,7 @@ class RouteException extends ContextException
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param array $route
@@ -60,7 +60,7 @@ class RouteException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, array $route, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, array $route, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
 

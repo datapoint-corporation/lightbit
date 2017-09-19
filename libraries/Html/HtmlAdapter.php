@@ -29,7 +29,7 @@ namespace Lightbit\Html;
 
 use \Lightbit;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\IModel;
 use \Lightbit\Helpers\TypeHelper;
@@ -46,7 +46,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -55,7 +55,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

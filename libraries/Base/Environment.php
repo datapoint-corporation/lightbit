@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IEnvironment;
 
 /**
@@ -42,7 +42,7 @@ class Environment extends Component implements IEnvironment
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -51,7 +51,7 @@ class Environment extends Component implements IEnvironment
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

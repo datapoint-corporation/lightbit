@@ -28,7 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlDocument;
 
@@ -92,7 +92,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -101,7 +101,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, null);
 

@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Action;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IElement;
 
 /**
@@ -42,7 +42,7 @@ interface IController extends IElement
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The controller context.
 	 *
 	 * @param string $id
@@ -51,7 +51,7 @@ interface IController extends IElement
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null);
+	public function __construct(Context $context, string $id, array $configuration = null);
 
 	/**
 	 * Gets an action method name.
@@ -67,10 +67,10 @@ interface IController extends IElement
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : IContext;
+	public function getContext() : Context;
 
 	/**
 	 * Gets the global identifier.

@@ -25,33 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IElement;
+use \Lightbit\Exception;
 
 /**
- * IModule.
+ * IllegalStateException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IModule extends IContext, IBase
+class IllegalStateException extends Exception
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The module context.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @param string $id
-	 *	The module identifier.
-	 *
-	 * @param string $path
-	 *	The module path.
-	 *
-	 * @param array $configuration
-	 *	The module configuration.
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
+	public function __construct(string $message, \Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+	}
 }

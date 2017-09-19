@@ -46,7 +46,7 @@ class View extends Element implements IView
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
@@ -60,7 +60,7 @@ class View extends Element implements IView
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The view context.
 	 *
 	 * @param string $path
@@ -69,7 +69,7 @@ class View extends Element implements IView
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
+	public function __construct(?Context $context, string $path, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->path = $path;
@@ -101,10 +101,10 @@ class View extends Element implements IView
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : IContext
+	public final function getContext() : Context
 	{
 		if ($this->context)
 		{

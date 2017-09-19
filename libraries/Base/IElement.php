@@ -28,9 +28,9 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Action;
-use \Lightbit\Base\IApplication;
+use \Lightbit\Base\Application;
 use \Lightbit\Base\IBase;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 
 /**
  * IElement.
@@ -51,16 +51,16 @@ interface IElement extends IBase
 	/**
 	 * Gets the application.
 	 *
-	 * @return IApplication
+	 * @return Application
 	 *	The application.
 	 */
-	public function getApplication() : IApplication;
+	public function getApplication() : Application;
 
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : IContext;
+	public function getContext() : Context;
 }

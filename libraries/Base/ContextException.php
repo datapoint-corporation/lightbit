@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Exception;
 
 /**
@@ -41,14 +41,14 @@ class ContextException extends Exception
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param string $message
@@ -57,7 +57,7 @@ class ContextException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 
@@ -67,10 +67,10 @@ class ContextException extends Exception
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : IContext
+	public final function getContext() : Context
 	{
 		return $this->context;
 	}

@@ -28,7 +28,7 @@
 namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IChannel;
 use \Lightbit\Data\Caching\CacheException;
 use \Lightbit\Data\Caching\ICache;
@@ -51,7 +51,7 @@ final class NoCache extends Component implements ICache, IFileCache, IMemoryCach
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -60,7 +60,7 @@ final class NoCache extends Component implements ICache, IFileCache, IMemoryCach
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

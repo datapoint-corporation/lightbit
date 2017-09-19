@@ -28,7 +28,7 @@
 namespace Lightbit\Data;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\NoCache;
@@ -44,7 +44,7 @@ final class SlugManager extends Component implements ISlugManager
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -53,7 +53,7 @@ final class SlugManager extends Component implements ISlugManager
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

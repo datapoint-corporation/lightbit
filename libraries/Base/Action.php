@@ -27,9 +27,9 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Exception;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\Object;
+use \Lightbit\IllegalStateException;
 
 /**
  * Action.
@@ -56,7 +56,7 @@ final class Action extends Object
 	{
 		if (!self::$instance)
 		{
-			throw new Exception('Action is not available within context.');
+			throw new IllegalStateException('Action is not in execution.');
 		}
 
 		return self::$instance;
@@ -72,7 +72,7 @@ final class Action extends Object
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
@@ -137,10 +137,10 @@ final class Action extends Object
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : IContext
+	public function getContext() : Context
 	{
 		return $this->controller->getContext();	
 	}

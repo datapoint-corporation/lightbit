@@ -27,7 +27,7 @@
 
 namespace Lightbit\Html\UI;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Html\HtmlWidget;
 use \Lightbit\Html\IHtmlAdapter;
 
@@ -49,13 +49,13 @@ class FormHtmlWidget extends HtmlWidget
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The html widget context.
 	 *
 	 * @param array $configuration
 	 *	The html widget configuration.
 	 */
-	public function __construct(IContext $context, array $configuration = null)
+	public function __construct(Context $context, array $configuration = null)
 	{
 		parent::__construct($context, $configuration);
 

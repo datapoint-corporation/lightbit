@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\ContextException;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Exception;
 
 /**
@@ -49,7 +49,7 @@ class ControllerNotFoundException extends ContextException
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param string $controllerID
@@ -61,7 +61,7 @@ class ControllerNotFoundException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $controllerID, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, string $controllerID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
 	}

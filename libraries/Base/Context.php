@@ -31,7 +31,6 @@ use \Lightbit;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\ModuleNotFoundException;
@@ -54,6 +53,7 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
+use \Lightbit\IllegalStateException;
 use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
@@ -63,7 +63,7 @@ use \Lightbit\Security\Cryptography\IPasswordDigest;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Context extends Object implements IContext
+abstract class Context extends Object
 {
 	/**
 	 * The components.
@@ -82,7 +82,7 @@ abstract class Context extends Object implements IContext
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
@@ -186,7 +186,7 @@ abstract class Context extends Object implements IContext
 	 * @param array $configuration
 	 *	The application configuration.
 	 */
-	protected function __construct(?IContext $context, string $id, string $path, array $configuration = null)
+	protected function __construct(?Context $context, string $id, string $path, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
@@ -354,10 +354,10 @@ abstract class Context extends Object implements IContext
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : ?IContext
+	public final function getContext() : ?Context
 	{
 		return $this->context;
 	}
@@ -377,7 +377,7 @@ abstract class Context extends Object implements IContext
 		{
 			if (!$this->hasController($id))
 			{
-				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: "%s", at context "%s"', $id, $this->context->getPrefix()));
+				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: "%s", at context "%s"', $id, $this->getPrefix()));
 			}
 
 			$className = $this->getControllerClassName($id);
@@ -672,10 +672,10 @@ abstract class Context extends Object implements IContext
 	 * @param string $id
 	 *	The module identifier.
 	 *
-	 * @return IModule
+	 * @return Module
 	 *	The module.
 	 */
-	public final function getModule(string $id) : IModule
+	public final function getModule(string $id) : Module
 	{
 		if (!isset($this->modules[$id]))
 		{
@@ -1022,6 +1022,108 @@ abstract class Context extends Object implements IContext
 	public final function on(string $id, \Closure $closure) : void
 	{
 		Lightbit::on($id, $closure);
+	}
+
+	public final function resolve(?array $route) : Action
+	{
+		$context = $this;
+
+		_resolve0:
+
+		// If a route is not given, we'll use the default route as defined
+		// by this context.
+		if (!$route)
+		{
+			$route = $context->getDefaultRoute();
+		}
+
+		// If the route path is null, we'll extend the default route with
+		// the one provided
+		else if (!isset($route[0]) || !$route[0])
+		{
+			$route = $context->getDefaultRoute() + $route;
+		}
+
+		// If the route path starts with "~/" the whole behaviour is skipped,
+		// as the route is resolved directly by the controller
+		$path = $route[0];
+		$parameters = $route; 
+		unset($parameters[0]);
+
+		if (strpos($path, '~/') === 0)
+		{
+			return Action::getInstance()->getController()->resolve
+			(
+				substr($path, 2),
+				$parameters
+			);
+		}
+
+		// Change the target context and path based on the path prefix,
+		// acording to the following rules.
+		if ($path[0] == '/')
+		{
+			$context = Lightbit::getApplication();
+			$path = substr($path, 1);
+		}
+
+		else if (strpos($path, '@/') === 0)
+		{
+			try
+			{
+				$context = Action::getInstance()->getContext();
+			}
+			catch (IllegalStateException $e) {}
+
+			$path = substr($path, 2);
+		}
+
+		$i;
+		_resolve1:
+
+		// If the route path contains a slash, we'll first check against
+		// for an existing controller, as they have priority.
+		if ($i = strrpos($path, '/'))
+		{
+			try
+			{
+				return $context->getController(substr($path, 0, $i))
+					->resolve(substr($path, $i + 1), $parameters);
+			}
+			catch (ControllerNotFoundException $e) { }
+		}
+
+		// Since we now know it has to be related to a module, we'll get that
+		// module and resolve from it
+		if ($i = strpos($path, '/'))
+		{
+			try
+			{
+				$context = $context->getModule(substr($path, 0, $i));
+				$path = substr($path, $i + 1);
+				goto _resolve1;
+			}
+			catch (ModuleNotFoundException $e)
+			{
+				$controllerID = substr($path, 0, strrpos($path, '/'));
+
+				throw new ControllerNotFoundException
+				(
+					$this,
+					$controllerID,
+					sprintf
+					(
+						'Context controller not found: controller "%s", at context "%s"',
+						$controllerID,
+						$this->getGlobalID()
+					)
+				);
+			}
+		}
+		
+		$context = $context->getModule($path);
+		$route = $context->getDefaultRoute();
+		goto _resolve0;
 	}
 
 	/**

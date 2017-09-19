@@ -28,7 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\Widget;
 use \Lightbit\Helpers\ObjectHelper;
 
@@ -50,13 +50,13 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The html widget context.
 	 *
 	 * @param array $configuration
 	 *	The html widget configuration.
 	 */
-	public function __construct(IContext $context, array $configuration = null)
+	public function __construct(Context $context, array $configuration = null)
 	{
 		parent::__construct($context, $configuration);
 	}

@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\RouteException;
 use \Lightbit\Exception;
 
@@ -45,7 +45,7 @@ class ControllerNotFoundRouteException extends RouteException
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param array $route
@@ -57,7 +57,7 @@ class ControllerNotFoundRouteException extends RouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, array $route, string $controllerID, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, array $route, string $controllerID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $route, $message, $previous);
 	}

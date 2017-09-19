@@ -73,10 +73,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the application.
 	 *
-	 * @return IApplication
+	 * @return Application
 	 *	The application.
 	 */
-	public final function getApplication() : IApplication
+	public final function getApplication() : Application
 	{
 		return Lightbit::getApplication();
 	}
@@ -109,10 +109,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : IContext
+	public function getContext() : Context
 	{
 		$action = Action::getInstance();
 
@@ -377,7 +377,7 @@ abstract class Element extends Object implements IElement
 			return $context->{$method}(...$arguments);
 		}
 
-		if (!($context instanceof IApplication))
+		if (!($context instanceof Application))
 		{
 			$context = $this->getApplication();
 

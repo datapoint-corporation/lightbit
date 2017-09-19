@@ -30,7 +30,7 @@ namespace Lightbit\Base;
 use \Lightbit;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Element;
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\IView;
@@ -56,7 +56,7 @@ abstract class Controller extends Element implements IController
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @type Context
 	 */
 	private $context;
 
@@ -91,7 +91,7 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The context.
 	 *
 	 * @param string $id
@@ -100,7 +100,7 @@ abstract class Controller extends Element implements IController
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
@@ -176,10 +176,10 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Gets the context.
 	 *
-	 * @return IContext
+	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : IContext
+	public final function getContext() : Context
 	{
 		return $this->context;
 	}

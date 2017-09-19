@@ -30,8 +30,7 @@ namespace Lightbit\Base;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IModule;
+use \Lightbit\Base\Module;
 use \Lightbit\Exception;
 
 /**
@@ -40,12 +39,12 @@ use \Lightbit\Exception;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Module extends Context implements IModule
+abstract class Module extends Context
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The module context.
 	 *
 	 * @param string $id
@@ -57,7 +56,7 @@ abstract class Module extends Context implements IModule
 	 * @param array $configuration
 	 *	The module configuration.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
+	public function __construct(Context $context, string $id, string $path, array $configuration = null)
 	{
 		parent::__construct($context, $id, $path, $configuration);
 	}
@@ -65,10 +64,10 @@ abstract class Module extends Context implements IModule
 	/**
 	 * Gets the application.
 	 *
-	 * @return IApplication
+	 * @return Application
 	 *	The application.
 	 */
-	public final function getApplication() : IApplication
+	public final function getApplication() : Application
 	{
 		return Lightbit::getApplication();
 	}

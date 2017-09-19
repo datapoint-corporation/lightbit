@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IElement;
 
 /**
@@ -41,7 +41,7 @@ interface IComponent extends IElement
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -50,7 +50,7 @@ interface IComponent extends IElement
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null);
+	public function __construct(Context $context, string $id, array $configuration = null);
 
 	/**
 	 * Gets the identifier.

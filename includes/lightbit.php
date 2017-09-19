@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Base\IApplication;
+use \Lightbit\Base\Application;
 use \Lightbit\ClassNotFoundException;
 use \Lightbit\ClassPathResolutionException;
 use \Lightbit\Exception;
@@ -72,7 +72,7 @@ class Lightbit
 	/**
 	 * The application.
 	 *
-	 * @type IApplication
+	 * @type Application
 	 */
 	private static $application;
 
@@ -124,10 +124,10 @@ class Lightbit
 	/**
 	 * Gets the application.
 	 *
-	 * @return IApplication
+	 * @return Application
 	 *	The the application.
 	 */
-	public static function getApplication() : IApplication
+	public static function getApplication() : Application
 	{
 		return self::$application;
 	}

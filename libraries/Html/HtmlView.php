@@ -27,7 +27,7 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\Context;
 use \Lightbit\Base\IView;
 use \Lightbit\Base\View;
 
@@ -42,7 +42,7 @@ class HtmlView extends View
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The view context.
 	 *
 	 * @param string $path
@@ -51,7 +51,7 @@ class HtmlView extends View
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
+	public function __construct(?Context $context, string $path, array $configuration = null)
 	{
 		parent::__construct($context, $path, $configuration);
 	}
