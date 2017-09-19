@@ -218,22 +218,16 @@ interface IContext
 	 *
 	 * @param array $configuration
 	 *	The component configuration.
-	 *
-	 * @param bool $merge
-	 *	The components configuration merge flag.
 	 */
-	public function setComponentConfiguration(string $id, array $configuration, bool $merge = true) : void;
+	public function setComponentConfiguration(string $id, array $configuration) : void;
 
 	/**
 	 * Sets the components configuration.
 	 *
 	 * @param array $componentsConfiguration
 	 *	The components configuration.
-	 *
-	 * @param bool $merge
-	 *	The components configuration merge flag.
 	 */
-	public function setComponentsConfiguration(array $setComponentsConfiguration, bool $merge = true) : void;
+	public function setComponentsConfiguration(array $setComponentsConfiguration) : void;
 
 	/**
 	 * Sets the layout.
@@ -259,22 +253,16 @@ interface IContext
 	 *
 	 * @param array $configuration
 	 *	The module configuration.
-	 *
-	 * @param bool $merge
-	 *	The module configuration merge flag.
 	 */
-	public function setModuleConfiguration(string $id, array $configuration, bool $merge = true) : void;
+	public function setModuleConfiguration(string $id, array $configuration) : void;
 
 	/**
 	 * Sets the modules configuration.
 	 *
 	 * @param array $modulesConfiguration
 	 *	The modules configuration.
-	 *
-	 * @param bool $merge
-	 *	The module configuration merge flag.
 	 */
-	public function setModulesConfiguration(array $modulesConfiguration, bool $merge = true) : void;
+	public function setModulesConfiguration(array $modulesConfiguration) : void;
 
 	/**
 	 * Sets a plugin configuration.
@@ -284,20 +272,14 @@ interface IContext
 	 *
 	 * @param array $configuration
 	 *	The plugin configuration.
-	 *
-	 * @param bool $merge
-	 *	The plugin configuration merge flag.
 	 */
-	public function setPluginConfiguration(string $id, array $configuration, bool $merge = true) : void;
+	public function setPluginConfiguration(string $id, array $configuration) : void;
 
 	/**
 	 * Sets the plugins configuration.
 	 *
 	 * @param array $modulesConfiguration
 	 *	The plugins configuration.
-	 *
-	 * @param bool $merge
-	 *	The plugins configuration merge flag.
 	 */
-	public function setPluginsConfiguration(array $modulesConfiguration, bool $merge = true) : void;
+	public function setPluginsConfiguration(array $modulesConfiguration) : void;
 }

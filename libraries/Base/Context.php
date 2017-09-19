@@ -182,22 +182,19 @@ abstract class Context extends Cluster implements IContext
 
 		$this->components = [];
 		$this->componentsConfiguration = [];
-
 		$this->eventListeners = [];
-
 		$this->modules = [];
-		$this->modulesConfiguration = [];
-
 		$this->plugins = [];
-		$this->pluginsConfiguration = [];
 
+		// Scans the modules base path for installations, loads the 
+		// configuration, creates and registers each module.
 		$modulesBasePath = $this->getModulesBasePath();
 
-		if (file_exists($modulesBasePath))
+		if (is_dir($modulesBasePath))
 		{
 			foreach (scandir($modulesBasePath) as $i => $id)
 			{
-				if ($id[0] === '.' || $id[0] === '_')
+				if ($id[0] === '.' || $id[0] === '_' || $id[0] === '~')
 				{
 					continue;
 				}
@@ -206,13 +203,15 @@ abstract class Context extends Cluster implements IContext
 			}
 		}
 
+		// Scans the modules base path for installations, loads the 
+		// configuration, creates and registers each plugin.
 		$pluginsBasePath = $this->getPluginsBasePath();
 
-		if (file_exists($pluginsBasePath))
+		if (is_dir($pluginsBasePath))
 		{
 			foreach (scandir($pluginsBasePath) as $i => $id)
 			{
-				if ($id[0] === '.' || $id[0] === '_')
+				if ($id[0] === '.' || $id[0] === '_' || $id[0] === '~')
 				{
 					continue;
 				}
@@ -223,15 +222,21 @@ abstract class Context extends Cluster implements IContext
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			$this->configure($configuration);
 		}
 	}
 
-	private function _dependencies(array $requirements) : void
+	/**
+	 * Loads the dependencies.
+	 *
+	 * @param array $dependencies
+	 *	The dependencies schema.
+	 */
+	private function _loadDependencies(array $dependencies) : void
 	{
-		foreach ($requirements as $class => $subjects)
+		foreach ($dependencies as $type => $subjects)
 		{
-			if ($class === 'modules')
+			if ($type === 'module')
 			{
 				foreach ($subjects as $i => $module)
 				{
@@ -239,7 +244,7 @@ abstract class Context extends Cluster implements IContext
 				}
 			}
 
-			if ($class === 'plugins')
+			if ($type === 'plugin')
 			{
 				foreach ($subjects as $i => $plugin)
 				{
@@ -580,41 +585,75 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->modules[$id]))
 		{
-			$modulePath = $this->getModulesBasePath() . DIRECTORY_SEPARATOR . $id;
+			// Ensure the module install path exists and matches a directory
+			// to throw an exception with a matching description.
+			$installPath = $this->getModulesBasePath() . DIRECTORY_SEPARATOR . $id;
 
-			if (!file_exists($modulePath))
+			if (!is_dir($installPath))
 			{
-				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, not available: "%s", at context "%s"', $id, $this->getPrefix()));
+				throw new ModuleNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context module not found, not available: module "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$moduleConfigurationPath = $modulePath . DIRECTORY_SEPARATOR . 'module.php';
+			// Get the module configuration and ensure it's an array with the
+			// applicable magic properties set as needed.
+			$configurationPath = $installPath . DIRECTORY_SEPARATOR . 'module.php';
 
-			if (!file_exists($moduleConfigurationPath))
+			if (!is_file($configurationPath))
 			{
-				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, configuration script is missing: "%s", at context "%s"', $id, $this->getPrefix())); 
+				throw new ModuleNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context module not found, missing configuration: module "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$moduleRequirementPath = $modulePath . DIRECTORY_SEPARATOR . 'module-dependencies.php';
+			$configuration = Lightbit::inclusion()($configurationPath);
 
-			if (file_exists($moduleRequirementPath))
+			if (!is_array($configuration) || !isset($configuration['@class']))
 			{
-				$moduleRequirement = Lightbit::inclusion()($moduleRequirementPath);
-
-				if (is_array($moduleRequirement))
-				{
-					$this->_dependencies($moduleRequirement);
-				}
+				throw new ModuleNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context module not found, bad configuration: module "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$moduleConfiguration = Lightbit::inclusion()($moduleConfigurationPath);
-
-			if (!isset($moduleConfiguration['@class']))
+			// If the configuration defines any dependencies, we'll have to
+			// load them before the instance can be created.
+			if (isset($configuration['@require']) && is_array($configuration['@require']))
 			{
-				throw new ModuleNotFoundException($this, $id, sprintf('Module not found, configuration script is invalid: "%s", at context "%s"', $id, $this->getPrefix())); 
+				$this->_loadDependencies($configuration['@require']);
 			}
 
-			$className = $moduleConfiguration['@class'];
-			return $this->modules[$id] = new $className($this, $id, $modulePath, $moduleConfiguration);
+			$this->modules[$id] = new $configuration['@class']
+			(
+				$this, 
+				$id, 
+				$installPath, 
+				$configuration
+			);
 		}
 
 		return $this->modules[$id];
@@ -660,41 +699,75 @@ abstract class Context extends Cluster implements IContext
 	{
 		if (!isset($this->plugins[$id]))
 		{
-			$pluginPath = $this->getPluginsBasePath() . DIRECTORY_SEPARATOR . $id;
+			// Ensure the plugin install path exists and matches a directory
+			// to throw an exception with a matching description.
+			$installPath = $this->getPluginsBasePath() . DIRECTORY_SEPARATOR . $id;
 
-			if (!file_exists($pluginPath))
+			if (!is_dir($installPath))
 			{
-				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, not available: "%s", at context "%s"', $id, $this->getPrefix()));
+				throw new PluginNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context plugin not found, not available: plugin "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$pluginConfigurationPath = $pluginPath . DIRECTORY_SEPARATOR . 'plugin.php';
+			// Get the plugin configuration and ensure it's an array with the
+			// applicable magic properties set as needed.
+			$configurationPath = $installPath . DIRECTORY_SEPARATOR . 'plugin.php';
 
-			if (!file_exists($pluginConfigurationPath))
+			if (!is_file($configurationPath))
 			{
-				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, configuration script is missing: "%s", at context "%s"', $id, $this->getPrefix())); 
+				throw new PluginNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context plugin not found, missing configuration: plugin "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$pluginRequirementPath = $pluginPath . DIRECTORY_SEPARATOR . 'plugin-dependencies.php';
+			$configuration = Lightbit::inclusion()($configurationPath);
 
-			if (file_exists($pluginRequirementPath))
+			if (!is_array($configuration) || !isset($configuration['@class']))
 			{
-				$pluginRequirement = Lightbit::inclusion()($pluginRequirementPath);
-
-				if (is_array($pluginRequirement))
-				{
-					$this->_dependencies($pluginRequirement);
-				}
+				throw new PluginNotFoundException
+				(
+					$this,
+					$id,
+					sprintf
+					(
+						'Context plugin not found, bad configuration: plugin "%s", at context "%s"',
+						$id,
+						$this->getGlobalID()
+					)
+				);
 			}
 
-			$pluginConfiguration = Lightbit::inclusion()($pluginConfigurationPath);
-
-			if (!isset($pluginConfiguration['@class']))
+			// If the configuration defines any dependencies, we'll have to
+			// load them before the instance can be created.
+			if (isset($configuration['@require']) && is_array($configuration['@require']))
 			{
-				throw new PluginNotFoundException($this, $id, sprintf('Plugin not found, configuration script is invalid: "%s", at context "%s"', $id, $this->getPrefix())); 
+				$this->_loadDependencies($configuration['@require']);
 			}
 
-			$className = $pluginConfiguration['@class'];
-			return $this->plugins[$id] = new $className($this, $id, $pluginPath, $pluginConfiguration);
+			$this->plugins[$id] = new $configuration['@class']
+			(
+				$this, 
+				$id, 
+				$installPath, 
+				$configuration
+			);
 		}
 
 		return $this->plugins[$id];
@@ -794,7 +867,7 @@ abstract class Context extends Cluster implements IContext
 	 */
 	public final function hasComponent(string $id) : bool
 	{
-		return false;
+		return (isset($this->components[$id]) || isset($this->componentsConfiguration[$id]['@class']));
 	}
 
 	/**
@@ -875,14 +948,11 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $configuration
 	 *	The component configuration.
-	 *
-	 * @param bool $merge
-	 *	The components configuration merge flag.
 	 */
-	public function setComponentConfiguration(string $id, array $configuration, bool $merge = true) : void
+	public function setComponentConfiguration(string $id, array $configuration) : void
 	{
 		$this->componentsConfiguration[$id]
-			= ($merge && isset($this->componentsConfiguration[$id]))
+			= (isset($this->componentsConfiguration[$id]))
 			? array_replace_recursive($this->componentsConfiguration[$id], $configuration)
 			: $configuration;
 	}
@@ -892,15 +962,12 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $componentsConfiguration
 	 *	The components configuration.
-	 *
-	 * @param bool $merge
-	 *	The components configuration merge flag.
 	 */
-	public function setComponentsConfiguration(array $componentsConfiguration, bool $merge = true) : void
+	public function setComponentsConfiguration(array $componentsConfiguration) : void
 	{
 		foreach ($componentsConfiguration as $id => $configuration)
 		{
-			$this->setComponentConfiguration($id, $configuration, $merge);
+			$this->setComponentConfiguration($id, $configuration);
 		}
 	}
 
@@ -935,33 +1002,10 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $configuration
 	 *	The module configuration.
-	 *
-	 * @param bool $merge
-	 *	The module configuration merge flag.
 	 */
-	public final function setModuleConfiguration(string $id, array $configuration, bool $merge = true) : void
+	public final function setModuleConfiguration(string $id, array $configuration) : void
 	{
-		if (isset($this->modules[$id]))
-		{
-			throw new Exception(sprintf('Module is already in use: "%s"', $id));
-		}
-
-		if (!isset($this->modulesConfiguration[$id]))
-		{
-			throw new Exception(sprintf('Module is not available: "%s"', $id));
-		}
-
-		if (isset($configuration['@class']))
-		{
-			throw new Exception(sprintf('Module class can not be changed: "%s"', $id));
-		}
-
-		$this->modulesConfiguration[$id] = [ '@class' => $this->modulesConfiguration[$id]['@class'] ] + 
-		(
-			$merge
-			? array_replace_recursive($this->modulesConfiguration[$id], $configuration) 
-			: $configuration
-		);
+		$this->getModule($id)->configure($configuration);
 	}
 
 	/**
@@ -969,15 +1013,12 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $modulesConfiguration
 	 *	The modules configuration.
-	 *
-	 * @param bool $merge
-	 *	The module configuration merge flag.
 	 */
-	public final function setModulesConfiguration(array $modulesConfiguration, bool $merge = true) : void
+	public final function setModulesConfiguration(array $modulesConfiguration) : void
 	{
 		foreach ($modulesConfiguration as $id => $configuration)
 		{
-			$this->setModuleConfiguration($id, $configuration, $merge);
+			$this->setModuleConfiguration($id, $configuration);
 		}
 	}
 
@@ -989,33 +1030,10 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $configuration
 	 *	The plugin configuration.
-	 *
-	 * @param bool $merge
-	 *	The plugin configuration merge flag.
 	 */
-	public final function setPluginConfiguration(string $id, array $configuration, bool $merge = true) : void
+	public final function setPluginConfiguration(string $id, array $configuration) : void
 	{
-		if (isset($this->plugins[$id]))
-		{
-			throw new Exception(sprintf('Plugin is already in use: "%s"', $id));
-		}
-
-		if (!isset($this->pluginsConfiguration[$id]))
-		{
-			throw new Exception(sprintf('Plugin is not available: "%s"', $id));
-		}
-
-		if (isset($configuration['@class']))
-		{
-			throw new Exception(sprintf('Plugin class can not be changed: "%s"', $id));
-		}
-
-		$this->pluginsConfiguration[$id] = [ '@class' => $this->pluginsConfiguration[$id]['@class'] ] + 
-		(
-			$merge
-			? array_replace_recursive($this->pluginsConfiguration[$id], $configuration) 
-			: $configuration
-		);
+		$this->getPlugin($id)->configure($configuration);
 	}
 
 	/**
@@ -1023,15 +1041,12 @@ abstract class Context extends Cluster implements IContext
 	 *
 	 * @param array $modulesConfiguration
 	 *	The plugins configuration.
-	 *
-	 * @param bool $merge
-	 *	The plugins configuration merge flag.
 	 */
-	public final function setPluginsConfiguration(array $pluginsConfiguration, bool $merge = true) : void
+	public final function setPluginsConfiguration(array $pluginsConfiguration) : void
 	{
 		foreach ($pluginsConfiguration as $id => $configuration)
 		{
-			$this->setPluginConfiguration($id, $configuration, $merge);
+			$this->setPluginConfiguration($id, $configuration);
 		}
 	}
 
