@@ -157,27 +157,6 @@ abstract class Context extends Object
 	private $path;
 
 	/**
-	 * The plugins.
-	 *
-	 * @type array
-	 */
-	private $plugins;
-
-	/**
-	 * The plugins base path.
-	 *
-	 * @type string
-	 */
-	private $pluginsBasePath;
-
-	/**
-	 * The plugins configuration.
-	 *
-	 * @type array
-	 */
-	private $pluginsConfiguration;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param string $path
@@ -197,7 +176,6 @@ abstract class Context extends Object
 		$this->controllers = [];
 		$this->eventListeners = [];
 		$this->modules = [];
-		$this->plugins = [];
 
 		// Scans the modules base path for installations, loads the 
 		// configuration, creates and registers each module.
@@ -214,28 +192,6 @@ abstract class Context extends Object
 
 				$this->getModule($id);
 			}
-		}
-
-		// Scans the modules base path for installations, loads the 
-		// configuration, creates and registers each plugin.
-		$pluginsBasePath = $this->getPluginsBasePath();
-
-		if (is_dir($pluginsBasePath))
-		{
-			foreach (scandir($pluginsBasePath) as $i => $id)
-			{
-				if ($id[0] === '.' || $id[0] === '_' || $id[0] === '~')
-				{
-					continue;
-				}
-
-				$this->getPlugin($id);
-			}
-		}
-
-		if ($configuration)
-		{
-			$this->configure($configuration);
 		}
 	}
 
@@ -254,14 +210,6 @@ abstract class Context extends Object
 				foreach ($subjects as $i => $module)
 				{
 					$this->getModule($module);
-				}
-			}
-
-			if ($type === 'plugin')
-			{
-				foreach ($subjects as $i => $plugin)
-				{
-					$this->getPlugin($plugin);
 				}
 			}
 		}
@@ -792,109 +740,6 @@ abstract class Context extends Object
 	}
 
 	/**
-	 * Gets a plugin.
-	 *
-	 * @param string $id
-	 *	The plugin identifier.
-	 *
-	 * @return IPlugin
-	 *	The plugin.
-	 */
-	public function getPlugin(string $id) : IPlugin
-	{
-		if (!isset($this->plugins[$id]))
-		{
-			// Ensure the plugin install path exists and matches a directory
-			// to throw an exception with a matching description.
-			$installPath = $this->getPluginsBasePath() . DIRECTORY_SEPARATOR . $id;
-
-			if (!is_dir($installPath))
-			{
-				throw new PluginNotFoundException
-				(
-					$this,
-					$id,
-					sprintf
-					(
-						'Context plugin not found, not available: plugin "%s", at context "%s"',
-						$id,
-						$this->getGlobalID()
-					)
-				);
-			}
-
-			// Get the plugin configuration and ensure it's an array with the
-			// applicable magic properties set as needed.
-			$configurationPath = $installPath . DIRECTORY_SEPARATOR . 'plugin.php';
-
-			if (!is_file($configurationPath))
-			{
-				throw new PluginNotFoundException
-				(
-					$this,
-					$id,
-					sprintf
-					(
-						'Context plugin not found, missing configuration: plugin "%s", at context "%s"',
-						$id,
-						$this->getGlobalID()
-					)
-				);
-			}
-
-			$configuration = Lightbit::inclusion()($configurationPath);
-
-			if (!is_array($configuration) || !isset($configuration['@class']))
-			{
-				throw new PluginNotFoundException
-				(
-					$this,
-					$id,
-					sprintf
-					(
-						'Context plugin not found, bad configuration: plugin "%s", at context "%s"',
-						$id,
-						$this->getGlobalID()
-					)
-				);
-			}
-
-			// If the configuration defines any dependencies, we'll have to
-			// load them before the instance can be created.
-			if (isset($configuration['@require']) && is_array($configuration['@require']))
-			{
-				$this->_loadDependencies($configuration['@require']);
-			}
-
-			$this->plugins[$id] = new $configuration['@class']
-			(
-				$this, 
-				$id, 
-				$installPath, 
-				$configuration
-			);
-		}
-
-		return $this->plugins[$id];
-	}
-
-	/**
-	 * Gets the plugins base path.
-	 *
-	 * @return string
-	 *	The plugins base path.
-	 */
-	public final function getPluginsBasePath() : string
-	{
-		if (!$this->pluginsBasePath)
-		{
-			$this->pluginsBasePath = $this->getPath() . DIRECTORY_SEPARATOR . 'plugins';
-		}
-
-		return $this->pluginsBasePath;
-	}
-
-	/**
 	 * Gets the prefix.
 	 *
 	 * @return string
@@ -1222,34 +1067,6 @@ abstract class Context extends Object
 		foreach ($modulesConfiguration as $id => $configuration)
 		{
 			$this->setModuleConfiguration($id, $configuration);
-		}
-	}
-
-	/**
-	 * Sets a plugin configuration.
-	 *
-	 * @param string $id
-	 *	The plugin identifier.
-	 *
-	 * @param array $configuration
-	 *	The plugin configuration.
-	 */
-	public final function setPluginConfiguration(string $id, array $configuration) : void
-	{
-		$this->getPlugin($id)->configure($configuration);
-	}
-
-	/**
-	 * Sets the plugins configuration.
-	 *
-	 * @param array $modulesConfiguration
-	 *	The plugins configuration.
-	 */
-	public final function setPluginsConfiguration(array $pluginsConfiguration) : void
-	{
-		foreach ($pluginsConfiguration as $id => $configuration)
-		{
-			$this->setPluginConfiguration($id, $configuration);
 		}
 	}
 
