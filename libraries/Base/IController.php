@@ -101,4 +101,15 @@ interface IController extends IElement
 	 *	The action.
 	 */
 	public function resolve(string $id, array $parameters) : Action;
+
+	/**
+	 * Runs an action.
+	 *
+	 * @param Action $action
+	 *	The action.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public function run(Action $action); // : mixed
 }

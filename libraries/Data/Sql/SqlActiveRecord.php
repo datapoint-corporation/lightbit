@@ -143,6 +143,30 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * the number of matching results, optionally based on a given 
+	 * select criteria.
+	 *
+	 * @param array $criteria
+	 *	The select criteria configuration.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public function count(array $criteria = null) : int
+	{
+		if (isset($criteria))
+		{
+			$criteria = new SqlSelectCriteria($criteria);
+		}
+
+		return $this->getSqlConnection()
+			->getStatementFactory()
+				->count($this->getTableName(), $criteria)
+					->scalar();
+	}
+
+	/**
 	 * Constructs a new instance for update.
 	 *
 	 * @param array $attributes
@@ -187,6 +211,22 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		$this->onAfterDelete();
+	}
+
+	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * the existance of any matching results, optionally based on a given 
+	 * select criteria.
+	 *
+	 * @param array $criteria
+	 *	The select criteria configuration.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function exists(array $criteria = null) : bool
+	{
+		return $this->count($criteria) > 0;
 	}
 
 	/**
@@ -493,7 +533,14 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function single(string $statement, array $arguments = null) : ?ISqlModel
 	{
-		return parent::single($statement, $arguments);
+		$instance = parent::single($statement, $arguments);
+
+		if ($instance)
+		{
+			$instance->commit();
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -511,7 +558,14 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 */
 	public function query(string $statement, array $arguments = null) : array
 	{
-		return parent::query($statement, $arguments);
+		$instances = parent::query($statement, $arguments);
+
+		foreach ($instances as $i => $instance)
+		{
+			$instance->commit();
+		}
+
+		return $instances;
 	}
 
 	/**

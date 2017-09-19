@@ -332,6 +332,11 @@ class Lightbit
 		{
 			$inclusion = function(string $__FILE__, array $__DATA__ = null)
 			{
+				if (!file_exists($__FILE__))
+				{
+					throw new FileNotFoundException($__FILE__, sprintf('Can not include file, not found: path "%s"', $__FILE__));
+				}
+
 				if (isset($__DATA__))
 				{
 					foreach ($__DATA__ as $__K__ => $__V__)

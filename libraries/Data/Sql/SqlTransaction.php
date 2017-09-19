@@ -38,8 +38,37 @@ use \Lightbit\Data\Sql\ISqlTransaction;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SqlTransaction extends Object implements ISqlTransaction
+abstract class SqlTransaction extends Object implements ISqlTransaction
 {
+	/**
+	 * Performs a commit, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	abstract public function commit() : void;
+
+	/**
+	 * Checks if the transaction is closed.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	abstract public function isClosed() : bool;
+
+	/**
+	 * Performs a rollback, closing the transaction.
+	 *
+	 * Once a transaction is closed, it can not be modified: any future commit
+	 * and rollback procedures will result in an exception being thrown.
+	 */
+	abstract public function rollback() : void;
+
+	/**
+	 * Starts the transaction.
+	 */
+	abstract public function start() : void;
+
 	/**
 	 * The connection.
 	 *
@@ -91,33 +120,4 @@ class SqlTransaction extends Object implements ISqlTransaction
 	{
 		return $this->connection;
 	}
-
-	/**
-	 * Performs a commit, closing the transaction.
-	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
-	 */
-	public function commit() : void;
-
-	/**
-	 * Checks if the transaction is closed.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isClosed() : bool;
-
-	/**
-	 * Performs a rollback, closing the transaction.
-	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
-	 */
-	public function rollback() : void;
-
-	/**
-	 * Starts the transaction.
-	 */
-	public function start() : void;
 }

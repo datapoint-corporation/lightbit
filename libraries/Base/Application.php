@@ -221,7 +221,7 @@ class Application extends Context implements IApplication
 				throw new Exception(sprintf('Route can not be relative, action not available: "%s"', $route[0]));
 			}
 
-			return $action->getController(substr($path, 2), $parameters);
+			return $action->getController()->resolve(substr($path, 2), $parameters);
 		}
 
 		else if (strpos($path, '@/') === 0)

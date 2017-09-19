@@ -107,6 +107,8 @@ abstract class HttpController extends Controller implements IHttpController
 		$response = $this->getHttpResponse();
 		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
 		$response->setStatusCode($statusCode);
+
+		$this->getApplication()->terminate();
 	}
 
 	/**

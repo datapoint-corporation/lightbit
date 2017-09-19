@@ -61,6 +61,13 @@ abstract class Controller extends Element implements IController
 	private $context;
 
 	/**
+	 * The global identifier.
+	 *
+	 * @type string
+	 */
+	private $globalID;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -185,7 +192,30 @@ abstract class Controller extends Element implements IController
 	 */
 	public function getGlobalID() : string
 	{
-		return $this->context->getGlobalID() . '/' . $this->id;
+		if (!$this->globalID)
+		{
+			$tokens = [];
+			$context = $this->context;
+
+			$this->globalID = '';
+
+			while (true)
+			{
+				$parent = $context->getContext();
+
+				if (!$parent)
+				{
+					break;
+				}
+				
+				$this->globalID = $context->getID() . '/';
+				$context = $parent;
+			}
+
+			$this->globalID .= $this->id;
+		}
+		
+		return $this->globalID;
 	}
 
 	/**
@@ -325,7 +355,7 @@ abstract class Controller extends Element implements IController
 			);
 		}
 
-		if (!$method->isPublic() || $method->isStatic())
+		if (!$method->isPublic() || $method->isAbstract() || $method->isStatic())
 		{
 			throw new MethodNotFoundRouteException
 			(
@@ -382,6 +412,33 @@ abstract class Controller extends Element implements IController
 		}
 
 		return new Action($this, $id, $arguments);
+	}
+
+	/**
+	 * Runs an action.
+	 *
+	 * @param Action $action
+	 *	The action.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public final function run(Action $action) // : mixed
+	{
+		$this->onRun();
+
+		$controller = $action->getController();
+
+		$result = ObjectHelper::call
+		(
+			$controller, 
+			$controller->getActionMethodName($action->getName()),
+			$action->getArguments()
+		);
+
+		$this->onAfterRun();
+
+		return $result;
 	}
 
 	/**
@@ -578,6 +635,15 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * Called during the controller run procedure, after the applicable
+	 * action method is invoked.
+	 */
+	protected function onAfterRun() : void
+	{
+		$this->raise('base.controller.run.after');
+	}
+
+	/**
 	 * Called during the controller display procedure, before the view is
 	 * resolved, constructed and executed.
 	 */
@@ -593,5 +659,14 @@ abstract class Controller extends Element implements IController
 	protected function onRender() : void
 	{
 		$this->raise('base.controller.render');
+	}
+
+	/**
+	 * Called during the controller run procedure, before the applicable
+	 * action method is invoked.
+	 */
+	protected function onRun() : void
+	{
+		$this->raise('base.controller.run');
 	}
 }

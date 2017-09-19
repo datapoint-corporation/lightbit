@@ -343,6 +343,20 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
+	 * Executes a transaction.
+	 *
+	 * @param \Closure $closure
+	 *	The transaction closure.
+	 *
+	 * @return mixed
+	 *	The transaction result.
+	 */
+	public function transaction(\Closure $closure) // : mixed;
+	{
+		return $this->getSqlConnection()->transaction($closure);
+	}
+
+	/**
 	 * Calls a method.
 	 *
 	 * @param string $method

@@ -49,6 +49,7 @@ defined('LIGHTBIT_PRECISION') || define('LIGHTBIT_PRECISION', 6);
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
 require __DIR__ . '/includes/lightbit.php';
+require __DIR__ . '/includes/helpers/data.php';
 require __DIR__ . '/includes/helpers/environment.php';
 require __DIR__ . '/includes/helpers/globalization.php';
 require __DIR__ . '/includes/helpers/html.php';

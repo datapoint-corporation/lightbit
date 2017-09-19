@@ -29,6 +29,7 @@ namespace Lightbit\Data;
 
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
+use \Lightbit\Data\Validation\IRule;
 use \Lightbit\Data\Validation\Rule;
 use \Lightbit\Helpers\ObjectHelper;
 
@@ -275,6 +276,27 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
+	 * Gets a rule.
+	 *
+	 * @param string $id
+	 *	The rule identifier.
+	 *
+	 * @return IRule
+	 *	The rule.
+	 */
+	public final function getRule(string $id) : IRule
+	{
+		$rules = $this->getRules();
+
+		if (!isset($rules[$id]))
+		{
+			throw new Exception('Can not get model rule, not defined: "%s"', $id);
+		}
+
+		return $rules[$id];
+	}
+
+	/**
 	 * Gets the rules.
 	 *
 	 * @return array
@@ -409,10 +431,9 @@ abstract class Model extends Element implements IModel
 			$rule->export($attributes);
 		}
 
-		$this->onAfterValidate();
 		$this->onAfterImport($attributes);
 
-		return !$this->attributesErrors;
+		return $this->validate();
 	}
 
 	/**
@@ -582,6 +603,8 @@ abstract class Model extends Element implements IModel
 	{
 		$result = true;
 
+		$this->onValidate();
+
 		foreach ($this->getRules() as $i => $rule)
 		{
 			if (!$rule->validate())
@@ -589,6 +612,10 @@ abstract class Model extends Element implements IModel
 				$result = false;
 			}
 		}
+
+		$this->onAfterValidate();
+
+		return $result;
 	}
 
 	/**

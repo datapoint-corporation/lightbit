@@ -59,6 +59,89 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 	}
 
 	/**
+	 * Creates a count statement.
+	 *
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The select criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
+	 */
+	public function count(string $table, ?ISqlCriteria $criteria) : ISqlStatement
+	{
+		if ($criteria)
+		{
+			$statement = 'SELECT ';
+
+			if ($criteria instanceof ISqlSelectCriteria)
+			{
+				if ($criteria->isDistinct())
+				{
+					$statement .= 'COUNT(DISTINCT ';
+				}
+
+				$statement .= $criteria->hasSelect() ?
+					$criteria->getSelect() : '*';
+
+				$statement .= ') FROM ';
+
+				$statement .= $criteria->hasFrom() ?
+					$criteria->getFrom() : $this->quote($table);
+			}
+			else 
+			{
+				$statement .= 'COUNT(\'1\') FROM ' . $this->quote($table);
+			}
+
+			if ($criteria->hasAlias())
+			{
+				$statement .= ' ' . $this->quote($criteria->getAlias());
+			}
+
+			if ($criteria->hasJoin())
+			{
+				$statement .= ' ' . $criteria->getJoin();
+			}
+
+			if ($criteria->hasCondition())
+			{
+				$statement .= ' WHERE ' . $criteria->getCondition();
+			}
+
+			if ($criteria instanceof ISqlSelectCriteria)
+			{
+				if ($criteria->hasGroup())
+				{
+					$statement .= ' GROUP BY ' . $criteria->getGroup();
+				}
+
+				if ($criteria->hasSort())
+				{
+					$statement .= ' ORDER BY ' . $criteria->getSort();
+				}
+
+				if ($criteria->hasLimit())
+				{
+					$statement .= ' LIMIT ' . $criteria->getLimit()
+						. ' OFFSET ' . ($criteria->hasOffset() ? $criteria->getOffset() : '0');
+				}
+
+				else if ($criteria->hasOffset())
+				{
+					$statement .= ' LIMIT 32768 OFFSET ' . $criteria->getOffset();
+				}
+			}
+
+			return $this->statement($statement, $criteria->getArguments());
+		}
+
+		return $this->statement('SELECT COUNT(\'1\') FROM ' . $this->quote($table));
+	}
+
+	/**
 	 * Creates a delete statement.
 	 *
 	 * @param array $table

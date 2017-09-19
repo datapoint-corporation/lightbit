@@ -57,6 +57,19 @@ interface ISqlActiveRecord extends ISqlModel
 	public function commit() : void;
 
 	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * the number of matching results, optionally based on a given 
+	 * select criteria.
+	 *
+	 * @param array $criteria
+	 *	The select criteria configuration.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public function count(array $criteria = null) : int;
+
+	/**
 	 * Creates, prepares and executes a delete statement matching the
 	 * model instance identity.
 	 *
@@ -64,6 +77,19 @@ interface ISqlActiveRecord extends ISqlModel
 	 * no action at all.
 	 */
 	public function delete() : void;
+
+	/**
+	 * Creates, prepares and executes a query statement that's meant to fetch
+	 * the existance of any matching results, optionally based on a given 
+	 * select criteria.
+	 *
+	 * @param array $criteria
+	 *	The select criteria configuration.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function exists(array $criteria = null) : bool;
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch

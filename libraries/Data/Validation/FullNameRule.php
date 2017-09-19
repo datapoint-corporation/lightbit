@@ -31,13 +31,20 @@ use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 
 /**
- * EmailAddressRule.
+ * FullNameRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class EmailAddressRule extends Rule
+class FullNameRule extends Rule
 {
+	/**
+	 * The names.
+	 *
+	 * @type array
+	 */
+	private $names;
+
 	/**
 	 * The transform flag.
 	 *
@@ -59,10 +66,11 @@ class EmailAddressRule extends Rule
 	 */
 	public function __construct(IModel $model, string $id, array $configuration = null)
 	{
-		parent::__construct($model, $id, null);
+		parent::__construct($model, $id);
 
-		$this->setMessage('format', 'Value of "{attribute-label}" is not an acceptable email address.');
 		$this->transform = true;
+
+		$this->setMessage('format', 'Value of "{attribute-label}" must be your full name.');
 
 		if ($configuration)
 		{
@@ -71,14 +79,14 @@ class EmailAddressRule extends Rule
 	}
 
 	/**
-	 * Sets the transform flag.
+	 * Gets the names.
 	 *
-	 * @param string $transform
-	 *	The transform flag.
+	 * @return array
+	 *	The names.
 	 */
-	public final function setTransform(bool $transform) : void
+	public final function getNames() : ?array
 	{
-		$this->transform = $transform;
+		return $this->names;
 	}
 
 	/**
@@ -105,19 +113,30 @@ class EmailAddressRule extends Rule
 	 */
 	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		if (!is_string($subject) || !preg_match('%^.+@.+\\.[a-z]{2,}$%i', $subject))
+		$this->names = preg_split('%([^\\pL]+)%u', $subject, -1, PREG_SPLIT_NO_EMPTY);
+
+		if (!isset($this->names[1]))
 		{
 			$this->report($attribute, 'format');
+			$this->names = null;
+
 			return false;
 		}
 
 		if ($this->transform)
 		{
-			$i = strpos($subject, '@');
-			$subject = substr($subject, 0, $i + 1) . strtolower(substr($subject, $i + 1));
+			foreach ($this->names as $i => $name)
+			{
+				$this->names[$i] = mb_convert_case
+				(
+					$name, 
+					(mb_strlen($name) > 2 ? MB_CASE_TITLE : MB_CASE_LOWER)
+				);
+			}
+
+			$model->setAttribute($attribute, implode(' ', $this->names));
 		}
 
-		$model->setAttribute($attribute, $subject);
 		return true;
 	}
 }

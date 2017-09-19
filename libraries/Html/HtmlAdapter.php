@@ -74,7 +74,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	protected function activeInputName(IModel $model, string $attribute) : string
 	{
-		$session = $this->getHttpSession();
+		$session = $this->getAction()->getController()->getHttpSession();
 
 		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash;
@@ -104,7 +104,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	protected function activeInputID(IModel $model, string $attribute) : string
 	{
-		$session = $this->getHttpSession();
+		$session = $this->getAction()->getController()->getHttpSession();
 
 		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash . 'id';

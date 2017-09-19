@@ -41,6 +41,20 @@ use \Lightbit\Data\Sql\ISqlStatement;
 interface ISqlStatementFactory
 {
 	/**
+	 * Creates a count statement.
+	 *
+	 * @param string $table
+	 *	The table names.
+	 *
+	 * @param ISqlCriteria $criteria
+	 *	The select criteria.
+	 *
+	 * @return ISqlStatement
+	 *	The statement.
+	 */
+	public function count(string $table, ?ISqlCriteria $criteria) : ISqlStatement;
+
+	/**
 	 * Creates a delete statement.
 	 *
 	 * @param array $table

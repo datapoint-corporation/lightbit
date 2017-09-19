@@ -41,6 +41,30 @@ use \Lightbit\Exception;
  */
 class ObjectHelper
 {
+	/**
+	 * Calls a function.
+	 *
+	 * @param Object $object
+	 *	The object to call the function on.
+	 *
+	 * @param string $function
+	 *	The function name.
+	 *
+	 * @param array $arguments
+	 *	The function arguments.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public static function call(Object $object, string $function, array $arguments = null) // : mixed
+	{
+		if ($arguments)
+		{
+			return $object->{$function}(...$arguments);
+		}
+
+		return $object->{$function}();
+	}
 
 	/**
 	 * Configures an object.

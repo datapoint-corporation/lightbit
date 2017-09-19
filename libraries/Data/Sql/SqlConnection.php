@@ -596,36 +596,42 @@ class SqlConnection extends Component implements ISqlConnection
 	 * @param \Closure $closure
 	 *	The transaction closure.
 	 *
-	 * @return array
+	 * @return mixed
 	 *	The transaction result.
 	 */
-	public final function transaction(\Closure $closure) : ?array
+	public function transaction(\Closure $closure) // : mixed;
 	{
 		$transaction = null;
 
 		try
 		{
 			$transaction = $this->getDriver()->transaction();
+			$transaction->start();
 			$result = $closure($this);
 			$transaction->commit();
 
-			return (is_array($result) ? $result : [ $result ]);
+			return $result;
 		}
 		catch (\Throwable $e)
 		{
-			if ($transaction && !$transaction->isClosed())
+			if ($transaction)
 			{
-				try
+				if (!$transaction->isClosed())
 				{
-					$transaction->rollback();
+					try
+					{
+						$transaction->rollback();
+					}
+					catch (\Throwable $e2)
+					{
+						throw new SqlTransactionException($transaction, sprintf('Can not rollback transaction with error: %s', lcfirst($e->getMessage())), $e2);
+					}
 				}
-				catch (\Throwable $e2)
-				{
-					throw new SqlException($this, sprintf('Can not rollback transaction with error: %s', lcfirst($e->getMessage())), $e2);
-				}
+
+				throw new SqlTransactionException($transaction, sprintf('Can not complete transaction, rollback issued: %s', lcfirst($e->getMessage())), $e);
 			}
 
-			throw new SqlException($this, sprintf('Can not complete transaction, rollback issued: %s', lcfirst($e->getMessage())), $e);
+			throw new SqlConnectionException($this, sprintf('Can not complete transaction, start failure: %s', lcfirst($e->getMessage())), $e);
 		}
 	}
 }

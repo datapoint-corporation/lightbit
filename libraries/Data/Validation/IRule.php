@@ -56,8 +56,7 @@ interface IRule extends IElement
 	 * Exports attributes.
 	 *
 	 * If the rule matches the model scenario, each attribute that it applies 
-	 * to, if present, will be assigned to the model before validation and any
-	 * encountered errors will be reported for proper action.
+	 * to, if present, will be assigned to the model for further action.
 	 *
 	 * @param array $attributes
 	 *	The attributes to export.

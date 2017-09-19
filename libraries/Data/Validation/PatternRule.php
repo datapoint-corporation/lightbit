@@ -27,23 +27,24 @@
 
 namespace Lightbit\Data\Validation;
 
+use \Lightbit\Base\Exception;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 
 /**
- * EmailAddressRule.
+ * PatternRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class EmailAddressRule extends Rule
+class PatternRule extends Rule
 {
 	/**
-	 * The transform flag.
+	 * The pattern.
 	 *
-	 * @type bool
+	 * @type string
 	 */
-	private $transform;
+	private $pattern;
 
 	/**
 	 * Constructor.
@@ -61,8 +62,9 @@ class EmailAddressRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->setMessage('format', 'Value of "{attribute-label}" is not an acceptable email address.');
-		$this->transform = true;
+		$this->pattern = '%^.+$%';
+
+		$this->setMessage('format', 'Value of "{attribute-label}" is not an acceptable password.');		
 
 		if ($configuration)
 		{
@@ -71,14 +73,14 @@ class EmailAddressRule extends Rule
 	}
 
 	/**
-	 * Sets the transform flag.
+	 * Sets the pattern.
 	 *
-	 * @param string $transform
-	 *	The transform flag.
+	 * @param string $pattern
+	 *	The pattern.
 	 */
-	public final function setTransform(bool $transform) : void
+	public final function setPattern(string $pattern) : void
 	{
-		$this->transform = $transform;
+		$this->pattern = $pattern;
 	}
 
 	/**
@@ -105,19 +107,19 @@ class EmailAddressRule extends Rule
 	 */
 	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		if (!is_string($subject) || !preg_match('%^.+@.+\\.[a-z]{2,}$%i', $subject))
+		$result = preg_match($this->pattern, $subject);
+
+		if ($result === false)
+		{
+			throw new Exception(sprintf('Can not match against attribute, invalid pattern: "%s"', $this->pattern));
+		}
+
+		if ($result === 0)
 		{
 			$this->report($attribute, 'format');
 			return false;
 		}
 
-		if ($this->transform)
-		{
-			$i = strpos($subject, '@');
-			$subject = substr($subject, 0, $i + 1) . strtolower(substr($subject, $i + 1));
-		}
-
-		$model->setAttribute($attribute, $subject);
 		return true;
 	}
 }

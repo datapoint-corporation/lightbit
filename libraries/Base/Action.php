@@ -166,7 +166,7 @@ final class Action extends Object
 	{
 		if (!$this->id)
 		{
-			$this->id = $this->controller->getID() . '/' . $this->name;
+			$this->id = $this->controller->getGlobalID() . '/' . $this->name;
 		}
 
 		return $this->id;
@@ -210,9 +210,9 @@ final class Action extends Object
 	public function run() // : mixed
 	{
 		self::$instance = $this;
-		$result = $this->controller->{$this->controller->getActionMethodName($this->name)}(...array_values($this->arguments));
-
+		$result = $this->controller->run($this);
 		self::$instance = null;
+		
 		return $result;
 	}
 }

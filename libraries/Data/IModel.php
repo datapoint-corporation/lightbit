@@ -28,6 +28,7 @@
 namespace Lightbit\Data;
 
 use \Lightbit\Base\IElement;
+use \Lightbit\Data\Validation\IRule;
 
 /**
  * IModel.
@@ -137,6 +138,17 @@ interface IModel extends IElement
 	 *	The attributes name.
 	 */
 	public function getAttributesName() : array;
+
+	/**
+	 * Gets a rule.
+	 *
+	 * @param string $id
+	 *	The rule identifier.
+	 *
+	 * @return IRule
+	 *	The rule.
+	 */
+	public function getRule(string $id) : IRule;
 
 	/**
 	 * Gets the rules.

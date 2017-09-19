@@ -30,7 +30,9 @@ namespace Lightbit\Data\Validation;
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\EmailAddressRule;
+use \Lightbit\Data\Validation\FullNameRule;
 use \Lightbit\Data\Validation\IRule;
+use \Lightbit\Data\Validation\PatternRule;
 use \Lightbit\Data\Validation\SafeRule;
 use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Exception;
@@ -63,6 +65,8 @@ abstract class Rule extends Element implements IRule
 		static $rulesClassName = 
 		[
 			'email-address' => EmailAddressRule::class,
+			'full-name' => FullNameRule::class,
+			'pattern' => PatternRule::class,
 			'safe' => SafeRule::class
 		];
 
@@ -148,7 +152,7 @@ abstract class Rule extends Element implements IRule
 
 		$this->messages = 
 		[
-			'empty' => 'Value of "{attribute}" must not be empty.'
+			'empty' => 'Value of "{attribute-label}" must not be empty.'
 		];
 
 		if ($configuration)
@@ -161,35 +165,20 @@ abstract class Rule extends Element implements IRule
 	 * Exports attributes.
 	 *
 	 * If the rule matches the model scenario, each attribute that it applies 
-	 * to, if present, will be assigned to the model before validation and any
-	 * encountered errors will be reported for proper action.
+	 * to, if present, will be assigned to the model for further actions.
 	 *
 	 * @param array $attributes
 	 *	The attributes to export.
 	 */
 	public final function export(array $attributes) : void
 	{
-		if ($this->hasScenario($this->model->getScenario()))
+		if ($this->isSafe() && $this->hasScenario($this->model->getScenario()))
 		{
-			foreach ($attributes as $attribute => $subject)
+			foreach ($this->getAttributesName() as $i => $attribute)
 			{
-				if ($this->isSafe() && $this->hasAttribute($attribute))
+				if (isset($attributes[$attribute]))
 				{
-					$this->model->setAttribute($attribute, $subject);
-
-					if ($subject)
-					{
-						if (!$this->validateAttribute($this->model, $attribute, $subject))
-						{
-							$result = false;
-						}
-					}
-
-					else if ($this->required)
-					{
-						$this->report($attribute, 'empty');
-						$result = false;
-					}
+					$this->model->setAttribute($attribute, $attributes[$attribute]);
 				}
 			}
 		}
@@ -252,9 +241,12 @@ abstract class Rule extends Element implements IRule
 	 */
 	public function hasScenario(string $scenario) : bool
 	{
-		return isset($this->scenarios)
-			? in_array($scenario, $this->scenarios)
-			: true;
+		if (isset($this->scenarios))
+		{
+			return in_array($scenario, $this->scenarios);	
+		}
+
+		return true;
 	}
 
 	/**
@@ -298,8 +290,19 @@ abstract class Rule extends Element implements IRule
 			$message = $this->messages[$message];
 		}
 
-		// TODO message formatting
-		$this->model->addAttributeError($attribute, $message);
+		$arguments = 
+		[
+			'attribute' => $attribute,
+			'attriibute-label' => $this->model->getAttributeLabel($attribute)
+		]
+
+		+ (array) $arguments;
+
+		$this->model->addAttributeError
+		(
+			$attribute, 
+			$this->getLocale()->message($message, $arguments)
+		);
 	}
 
 	/**
@@ -409,9 +412,9 @@ abstract class Rule extends Element implements IRule
 					}
 				}
 
-				else if ($required)
+				else if ($this->required)
 				{
-					$this->report('empty', $attribute);
+					$this->report($attribute, 'empty');
 					$result = false;
 				}
 			}

@@ -251,8 +251,8 @@ interface ISqlConnection extends IComponent, IChannel
 	 * @param \Closure $closure
 	 *	The transaction closure.
 	 *
-	 * @return array
+	 * @return mixed
 	 *	The transaction result.
 	 */
-	public function transaction(\Closure $closure) : ?array;
+	public function transaction(\Closure $closure); // : mixed;
 }
