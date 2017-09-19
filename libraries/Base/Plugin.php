@@ -40,6 +40,8 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
+use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -278,6 +280,17 @@ class Plugin extends Cluster implements IPlugin
 	}
 
 	/**
+	 * Gets the locale.
+	 *
+	 * @return Locale
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale
+	{
+		return $this->getLocale()->getLocale();
+	}
+
+	/**
 	 * Gets the memory cache.
 	 *
 	 * @return IMemoryCache
@@ -286,6 +299,17 @@ class Plugin extends Cluster implements IPlugin
 	public function getMemoryCache() : IMemoryCache
 	{
 		return $this->getContext()->getMemoryCache();
+	}
+
+	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource
+	{
+		return $this->getContext()->getMessageSource();
 	}
 
 	/**

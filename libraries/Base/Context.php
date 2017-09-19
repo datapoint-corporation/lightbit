@@ -895,7 +895,7 @@ abstract class Context extends Cluster implements IContext
 	 */
 	public final function on(string $id, \Closure $closure) : void
 	{
-		$this->eventListeners[$id][] = $closure;
+		Lightbit::on($id, $closure);
 	}
 
 	/**
@@ -910,34 +910,9 @@ abstract class Context extends Cluster implements IContext
 	 * @return array
 	 *	The event results.
 	 */
-	public function raise(string $id, ...$arguments) : array
+	public final function raise(string $id, ...$arguments) : array
 	{
-		$results = [];
-
-		if (isset($this->eventListeners[$id]))
-		{
-			foreach ($this->eventListeners[$id] as $i => $closure)
-			{
-				$result = $closure(...$arguments);
-
-				if (isset($result))
-				{
-					$results[] = $result;
-				}
-			}
-		}
-
-		if ($this->context)
-		{
-			$propagation = $this->context->raise($id, ...$arguments);
-
-			if ($propagation)
-			{
-				$results = ($results ? $propagation : array_merge($results, $propagation));
-			}
-		}
-
-		return $results;
+		return Lightbit::raise($id, ...$arguments);
 	}
 
 	/**

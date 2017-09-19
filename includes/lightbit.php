@@ -94,6 +94,13 @@ class Lightbit
 	private static $debug = false;
 
 	/**
+	 * The event listeners.
+	 *
+	 * @type array
+	 */
+	private static $eventListeners = [];
+
+	/**
 	 * The namespaces path.
 	 *
 	 * @type array
@@ -416,6 +423,52 @@ class Lightbit
 		{
 			throw new ClassNotFoundException($className, sprintf('Class not found, file does not exist: "%s"', $className), $e);
 		}
+	}
+
+	/**
+	 * Sets an event listener.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param Closure $closure
+	 *	The event listener callback.
+	 */
+	public static function on(string $id, \Closure $closure) : void
+	{
+		self::$eventListeners[$id][] = $closure;
+	}
+
+	/**
+	 * Raises an event.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param mixed $arguments
+	 *	The event arguments.
+	 *
+	 * @return array
+	 *	The event results.
+	 */
+	public static function raise(string $id, ...$arguments) : array
+	{
+		$results = [];
+
+		if (isset(self::$eventListeners[$id]))
+		{
+			foreach (self::$eventListeners[$id] as $i => $closure)
+			{
+				$result = $closure(...$arguments);
+
+				if (isset($result))
+				{
+					$results[] = $result;
+				}
+			}
+		}
+
+		return $results;
 	}
 
 	/**

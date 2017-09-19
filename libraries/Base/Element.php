@@ -322,7 +322,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function on(string $id, \Closure $closure) : void
 	{
-		$this->getContext()->on($id, $closure);
+		Lightbit::on($id, $closure);
 	}
 
 	/**
@@ -339,7 +339,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function raise(string $id, ...$arguments) : array
 	{
-		return $this->getContext()->raise($id, ...$arguments);
+		return Lightbit::raise($id, ...$arguments);
 	}
 
 	/**
