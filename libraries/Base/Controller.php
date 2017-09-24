@@ -41,9 +41,6 @@ use \Lightbit\Base\View;
 use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Exception;
-use \Lightbit\Helpers\ObjectHelper;
-use \Lightbit\Helpers\TypeHelper;
-use \Lightbit\IO\FileSystem\Alias;
 
 /**
  * Controller.
@@ -107,7 +104,7 @@ abstract class Controller extends Element implements IController
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -207,14 +204,14 @@ abstract class Controller extends Element implements IController
 				{
 					break;
 				}
-				
-				$this->globalID = $context->getID() . '/';
+
+				$this->globalID = $context->getID() . '/' . $this->globalID;
 				$context = $parent;
 			}
 
 			$this->globalID .= $this->id;
 		}
-		
+
 		return $this->globalID;
 	}
 
@@ -239,7 +236,7 @@ abstract class Controller extends Element implements IController
 	{
 		if (!$this->layout)
 		{
-			return $this->getApplication()->getLayout();
+			return $this->getContext()->getLayout();
 		}
 
 		return $this->layout;
@@ -260,8 +257,11 @@ abstract class Controller extends Element implements IController
 				return $this->getContext()->getLayoutPath();
 			}
 
-			$this->layoutPath = (new Alias($this->layout))
-				->resolve('php', $this->getApplication()->getPath());
+			$this->layoutPath = __asset_path_resolve
+			(
+				$this->getContext()->getPath(),
+				'php', $this->layout
+			);
 		}
 
 		return $this->layoutPath;
@@ -300,7 +300,7 @@ abstract class Controller extends Element implements IController
 	 *	The view parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
+	 *	The capture flag which, when set, will use an additional output
 	 *	buffer to capture any generated contents.
 	 *
 	 * @return string
@@ -310,7 +310,7 @@ abstract class Controller extends Element implements IController
 	{
 		$this->onRender();
 
-		$result = $this->view((new Alias($view))->lookup('php', $this->getViewsBasePaths()))
+		$result = $this->view(__asset_path_resolve_array($this->getViewsBasePaths(), 'php', $view))
 			->run($parameters, $capture);
 
 		$this->onAfterRender();
@@ -347,9 +347,9 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Action not found, method is not defined: "%s", at controller "%s", at context "%s"', 
-					$id, 
-					$this->id, 
+					'Action not found, method is not defined: "%s", at controller "%s", at context "%s"',
+					$id,
+					$this->id,
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -363,9 +363,9 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Action not found, method signature mismatch: "%s", at controller "%s", at context "%s"', 
-					$id, 
-					$this->id, 
+					'Action not found, method signature mismatch: "%s", at controller "%s", at context "%s"',
+					$id,
+					$this->id,
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -402,10 +402,10 @@ abstract class Controller extends Element implements IController
 				$parameterName,
 				sprintf
 				(
-					'Action binding failure, missing parameter: "%s", at action, "%s", at controller "%s", at context "%s"', 
+					'Action binding failure, missing parameter: "%s", at action, "%s", at controller "%s", at context "%s"',
 					$parameterName,
-					$id, 
-					$this->id, 
+					$id,
+					$this->id,
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -429,9 +429,9 @@ abstract class Controller extends Element implements IController
 
 		$controller = $action->getController();
 
-		$result = ObjectHelper::call
+		$result = __object_call_array
 		(
-			$controller, 
+			$controller,
 			$controller->getActionMethodName($action->getName()),
 			$action->getArguments()
 		);
@@ -500,7 +500,7 @@ abstract class Controller extends Element implements IController
 		// as action parameters.
 		if (!$typeName)
 		{
-			if (!TypeHelper::isScalarTypeName($typeName))
+			if (!__type_is_scalar($typeName))
 			{
 				throw new IllegalParameterRouteException
 				(
@@ -508,24 +508,24 @@ abstract class Controller extends Element implements IController
 					$parameterName,
 					sprintf
 					(
-						'Action binding failure, not a scalar: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						'Action binding failure, not a scalar: "%s", at action, "%s", at controller "%s", at context "%s"',
 						$parameterName,
-						$id, 
-						$this->id, 
+						$id,
+						$this->id,
 						$this->getContext()->getPrefix()
 					)
 				);
 			}
 		}
 
-		$valueTypeName = TypeHelper::getNameOf($value);
+		$valueTypeName = __type_of($value);
 
 		if ($typeName == $valueTypeName)
 		{
 			return $value;
 		}
 
-		if (TypeHelper::isScalarTypeName($typeName))
+		if (__type_is_scalar($typeName))
 		{
 			try
 			{
@@ -539,10 +539,10 @@ abstract class Controller extends Element implements IController
 					($route = ([ $this->id . '/' . $id ] + $parameters)),
 					sprintf
 					(
-						'Action binding failure, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						'Action binding failure, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"',
 						$parameterName,
-						$id, 
-						$this->id, 
+						$id,
+						$this->id,
 						$this->getContext()->getPrefix()
 					),
 					$e
@@ -567,10 +567,10 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						sprintf
 						(
-							'Action parameter bind failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+							'Action parameter bind failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"',
 							$parameterName,
-							$id, 
-							$this->id, 
+							$id,
+							$this->id,
 							$this->getContext()->getPrefix()
 						)
 					);
@@ -589,10 +589,10 @@ abstract class Controller extends Element implements IController
 					$value,
 					sprintf
 					(
-						'Action parameter bind failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"', 
+						'Action parameter bind failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"',
 						$parameterName,
-						$id, 
-						$this->id, 
+						$id,
+						$this->id,
 						$this->getContext()->getPrefix()
 					),
 					$e
@@ -607,10 +607,10 @@ abstract class Controller extends Element implements IController
 			$parameterName,
 			sprintf
 			(
-				'Action parameter bind failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"', 
+				'Action parameter bind failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"',
 				$parameterName,
-				$id, 
-				$this->id, 
+				$id,
+				$this->id,
 				$this->getContext()->getPrefix()
 			)
 		);

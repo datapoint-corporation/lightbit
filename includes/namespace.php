@@ -25,78 +25,43 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+use \Lightbit\NamespacePathResolutionException;
+use \Lightbit\IllegalStateException;
 
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
+$_SERVER['__LIGHTBIT_NAMESPACE_PATH'] = [];
 
-/**
- * IntegerFilter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class IntegerFilter extends Filter
+function __namespace_path_resolve(string $namespace) : string
 {
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 */
-	public function __construct(array $configuration = null)
+	if (!isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]))
 	{
-		parent::__construct($configuration);
-	}
+		$i;
+		$parent = $namespace;
 
-	/**
-	 * Runs the filter.
-	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
-	 *
-	 * @return int
-	 *	The value.
-	 */
-	public function run($value) : int
-	{
-		while (!is_int($value))
+		while (($i = strrpos($parent, '\\')) !== false)
 		{
-			if (is_string($value))
+			$parent = substr($namespace, 0, $i);
+
+			if (isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$parent]))
 			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
-				{
-					$value = intval($value);
-					break;
-				}
+				return $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]
+					= $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$parent]
+					. DIRECTORY_SEPARATOR
+					. strtr(substr($namespace, $i + 1), [ '\\' => DIRECTORY_SEPARATOR ]);
 			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', __type_of($value)));
 		}
 
-		if ($this->unsigned && $value < 0)
-		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
-		}
-
-		return $value;
+		throw new NamespacePathResolutionException($namespace, sprintf('Namespace does not exist: namespace "%s"', $namespace));
 	}
 
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
+	return $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace];
+}
+
+function __namespace_register(string $namespace, string $path) : void
+{
+	if (isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]))
 	{
-		$this->unsigned = $unsigned;
+		throw new IllegalStateException(sprintf('Namespace already exists: namespace "%s"', $namespace));
 	}
+
+	$_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 }

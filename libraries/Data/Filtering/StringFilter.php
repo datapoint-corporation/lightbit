@@ -29,7 +29,6 @@ namespace Lightbit\Data\Filtering;
 
 use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Data\Filtering\FilterException;
-use \Lightbit\Helpers\TypeHelper;
 
 /**
  * StringFilter.
@@ -70,7 +69,7 @@ class StringFilter extends Filter
 	{
 		if (!is_string($value))
 		{
-			$value = TypeHelper::toString($value);
+			$value = __type_to_string($value);
 		}
 
 		if (isset($this->expression) && !preg_match($this->expression, $value))

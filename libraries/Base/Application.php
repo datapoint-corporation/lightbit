@@ -39,7 +39,6 @@ use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\SqlConnection;
 use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Exception;
-use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
 use \Lightbit\Http\HttpAssetManager;
@@ -49,7 +48,6 @@ use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpSession;
 use \Lightbit\Http\QueryStringHttpRouter;
-use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\Security\Cryptography\PasswordDigest;
 
 /**
@@ -108,7 +106,7 @@ class Application extends Context
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -139,10 +137,11 @@ class Application extends Context
 			$httpStatusCode = 0;
 		}
 
-		return (new Alias($this->httpErrorDocuments[$httpStatusCode]))->lookup
+		return __asset_path_resolve_array
 		(
-			'php', 
-			array_merge($this->getViewsBasePaths(), [ LIGHTBIT_PATH . '/views/http' ])
+			array_merge($this->getViewsBasePaths(), [ LIGHTBIT_PATH . '/views/http' ]),
+			'php',
+			$this->httpErrorDocuments[$httpStatusCode]
 		);
 	}
 
@@ -154,7 +153,7 @@ class Application extends Context
 	 */
 	public final function isDebug() : bool
 	{
-		return Lightbit::isDebug();
+		return __environment_debug_get();
 	}
 
 	/**
@@ -169,7 +168,7 @@ class Application extends Context
 
 		try
 		{
-			if (Lightbit::isCli())
+			if (__environment_is_cli())
 			{
 				$result = $this->resolve($this->getDefaultRoute())->run();
 			}
@@ -196,7 +195,7 @@ class Application extends Context
 	 */
 	public final function setDebug(bool $debug) : void
 	{
-		Lightbit::setDebug($debug);
+		__environment_debug_set($debug);
 	}
 
 	/**
@@ -238,7 +237,7 @@ class Application extends Context
 	public final function terminate(int $status = 0) : void
 	{
 		$this->dispose();
-		
+
 		exit($status);
 	}
 
@@ -252,7 +251,7 @@ class Application extends Context
 	public final function throwable(\Throwable $throwable) : void
 	{
 
-		if (Lightbit::isCli())
+		if (__environment_is_cli())
 		{
 			// For Command Line Interfaces (CLI), output formatting is not supported
 			// and the stack trace is simply dumped to the screen.
@@ -272,7 +271,7 @@ class Application extends Context
 			// generated according to the status code.
 			$this->onHttpErrorResponse
 			(
-				(($throwable instanceof HttpStatusException) ? $throwable->getStatusCode() : 500), 
+				(($throwable instanceof HttpStatusException) ? $throwable->getStatusCode() : 500),
 				$throwable
 			);
 		}
@@ -304,7 +303,7 @@ class Application extends Context
 	{
 		$document = $this->getHtmlDocument();
 		$document->reset();
-		
+
 		$response = $this->getHttpResponse();
 		$response->reset();
 		$response->setStatusCode($httpStatusCode);

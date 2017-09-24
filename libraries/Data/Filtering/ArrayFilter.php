@@ -29,7 +29,6 @@ namespace Lightbit\Data\Filtering;
 
 use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Data\Filtering\FilterException;
-use \Lightbit\Helpers\TypeHelper;
 
 /**
  * ArrayFilter.
@@ -70,16 +69,16 @@ class ArrayFilter extends Filter
 	{
 		if (!is_array($value))
 		{
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'array', TypeHelper::getNameOf($value)));
+			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'array', __type_of($value)));
 		}
 
 		if ($this->typeName)
 		{
 			foreach ($value as $i => $subject)
 			{
-				if (TypeHelper::getNameOf($subject) !== $this->typeName)
+				if (__type_of($subject) !== $this->typeName)
 				{
-					throw new FilterException($this, sprintf('Bad array value data type: expecting %s at position %s, got %s', $this->typeName, $i, TypeHelper::getNameOf($subject)));
+					throw new FilterException($this, sprintf('Bad array value data type: expecting %s at position %s, got %s', $this->typeName, $i, __type_of($subject)));
 				}
 			}
 		}

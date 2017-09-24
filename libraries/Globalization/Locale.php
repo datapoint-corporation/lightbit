@@ -30,7 +30,6 @@ namespace Lightbit\Globalization;
 use \Lightbit\Base\Object;
 use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
-use \Lightbit\Helpers\MathHelper;
 
 /**
  * Locale.
@@ -81,7 +80,7 @@ final class Locale extends Object implements ILocale
 	 * @param string $id
 	 *	The locale identifier.
 	 */
-	private function __construct(string $id) 
+	private function __construct(string $id)
 	{
 		$this->id = $id;
 		$this->numberFormatters = [];
@@ -106,7 +105,7 @@ final class Locale extends Object implements ILocale
 	{
 		if ($precision)
 		{
-			$number = MathHelper::round($currency, 2);
+			$number = __decimal_round($currency, 2);
 		}
 
 		return $this->getNumberFormatter(\NumberFormatter::CURRENCY)
@@ -210,7 +209,7 @@ final class Locale extends Object implements ILocale
 	{
 		if ($precision)
 		{
-			$number = MathHelper::round($number, $precision);
+			$number = __decimal_round($number, $precision);
 		}
 
 		return $this->getNumberFormatter(\NumberFormatter::DECIMAL)

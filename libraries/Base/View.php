@@ -32,8 +32,6 @@ use \Lightbit\Exception;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IWidget;
 use \Lightbit\Base\IView;
-use \Lightbit\Helpers\ObjectHelper;
-use \Lightbit\IO\FileSystem\Alias;
 
 /**
  * View.
@@ -43,6 +41,13 @@ use \Lightbit\IO\FileSystem\Alias;
  */
 class View extends Element implements IView
 {
+	/**
+	 * The base path.
+	 *
+	 * @type string
+	 */
+	private $basePath;
+
 	/**
 	 * The context.
 	 *
@@ -76,7 +81,7 @@ class View extends Element implements IView
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -88,14 +93,12 @@ class View extends Element implements IView
 	 */
 	public final function getBasePath() : string
 	{
-		static $basePath;
-
-		if (!$basePath)
+		if (!$this->basePath)
 		{
-			$basePath = dirname($this->path);
+			$this->basePath = dirname($this->path);
 		}
 
-		return $basePath;
+		return $this->basePath;
 	}
 
 	/**
@@ -169,7 +172,7 @@ class View extends Element implements IView
 	 *	The view parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
+	 *	The capture flag which, when set, will use an additional output
 	 *	buffer to capture any generated contents.
 	 *
 	 * @return string
@@ -177,7 +180,7 @@ class View extends Element implements IView
 	 */
 	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
 	{
-		return $this->view((new Alias($view))->resolve('php', $this->getBasePath()))
+		return $this->view(__asset_path_resolve($this->getBasePath(), 'php', $view))
 			->run($parameters, $capture);
 	}
 
@@ -188,7 +191,7 @@ class View extends Element implements IView
 	 *	The parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output 
+	 *	The capture flag which, when set, will use an additional output
 	 *	buffer to capture any generated contents.
 	 *
 	 * @return string
@@ -207,8 +210,8 @@ class View extends Element implements IView
 				throw new Exception('View output buffer can not start: unknown error');
 			}
 		}
-		
-		Lightbit::inclusion()->bindTo($this, null)($this->path, $parameters);
+
+		__include_as($this, $this->path, $parameters);
 
 		if ($capture)
 		{
@@ -231,15 +234,39 @@ class View extends Element implements IView
 	 * @param string $className
 	 *	The widget class name.
 	 *
-	 * @param array $configuration
-	 *	The widget configuration.
+	 * @param array $arguments
+	 *	The widget constructor arguments.
 	 *
 	 * @return IWidget
 	 *	The widget.
 	 */
-	public function widget(string $className, array $configuration = null) : IWidget
+	public function widget(string $className, ...$arguments) : IWidget
 	{
-		return new $className($this->getContext(), $configuration);
+		return new $className(...$arguments);
+	}
+
+	/**
+	 * Creates and instantly inflates an inline widget.
+	 *
+	 * @param string $className
+	 *	The widget class name.
+	 *
+	 * @param array $arguments
+	 *	The widget constructor arguments.
+	 *
+	 * @return string
+	 *	The content.
+	 */
+	public function inflate(string $className, ...$arguments) : string
+	{
+		$widget = $this->widget($className, ...$arguments);
+
+		if (! ($widget instanceof IInlineWidget))
+		{
+			throw new Exception(sprintf('Can not inflate widget: "%s"', $className));
+		}
+
+		return $widget->inflate();
 	}
 
 	/**

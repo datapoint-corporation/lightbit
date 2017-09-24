@@ -25,22 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Base\Action;
+$_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'] = [];
 
-/**
- * Creates an url.
- *
- * @param array $route
- *	The route to resolve to.
- *
- * @param bool $absolute
- *	The absolute flag which, when set, will cause the url to be
- *	created as an absolute url.
- *
- * @return string
- *	The result.
- */
-function lburl(array $route, bool $absolute = false) : string
+function __event_raise(string $event, ...$arguments) : array
 {
-	return Action::getInstance()->getContext()->getHttpRouter()->url($route, $absolute);
+	$result = [];
+
+	if (isset($_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event]))
+	{
+		foreach ($_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event] as $i => $callable)
+		{
+			$return = call_user_func_array($callable, $arguments);
+
+			if (isset($return))
+			{
+				$result[] = $return;
+			}
+		}
+	}
+
+	return $result;
+}
+
+function __event_subscribe(string $event, array $callable) : void
+{
+	$_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event][] = $callable;
 }

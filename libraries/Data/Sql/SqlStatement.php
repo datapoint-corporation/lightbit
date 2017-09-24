@@ -31,7 +31,6 @@ use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\SqlStatementException;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * ISqlStatement.
@@ -95,7 +94,7 @@ class SqlStatement extends Object implements ISqlStatement
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -211,7 +210,7 @@ class SqlStatement extends Object implements ISqlStatement
 	{
 		return $this->query($arguments)->scalar();
 	}
-	
+
 	/**
 	 * Sets the arguments.
 	 *

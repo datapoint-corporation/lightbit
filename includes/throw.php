@@ -25,18 +25,31 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Helpers\HtmlHelper;
-
 /**
- * Encodes the content.
+ * Throws an exception.
  *
- * @param string $content
- *	The content to encode.
+ * @param string $message
+ *	The exception message.
  *
- * @return string
- *	The result.
+ * @param array $arguments
+ *	The exception message arguments.
  */
-function lbhtml(string $content) : string
+function __throw(string $message, ...$arguments) : void
 {
-	return HtmlHelper::encode($content);
+	if (class_exists(Lightbit\Exception::class))
+	{
+		throw new \Lightbit\Exception(sprintf($message, ...$arguments));
+	}
+
+	throw new Exception(sprintf($message, ...$arguments));
+}
+
+function __throw_state(string $message, ...$arguments) : void
+{
+	if (class_exists(Lightbit\IllegalStateException::class))
+	{
+		throw new \Lightbit\IllegalStateException(sprintf($message, ...$arguments));
+	}
+
+	throw new IllegalStateException(sprintf($message, ...$arguments));
 }

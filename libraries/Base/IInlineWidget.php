@@ -25,74 +25,23 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Helpers;
+namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
+use \Lightbit\Base\IWidget;
 
 /**
- * GlobalizationHelper.
+ * IInlineWidget.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class GlobalizationHelper
+interface IInlineWidget extends IWidget
 {
 	/**
-	 * Inflates a message.
-	 *
-	 * This function is context aware: the message is read through the 
-	 * message source and formatted through the locale.
-	 *
-	 * @param string $category
-	 *	The message category.
-	 *
-	 * @param string $message
-	 *	The message.
-	 *
-	 * @param array $arguments
-	 *	The message arguments.
+	 * Inflates the widget content.
 	 *
 	 * @return string
-	 *	The result.
+	 *	The content.
 	 */
-	public static function inflate(string $category, string $message, array $arguments = null) : string
-	{
-		$context = Action::getInstance()->getContext();
-		$locale = $context->getLocale();
-
-		return $locale->message
-		(
-			$context->getMessageSource()->read($locale, $category, $message),
-			$arguments
-		);
-	}
-
-	/**
-	 * Reads a message.
-	 *
-	 * If the message is not available at the source, the original message
-	 * is returned as a fail safe.
-	 *
-	 * @param string $category
-	 *	The message category.
-	 *
-	 * @param string $message
-	 *	The message to read.
-	 *
-	 * @return string
-	 *	The message.
-	 */
-	public static function message(string $category, string $message) : string
-	{
-		return Action::getInstance()->getContext()->getMessageSource()->read(null, $category, $message);
-	}
-
-	/**
-	 * Constructor.
-	 */
-	private function __construct()
-	{
-		trigger_error(sprintf('Class does not support construction: "%s"', __CLASS__), E_USER_ERROR);
-		exit(1);
-	}
+	public function inflate() : string;
 }

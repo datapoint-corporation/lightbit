@@ -39,57 +39,37 @@ define('LIGHTBIT', microtime(true));
  */
 define('LIGHTBIT_PATH', __DIR__);
 
-/**
- * The Lightbit math fixed point precision.
- *
- * @type int
- */
-defined('LIGHTBIT_PRECISION') || define('LIGHTBIT_PRECISION', 6);
-
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
 require __DIR__ . '/includes/lightbit.php';
-require __DIR__ . '/includes/helpers/data.php';
-require __DIR__ . '/includes/helpers/environment.php';
-require __DIR__ . '/includes/helpers/globalization.php';
-require __DIR__ . '/includes/helpers/html.php';
-require __DIR__ . '/includes/helpers/http.php';
-require __DIR__ . '/includes/helpers/math.php';
-require __DIR__ . '/includes/helpers/string.php';
+require __DIR__ . '/includes/action.php';
+require __DIR__ . '/includes/application.php';
+require __DIR__ . '/includes/asset.php';
+require __DIR__ . '/includes/class.php';
+require __DIR__ . '/includes/context.php';
+require __DIR__ . '/includes/environment.php';
+require __DIR__ . '/includes/event.php';
+require __DIR__ . '/includes/globalization.php';
+require __DIR__ . '/includes/html.php';
+require __DIR__ . '/includes/http.php';
+require __DIR__ . '/includes/include.php';
+require __DIR__ . '/includes/map.php';
+require __DIR__ . '/includes/namespace.php';
+require __DIR__ . '/includes/number.php';
+require __DIR__ . '/includes/object.php';
+require __DIR__ . '/includes/path.php';
+require __DIR__ . '/includes/string.php';
+require __DIR__ . '/includes/throw.php';
+require __DIR__ . '/includes/type.php';
+require __DIR__ . '/includes/url.php';
 
 // Register the Lightbit namespace and file system alias prefix path as
 // required by the framework.
-Lightbit::setNamespacePath('Lightbit', __DIR__ . '/libraries');
-Lightbit::setPrefixPath('lightbit', __DIR__);
+__asset_bundle_register('lightbit', __DIR__);
+__namespace_register('Lightbit', __DIR__ . '/libraries');
 
 // Register the lightbit autoloader, exception and error handler
 // to enable the expected core behaviours.
-spl_autoload_register
-(
-	function(string $className) : bool
-	{
-		Lightbit::loadClass($className);
-		return true;
-	},
-	true,
-	true
-);
-
-set_error_handler
-(
-	function(int $code, string $message, string $filePath, int $line) : bool
-	{
-		throw new \Lightbit\Exception(sprintf('%s (%d) at %s, line %d', $message, $code, $filePath, $line));
-		return true;
-	},
-	E_ALL
-);
-
-set_exception_handler
-(
-	function(\Throwable $e)
-	{
-		Lightbit::throwable($e);
-	}
-);
-
+spl_autoload_register('__lightbit_autoload', true, true);
+set_error_handler('__lightbit_error_handler', E_ALL);
+set_exception_handler('__lightbit_exception_handler');

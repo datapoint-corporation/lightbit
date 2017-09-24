@@ -29,7 +29,6 @@ namespace Lightbit\Data\Filtering;
 
 use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Data\Filtering\FilterException;
-use \Lightbit\Helpers\TypeHelper;
 
 /**
  * FloatFilter.
@@ -85,7 +84,7 @@ class FloatFilter extends Filter
 				}
 			}
 
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'float', TypeHelper::getNameOf($value)));
+			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'float', __type_of($value)));
 		}
 
 		if ($this->unsigned && $value < 0)

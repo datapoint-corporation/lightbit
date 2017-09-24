@@ -25,36 +25,14 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Helpers;
-
-/**
- * HtmlHelper.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-class HtmlHelper
+function __(string $category, string $message, array $attributes = null) : string
 {
-	/**
-	 * Encodes the content.
-	 *
-	 * @param string $content
-	 *	The content to encode.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public static function encode(string $content) : string
-	{
-		return htmlspecialchars($content);
-	}
+	$context = __context();
+	$locale = $context->getLocale();
 
-	/**
-	 * Constructor.
-	 */
-	private function __construct()
-	{
-		trigger_error(sprintf('Class does not support construction: "%s"', __CLASS__), E_USER_ERROR);
-		exit(1);
-	}
+	return $locale->message
+	(
+		$message = $context->getMessageSource()->read($locale, $category, $message),
+		$attributes
+	);
 }

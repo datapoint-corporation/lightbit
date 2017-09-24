@@ -29,7 +29,6 @@ namespace Lightbit\Data\Filtering;
 
 use \Lightbit\Data\Filtering\Filter;
 use \Lightbit\Data\Filtering\FilterException;
-use \Lightbit\Helpers\TypeHelper;
 
 /**
  * TypeFilter.
@@ -84,9 +83,9 @@ class TypeFilter extends Filter
 			? substr($this->typeName, 1)
 			: $this->typeName;
 
-		if (TypeHelper::isBasicTypeName($typeName))
+		if (__type_is_basic($typeName))
 		{
-			if (TypeHelper::getNameOf($value) == $typeName)
+			if (__type_of($value) == $typeName)
 			{
 				return true;
 			}
@@ -95,7 +94,7 @@ class TypeFilter extends Filter
 		{
 			$class = new ReflectionClass($value);
 
-			if ($class->getName() == $typeName 
+			if ($class->getName() == $typeName
 				|| $class->isSubclassOf($typeName)
 				|| $class->implemets($typeName))
 			{
@@ -103,7 +102,7 @@ class TypeFilter extends Filter
 			}
 		}
 
-		throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $typeName, TypeHelper::getNameOf($value)));
+		throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', $typeName, __type_of($value)));
 	}
 
 	/**

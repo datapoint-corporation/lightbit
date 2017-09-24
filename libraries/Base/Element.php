@@ -67,7 +67,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public final function getAction() : Action
 	{
-		return Action::getInstance();
+		return __action();
 	}
 
 	/**
@@ -78,7 +78,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public final function getApplication() : Application
 	{
-		return Lightbit::getApplication();
+		return __application();
 	}
 
 	/**
@@ -114,14 +114,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getContext() : Context
 	{
-		$action = Action::getInstance();
-
-		if ($action)
-		{
-			return $action->getController()->getContext();
-		}
-
-		return Lightbit::getApplication();
+		return __context();
 	}
 
 	/**
@@ -312,37 +305,6 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
-	 * Sets an event listener.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param Closure $closure
-	 *	The event listener callback.
-	 */
-	public function on(string $id, \Closure $closure) : void
-	{
-		Lightbit::on($id, $closure);
-	}
-
-	/**
-	 * Raises an event.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param mixed $arguments
-	 *	The event arguments.
-	 *
-	 * @return array
-	 *	The event results.
-	 */
-	public function raise(string $id, ...$arguments) : array
-	{
-		return Lightbit::raise($id, ...$arguments);
-	}
-
-	/**
 	 * Executes a transaction.
 	 *
 	 * @param \Closure $closure
@@ -372,20 +334,14 @@ abstract class Element extends Object implements IElement
 	{
 		$context = $this->getContext();
 
-		if (method_exists($context, $method))
+		do
 		{
-			return $context->{$method}(...$arguments);
-		}
-
-		if (!($context instanceof Application))
-		{
-			$context = $this->getApplication();
-
 			if (method_exists($context, $method))
 			{
 				return $context->{$method}(...$arguments);
 			}
 		}
+		while ($context = $context->getContext());
 
 		return parent::__call($method, $arguments);
 	}

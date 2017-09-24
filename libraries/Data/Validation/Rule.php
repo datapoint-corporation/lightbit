@@ -30,11 +30,12 @@ namespace Lightbit\Data\Validation;
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\EmailAddressRule;
+use \Lightbit\Data\Validation\EnumerationRule;
 use \Lightbit\Data\Validation\FullNameRule;
 use \Lightbit\Data\Validation\IRule;
+use \Lightbit\Data\Validation\LengthRule;
 use \Lightbit\Data\Validation\PatternRule;
 use \Lightbit\Data\Validation\SafeRule;
-use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Exception;
 
 /**
@@ -62,10 +63,12 @@ abstract class Rule extends Element implements IRule
 	 */
 	public static function create(IModel $model, string $id, array $configuration) : IRule
 	{
-		static $rulesClassName = 
+		static $rulesClassName =
 		[
 			'email-address' => EmailAddressRule::class,
+			'enumeration' => EnumerationRule::class,
 			'full-name' => FullNameRule::class,
+			'length' => LengthRule::class,
 			'pattern' => PatternRule::class,
 			'safe' => SafeRule::class
 		];
@@ -150,21 +153,21 @@ abstract class Rule extends Element implements IRule
 		$this->required = false;
 		$this->safe = true;
 
-		$this->messages = 
+		$this->messages =
 		[
 			'empty' => 'Value of "{attribute-label}" must not be empty.'
 		];
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
 	/**
 	 * Exports attributes.
 	 *
-	 * If the rule matches the model scenario, each attribute that it applies 
+	 * If the rule matches the model scenario, each attribute that it applies
 	 * to, if present, will be assigned to the model for further actions.
 	 *
 	 * @param array $attributes
@@ -197,7 +200,7 @@ abstract class Rule extends Element implements IRule
 			return $this->model->getAttributesName();
 		}
 
-		return $this->attributesName;		
+		return $this->attributesName;
 	}
 
 	/**
@@ -243,7 +246,7 @@ abstract class Rule extends Element implements IRule
 	{
 		if (isset($this->scenarios))
 		{
-			return in_array($scenario, $this->scenarios);	
+			return in_array($scenario, $this->scenarios);
 		}
 
 		return true;
@@ -290,7 +293,7 @@ abstract class Rule extends Element implements IRule
 			$message = $this->messages[$message];
 		}
 
-		$arguments = 
+		$arguments =
 		[
 			'attribute' => $attribute,
 			'attriibute-label' => $this->model->getAttributeLabel($attribute)
@@ -300,7 +303,7 @@ abstract class Rule extends Element implements IRule
 
 		$this->model->addAttributeError
 		(
-			$attribute, 
+			$attribute,
 			$this->getLocale()->message($message, $arguments)
 		);
 	}
@@ -384,7 +387,7 @@ abstract class Rule extends Element implements IRule
 	/**
 	 * Validates the model.
 	 *
-	 * If the rule matches the model scenario, each attribute that it applies 
+	 * If the rule matches the model scenario, each attribute that it applies
 	 * to will be validated and any encountered errors will be reported for
 	 * proper action.
 	 *

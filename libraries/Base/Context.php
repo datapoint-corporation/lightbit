@@ -44,7 +44,6 @@ use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Globalization\Locale;
-use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -54,7 +53,6 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
 use \Lightbit\IllegalStateException;
-use \Lightbit\IO\FileSystem\Alias;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
@@ -177,7 +175,7 @@ abstract class Context extends Object
 		$this->eventListeners = [];
 		$this->modules = [];
 
-		// Scans the modules base path for installations, loads the 
+		// Scans the modules base path for installations, loads the
 		// configuration, creates and registers each module.
 		$modulesBasePath = $this->getModulesBasePath();
 
@@ -227,7 +225,7 @@ abstract class Context extends Object
 	protected function controllerClassName(string $id) : string
 	{
 		return $this->getNamespaceName()
-			. '\\Controllers\\' 
+			. '\\Controllers\\'
 			. strtr(ucwords(strtr($id, [ '/' => ' \\ ', '-' => ' ' ])), [ ' ' => '' ])
 			. 'Controller';
 	}
@@ -286,8 +284,8 @@ abstract class Context extends Object
 
 			$className = $this->componentsConfiguration[$id]['@class'];
 
-			$component 
-				= $this->components[$id] 
+			$component
+				= $this->components[$id]
 					= new $className($this, $id, $this->componentsConfiguration[$id]);
 
 			if (($component instanceof IChannel) && $component->isClosed())
@@ -479,7 +477,7 @@ abstract class Context extends Object
 	 */
 	public function getHttpResponse() : IHttpResponse
 	{
-		return $this->getComponent('http.response'); 
+		return $this->getComponent('http.response');
 	}
 
 	/**
@@ -534,9 +532,19 @@ abstract class Context extends Object
 	 */
 	public final function getLayoutPath() : ?string
 	{
-		if ($this->layout && !$this->layoutPath)
+		if (!$this->layoutPath)
 		{
-			$this->layoutPath = (new Alias($this->layout))->resolve('php', $this->getPath());
+			if (!$this->layout)
+			{
+				if ($this->context)
+				{
+					return $this->context->getLayoutPath();
+				}
+
+				return null;
+			}
+
+			$this->layoutPath = __asset_path_resolve($this->getPath(), 'php', $this->layout);
 		}
 
 		return $this->layoutPath;
@@ -597,7 +605,7 @@ abstract class Context extends Object
 
 		if (!$result)
 		{
-			$result = Lightbit::getClassNamespaceName(static::class);
+			$result = __class_namespace(static::class);
 		}
 
 		return $result;
@@ -665,7 +673,7 @@ abstract class Context extends Object
 				);
 			}
 
-			$configuration = Lightbit::inclusion()($configurationPath);
+			$configuration = __include($configurationPath);
 
 			if (!is_array($configuration) || !isset($configuration['@class']))
 			{
@@ -691,9 +699,9 @@ abstract class Context extends Object
 
 			$this->modules[$id] = new $configuration['@class']
 			(
-				$this, 
-				$id, 
-				$installPath, 
+				$this,
+				$id,
+				$installPath,
 				$configuration
 			);
 		}
@@ -761,7 +769,7 @@ abstract class Context extends Object
 			}
 
 			$prefix = '/' . implode('/', array_reverse($tokens));
-		}		
+		}
 
 		return $prefix;
 	}
@@ -835,7 +843,7 @@ abstract class Context extends Object
 
 		if (!isset($results[$id]))
 		{
-			return $results[$id] = Lightbit::hasClass($this->getControllerClassName($id));
+			return $results[$id] = __class_exists($this->getControllerClassName($id));
 		}
 
 		return $results[$id];
@@ -856,19 +864,14 @@ abstract class Context extends Object
 	}
 
 	/**
-	 * Sets an event listener.
+	 * Resolves a route.
 	 *
-	 * @param string $id
-	 *	The event identifier.
+	 * @param array $route
+	 *	The route.
 	 *
-	 * @param Closure $closure
-	 *	The event listener callback.
+	 * @return Action
+	 *	The action.
 	 */
-	public final function on(string $id, \Closure $closure) : void
-	{
-		Lightbit::on($id, $closure);
-	}
-
 	public final function resolve(?array $route) : Action
 	{
 		$context = $this;
@@ -892,12 +895,12 @@ abstract class Context extends Object
 		// If the route path starts with "~/" the whole behaviour is skipped,
 		// as the route is resolved directly by the controller
 		$path = $route[0];
-		$parameters = $route; 
+		$parameters = $route;
 		unset($parameters[0]);
 
 		if (strpos($path, '~/') === 0)
 		{
-			return Action::getInstance()->getController()->resolve
+			return __action()->getController()->resolve
 			(
 				substr($path, 2),
 				$parameters
@@ -908,7 +911,7 @@ abstract class Context extends Object
 		// acording to the following rules.
 		if ($path[0] == '/')
 		{
-			$context = Lightbit::getApplication();
+			$context = __application();
 			$path = substr($path, 1);
 		}
 
@@ -916,7 +919,7 @@ abstract class Context extends Object
 		{
 			try
 			{
-				$context = Action::getInstance()->getContext();
+				$context = __action()->getContext();
 			}
 			catch (IllegalStateException $e) {}
 
@@ -954,38 +957,21 @@ abstract class Context extends Object
 
 				throw new ControllerNotFoundException
 				(
-					$this,
+					$context,
 					$controllerID,
 					sprintf
 					(
 						'Context controller not found: controller "%s", at context "%s"',
 						$controllerID,
-						$this->getGlobalID()
+						$context->getGlobalID()
 					)
 				);
 			}
 		}
-		
+
 		$context = $context->getModule($path);
 		$route = $context->getDefaultRoute();
 		goto _resolve0;
-	}
-
-	/**
-	 * Raises an event.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param mixed $arguments
-	 *	The event arguments.
-	 *
-	 * @return array
-	 *	The event results.
-	 */
-	public final function raise(string $id, ...$arguments) : array
-	{
-		return Lightbit::raise($id, ...$arguments);
 	}
 
 	/**

@@ -53,7 +53,7 @@ class SqlCriteria extends Object implements ISqlCriteria
 	 * @type string
 	 */
 	private $alias;
-	
+
 	/**
 	 * The join.
 	 *
@@ -103,7 +103,7 @@ class SqlCriteria extends Object implements ISqlCriteria
 			}
 			else
 			{
-				$parameter = ':lb' . Lightbit::getNextID();
+				$parameter = ':lb' . __lightbit_next_id();
 				$comparison .= '= ' . $parameter;
 				$this->setArguments([ $parameter => $candidate ]);
 			}

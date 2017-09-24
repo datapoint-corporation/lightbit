@@ -32,7 +32,6 @@ use \Lightbit\Base\Context;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\MySql\MySqlSqlDriver;
 use \Lightbit\Exception;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * SqlConnection.
@@ -47,7 +46,7 @@ class SqlConnection extends Component implements ISqlConnection
 	 *
 	 * @type array
 	 */
-	private static $driversClassName = 
+	private static $driversClassName =
 	[
 		'mysql' => MySqlSqlDriver::class
 	];
@@ -156,7 +155,7 @@ class SqlConnection extends Component implements ISqlConnection
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -209,11 +208,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, already started: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, already started: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -288,11 +287,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, already closed: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, already closed: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -313,11 +312,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, closed: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -338,11 +337,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, closed: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -455,11 +454,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, closed: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);
@@ -577,11 +576,11 @@ class SqlConnection extends Component implements ISqlConnection
 		{
 			throw new SqlConnectionException
 			(
-				$this, 
+				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"', 
-					$this->getID(), 
+					'Bad SQL connection status, closed: "%s", at context "%s"',
+					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
 			);

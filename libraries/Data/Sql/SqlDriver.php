@@ -30,7 +30,6 @@ namespace Lightbit\Data\Sql;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlStatement;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * SqlDriver.

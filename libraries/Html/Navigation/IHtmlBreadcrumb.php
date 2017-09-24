@@ -25,22 +25,11 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-/**
- * Checks the debug flag.
- *
- * @param bool $debug
- *	The flag value, if applicable.
- *
- * @return bool
- *	The result.
- */
-function lbdebug(bool $debug = null) : bool
-{
-	if (isset($debug))
-	{
-		Lightbit::setDebug($debug);
-		return $debug;
-	}
+namespace Lightbit\Html\Navigation;
 
-	return Lightbit::isDebug();
+interface IHtmlBreadcrumb
+{
+	public function getTitle() : string;
+
+	public function getRoute() : ?array;
 }

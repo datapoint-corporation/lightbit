@@ -104,7 +104,7 @@ abstract class SqlTransaction extends Object implements ISqlTransaction
 	{
 		if (!$this->id)
 		{
-			$this->id = 'lb' . Lightbit::getNextID();
+			$this->id = 'lb' . __lightbit_next_id();
 		}
 
 		return $this->id;

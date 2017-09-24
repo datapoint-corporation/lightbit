@@ -91,7 +91,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= $criteria->hasFrom() ?
 					$criteria->getFrom() : $this->quote($table);
 			}
-			else 
+			else
 			{
 				$statement .= 'COUNT(\'1\') FROM ' . $this->quote($table);
 			}
@@ -162,7 +162,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			if ($criteria->hasAlias())
 			{
 				$statement .= ' ' . $criteria->getAlias()
-					. ' FROM ' . $this->quote($table) 
+					. ' FROM ' . $this->quote($table)
 					. ' ' . $this->quote($criteria->getAlias());
 
 				if ($criteria->hasJoin())
@@ -220,7 +220,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . Lightbit::getNextID();
+				$parameter = ':lb' . __lightbit_next_id();
 				$placeholders[] = $parameter;
 				$parameters[$parameter] = $value;
 			}
@@ -266,7 +266,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= $criteria->hasFrom() ?
 					$criteria->getFrom() : $this->quote($table);
 			}
-			else 
+			else
 			{
 				$statement .= '* FROM ' . $this->quote($table);
 			}
@@ -335,7 +335,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 	{
 		$parameters = [];
 		$assignments = [];
-		
+
 		foreach ($values as $field => $value)
 		{
 			$assignment = $this->quote($field) . ' = ';
@@ -346,7 +346,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . Lightbit::getNextID();
+				$parameter = ':lb' . __lightbit_next_id();
 				$assignment .= $parameter;
 				$parameters[$parameter] = $value;
 			}
@@ -363,7 +363,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			if ($criteria->hasAlias())
 			{
 				$statement .= ' ' . $criteria->getAlias()
-					. ' FROM ' . $this->quote($table) 
+					. ' FROM ' . $this->quote($table)
 					. ' ' . $this->quote($criteria->getAlias());
 
 				if ($criteria->hasJoin())
@@ -393,7 +393,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 			{
 				$parameters += $criteria->getArguments();
 			}
-			
+
 			return $this->statement($statement, $parameters);
 		}
 

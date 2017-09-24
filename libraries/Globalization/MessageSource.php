@@ -33,7 +33,6 @@ use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
-use \Lightbit\IO\FileSystem\Alias;
 
 /**
  * MessageSource.
@@ -110,8 +109,12 @@ class MessageSource extends Component implements IMessageSource
 	{
 		if (!$this->directoryPath)
 		{
-			$this->directoryPath = (new Alias($this->directory))
-				->resolve(null, $this->getContext()->getPath());
+			$this->directoryPath = __asset_path_resolve
+			(
+				$this->getContext()->getPath(),
+				null,
+				$this->directory
+			);
 		}
 
 		return $this->directoryPath;
@@ -142,7 +145,7 @@ class MessageSource extends Component implements IMessageSource
 			$this->messageCollections[$localeID][$category] = [];
 
 			$filePathPrefix = $this->getDirectoryPath() . DIRECTORY_SEPARATOR;
-			$filePathSuffix = DIRECTORY_SEPARATOR 
+			$filePathSuffix = DIRECTORY_SEPARATOR
 				. strtr($category, [ '/' => DIRECTORY_SEPARATOR ])
 				. '.php';
 
@@ -152,7 +155,7 @@ class MessageSource extends Component implements IMessageSource
 
 				if (file_exists($filePath))
 				{
-					$extension = Lightbit::inclusion()($filePath, [ 'locale' => $locale ]);
+					$extension = __include($filePath, [ 'locale' => $locale ]);
 
 					if (!is_array($extension))
 					{
@@ -170,8 +173,12 @@ class MessageSource extends Component implements IMessageSource
 	/**
 	 * Reads a message.
 	 *
-	 * If the message is not available at the source, the original message
-	 * is returned as a fail safe.
+	 * If the message is not available at the source and the component context
+	 * has a parent, an attempt will be made to read the message source through
+	 * that parent context.
+	 *
+	 * Ultimately, if a message can not be found, the original message will
+	 * be returned instead.
 	 *
 	 * @param ILocale $locale
 	 *	The message locale.
@@ -193,6 +200,13 @@ class MessageSource extends Component implements IMessageSource
 		if (isset($collection[$message]))
 		{
 			return $collection[$message];
+		}
+
+		$context = $this->getContext()->getContext();
+
+		if ($context)
+		{
+			return $context->getMessageSource()->read($locale, $category, $message);
 		}
 
 		return $message;

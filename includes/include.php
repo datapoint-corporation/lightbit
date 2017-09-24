@@ -25,78 +25,50 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
-
-/**
- * IntegerFilter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class IntegerFilter extends Filter
+function __include(string $__PATH__, array $__DATA__ = null) // : mixed
 {
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 */
-	public function __construct(array $configuration = null)
+	if (isset($__DATA__))
 	{
-		parent::__construct($configuration);
+		foreach ($__DATA__ as $__K__ => $__V__)
+		{
+			$__K__ = lcfirst(strtr(ucwords(strtr($__K__, [ '-' => ' ' ])), [ ' ' => '' ]));
+
+			${$__K__} = $__V__;
+			unset($__K__);
+			unset($__V__);
+		}
 	}
 
-	/**
-	 * Runs the filter.
-	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
-	 *
-	 * @return int
-	 *	The value.
-	 */
-	public function run($value) : int
+	unset($__DATA__);
+
+	return include($__PATH__);
+}
+
+function __include_as($__THIS__, string $__PATH__, array $__DATA__ = null) // : mixed
+{
+	static $closure;
+
+	if (!$closure)
 	{
-		while (!is_int($value))
+		$closure = function(string $__PATH__, array $__DATA__ = null) // : mixed
 		{
-			if (is_string($value))
+			if (isset($__DATA__))
 			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
+				foreach ($__DATA__ as $__K__ => $__V__)
 				{
-					$value = intval($value);
-					break;
+					$__K__ = lcfirst(strtr(ucwords(strtr($__K__, [ '-' => ' ' ])), [ ' ' => '' ]));
+
+					${$__K__} = $__V__;
+					unset($__K__);
+					unset($__V__);
 				}
 			}
 
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', __type_of($value)));
-		}
+			unset($__DATA__);
 
-		if ($this->unsigned && $value < 0)
-		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
-		}
-
-		return $value;
+			return include($__PATH__);
+		};
 	}
 
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
-	{
-		$this->unsigned = $unsigned;
-	}
+	return $closure->bindTo($__THIS__, null)($__PATH__, $__DATA__);
 }

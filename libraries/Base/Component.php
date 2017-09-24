@@ -30,7 +30,6 @@ namespace Lightbit\Base;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\Context;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * Component.
@@ -73,7 +72,7 @@ abstract class Component extends Element implements IComponent
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 

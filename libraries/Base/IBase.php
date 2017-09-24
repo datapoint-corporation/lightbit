@@ -199,29 +199,4 @@ interface IBase
 	 *	The sql connection.
 	 */
 	public function getSqlConnection() : ISqlConnection;
-
-	/**
-	 * Sets an event listener.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param Closure $closure
-	 *	The event listener callback.
-	 */
-	public function on(string $id, \Closure $closure) : void;
-
-	/**
-	 * Raises an event.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param mixed $arguments
-	 *	The event arguments.
-	 *
-	 * @return array
-	 *	The event results.
-	 */
-	public function raise(string $id, ...$arguments) : array;
 }

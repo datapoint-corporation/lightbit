@@ -25,78 +25,48 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+$_SERVER['__LIGHTBIT_ENVIRONMENT_DEBUG'] = false;
 
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
-
-/**
- * IntegerFilter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class IntegerFilter extends Filter
+function __environment_debug_set(bool $debug) : void
 {
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
+	$_SERVER['__LIGHTBIT_ENVIRONMENT_DEBUG'] = $debug;
+}
 
-	/**
-	 * Constructor.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 */
-	public function __construct(array $configuration = null)
+function __environment_debug_get() : bool
+{
+	return $_SERVER['__LIGHTBIT_ENVIRONMENT_DEBUG'];
+}
+
+function __environment_is_windows() : bool
+{
+	static $windows;
+
+	if (!isset($windows))
 	{
-		parent::__construct($configuration);
+		$windows = (strpos(strtoupper(PHP_OS), 'WIN') === 0);
 	}
 
-	/**
-	 * Runs the filter.
-	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
-	 *
-	 * @return int
-	 *	The value.
-	 */
-	public function run($value) : int
+	return $windows;
+}
+
+function __environment_is_cli() : bool
+{
+	static $cli;
+
+	if (!isset($cli))
 	{
-		while (!is_int($value))
-		{
-			if (is_string($value))
-			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
-				{
-					$value = intval($value);
-					break;
-				}
-			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', __type_of($value)));
-		}
-
-		if ($this->unsigned && $value < 0)
-		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
-		}
-
-		return $value;
+		$cli = (strpos('cli', php_sapi_name()) !== false);
 	}
 
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
+	return $cli;
+}
+
+function __environment_is_linux() : bool
+{
+	static $linux;
+
+	if (!isset($linux))
 	{
-		$this->unsigned = $unsigned;
+		$linux = (strtoupper(PHP_OS) === 'linux');
 	}
 }

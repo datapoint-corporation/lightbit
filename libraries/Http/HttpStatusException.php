@@ -28,7 +28,6 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Exception;
-use \Lightbit\Helpers\HttpHelper;
 
 /**
  * HttpStatusException.
@@ -92,7 +91,7 @@ class HttpStatusException extends Exception
 	{
 		if (!$this->statusMessage)
 		{
-			$this->statusMessage = HttpHelper::getStatusMessage($this->statusCode);
+			$this->statusMessage = __http_status_message($this->statusCode);
 		}
 
 		return $this->statusMessage;

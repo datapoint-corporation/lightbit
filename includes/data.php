@@ -25,70 +25,9 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+use \Lightbit\Data\Expression;
 
-use \Lightbit;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\Widget;
-
-/**
- * HtmlWidget.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-abstract class HtmlWidget extends Widget implements IHtmlWidget
+function __data_expression(string $expression) : Expression
 {
-	/**
-	 * The identifier.
-	 *
-	 * @type string
-	 */
-	private $id;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The html widget context.
-	 *
-	 * @param array $configuration
-	 *	The html widget configuration.
-	 */
-	public function __construct(array $configuration = null)
-	{
-		parent::__construct($configuration);
-	}
-
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public final function getID() : string
-	{
-		if (!$this->id)
-		{
-			$this->id = 'lb' . __lightbit_next_id();
-		}
-
-		return $this->id;
-	}
-
-	/**
-	 * Sets the identifier.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 */
-	public final function setID(string $id) : string
-	{
-		if ($this->id)
-		{
-			throw new Exception(sprintf('Widget identifier is already set: current "%s", next "%s", class "%s"', $this->id, $id, static::class));
-		}
-
-		$this->id = $id;
-	}
 }

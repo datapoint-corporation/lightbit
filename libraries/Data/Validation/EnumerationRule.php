@@ -25,29 +25,45 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\Data\Validation;
 
-use \Lightbit\Base\Context;
-use \Lightbit\Base\Element;
-use \Lightbit\Base\IWidget;
-use \Lightbit\Base\View;
+use \Lightbit\Base\Exception;
+use \Lightbit\Data\IModel;
+use \Lightbit\Data\Validation\Rule;
 
 /**
- * IWidget.
+ * EnumerationRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Widget extends Element implements IWidget
+class EnumerationRule extends Rule
 {
+	/**
+	 * The available options.
+	 *
+	 * @type string
+	 */
+	private $options;
+
 	/**
 	 * Constructor.
 	 *
+	 * @param IModel $model
+	 *	The rule model.
+	 *
+	 * @param string $id
+	 *	The rule identifier.
+	 *
 	 * @param array $configuration
-	 *	The widget configuration.
+	 *	The rule configuration.
 	 */
-	public function __construct(array $configuration = null)
+	public function __construct(IModel $model, string $id, array $configuration = null)
 	{
+		parent::__construct($model, $id, null);
+
+		$this->setMessage('invalid', 'Value of "{attribute-label}" is not acceptable.');		
+
 		if ($configuration)
 		{
 			$this->configure($configuration);
@@ -55,48 +71,47 @@ class Widget extends Element implements IWidget
 	}
 
 	/**
-	 * Gets the views base paths.
+	 * Sets the options.
 	 *
-	 * @return array
-	 *	The views base paths.
+	 * @param array $options
+	 *	The options.
 	 */
-	protected function getViewsBasePaths() : array
+	public final function setOptions(?array $options) : void
 	{
-		return $this->getContext()->getViewsBasePaths();
+		$this->options = $options;
 	}
 
 	/**
-	 * Renders a view.
+	 * Validates a single attribute.
 	 *
-	 * @param string $view
-	 *	The view file system alias.
+	 * By the time this method is called, the rule is confirmed to apply to
+	 * the given model and attribute as this method is meant only to validate
+	 * and, if necessary, report any encountered errors.
 	 *
-	 * @param array $parameters
-	 *	The view parameters.
+	 * If the attribute requires transformation, the new value must be set once
+	 * the original passes validation.
 	 *
-	 * @return string
-	 *	The content.
+	 * @param IModel $model
+	 *	The model.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @param string $subject
+	 *	The attribute.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	protected final function render(string $view, array $parameters = null, bool $capture = false) : ?string
+	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		return $this->view(__asset_path_resolve_array($this->getViewsBasePaths(), 'php', $view))
-			->run($parameters, true);
-	}
+		if (isset($this->options) && !in_array($subject, $this->options))
+		{
+			$model->setAttribute($attribute, null);
+			$this->report($attribute, 'invalid');
+			return false;
+		}
 
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new View($this->getContext(), $path, $configuration);
+		return true;
 	}
 }

@@ -27,8 +27,8 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit;
 use \Lightbit\Exception;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * Object.
@@ -49,7 +49,21 @@ abstract class Object
 	 */
 	public final function configure(array $configuration) : void
 	{
-		ObjectHelper::configure($this, $configuration);
+		__object_apply($this, $configuration);
+	}
+
+	/**
+	 * Sets an event subscription.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param array $callable
+	 *	The event subscription callable.
+	 */
+	public final function on(string $id, array $callable) : void
+	{
+		__event_subscribe($id, $callable);
 	}
 
 	/**
@@ -61,6 +75,23 @@ abstract class Object
 	public function toString() : string
 	{
 		return static::class;
+	}
+
+	/**
+	 * Raises an event.
+	 *
+	 * @param string $id
+	 *	The event identifier.
+	 *
+	 * @param mixed $arguments
+	 *	The event arguments.
+	 *
+	 * @return array
+	 *	The event results.
+	 */
+	public final function raise(string $id, ...$arguments) : array
+	{
+		return __event_raise($id, ...$arguments);
 	}
 
 	/**

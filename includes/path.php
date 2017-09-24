@@ -25,70 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
-
-use \Lightbit;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\Widget;
-
 /**
- * HtmlWidget.
+ * Resolves a relative path to an absolute path using the exact same logic
+ * implemented for the standard "fopen" and "include" functions/statements.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @param string $path
+ *	The relative path.
+ *
+ * @return string
+ *	The absolute path.
  */
-abstract class HtmlWidget extends Widget implements IHtmlWidget
+function __path_resolve(string $path) : string
 {
-	/**
-	 * The identifier.
-	 *
-	 * @type string
-	 */
-	private $id;
+	$result = stream_resolve_include_path
+	(
+		strtr($path, [ '/' => DIRECTORY_SEPARATOR ])
+	);
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The html widget context.
-	 *
-	 * @param array $configuration
-	 *	The html widget configuration.
-	 */
-	public function __construct(array $configuration = null)
+	if ($result === false)
 	{
-		parent::__construct($configuration);
+		__throw('Can not resolve path: path "%s"', $path);
 	}
 
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public final function getID() : string
-	{
-		if (!$this->id)
-		{
-			$this->id = 'lb' . __lightbit_next_id();
-		}
-
-		return $this->id;
-	}
-
-	/**
-	 * Sets the identifier.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 */
-	public final function setID(string $id) : string
-	{
-		if ($this->id)
-		{
-			throw new Exception(sprintf('Widget identifier is already set: current "%s", next "%s", class "%s"', $this->id, $id, static::class));
-		}
-
-		$this->id = $id;
-	}
+	return $result;
 }

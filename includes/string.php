@@ -25,32 +25,48 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Data\Expression;
-
-/**
- * Creates an expression.
- *
- * @param string $expression
- *	The expression.
- *
- * @return Expression
- *	The expression.
- */
-function __exp(string $expression) : Expression
+function __string_length(string $content) : int
 {
-	return new Expression($expression);
+	return mb_strlen($content);
 }
 
-/**
- * Creates an expression.
- *
- * @param string $expression
- *	The expression.
- *
- * @return Expression
- *	The expression.
- */
-function lbexpression(string $expression) : Expression
+function __string_slug(string $content) : string
 {
-	return new Expression($expression);
+	return strtolower
+	(
+		implode
+		(
+			$delimiter,
+			preg_split('%([^\\w]+|_+)%', __string_transliterate($content), -1, PREG_SPLIT_NO_EMPTY)
+		)
+	);
+}
+
+function __string_split_word(string $content) : array
+{
+	return preg_split('%[^\\p{L}]+%u', $content, -1, PREG_SPLIT_NO_EMPTY);
+}
+
+function __string_transliterate(string $content) : string
+{
+	static $transliterator;
+
+	if (!$transliterator)
+	{
+		$transliterator = Transliterator::create('Any-Latin; Latin-ASCII');
+
+		if (!$transliterator)
+		{
+			__throw('String transliterator does not exist: transliterator "%s"', 'Any-Latin; Latin-ASCII');
+		}
+	}
+
+	$result = $transliterator->transliterate($content);
+
+	if ($result === false)
+	{
+		__throw('String transliterator error: ', $transliterator->getErrorMessage());
+	}
+
+	return $result;
 }

@@ -25,35 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Helpers\StringHelper;
-
-/**
- * Creates a content slug.
- *
- * @param string $content
- *	The content to create the slug from.
- *
- * @param string $delimiter
- *	The slug delimiter.
- *
- * @return string
- *	The slug.
- */
-function lbslug(string $content, string $delimiter = '-') : string
+function __url(array $route, bool $absolute = false) : string
 {
-	return StringHelper::slug($content, $delimiter);
-}
-
-/**
- * Extracts words from the given content.
- *
- * @param string $content
- *	The content.
- *
- * @return array
- *	The result.
- */
-function lbwords(string $content) : array
-{
-	return StringHelper::words($content);
+	return __application()->getHttpRouter()->url($route, $absolute);
 }

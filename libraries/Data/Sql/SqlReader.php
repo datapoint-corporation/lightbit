@@ -32,7 +32,6 @@ use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\SqlConnection;
 use \Lightbit\Data\Sql\SqlStatement;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * ISqlReader.
@@ -95,7 +94,7 @@ class SqlReader extends Object implements ISqlReader
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -153,7 +152,7 @@ class SqlReader extends Object implements ISqlReader
 			while ($this->continue());
 
 			$this->pdoStatement = null;
-		}		
+		}
 	}
 
 	/**
@@ -257,7 +256,7 @@ class SqlReader extends Object implements ISqlReader
 	}
 
 	/**
-	 * Fetches the next cell in the current result set and returns it, 
+	 * Fetches the next cell in the current result set and returns it,
 	 * disposing all remaining resulsts by closing.
 	 *
 	 * @return mixed
@@ -273,7 +272,7 @@ class SqlReader extends Object implements ISqlReader
 	}
 
 	/**
-	 * Fetches the next result in the current result set and returns it, 
+	 * Fetches the next result in the current result set and returns it,
 	 * disposing all remaining resulsts by closing.
 	 *
 	 * @param bool $numeric
@@ -287,7 +286,7 @@ class SqlReader extends Object implements ISqlReader
 		$result = $this->next($numeric);
 
 		$this->close();
-		
+
 		return $result;
 	}
 }

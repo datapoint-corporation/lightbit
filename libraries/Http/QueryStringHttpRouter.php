@@ -35,7 +35,6 @@ use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\ParameterRouteException;
 use \Lightbit\Base\RouteException;
 use \Lightbit\Exception;
-use \Lightbit\Helpers\QueryStringHelper;
 use \Lightbit\Http\HttpRouter;
 
 /**
@@ -160,14 +159,14 @@ class QueryStringHttpRouter extends HttpRouter
 		$result = '' . $this->getScriptName();
 
 		$arguments = [ 'action' => strtr($action->getID(), '/-', '._') ]
-			+ $action->getArguments() 
+			+ $action->getArguments()
 			+ $route;
 
 		unset($arguments[0]);
 
 		if ($arguments)
 		{
-			$result .= '?' . QueryStringHelper::encode($arguments);
+			$result .= '?' . __http_query_encode($arguments);
 		}
 
 		if ($absolute)

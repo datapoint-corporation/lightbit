@@ -25,47 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Helpers\GlobalizationHelper;
+use \Lightbit\Base\Context;
 
-/**
- * Reads a message.
- *
- * If the message is not available at the source, the original message
- * is returned as a fail safe.
- *
- * @param string $category
- *	The message category.
- *
- * @param string $message
- *	The message to read.
- *
- * @return string
- *	The message.
- */
-function lbmessage(string $category, string $message) : string
+$_SERVER['__LIGHTBIT_CONTEXT'] = null;
+
+function __context() : Context
 {
-	return GlobalizationHelper::message($category, $message);
+	if (!isset($_SERVER['__LIGHTBIT_CONTEXT']))
+	{
+		__throw_state('Context does not exist.');
+	}
+
+	return $_SERVER['__LIGHTBIT_CONTEXT'];
 }
 
-/**
- * Inflates a message.
- *
- * This function is context aware: the message is read through the 
- * message source and formatted through the locale.
- *
- * @param string $category
- *	The message category.
- *
- * @param string $message
- *	The message.
- *
- * @param array $arguments
- *	The message arguments.
- *
- * @return string
- *	The result.
- */
-function __(string $category, string $message, array $arguments = null) : string
+function __context_get() : ?Context
 {
-	return GlobalizationHelper::inflate($category, $message, $arguments);
+	return $_SERVER['__LIGHTBIT_CONTEXT'];
+}
+
+function __context_set(?Context $context) : void
+{
+	$_SERVER['__LIGHTBIT_CONTEXT'] = $context;
 }

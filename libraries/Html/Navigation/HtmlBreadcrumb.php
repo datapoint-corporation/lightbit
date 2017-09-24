@@ -25,78 +25,80 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\Html\Navigation;
 
-use \Lightbit\Base\Context;
-use \Lightbit\Base\Element;
-use \Lightbit\Base\IWidget;
-use \Lightbit\Base\View;
+use \Lightbit\Base\Object;
+use \Lightbit\Html\Navigation\IHtmlBreadcrumb;
 
 /**
- * IWidget.
+ * HtmlBreadcrumb.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Widget extends Element implements IWidget
+class HtmlBreadcrumb extends Object implements IHtmlBreadcrumb
 {
+	public static function create(array $breadcrumb) : IHtmlBreadcrumb
+	{
+		return __object_create_ex(self::class, null, $breadcrumb);
+	}
+
+	/**
+	 * The route.
+	 *
+	 * @type array
+	 */
+	private $route;
+
+	/**
+	 * The title.
+	 *
+	 * @type string
+	 */
+	private $title;
+
 	/**
 	 * Constructor.
 	 *
+	 * @param string $title
+	 *	The breadcrumb title.
+	 *
+	 * @param array $route
+	 *	The breadcrumb route.
+	 *
 	 * @param array $configuration
-	 *	The widget configuration.
+	 *	The breadcrumb configuration.
 	 */
-	public function __construct(array $configuration = null)
+	public function __construct(string $title, array $route = null, array $configuration = null)
 	{
+		$this->route = $route;
+		$this->title = $title;
+
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 
 	/**
-	 * Gets the views base paths.
+	 * Gets the route.
 	 *
 	 * @return array
-	 *	The views base paths.
+	 *	The route.
 	 */
-	protected function getViewsBasePaths() : array
+	public function getRoute() : ?array
 	{
-		return $this->getContext()->getViewsBasePaths();
+		return $this->route;
 	}
 
 	/**
-	 * Renders a view.
-	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
+	 * Gets the title.
 	 *
 	 * @return string
-	 *	The content.
+	 *	The title.
 	 */
-	protected final function render(string $view, array $parameters = null, bool $capture = false) : ?string
+	public function getTitle() : string
 	{
-		return $this->view(__asset_path_resolve_array($this->getViewsBasePaths(), 'php', $view))
-			->run($parameters, true);
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new View($this->getContext(), $path, $configuration);
+		return $this->title;
 	}
 }

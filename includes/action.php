@@ -25,70 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+use \Lightbit\Base\Action;
 
-use \Lightbit;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\Widget;
+$_SERVER['__LIGHTBIT_ACTION'] = null;
 
-/**
- * HtmlWidget.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-abstract class HtmlWidget extends Widget implements IHtmlWidget
+function __action() : Action
 {
-	/**
-	 * The identifier.
-	 *
-	 * @type string
-	 */
-	private $id;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The html widget context.
-	 *
-	 * @param array $configuration
-	 *	The html widget configuration.
-	 */
-	public function __construct(array $configuration = null)
+	if (!isset($_SERVER['__LIGHTBIT_ACTION']))
 	{
-		parent::__construct($configuration);
+		__throw_state('Action does not exist.');
 	}
 
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public final function getID() : string
-	{
-		if (!$this->id)
-		{
-			$this->id = 'lb' . __lightbit_next_id();
-		}
+	return $_SERVER['__LIGHTBIT_ACTION'];
+}
 
-		return $this->id;
-	}
+function __action_get() : ?Action
+{
+ 	return $_SERVER['__LIGHTBIT_ACTION'];
+}
 
-	/**
-	 * Sets the identifier.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 */
-	public final function setID(string $id) : string
-	{
-		if ($this->id)
-		{
-			throw new Exception(sprintf('Widget identifier is already set: current "%s", next "%s", class "%s"', $this->id, $id, static::class));
-		}
-
-		$this->id = $id;
-	}
+function __action_set(?Action $action) : void
+{
+	$_SERVER['__LIGHTBIT_ACTION'] = $action;
 }

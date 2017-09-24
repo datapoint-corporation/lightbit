@@ -29,7 +29,6 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Http\IHttpResponse;
 
 /**

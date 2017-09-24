@@ -377,6 +377,25 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
+	 * Checks if an attribute has been modified.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributeUpdate(string $attribute) : bool
+	{
+		if (isset($this->attributes))
+		{
+			return ($this->getAttribute($attribute) !== $this->attributes[$attribute]);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Checks if it is new.
 	 *
 	 * @return bool

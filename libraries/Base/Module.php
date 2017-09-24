@@ -31,6 +31,10 @@ use \Lightbit\Base\Action;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\Module;
+use \Lightbit\Data\SlugManager;
+use \Lightbit\Globalization\Locale;
+use \Lightbit\Globalization\MessageSource;
+use \Lightbit\Security\Cryptography\PasswordDigest;
 use \Lightbit\Exception;
 
 /**
@@ -58,7 +62,21 @@ abstract class Module extends Context
 	 */
 	public function __construct(Context $context, string $id, string $path, array $configuration = null)
 	{
-		parent::__construct($context, $id, $path, $configuration);
+		parent::__construct($context, $id, $path);
+
+		$this->setComponentsConfiguration
+		(
+			[
+				'data.slug.manager' => [ '@class' => SlugManager::class ],
+				'globalization.message.source' => [ '@class' => MessageSource::class ],
+				'security.cryptography.password.digest' => [ '@class' => PasswordDigest::class ]
+			]
+		);
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
 	}
 
 	/**
@@ -69,6 +87,6 @@ abstract class Module extends Context
 	 */
 	public final function getApplication() : Application
 	{
-		return Lightbit::getApplication();
+		return __application();
 	}
 }

@@ -31,7 +31,6 @@ use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\IRule;
 use \Lightbit\Data\Validation\Rule;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * IModel.
@@ -39,7 +38,7 @@ use \Lightbit\Helpers\ObjectHelper;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Model extends Element implements IModel
+class Model extends Element implements IModel
 {
 	/**
 	 * Creates a model instance.
@@ -100,7 +99,7 @@ abstract class Model extends Element implements IModel
 
 		if ($attributes)
 		{
-			ObjectHelper::setAttributes($this, $attributes);
+			__object_attribute_set_array($this, $attributes);
 		}
 	}
 
@@ -156,7 +155,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public function getAttribute(string $attribute) // : mixed
 	{
-		return ObjectHelper::getAttribute($this, $attribute);
+		return __object_attribute_get($this, $attribute);
 	}
 
 	/**
@@ -177,7 +176,7 @@ abstract class Model extends Element implements IModel
 			return $labels[$attribute];
 		}
 
-		return ucwords(implode(' ', lbwords($attribute)));
+		return ucwords(implode(' ', __string_split_word($attribute)));
 	}
 
 	/**
@@ -207,7 +206,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function getAttributes() : array
 	{
-		return ObjectHelper::getAttributes($this, $this->getAttributesName());
+		return __object_attribute_get_array($this, $this->getAttributesName());
 	}
 
 	/**
@@ -230,7 +229,7 @@ abstract class Model extends Element implements IModel
 			{
 				if (!isset($attributesLabel[$locale][$attribute]))
 				{
-					$attributesLabel[$locale][$attribute] = ucwords(strtolower(implode(' ', lbwords($attribute))));
+					$attributesLabel[$locale][$attribute] = ucwords(strtolower(implode(' ', __string_split_word($attribute))));
 				}
 			}
 		}
@@ -342,8 +341,8 @@ abstract class Model extends Element implements IModel
 					$matches[] = $rule->getAttributesName();
 				}
 			}
-			
-			$safeAttributesName[$this->scenario] = $matches 
+
+			$safeAttributesName[$this->scenario] = $matches
 				? array_unique(array_merge(...$matches))
 				: [];
 		}
@@ -373,7 +372,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function hasAttribute(string $attribute) : bool
 	{
-		return ObjectHelper::hasAttribute($this, $attribute);
+		return __object_attribute_is_set($this, $attribute);
 	}
 
 	/**
@@ -508,7 +507,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function setAttribute(string $attribute, $value) : void
 	{
-		ObjectHelper::setAttribute($this, $attribute, $value);
+		__object_attribute_set($this, $attribute, $value);
 	}
 
 	/**
@@ -543,7 +542,7 @@ abstract class Model extends Element implements IModel
 	 */
 	public final function setAttributes(array $attributes) : void
 	{
-		ObjectHelper::setAttributes($this, $attributes);
+		__object_attribute_set_array($this, $attributes);
 	}
 
 	/**

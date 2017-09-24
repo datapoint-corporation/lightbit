@@ -25,78 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
-
 /**
- * IntegerFilter.
+ * Formats a number for display.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
+ * The main advantage between this and the standard "number_format" function is
+ * the fact it allows to retain the original number precision if needed.
+ *
+ * @param string $number
+ *	The number.
+ *
+ * @param int $precision
+ *	The precision.
+ *
+ * @param string $decimals
+ *	The decimals delimiter.
+ *
+ * @param string $thousands
+ *	The thousands delimiter.
+ *
+ * @return string
+ *	The result.
  */
-class IntegerFilter extends Filter
+function __number_format(string $number, int $precision = null, string $decimals = '.', string $thousands = '')
 {
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 */
-	public function __construct(array $configuration = null)
+	if (!isset($precision))
 	{
-		parent::__construct($configuration);
-	}
-
-	/**
-	 * Runs the filter.
-	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
-	 *
-	 * @return int
-	 *	The value.
-	 */
-	public function run($value) : int
-	{
-		while (!is_int($value))
+		if (($i = strpos($number, '.')) !== false)
 		{
-			if (is_string($value))
-			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
-				{
-					$value = intval($value);
-					break;
-				}
-			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', __type_of($value)));
+			$precision = strlen(substr($number, $i + 1));
 		}
-
-		if ($this->unsigned && $value < 0)
+		else
 		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
+			$precision = 0;
 		}
-
-		return $value;
 	}
 
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
-	{
-		$this->unsigned = $unsigned;
-	}
+	return number_format($number, $precision, $decimals, $thousands);
 }

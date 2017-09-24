@@ -25,554 +25,126 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Base\Application;
-use \Lightbit\ClassNotFoundException;
-use \Lightbit\ClassPathResolutionException;
-use \Lightbit\Exception;
-use \Lightbit\Helpers\TypeHelper;
-use \Lightbit\Html\HtmlView;
-use \Lightbit\Http\HttpStatusException;
-use \Lightbit\IO\FileSystem\Alias;
-use \Lightbit\IO\FileSystem\FileNotFoundException;
-use \Lightbit\NamespacePathResolutionException;
-
-/**
- * Lightbit.
- *
- * This class defines the static methods that are used to implement the
- * framework core behaviours like path resolution, autoloading and context
- * safe script inclusion.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-class Lightbit
+function __exit(int $code) : void
 {
-	/**
-	 * The version.
-	 *
-	 * @type string
-	 */
-	public const VERSION = '1.0.0';
-
-	/**
-	 * The version build.
-	 *
-	 * @type string
-	 */
-	public const VERSION_BUILD = '201705301323';
-
-	/**
-	 * The version signature.
-	 *
-	 * @type string
-	 */
-	public const VERSION_SIGNATURE = 'Lightbit/1.0.0';
-
-	/**
-	 * The application.
-	 *
-	 * @type Application
-	 */
-	private static $application;
-
-	/**
-	 * The classes path.
-	 *
-	 * @type array
-	 */
-	private static $classesPath =
-	[
-		__CLASS__ => __FILE__
-	];
-
-	/**
-	 * The debug flag.
-	 *
-	 * @type bool
-	 */
-	private static $debug = false;
-
-	/**
-	 * The event listeners.
-	 *
-	 * @type array
-	 */
-	private static $eventListeners = [];
-
-	/**
-	 * The namespaces path.
-	 *
-	 * @type array
-	 */
-	private static $namespacesPath = [];
-
-	/**
-	 * The file system alias prefixes path.
-	 *
-	 * @type array
-	 */
-	private static $prefixesPath = [];
-
-	/**
-	 * The last identifier.
-	 *
-	 * @type int
-	 */
-	private static $lastID = -1;
-
-	/**
-	 * Gets the application.
-	 *
-	 * @return Application
-	 *	The the application.
-	 */
-	public static function getApplication() : Application
+	if ($application = __application_get())
 	{
-		return self::$application;
+		$application->dispose();
 	}
 
-	/**
-	 * Gets a class namespace name.
-	 *
-	 * @param string $className
-	 *	The class namespace name.
-	 *
-	 * @return string
-	 *	The class namespace.
-	 */
-	public static function getClassNamespaceName(string $className) : string
+	exit($code);
+}
+
+function __lightbit_autoload(string $class) : void
+{
+	__class_load($class);
+}
+
+function __lightbit_error_handler(int $code, string $message, string $file, int $line) : bool
+{
+	$category = 'UNKNOWN ERROR';
+
+	switch ($code)
 	{
-		if ($i = strrpos($className, '\\'))
+		case E_ERROR:
+		case E_USER_ERROR:
+			$category = 'FATAL ERROR';
+			break;
+
+		case E_WARNING:
+		case E_NOTICE:
+		case E_DEPRECATED:
+		case E_STRICT:
+		case E_RECOVERABLE_ERROR:
+		case E_USER_WARNING:
+		case E_USER_NOTICE:
+		case E_USER_DEPRECATED:
+			$category = 'WARNING';
+			break;
+
+		case E_PARSE:
+			$category = 'PARSE ERROR';
+			break;
+
+		case E_COMPILE_ERROR:
+			$category = 'COMPILE ERROR';
+			break;
+
+		case E_CORE_ERROR:
+			$category = 'CORE ERROR';
+			break;
+
+		case E_CORE_WARNING:
+			$category = 'CORE WARNING';
+			break;
+
+		case E_COMPILE_ERROR:
+			$category = 'COMPILE ERROR';
+			break;
+
+		case E_COMPILE_WARNING:
+			$category = 'COMPILE WARNING';
+			break;
+	}
+
+	if (__environment_is_cli())
+	{
+		echo sprintf('%s: %s at %s, line %d', $category, $message, $file, $line), PHP_EOL;
+	}
+	else
+	{
+		echo __html_element('h1', null, $category), PHP_EOL;
+		echo __html_element('p', null, sprintf('%s at %s, line %d', $message, $file, $line)), PHP_EOL;
+	}
+
+	__exit(1);
+	return true;
+}
+
+function __lightbit_exception_handler(Throwable $e) : bool
+{
+	if ($application = __application_get())
+	{
+		$application->throwable($e);
+	}
+
+	else if (__environment_is_cli())
+	{
+		do
 		{
-			return substr($className, 0, $i);
+			echo sprintf('%s: %s at %s, line %d', __type_of($e), $e->getMessage(), $e->getFile(), $e->getLine()), PHP_EOL;
+			echo $e->getTraceAsString(), PHP_EOL;
+			echo PHP_EOL;
 		}
-
-		return '';
+		while ($e = $e->getPrevious());
 	}
 
-	/**
-	 * Gets a class path.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @return string
-	 *	The class path.
-	 */
-	public static function getClassPath(string $className) : string
+	else
 	{
-		if (isset(self::$classesPath[$className]))
+		echo __html_element('h1', null, __type_of($e)), PHP_EOL;
+		echo __html_element('p', null, $e->getMessage()), PHP_EOL;
+
+		do
 		{
-			return self::$classesPath[$className];
+			echo __html_element('p', [ 'style' => 'font-weight: bold; margin-top: 1.5em' ], __type_of($e)), PHP_EOL;
+			echo __html_element('p', null, sprintf('%s at %s, line %d', $e->getMessage(), $e->getFile(), $e->getLine())), PHP_EOL;
+			echo __html_element('pre', null, $e->getTraceAsString()), PHP_EOL;
+			echo PHP_EOL;
 		}
-
-		if ($i = strrpos($className, '\\'))
-		{
-			try
-			{
-				return self::$classesPath[$className]
-					= self::getNamespacePath(substr($className, 0, $i))
-					. DIRECTORY_SEPARATOR
-					. strtr(substr($className, $i + 1), '\\', DIRECTORY_SEPARATOR)
-					. '.php';
-			}
-			catch (NamespacePathResolutionException $e)
-			{
-				throw new ClassPathResolutionException($className, sprintf('Class path resolution failure: "%s"', $className), $e);
-			}
-		}
-
-		return $className . '.php';
+		while ($e = $e->getPrevious());
 	}
 
-	/**
-	 * Gets a namespace path.
-	 *
-	 * @param string $namespaceName
-	 *	The namespace name.
-	 *
-	 * @return string
-	 *	The namespace path.
-	 */
-	public static function getNamespacePath(string $namespaceName) : string
-	{
-		if (isset(self::$namespacesPath[$namespaceName]))
-		{
-			return self::$namespacesPath[$namespaceName];
-		}
+	__exit(1);
+	return true;
+}
 
-		$i;
-		$parentNamespaceName = $namespaceName;
-		
-		while (($i = strrpos($parentNamespaceName, '\\')) !== false)
-		{
-			$parentNamespaceName = substr($namespaceName, 0, $i);
+function __lightbit_next_id() : int
+{
+	static $id = -1;
+	return ++$id;
+}
 
-			if (isset(self::$namespacesPath[$parentNamespaceName]))
-			{
-				return self::$namespacesPath[$namespaceName]
-					= self::$namespacesPath[$parentNamespaceName]
-					. DIRECTORY_SEPARATOR
-					. strtr(substr($namespaceName, $i + 1), [ '\\' => DIRECTORY_SEPARATOR ]);
-			}
-		}
-
-		throw new NamespacePathResolutionException($namespaceName, sprintf('Namespace path is not available: "%s"', $namespaceName));
-	}
-
-	/**
-	 * Creates the next identifier.
-	 *
-	 * @return int
-	 *	The next identifier.
-	 */
-	public static function getNextID() : int
-	{
-		return ++self::$lastID;
-	}
-
-	/**
-	 * Gets a file system resource alias prefix path.
-	 *
-	 * @param string $prefix
-	 *	The file system resource alias prefix.
-	 *
-	 * @return string
-	 *	The file system resource alias prefix path.
-	 */
-	public static function getPrefixPath(string $prefix) : string
-	{
-		if (isset(self::$prefixesPath[$prefix]))
-		{
-			return self::$prefixesPath[$prefix];
-		}
-
-		throw new Exception(sprintf('File system resource alias prefix is not defined: "%s"', $prefix));
-	}
-
-	/**
-	 * Handles a throwable.
-	 *
-	 * @param Throwable $throwable
-	 *	The throwable.
-	 */
-	public static function throwable(\Throwable $throwable) : void
-	{
-		static $throwing;
-
-		if (!isset($throwing))
-		{
-			$throwing = true;
-
-			if (isset(self::$application))
-			{
-				self::$application->throwable($throwable);
-			}
-			else
-			{
-				do
-				{
-					echo get_class($throwable), ': ', $throwable->getMessage(), PHP_EOL;
-					echo $throwable->getTraceAsString(), PHP_EOL;
-					echo PHP_EOL;
-
-					$throwable = $throwable->getPrevious();
-				}
-				while ($throwable);
-			}
-		}
-		
-		exit (1);
-	}
-
-	/**
-	 * Checks for a class availability.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public static function hasClass(string $className) : bool
-	{
-		if (!class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false))
-		{
-			$classPath = self::getClassPath($className);
-
-			if (!file_exists($classPath))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-
-	/**
-	 * Includes a script file.
-	 *
-	 * @param string $alias
-	 *	The script file system alias.
-	 *
-	 * @return mixed
-	 *	The script result.
-	 */
-	public static function include(string $alias) // : mixed
-	{
-		return self::inclusion()((new Alias($alias))->resolve('php'));
-	}
-
-	/**
-	 * Creates an inclusion closure.
-	 *
-	 * @return Closure
-	 *	The inclusion closure.
-	 */
-	public static function inclusion() : \Closure
-	{
-		static $inclusion;
-
-		if (!isset($inclusion))
-		{
-			$inclusion = function(string $__FILE__, array $__DATA__ = null)
-			{
-				if (!file_exists($__FILE__))
-				{
-					throw new FileNotFoundException($__FILE__, sprintf('Can not include file, not found: path "%s"', $__FILE__));
-				}
-
-				if (isset($__DATA__))
-				{
-					foreach ($__DATA__ as $__K__ => $__V__)
-					{
-						$__K__ = lcfirst(strtr(ucwords(strtr($__K__, [ '-' => ' ' ])), [ ' ' => '' ]));
-
-						${$__K__} = $__V__;
-						unset($__K__);
-						unset($__V__);
-					}
-				}
-
-				unset($__DATA__);
-
-				return require $__FILE__;
-			};
-
-			$inclusion = $inclusion->bindTo(null, null);
-		}
-
-		return $inclusion;
-	}
-
-	/**
-	 * Checks if this is a command line interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public static function isCli() : bool
-	{
-		static $result;
-
-		if (!isset($result))
-		{
-			$result = (strpos('cli', php_sapi_name()) !== false);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Checks the debug flag.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public static function isDebug() : bool
-	{
-		return self::$debug;
-	}
-	
-	/**
-	 * Loads a class.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 */
-	public static function loadClass(string $className) : void
-	{
-		try
-		{
-			$classPath = self::getClassPath($className);
-
-			if (!file_exists($classPath))
-			{
-				throw new FileNotFoundException($classPath, sprintf('Class file not found: "%s"', $classPath));
-			}
-
-			self::inclusion()(self::getClassPath($className));
-		}
-		catch (ClassPathResolutionException $e)
-		{
-			throw new ClassNotFoundException($className, sprintf('Class not found, path resolution failure: "%s"', $className), $e);	
-		}
-		catch (FileNotFoundException $e)
-		{
-			throw new ClassNotFoundException($className, sprintf('Class not found, file does not exist: "%s"', $className), $e);
-		}
-	}
-
-	/**
-	 * Sets an event listener.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param Closure $closure
-	 *	The event listener callback.
-	 */
-	public static function on(string $id, \Closure $closure) : void
-	{
-		self::$eventListeners[$id][] = $closure;
-	}
-
-	/**
-	 * Raises an event.
-	 *
-	 * @param string $id
-	 *	The event identifier.
-	 *
-	 * @param mixed $arguments
-	 *	The event arguments.
-	 *
-	 * @return array
-	 *	The event results.
-	 */
-	public static function raise(string $id, ...$arguments) : array
-	{
-		$results = [];
-
-		if (isset(self::$eventListeners[$id]))
-		{
-			foreach (self::$eventListeners[$id] as $i => $closure)
-			{
-				$result = $closure(...$arguments);
-
-				if (isset($result))
-				{
-					$results[] = $result;
-				}
-			}
-		}
-
-		return $results;
-	}
-
-	/**
-	 * Creates, registers and runs an application.
-	 *
-	 * @param string $private
-	 *	The application private install path.
-	 *
-	 * @param string $public
-	 *	The application public install path.
-	 *
-	 * @param string $className
-	 *	The application class name.
-	 *
-	 * @param string $configuration
-	 *	The application configuration script file system alias.
-	 *
-	 * @return int
-	 *	The application exit status.
-	 */
-	public static function run(string $private, string $public, string $className, string $configuration = null) : int
-	{
-		self::setPrefixPath('private', $private);
-		self::setPrefixPath('public', $public);
-
-		$express = null;
-
-		if ($configuration)
-		{
-			$configurationPath;
-			$express = self::inclusion()($configurationPath = (new Alias($configuration))->resolve('php', $private));
-
-			if (isset($express) && !is_array($express))
-			{
-				throw new Exception(sprintf('Configuration script file error: "%s", script path "%s", returns %s', $configuration, $configurationPath, TypeHelper::getNameOf($express)));
-			}
-		}
-
-		$result = (self::$application = new $className(self::$prefixesPath['private'], $express))->run();
-		self::$application->dispose();
-		self::$application = null;
-
-		return $result;
-	}
-
-	/**
-	 * Sets a class path.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @param string $path
-	 *	The class path.
-	 */
-	public static function setClassPath(string $className, string $path) : void
-	{
-		self::$classesPath[$className] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
-	}
-
-	/**
-	 * Sets the debug flag.
-	 *
-	 * @param bool $debug
-	 *	The debug flag.
-	 */
-	public static function setDebug(bool $debug) : void
-	{
-		self::$debug = $debug;
-	}
-
-	/**
-	 * Sets a namespace path.
-	 *
-	 * @param string $namespaceName
-	 *	The namespace name.
-	 *
-	 * @param string $path
-	 *	The namespace path.
-	 */
-	public static function setNamespacePath(string $namespaceName, string $path) : void
-	{
-		self::$namespacesPath[$namespaceName] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
-	}
-
-	/**
-	 * Sets a file system resource alias prefix path.
-	 *
-	 * @param string $prefix
-	 *	The file system resource alias prefix.
-	 *
-	 * @param string $path
-	 *	The file system resource alias prefix path.
-	 */
-	public static function setPrefixPath(string $prefix, string $path) : void
-	{
-		self::$prefixesPath[$prefix] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
-	}
-
-	/**
-	 * Constructor.
-	 */
-	private function __construct()
-	{
-		trigger_error(sprintf('Class does not support construction: "%s"', __CLASS__), E_USER_ERROR);
-		exit(1);
-	}
+function __lightbit_version() : string
+{
+	return '1.0.0';
 }

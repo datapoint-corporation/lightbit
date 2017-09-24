@@ -152,6 +152,17 @@ interface ISqlActiveRecord extends ISqlModel
 	public function getTableName() : string;
 
 	/**
+	 * Checks if an attribute has been modified.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributeUpdate(string $attribute) : bool;
+
+	/**
 	 * Checks if it is new.
 	 *
 	 * @return bool

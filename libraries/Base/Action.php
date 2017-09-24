@@ -40,29 +40,6 @@ use \Lightbit\IllegalStateException;
 final class Action extends Object
 {
 	/**
-	 * The instance.
-	 *
-	 * @type Action
-	 */
-	private static $instance;
-
-	/**
-	 * Gets the instance.
-	 *
-	 * @return Action
-	 *	The instance.
-	 */
-	public static function getInstance() : Action
-	{
-		if (!self::$instance)
-		{
-			throw new IllegalStateException('Action is not in execution.');
-		}
-
-		return self::$instance;
-	}
-
-	/**
 	 * The arguments.
 	 *
 	 * @type array
@@ -124,6 +101,57 @@ final class Action extends Object
 	}
 
 	/**
+	 * Compares to a route.
+	 *
+	 * Comparison is based on the resolution of the given route through the
+	 * context this action is attached to.
+	 *
+	 * The following list of integers can be returned:
+	 *
+	 *	0)	The route resolves to a different controller, either within the
+	 *		same context or at one of the parent modules.
+	 *
+	 *	1)	The route resolves to the same context and controller with a
+	 *		a matching action name - arguments may differ.
+	 *
+	 *	2)	The route resolves to an action within the same context and
+	 *		controller.
+	 *
+	 *	3)	The route resolves to an action in a different controller, that
+	 *		may be part of either the same context or a child of it.
+	 *
+	 * @param array $route
+	 *	The route to compare against.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public function compare(array $route) : int
+	{
+		$action = $this->controller->getContext()->resolve($route);
+
+		if ($this->controller === $action->controller)
+		{
+			return ($this->name === $this->name ? 1 : 2);
+		}
+
+		$self = $this->controller->getContext();
+		$subject = $action->controller->getContext();
+
+		while ($subject)
+		{
+			if ($self === $subject)
+			{
+				return 3;
+			}
+
+			$subject = $subject->getContext();
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Gets the arguments.
 	 *
 	 * @return array
@@ -142,7 +170,7 @@ final class Action extends Object
 	 */
 	public function getContext() : Context
 	{
-		return $this->controller->getContext();	
+		return $this->controller->getContext();
 	}
 
 	/**
@@ -209,10 +237,15 @@ final class Action extends Object
 	 */
 	public function run() // : mixed
 	{
-		self::$instance = $this;
+		$action = __action_get();
+		$context = __context_get();
+
+		__action_set($this);
+		__context_set($this->controller->getContext());
 		$result = $this->controller->run($this);
-		self::$instance = null;
-		
+
+		__action_set($action);
+		__context_set($context);
 		return $result;
 	}
 }

@@ -32,7 +32,6 @@ use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\IModel;
-use \Lightbit\Helpers\TypeHelper;
 use \Lightbit\Html\IHtmlAdapter;
 
 /**
@@ -76,7 +75,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	{
 		$session = $this->getAction()->getController()->getHttpSession();
 
-		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
+		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash;
 
 		$result = $session->fetch($id);
@@ -106,7 +105,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	{
 		$session = $this->getAction()->getController()->getHttpSession();
 
-		$hash = hash('md5', (Lightbit::VERSION . '/' . get_class($model) . '/' . $attribute));
+		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash . 'id';
 
 		$result = $session->fetch($id);
@@ -136,7 +135,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	{
 		if (isset($value))
 		{
-			$typeName = TypeHelper::getNameOf($value);
+			$typeName = __type_of($value);
 
 			if ($typeName === 'bool')
 			{
@@ -152,9 +151,9 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 			{
 				$value = ($value instanceof Object)
 					? $this->getSlugManager()->compose($value)
-					: TypeHelper::toString($value);
+					: __type_to_string($value);
 			}
-		
+
 			return strtr($this->escape($attribute), [ ' ' => '-' ]) . '="' . $this->escape($value) . '"';
 		}
 
@@ -310,9 +309,9 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 * @return string
 	 *	The result.
 	 */
-	public function escape(string $content) : string
+	public final function escape(string $content) : string
 	{
-		return htmlspecialchars($content);
+		return __html_encode($content);
 	}
 
 	/**
@@ -388,7 +387,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	protected function isVoidElementTag(string $tag) : bool
 	{
-		static $voidElementsTag = 
+		static $voidElementsTag =
 		[
 			'area' => true,
 			'base' => true,
@@ -423,7 +422,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	public function merge(...$attributes) : array
 	{
 		$result = [];
-		
+
 		$classNames = [];
 		foreach ($attributes as $i => $node)
 		{

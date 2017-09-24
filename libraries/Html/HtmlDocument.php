@@ -29,8 +29,9 @@ namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Helpers\ObjectHelper;
 use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Html\Navigation\HtmlBreadcrumb;
+use \Lightbit\Html\Navigation\IHtmlBreadcrumb;
 
 /**
  * HtmlDocument.
@@ -40,6 +41,13 @@ use \Lightbit\Html\IHtmlDocument;
  */
 class HtmlDocument extends Component implements IHtmlDocument
 {
+	/**
+	 * The breadcrumbs.
+	 *
+	 * @type array
+	 */
+	private $breadcrumbs;
+
 	/**
 	 * The inline scripts.
 	 *
@@ -109,7 +117,37 @@ class HtmlDocument extends Component implements IHtmlDocument
 
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
+		}
+	}
+
+	/**
+	 * Sets an additional breadcrumb.
+	 *
+	 * @param IHtmlBreadcrumb $title
+	 *	The breadcrumb.
+	 */
+	public function addBreadcrumb(IHtmlBreadcrumb $breadcrumb) : void
+	{
+		$this->breadcrumbs[] = $breadcrumb;
+	}
+
+	/**
+	 * Sets additional breadcrumbs.
+	 *
+	 * @param array $breadcrumbs
+	 *	The breadcrumbs.
+	 */
+	public function addBreadcrumbs(array $breadcrumbs) : void
+	{
+		foreach ($breadcrumbs as $i => $breadcrumb)
+		{
+			if (! ($breadcrumb instanceof IHtmlBreadcrumb))
+			{
+				$breadcrumb = HtmlBreadcrumb::create($breadcrumb);
+			}
+
+			$this->addBreadcrumb($breadcrumb);
 		}
 	}
 
@@ -127,7 +165,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addInlineScript(string $script, string $position = 'head', array $attributes = null) : void
 	{
-		$this->inlineScripts[$position][] = 
+		$this->inlineScripts[$position][] =
 		[
 			'attributes' => $attributes,
 			'script' => $script
@@ -145,7 +183,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addInlineStyle(string $style, array $attributes = null) : void
 	{
-		$this->inlineStyles[] = 
+		$this->inlineStyles[] =
 		[
 			'attributes' => $attributes,
 			'style' => $style
@@ -177,7 +215,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addScript(string $location, string $position = 'head', array $attributes = null) : void
 	{
-		$this->scripts[$position][] = 
+		$this->scripts[$position][] =
 		[
 			'attributes' => $attributes,
 			'location' => $location
@@ -195,7 +233,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addStyle(string $location, array $attributes = null) : void
 	{
-		$this->styles[] = 
+		$this->styles[] =
 		[
 			'attributes' => $attributes,
 			'location' => $location
@@ -213,11 +251,22 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addTag(string $tag, array $attributes = null) : void
 	{
-		$this->tags[] = 
+		$this->tags[] =
 		[
 			'attributes' => $attributes,
 			'tag' => $tag
 		];
+	}
+
+	/**
+	 * Gets the breadcrumbs.
+	 *
+	 * @return array
+	 *	The breadcrumbs.
+	 */
+	public function getBreadcrumbs() : array
+	{
+		return $this->breadcrumbs;
 	}
 
 	/**
@@ -310,14 +359,14 @@ class HtmlDocument extends Component implements IHtmlDocument
 
 			foreach ($this->styles as $i => $style)
 			{
-				$result .= 
+				$result .=
 
 					$html->element
 					(
-						'link', 
+						'link',
 						$html->merge
 						(
-							[ 'rel' => 'stylesheet', 'type' => 'text/css' ], 
+							[ 'rel' => 'stylesheet', 'type' => 'text/css' ],
 							$style['attributes'],
 							[ 'href' => $style['location'] ]
 						)
@@ -328,13 +377,13 @@ class HtmlDocument extends Component implements IHtmlDocument
 
 			foreach ($this->inlineStyles as $i => $style)
 			{
-				$result .= 
+				$result .=
 
 					$html->element
 					(
-						'style', 
-						$html->merge([ 'type' => 'text/css' ], $style['attributes']), 
-						(new View($this->getContext(), (new Alias($style['style']))->resolve('php')))->run(null, true),
+						'style',
+						$html->merge([ 'type' => 'text/css' ], $style['attributes']),
+						(new View($this->getContext(), (__asset_path_resolve(null, 'php', $style['style']))))->run(null, true),
 						false
 					)
 
@@ -346,24 +395,24 @@ class HtmlDocument extends Component implements IHtmlDocument
 		{
 			foreach ($this->scripts[$position] as $i => $script)
 			{
-				$result .= 
+				$result .=
 
 					$html->element
 					(
-						'script', 
+						'script',
 						$html->merge
 						(
-							[ 
-								'language' => 'javascript', 
-								'type' => 'text/javascript' 
-							], 
+							[
+								'language' => 'javascript',
+								'type' => 'text/javascript'
+							],
 							$script['attributes'],
 							[
 								'src' => $script['location']
 							]
 						)
 					)
-					
+
 					. PHP_EOL;
 			}
 		}
@@ -372,13 +421,13 @@ class HtmlDocument extends Component implements IHtmlDocument
 		{
 			foreach ($this->inlineScripts as $i => $script)
 			{
-				$result .= 
+				$result .=
 
 					$html->element
 					(
-						'script', 
-						$html->merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']), 
-						(new View($this->getContext(), (new Alias($script['script']))->resolve('php')))->run(null, true),
+						'script',
+						$html->merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']),
+						(new View($this->getContext(), (__asset_path_resolve(null, 'php', $script['script']))))->run(null, true),
 						false
 					)
 
@@ -394,12 +443,19 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function reset() : void
 	{
+		$this->breadcrumbs = [];
 		$this->inlineScripts = [];
 		$this->inlineStyles = [];
 		$this->metaAttributes = [];
 		$this->scripts = [];
 		$this->styles = [];
 		$this->tags = [];
+	}
+
+	public function setBreadcrumbs(array $breadcrumbs) : void
+	{
+		$this->breadcrumbs = [];
+		$this->addBreadcrumbs($breadcrumbs);
 	}
 
 	/**

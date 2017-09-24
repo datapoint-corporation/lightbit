@@ -33,7 +33,6 @@ use \Lightbit\Data\Filtering\IFilter;
 use \Lightbit\Data\Filtering\IntegerFilter;
 use \Lightbit\Data\Filtering\StringFilter;
 use \Lightbit\Data\Filtering\TypeFilter;
-use \Lightbit\Helpers\ObjectHelper;
 
 /**
  * Filter.
@@ -97,7 +96,7 @@ abstract class Filter extends Element implements IFilter
 	{
 		if ($configuration)
 		{
-			ObjectHelper::configure($this, $configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 }
