@@ -139,7 +139,7 @@ class Application extends Context
 
 		return __asset_path_resolve_array
 		(
-			array_merge($this->getViewsBasePaths(), [ LIGHTBIT_PATH . '/views/http' ]),
+			array_merge([ $this->getViewsBasePath(), LIGHTBIT_PATH . '/views/http' ]),
 			'php',
 			$this->httpErrorDocuments[$httpStatusCode]
 		);

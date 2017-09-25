@@ -96,7 +96,7 @@ function __http_status_message(int $code) : string
 		511 => 'Network Authentication Required'
 	];
 
-	if (isset($messages[$statusCode]))
+	if (isset($messages[$code]))
 	{
 		return $messages[$code];
 	}

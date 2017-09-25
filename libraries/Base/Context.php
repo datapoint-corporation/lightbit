@@ -120,6 +120,20 @@ abstract class Context extends Object
 	private $layoutPath;
 
 	/**
+	 * The layout base path.
+	 *
+	 * @type string
+	 */
+	private $layoutBasePath;
+
+	/**
+	 * The layouts base path.
+	 *
+	 * @type string
+	 */
+	private $layoutsBasePath;
+
+	/**
 	 * The context locale.
 	 *
 	 * @type ILocale
@@ -153,6 +167,20 @@ abstract class Context extends Object
 	 * @type string
 	 */
 	private $path;
+
+	/**
+	 * The context prefix.
+	 *
+	 * @type string
+	 */
+	private $prefix;
+
+	/**
+	 * The views base path.
+	 *
+	 * @type string
+	 */
+	private $viewsBasePath;
 
 	/**
 	 * Constructor.
@@ -532,22 +560,49 @@ abstract class Context extends Object
 	 */
 	public final function getLayoutPath() : ?string
 	{
-		if (!$this->layoutPath)
+		if (!$this->layoutPath && $this->layout)
 		{
-			if (!$this->layout)
-			{
-				if ($this->context)
-				{
-					return $this->context->getLayoutPath();
-				}
-
-				return null;
-			}
-
-			$this->layoutPath = __asset_path_resolve($this->getPath(), 'php', $this->layout);
+			$this->layoutPath = __asset_path_resolve($this->getLayoutsBasePath(), 'php', $this->layout);
 		}
 
 		return $this->layoutPath;
+	}
+
+	/**
+	 * Gets the layout base path.
+	 *
+	 * @return string
+	 *	The layout base path.
+	 */
+	public final function getLayoutBasePath() : ?string
+	{
+		if (!$this->layoutBasePath && $this->layout)
+		{
+			if (!$this->layoutPath)
+			{
+				$this->layoutPath = __asset_path_resolve($this->getLayoutsBasePath(), 'php', $this->layout);
+			}
+
+			$this->layoutBasePath = dirname($this->layoutPath);
+		}
+
+		return $this->layoutBasePath;
+	}
+
+	/**
+	 * Gets the layouts base path.
+	 *
+	 * @return string
+	 *	The layouts base path.
+	 */
+	public final function getLayoutsBasePath() : string
+	{
+		if (!$this->layoutsBasePath)
+		{
+			$this->layoutsBasePath = $this->path . DIRECTORY_SEPARATOR . 'themes';
+		}
+
+		return $this->layoutsBasePath;
 	}
 
 	/**
@@ -673,9 +728,26 @@ abstract class Context extends Object
 				);
 			}
 
-			$configuration = __include($configurationPath);
+			try
+			{
+				$configuration = __include($configurationPath);
 
-			if (!is_array($configuration) || !isset($configuration['@class']))
+				if ($require = __map_get($configuration, '?array', '@require'))
+				{
+					$this->_loadDependencies($require);
+				}
+
+				$this->modules[$id] = __object_construct_a
+				(
+					Module::class,
+					__map_get($configuration, 'string', '@class'),
+					$this,
+					$id,
+					$installPath,
+					$configuration
+				);
+			}
+			catch (\Throwable $e)
 			{
 				throw new ModuleNotFoundException
 				(
@@ -683,27 +755,13 @@ abstract class Context extends Object
 					$id,
 					sprintf
 					(
-						'Context module not found, bad configuration: module "%s", at context "%s"',
+						'Can not get module, unexpected error: module "%s", at context "%s"',
 						$id,
 						$this->getGlobalID()
-					)
+					),
+					$e
 				);
 			}
-
-			// If the configuration defines any dependencies, we'll have to
-			// load them before the instance can be created.
-			if (isset($configuration['@require']) && is_array($configuration['@require']))
-			{
-				$this->_loadDependencies($configuration['@require']);
-			}
-
-			$this->modules[$id] = new $configuration['@class']
-			(
-				$this,
-				$id,
-				$installPath,
-				$configuration
-			);
 		}
 
 		return $this->modules[$id];
@@ -755,9 +813,7 @@ abstract class Context extends Object
 	 */
 	public final function getPrefix() : string
 	{
-		static $prefix;
-
-		if (!$prefix)
+		if (!$this->prefix)
 		{
 			$tokens = [];
 			$context = $this;
@@ -768,10 +824,10 @@ abstract class Context extends Object
 				$context = $previous;
 			}
 
-			$prefix = '/' . implode('/', array_reverse($tokens));
+			$this->prefix = '/' . implode('/', array_reverse($tokens));
 		}
 
-		return $prefix;
+		return $this->prefix;
 	}
 
 	/**
@@ -799,19 +855,17 @@ abstract class Context extends Object
 	/**
 	 * Gets the views base paths.
 	 *
-	 * @return array
-	 *	The views base paths.
+	 * @return string
+	 *	The views base path.
 	 */
-	public final function getViewsBasePaths() : array
+	public final function getViewsBasePath() : string
 	{
-		static $viewsBasePaths;
-
-		if (!$viewsBasePaths)
+		if (!$this->viewsBasePath)
 		{
-			$viewsBasePaths = $this->viewsBasePaths();
+			$this->viewsBasePath = $this->path . DIRECTORY_SEPARATOR . 'views';
 		}
 
-		return $viewsBasePaths;
+		return $this->viewsBasePath;
 	}
 
 	/**
@@ -1015,6 +1069,7 @@ abstract class Context extends Object
 	{
 		$this->layout = $layout;
 		$this->layoutPath = null;
+		$this->layoutBasePath = null;
 	}
 
 	/**
@@ -1054,25 +1109,5 @@ abstract class Context extends Object
 		{
 			$this->setModuleConfiguration($id, $configuration);
 		}
-	}
-
-	/**
-	 * Creates the views base paths collection.
-	 *
-	 * @return array
-	 *	The views base paths collection.
-	 */
-	protected function viewsBasePaths() : array
-	{
-		$result = [ $this->getPath() . DIRECTORY_SEPARATOR . 'views' ];
-
-		$layoutPath = $this->getLayoutPath();
-
-		if ($layoutPath)
-		{
-			array_unshift($result, dirname($layoutPath) . DIRECTORY_SEPARATOR . 'views');
-		}
-
-		return $result;
 	}
 }

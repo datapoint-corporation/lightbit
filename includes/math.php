@@ -25,65 +25,59 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-if (!defined('LIGHTBIT_PRECISION'))
-{
-	define('LIGHTBIT_PRECISION', 6);
-}
-
-
 function __decimal_add(string $alpha, string $bravo) : string
 {
-	return bcadd($alpha, $bravo, LIGHTBIT_PRECISION);
+	return bcadd($alpha, $bravo, LIGHTBIT_DECIMAL_PRECISION);
 }
 
 function __decimal_ceil(string $number, int $precision = 0) : string
 {
 	// Multiply the value according to the precision
-	$multiplier = bcpow('10', $precision, LIGHTBIT_PRECISION);
-	$number = bcmul($number, $multiplier, LIGHTBIT_PRECISION);
+	$multiplier = bcpow('10', $precision, LIGHTBIT_DECIMAL_PRECISION);
+	$number = bcmul($number, $multiplier, LIGHTBIT_DECIMAL_PRECISION);
 
 	// Make the necessary changes to the integral part
 	list ($integral, $fractional) = explode('.', $number);
 
-	if (bccomp('0', $fractional, LIGHTBIT_PRECISION))
+	if (bccomp('0', $fractional, LIGHTBIT_DECIMAL_PRECISION))
 	{
-		$number = bcadd($integral, '1', LIGHTBIT_PRECISION);
+		$number = bcadd($integral, '1', LIGHTBIT_DECIMAL_PRECISION);
 	}
 
 	// Divide it back and format the number for return
-	$number = bcdiv($number, $multiplier, LIGHTBIT_PRECISION);
+	$number = bcdiv($number, $multiplier, LIGHTBIT_DECIMAL_PRECISION);
 
 	return number_format($number, $precision, '.', '');
 }
 
 function __decimal_divide(string $alpha, string $bravo) : string
 {
-	return bcdiv($alpha, $bravo, LIGHTBIT_PRECISION);
+	return bcdiv($alpha, $bravo, LIGHTBIT_DECIMAL_PRECISION);
 }
 
 function __decimal_floor(string $number, int $precision = 0) : string
 {
 	// Multiply the value according to the precision
-	$multiplier = bcpow('10', $precision, LIGHTBIT_PRECISION);
-	$number = bcmul($number, $multiplier, LIGHTBIT_PRECISION);
+	$multiplier = bcpow('10', $precision, LIGHTBIT_DECIMAL_PRECISION);
+	$number = bcmul($number, $multiplier, LIGHTBIT_DECIMAL_PRECISION);
 
 	// Remove the fractional part of the number
 	$number = substr($number, 0, strrpos($number, '.'));
 
 	// Divide it back and format the number for return
-	$number = bcdiv($number, $multiplier, LIGHTBIT_PRECISION);
+	$number = bcdiv($number, $multiplier, LIGHTBIT_DECIMAL_PRECISION);
 
 	return number_format($number, $precision, '.', '');
 }
 
 function __decimal_multiply(string $alpha, string $bravo) : string
 {
-	return bcmul($alpha, $bravo, LIGHTBIT_PRECISION);
+	return bcmul($alpha, $bravo, LIGHTBIT_DECIMAL_PRECISION);
 }
 
 function __decimal_precision() : int
 {
-	return LIGHTBIT_PRECISION;
+	return LIGHTBIT_DECIMAL_PRECISION;
 }
 
 function __decimal_round(string $number, int $precision = 0) : string
@@ -93,5 +87,5 @@ function __decimal_round(string $number, int $precision = 0) : string
 
 function __decimal_subtract(string $alpha, string $bravo) : string
 {
-	return bcsub($alpha, $bravo, LIGHTBIT_PRECISION);
+	return bcsub($alpha, $bravo, LIGHTBIT_DECIMAL_PRECISION);
 }

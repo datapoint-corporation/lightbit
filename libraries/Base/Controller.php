@@ -86,6 +86,13 @@ abstract class Controller extends Element implements IController
 	private $layoutPath;
 
 	/**
+	 * The views base paths.
+	 *
+	 * @type string
+	 */
+	private $viewsBasePaths;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Context $context
@@ -191,20 +198,11 @@ abstract class Controller extends Element implements IController
 	{
 		if (!$this->globalID)
 		{
-			$tokens = [];
+			$this->globalID = '';
 			$context = $this->context;
 
-			$this->globalID = '';
-
-			while (true)
+			while ($parent = $context->getContext())
 			{
-				$parent = $context->getContext();
-
-				if (!$parent)
-				{
-					break;
-				}
-
 				$this->globalID = $context->getID() . '/' . $this->globalID;
 				$context = $parent;
 			}
@@ -236,7 +234,7 @@ abstract class Controller extends Element implements IController
 	{
 		if (!$this->layout)
 		{
-			return $this->getContext()->getLayout();
+			return $this->context->getLayout();
 		}
 
 		return $this->layout;
@@ -254,12 +252,12 @@ abstract class Controller extends Element implements IController
 		{
 			if (!$this->layout)
 			{
-				return $this->getContext()->getLayoutPath();
+				return $this->context->getLayoutPath();
 			}
 
 			$this->layoutPath = __asset_path_resolve
 			(
-				$this->getContext()->getPath(),
+				$this->context->getPath(),
 				'php', $this->layout
 			);
 		}
@@ -273,21 +271,37 @@ abstract class Controller extends Element implements IController
 	 * @return array
 	 *	The views base paths.
 	 */
-	public function getViewsBasePaths() : array
+	public final function getViewsBasePaths() : array
 	{
-		static $viewsBasePaths;
-
-		if (!isset($viewsBasePaths))
+		if (!$this->viewsBasePaths)
 		{
-			$viewsBasePaths = [];
+			// Each context, if it has a theme, can override the controller
+			// views by placing them in the proper directory next to the theme
+			// layout script.
+			$context = $this->context;
+			$prefix = '';
+			$suffix = DIRECTORY_SEPARATOR . strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
 
-			foreach ($this->getContext()->getViewsBasePaths() as $i => $path)
+			_getViewsBasePath0:
+			if ($layoutBasePath = $context->getLayoutBasePath())
 			{
-				$viewsBasePaths[] = $path . DIRECTORY_SEPARATOR . strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
+				$this->viewsBasePaths[] = $layoutBasePath . $prefix . $suffix;
 			}
+
+			if ($previous = $context->getContext())
+			{
+				$prefix = DIRECTORY_SEPARATOR . $context->getID();
+				$context = $previous;
+				goto _getViewsBasePath0;
+			}
+
+			$this->viewsBasePaths = array_reverse($this->viewsBasePaths);
+
+			// Self
+			$this->viewsBasePaths[] = $this->context->getViewsBasePath() . $suffix;
 		}
 
-		return $viewsBasePaths;
+		return $this->viewsBasePaths;
 	}
 
 	/**
@@ -347,10 +361,10 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Action not found, method is not defined: "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, method is undefined: "%s", at controller "%s", at context "%s"',
 					$id,
 					$this->id,
-					$this->getContext()->getPrefix()
+					$this->context->getPrefix()
 				)
 			);
 		}
@@ -363,10 +377,10 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Action not found, method signature mismatch: "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, method signature mismatch: "%s", at controller "%s", at context "%s"',
 					$id,
 					$this->id,
-					$this->getContext()->getPrefix()
+					$this->context->getPrefix()
 				)
 			);
 		}
@@ -402,11 +416,11 @@ abstract class Controller extends Element implements IController
 				$parameterName,
 				sprintf
 				(
-					'Action binding failure, missing parameter: "%s", at action, "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, parameter missing: "%s", at action, "%s", at controller "%s", at context "%s"',
 					$parameterName,
 					$id,
 					$this->id,
-					$this->getContext()->getPrefix()
+					$this->context->getPrefix()
 				)
 			);
 		}
@@ -451,6 +465,7 @@ abstract class Controller extends Element implements IController
 	{
 		$this->layout = $layout;
 		$this->layoutPath = null;
+		$this->viewsBasePath = null;
 	}
 
 	/**
@@ -512,7 +527,7 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						$id,
 						$this->id,
-						$this->getContext()->getPrefix()
+						$this->context->getPrefix()
 					)
 				);
 			}
@@ -543,7 +558,7 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						$id,
 						$this->id,
-						$this->getContext()->getPrefix()
+						$this->context->getPrefix()
 					),
 					$e
 				);
@@ -571,7 +586,7 @@ abstract class Controller extends Element implements IController
 							$parameterName,
 							$id,
 							$this->id,
-							$this->getContext()->getPrefix()
+							$this->context->getPrefix()
 						)
 					);
 				}
@@ -593,7 +608,7 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						$id,
 						$this->id,
-						$this->getContext()->getPrefix()
+						$this->context->getPrefix()
 					),
 					$e
 				);
@@ -611,7 +626,7 @@ abstract class Controller extends Element implements IController
 				$parameterName,
 				$id,
 				$this->id,
-				$this->getContext()->getPrefix()
+				$this->context->getPrefix()
 			)
 		);
 	}

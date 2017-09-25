@@ -32,6 +32,7 @@ use \Lightbit\Exception;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IWidget;
 use \Lightbit\Base\IView;
+use \Lightbit\IO\FileSystem\FileNotFoundException;
 
 /**
  * View.
@@ -209,6 +210,11 @@ class View extends Element implements IView
 			{
 				throw new Exception('View output buffer can not start: unknown error');
 			}
+		}
+
+		if (!is_file($this->path))
+		{
+			throw new FileNotFoundException($this->path, sprintf('Can not render view, file not found: file path "%s"', $this->path));
 		}
 
 		__include_as($this, $this->path, $parameters);

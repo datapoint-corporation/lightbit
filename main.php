@@ -33,11 +33,32 @@
 define('LIGHTBIT', microtime(true));
 
 /**
- * The Lightbit install path.
+ * The lightbit install path.
  *
  * @type string
  */
-define('LIGHTBIT_PATH', __DIR__);
+const LIGHTBIT_PATH = __DIR__;
+
+/**
+ * The lightbit decimal precision.
+ *
+ * @type int
+ */
+const LIGHTBIT_DECIMAL_PRECISION = 6;
+
+/**
+ * The lightbit version.
+ *
+ * @type string
+ */
+const LIGHTBIT_VERSION = '1.0.0';
+
+/**
+ * The lightbit version build number.
+ *
+ * @type int
+ */
+const LIGHTBIT_VERSION_BUILD = 201709240118;
 
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
@@ -54,6 +75,7 @@ require __DIR__ . '/includes/html.php';
 require __DIR__ . '/includes/http.php';
 require __DIR__ . '/includes/include.php';
 require __DIR__ . '/includes/map.php';
+require __DIR__ . '/includes/math.php';
 require __DIR__ . '/includes/namespace.php';
 require __DIR__ . '/includes/number.php';
 require __DIR__ . '/includes/object.php';
