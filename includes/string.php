@@ -47,6 +47,11 @@ function __string_split_word(string $content) : array
 	return preg_split('%[^\\p{L}]+%u', $content, -1, PREG_SPLIT_NO_EMPTY);
 }
 
+function __string_split_word_ascii(string $ascii)
+{
+	return preg_split('%[^\\w]+%', $content, -1, PREG_SPLIT_NO_EMPTY);
+}
+
 function __string_transliterate(string $content) : string
 {
 	static $transliterator;

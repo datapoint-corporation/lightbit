@@ -52,31 +52,60 @@ function __html_attribute(string $property, $attribute) : string
 	return '';
 }
 
-function __html_attribute_array(array $attributes) : string
+function __html_attribute_array(?array $attributes) : string
 {
 	$result = '';
 
-	foreach ($attributes as $property => $attribute)
+	if ($attributes)
 	{
-		if ($m = __html_attribute($property, $attribute))
+		foreach ($attributes as $property => $attribute)
 		{
-			$result .= $m;
+			if ($m = __html_attribute($property, $attribute))
+			{
+				$result .= $m;
+			}
 		}
 	}
 
 	return $result;
 }
 
+function __html_attribute_array_ex(?array ...$attributes) : string
+{
+	$result = [];
+	$class = [];
+
+	foreach ($attributes as $i => $argument)
+	{
+		if ($argument)
+		{
+			if ($c = __map_get($argument, '?string', 'class'))
+			{
+				$class = array_merge($class, explode(' ', $c));
+			}
+
+			$result += $argument;
+		}
+	}
+
+	if ($class)
+	{
+		$result['class'] = implode(' ', array_unique($class));
+	}
+
+	return __html_attribute_array($result);
+}
+
 function __html_begin(string $tag, array $attributes = null) : string
 {
 	$result = '<' . __html_encode($tag);
 
-	if ($attributes && $markup = __html_attribute_array($attributes))
+	if ($attributes)
 	{
-		$result .= ' ' . $markup;
+		$result .= __html_attribute_array($attributes);
 	}
 
-	return $result . '>';
+	return $result;
 }
 
 function __html_comment(string $content) : string
