@@ -58,7 +58,7 @@ interface ISqlActiveRecord extends ISqlModel
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the number of matching results, optionally based on a given 
+	 * the number of matching results, optionally based on a given
 	 * select criteria.
 	 *
 	 * @param array $criteria
@@ -73,14 +73,14 @@ interface ISqlActiveRecord extends ISqlModel
 	 * Creates, prepares and executes a delete statement matching the
 	 * model instance identity.
 	 *
-	 * If the instance is new (see: isNew), this method performs 
+	 * If the instance is new (see: isNew), this method performs
 	 * no action at all.
 	 */
 	public function delete() : void;
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the existance of any matching results, optionally based on a given 
+	 * the existance of any matching results, optionally based on a given
 	 * select criteria.
 	 *
 	 * @param array $criteria
@@ -161,6 +161,14 @@ interface ISqlActiveRecord extends ISqlModel
 	 *	The result.
 	 */
 	public function hasAttributeUpdate(string $attribute) : bool;
+
+	/**
+	 * Checks if an attribute has been modified.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributesUpdate() : bool;
 
 	/**
 	 * Checks if it is new.

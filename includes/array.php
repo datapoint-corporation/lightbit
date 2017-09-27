@@ -25,62 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __string_length(string $content) : int
+function __array_case_insensitive_map(array $content) : array
 {
-	return mb_strlen($content);
-}
+	$result = [];
 
-function __string_match(string $subject, string $candidate, bool $insensitive = false) : string
-{
-	if ($insensitive)
+	foreach ($content as $index => $value)
 	{
-		return strtolower($subject) === strtolower($candidate);
-	}
-
-	return $subject === $candidate;
-}
-
-function __string_slug(string $content) : string
-{
-	return strtolower
-	(
-		implode
-		(
-			$delimiter,
-			preg_split('%([^\\w]+|_+)%', __string_transliterate($content), -1, PREG_SPLIT_NO_EMPTY)
-		)
-	);
-}
-
-function __string_split_word(string $content) : array
-{
-	return preg_split('%[^\\p{L}]+%u', $content, -1, PREG_SPLIT_NO_EMPTY);
-}
-
-function __string_split_word_ascii(string $ascii)
-{
-	return preg_split('%[^\\w]+%', $content, -1, PREG_SPLIT_NO_EMPTY);
-}
-
-function __string_transliterate(string $content) : string
-{
-	static $transliterator;
-
-	if (!$transliterator)
-	{
-		$transliterator = Transliterator::create('Any-Latin; Latin-ASCII');
-
-		if (!$transliterator)
-		{
-			__throw('String transliterator does not exist: transliterator "%s"', 'Any-Latin; Latin-ASCII');
-		}
-	}
-
-	$result = $transliterator->transliterate($content);
-
-	if ($result === false)
-	{
-		__throw('String transliterator error: ', $transliterator->getErrorMessage());
+		$result[strtolower($index)] = $index;
 	}
 
 	return $result;

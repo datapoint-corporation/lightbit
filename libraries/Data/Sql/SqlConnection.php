@@ -231,11 +231,14 @@ class SqlConnection extends Component implements ISqlConnection
 				$this->user,
 				$this->password,
 				[
+					\PDO::ATTR_CASE => \PDO::CASE_NATURAL,
 					\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 					\PDO::ATTR_EMULATE_PREPARES => false
 				]
-				+ $this->driverConfiguration
-				+ [ \PDO::ATTR_AUTOCOMMIT => true ]
+				+ $this->driverConfiguration +
+				[
+					\PDO::ATTR_AUTOCOMMIT => true
+				]
 			);
 
 			$driver = new $driverClassName($this);

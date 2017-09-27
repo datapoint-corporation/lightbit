@@ -275,6 +275,8 @@ abstract class Controller extends Element implements IController
 	{
 		if (!$this->viewsBasePaths)
 		{
+			$this->viewsBasePaths = [];
+
 			// Each context, if it has a theme, can override the controller
 			// views by placing them in the proper directory next to the theme
 			// layout script.
@@ -295,7 +297,10 @@ abstract class Controller extends Element implements IController
 				goto _getViewsBasePath0;
 			}
 
-			$this->viewsBasePaths = array_reverse($this->viewsBasePaths);
+			if ($this->viewsBasePaths)
+			{
+				$this->viewsBasePaths = array_reverse($this->viewsBasePaths);
+			}
 
 			// Self
 			$this->viewsBasePaths[] = $this->context->getViewsBasePath() . $suffix;

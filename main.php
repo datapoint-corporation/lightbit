@@ -68,6 +68,7 @@ require __DIR__ . '/includes/application.php';
 require __DIR__ . '/includes/asset.php';
 require __DIR__ . '/includes/class.php';
 require __DIR__ . '/includes/context.php';
+require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/environment.php';
 require __DIR__ . '/includes/event.php';
 require __DIR__ . '/includes/globalization.php';

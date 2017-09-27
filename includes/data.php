@@ -29,5 +29,5 @@ use \Lightbit\Data\Expression;
 
 function __data_expression(string $expression) : Expression
 {
-
+	return new Expression($expression);
 }

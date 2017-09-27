@@ -105,7 +105,7 @@ function __html_begin(string $tag, array $attributes = null) : string
 		$result .= __html_attribute_array($attributes);
 	}
 
-	return $result;
+	return $result . '>';
 }
 
 function __html_comment(string $content) : string

@@ -135,7 +135,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 			if (!$identity)
 			{
 				$this->id = null;
-				break;			
+				break;
 			}
 
 			$this->id[$attribute] = $identity;
@@ -144,7 +144,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the number of matching results, optionally based on a given 
+	 * the number of matching results, optionally based on a given
 	 * select criteria.
 	 *
 	 * @param array $criteria
@@ -188,7 +188,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * Creates, prepares and executes a delete statement matching the
 	 * model instance identity.
 	 *
-	 * If the instance is new (see: isNew), this method performs 
+	 * If the instance is new (see: isNew), this method performs
 	 * no action at all.
 	 */
 	public final function delete() : void
@@ -215,7 +215,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 	/**
 	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the existance of any matching results, optionally based on a given 
+	 * the existance of any matching results, optionally based on a given
 	 * select criteria.
 	 *
 	 * @param array $criteria
@@ -340,7 +340,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 			self::$schema[static::class]['primary-key'] = $primaryKey;
 		}
-		
+
 		return self::$schema[static::class]['primary-key'];
 	}
 
@@ -393,6 +393,28 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks if an attribute has been modified.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasAttributesUpdate() : bool
+	{
+		if (isset($this->attributes))
+		{
+			foreach ($this->attributes as $property => $attribute)
+			{
+				if ($attribute !== $this->getAttribute($attribute))
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -525,7 +547,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 					$this->setAttribute($primaryKey[0], $sql->getLastInsertID());
 				}
 			}
-		
+
 			$this->commit();
 		}
 
@@ -612,11 +634,11 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * After Delete.
 	 *
 	 * This method is invoked at the end of the active record delete procedure
-	 * (see: delete), before any validation takes place and the changes are 
+	 * (see: delete), before any validation takes place and the changes are
 	 * written to the database.
 	 *
-	 * The default implementation raises the global and generic 
-	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterDelete" event, in addition to a 
+	 * The default implementation raises the global and generic
+	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterDelete" event, in addition to a
 	 * global and dynamic event based on the class name (e.g.:
 	 * "MyNamespace.MyClassName.AfterDelete").
 	 */
@@ -632,11 +654,11 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * After Save.
 	 *
 	 * This method is invoked at the end of the active record save procedure
-	 * (see: save), before any validation takes place and the changes are 
+	 * (see: save), before any validation takes place and the changes are
 	 * written to the database.
 	 *
-	 * The default implementation raises the global and generic 
-	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterSave" event, in addition to a 
+	 * The default implementation raises the global and generic
+	 * "Lightbit.Data.Sql.SqlActiveRecord.AfterSave" event, in addition to a
 	 * global and dynamic event based on the class name (e.g.:
 	 * "MyNamespace.MyClassName.AfterSave").
 	 */
@@ -651,12 +673,12 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	/**
 	 * Delete.
 	 *
-	 * This method is invoked at the beginning of the active record save 
+	 * This method is invoked at the beginning of the active record save
 	 * procedure (see: save), before any validation takes place and the changes
 	 * are written to the database.
 	 *
-	 * The default implementation raises the global and generic 
-	 * "Lightbit.Data.Sql.SqlActiveRecord.Delete" event, in addition to a 
+	 * The default implementation raises the global and generic
+	 * "Lightbit.Data.Sql.SqlActiveRecord.Delete" event, in addition to a
 	 * global and dynamic event based on the class name (e.g.:
 	 * "MyNamespace.MyClassName.Delete").
 	 */
@@ -671,12 +693,12 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	/**
 	 * Save.
 	 *
-	 * This method is invoked at the beginning of the active record save 
+	 * This method is invoked at the beginning of the active record save
 	 * procedure (see: save), before any validation takes place and the changes
 	 * are written to the database.
 	 *
-	 * The default implementation raises the global and generic 
-	 * "Lightbit.Data.Sql.SqlActiveRecord.Save" event, in addition to a 
+	 * The default implementation raises the global and generic
+	 * "Lightbit.Data.Sql.SqlActiveRecord.Save" event, in addition to a
 	 * global and dynamic event based on the class name (e.g.:
 	 * "MyNamespace.MyClassName.Save").
 	 */
