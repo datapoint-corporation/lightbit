@@ -1,7 +1,7 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Lightbit Content Management System
+// Lightbit
 //
 // Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/

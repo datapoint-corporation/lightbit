@@ -46,8 +46,8 @@ use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\HttpQueryString;
 use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
+use \Lightbit\Http\HttpRouter;
 use \Lightbit\Http\HttpSession;
-use \Lightbit\Http\QueryStringHttpRouter;
 use \Lightbit\Security\Cryptography\PasswordDigest;
 
 /**
@@ -96,7 +96,7 @@ class Application extends Context
 				'http.query.string' => [ '@class' => HttpQueryString::class ],
 				'http.request' => [ '@class' => HttpRequest::class ],
 				'http.response' => [ '@class' => HttpResponse::class ],
-				'http.router' => [ '@class' => QueryStringHttpRouter::class ],
+				'http.router' => [ '@class' => HttpRouter::class ],
 				'http.session' => [ '@class' => HttpSession::class ],
 				'security.cryptography.password.digest' => [ '@class' => PasswordDigest::class ],
 			]

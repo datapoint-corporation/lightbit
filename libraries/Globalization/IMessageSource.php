@@ -1,7 +1,7 @@
 <?php
 
 // -----------------------------------------------------------------------------
-// Lightbit Content Management System
+// Lightbit
 //
 // Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
@@ -40,13 +40,6 @@ interface IMessageSource extends IComponent
 {
 	/**
 	 * Reads a message.
-	 *
-	 * If the message is not available at the source and the component context
-	 * has a parent, an attempt will be made to read the message source through
-	 * that parent context.
-	 *
-	 * Ultimately, if a message can not be found, the original message will
-	 * be returned instead.
 	 *
 	 * @param ILocale $locale
 	 *	The message locale.

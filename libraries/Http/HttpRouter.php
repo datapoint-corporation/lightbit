@@ -30,8 +30,12 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Base\Object;
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Base\IllegalParameterRouteException;
+use \Lightbit\Base\MissingParameterRouteException;
+use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\Base\RouteException;
+use \Lightbit\Exception;
+use \Lightbit\Http\HttpRouterBase;
 
 /**
  * HttpRouter.
@@ -39,37 +43,14 @@ use \Lightbit\Http\IHttpRouter;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class HttpRouter extends Component implements IHttpRouter
+class HttpRouter extends HttpRouterBase
 {
 	/**
-	 * Resolves the current request to a controller action.
-	 *
-	 * @return Action
-	 *	The action.
-	 */
-	abstract public function resolve() : Action;
-
-	/**
-	 * Creates an url.
-	 *
-	 * @param array $route
-	 *	The route to resolve to.
-	 *
-	 * @param bool $absolute
-	 *	The absolute flag which, when set, will cause the url to be
-	 *	created as an absolute url.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	abstract public function url(array $route, bool $absolute = false) : string;
-
-	/**
-	 * The base url.
+	 * The script name.
 	 *
 	 * @type string
 	 */
-	private $baseUrl;
+	private $scriptName;
 
 	/**
 	 * Constructor.
@@ -85,143 +66,119 @@ abstract class HttpRouter extends Component implements IHttpRouter
 	 */
 	public function __construct(Context $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context, $id, $configuration);
+		parent::__construct($context, $id);
+
+		if (isset($_SERVER['SCRIPT_NAME']))
+    	{
+			$this->scriptName = basename($_SERVER['SCRIPT_NAME']);
+    	}
+
+    	if ($configuration)
+    	{
+    		__object_apply($this, $configuration);
+    	}
 	}
 
 	/**
-	 * Gets the address.
+	 * Gets the script name.
 	 *
 	 * @return string
-	 *	The address.
+	 *	The script name.
 	 */
-	public final function getAddress() : string
+	public final function getScriptName() : ?string
 	{
-		static $address;
-
-		if (!$address)
-		{
-			$address = $this->getHost() . ':' . $this->getPort();
-		}
-
-    	return $address;
+		return $this->scriptName;
 	}
 
 	/**
-	 * Gets the base url.
+	 * Sets the script name.
 	 *
-	 * @return string
-	 *	The base url.
+	 * @param string $scriptName
+	 *	The script name.
 	 */
-	public final function getBaseUrl() : string
+	public final function setScriptName(?string $scriptName) : void
 	{
-		if (!$this->baseUrl)
-        {
-        	if (!isset($_SERVER['HTTP_HOST']))
-        	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'HTTP_HOST'));
-        	}
-
-        	if (!isset($_SERVER['SCRIPT_NAME']))
-        	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'SCRIPT_NAME'));
-        	}
-
-        	$this->baseUrl
-        		= ($this->isHttps() ? 'https://' : 'http://')
-        		. $this->getHost()
-        		. ($this->isDefaultPort() ?  '' : (':' . $this->getPort()))
-        		. (($x = dirname($_SERVER['SCRIPT_NAME'])) == '/' ? '/' : ($x . '/'));
-        }
-
-		return $this->baseUrl;
+		$this->scriptName = $scriptName;
 	}
 
 	/**
-	 * Gets the host.
+	 * Resolves the current request to a controller action.
 	 *
-	 * @return string
-	 *	The host.
+	 * @return Action
+	 *	The action.
 	 */
-	public final function getHost() : string
+	public final function resolve() : Action
 	{
-		static $host;
+		$path = null;
 
-		if (!$host)
+		if (!empty($_GET['action']))
 		{
-			if (!isset($_SERVER['HTTP_HOST']))
-        	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'HTTP_HOST'));
-        	}
-
-        	$host = $_SERVER['HTTP_HOST'];
-		}
-
-		return $host;
-	}
-
-	/**
-	 * Gets the port.
-	 *
-	 * @return int
-	 *	The port.
-	 */
-	public final function getPort() : int
-	{
-		static $port;
-
-		if (!$port)
-		{
-			if (!isset($_SERVER['SERVER_PORT']))
+			if (!is_string($_GET['action']))
 			{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'SERVER_PORT'));
+				throw new HttpStatusException(400, sprintf('Bad data type for query string parameter: "%s"', 'action'));
 			}
 
-			$port = intval($_SERVER['SERVER_PORT']);
+			if (!preg_match('%^\\w+(\\.\\w+)*$%', $_GET['action']))
+			{
+				throw new HttpStatusException(404, sprintf('Bad format for query string parameter: "%s"', 'action'));
+			}
+
+			$path = '/' . strtr($_GET['action'], [ '.' => '/', '_' => '-' ]);
 		}
 
-		return $port;
-	}
-
-	/**
-	 * Checks if the port is the default for the procotol.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isDefaultPort() : bool
-	{
-		static $default;
-
-		if (!isset($default))
+		try
 		{
-			$port = $this->getPort();
-			$default = $this->isHttps()
-				? ($port == 443)
-				: ($port == 80);
+			return $this->getApplication()->resolve([ $path ] + $_GET);
 		}
-
-		return $default;
+		catch (IllegalParameterRouteException $e)
+		{
+			throw new HttpStatusException(400, $e->getMessage(), $e);
+		}
+		catch (MissingParameterRouteException $e)
+		{
+			throw new HttpStatusException(400, $e->getMessage(), $e);
+		}
+		catch (RouteException $e)
+		{
+			throw new HttpStatusException(404, $e->getMessage(), $e);
+		}
 	}
 
 	/**
-	 * Checks if it's the secure hypertext transport protocol.
+	 * Creates an url.
 	 *
-	 * @return bool
+	 * @param array $route
+	 *	The route to resolve to.
+	 *
+	 * @param bool $absolute
+	 *	The absolute flag which, when set, will cause the url to be
+	 *	created as an absolute url.
+	 *
+	 * @return string
 	 *	The result.
 	 */
-	public final function isHttps() : bool
+	public function url(array $route, bool $absolute = false) : string
 	{
-		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-	}
+		$action = $this->getContext()->resolve($route);
 
-	/**
-	 * Sets the base url.
-	 *
-	 * @param string $baseUrl
-	 *	The base url.
-	 */
-	public final function setBaseUrl(string $baseUrl) : void
-	{
-		$this->baseUrl = $baseUrl;
+		$result = '' . $this->getScriptName();
+
+		$arguments = [ 'action' => strtr($action->getID(), '/-', '._') ]
+			+ $action->getArguments()
+			+ $route;
+
+		unset($arguments[0]);
+
+		if ($arguments)
+		{
+			$result .= '?' . __http_query_encode($arguments);
+		}
+
+		if ($absolute)
+		{
+			$result = $this->getBaseUrl() . $result;
+		}
+
+		return $result;
 	}
 }
