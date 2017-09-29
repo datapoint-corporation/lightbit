@@ -88,7 +88,7 @@ require __DIR__ . '/includes/url.php';
 
 // Register the Lightbit namespace and file system alias prefix path as
 // required by the framework.
-__asset_bundle_register('lightbit', __DIR__);
+__asset_prefix_register('lightbit', __DIR__);
 __namespace_register('Lightbit', __DIR__ . '/libraries');
 
 // Register the lightbit autoloader, exception and error handler

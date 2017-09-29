@@ -25,36 +25,41 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'] = [];
+$__LIGHTBIT_ASSET_PREFIX = [];
 
-function __asset_bundle_exists(string $id) : bool
+function __asset_prefix_exists(string $id) : bool
 {
-	return (isset($_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id]));
+	global $__LIGHTBIT_ASSET_PREFIX;
+	return (isset($__LIGHTBIT_ASSET_PREFIX[$id]));
 }
 
-function __asset_bundle_get_path(string $id) : string
+function __asset_prefix_get_path(string $id) : string
 {
-	if (!isset($_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id]))
+	global $__LIGHTBIT_ASSET_PREFIX;
+
+	if (!isset($__LIGHTBIT_ASSET_PREFIX[$id]))
 	{
-		__throw('Asset bundle does not exist: bundle "%s"', $id);
+		__throw('Can not get asset prefix path, not set: prefix "%s"', $id);
 	}
 
-	return $_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id];
+	return $__LIGHTBIT_ASSET_PREFIX[$id];
 }
 
-function __asset_bundle_register(string $id, string $path) : void
+function __asset_prefix_register(string $id, string $path) : void
 {
-	if (isset($_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id]))
+	global $__LIGHTBIT_ASSET_PREFIX;
+
+	if (isset($__LIGHTBIT_ASSET_PREFIX[$id]))
 	{
 		__throw
 		(
-			'Asset bundle already exists: bundle "%s", to path "%s"',
+			'Can not register asset prefix, already set: prefix "%s", to path "%s"',
 			$id,
-			$_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id]
+			$__LIGHTBIT_ASSET_PREFIX[$id]
 		);
 	}
 
-	$_SERVER['__LIGHTBIT_ASSET_BUNDLE_PATH'][$id] = __path_resolve($path);
+	$__LIGHTBIT_ASSET_PREFIX[$id] = __path_resolve($path);
 }
 
 function __asset_path_resolve(?string $context, ?string $extension, string $reference) : string
@@ -63,7 +68,7 @@ function __asset_path_resolve(?string $context, ?string $extension, string $refe
 
 	if ($i = strpos($reference, '://'))
 	{
-		$path = __asset_bundle_get_path(substr($reference, 0, $i));
+		$path = __asset_prefix_get_path(substr($reference, 0, $i));
 		$path .= substr($reference, $i + 2);
 	}
 	else if ($context)
@@ -87,7 +92,7 @@ function __asset_path_resolve_array(array $context, ?string $extension, string $
 {
 	if ($i = strpos($reference, '://'))
 	{
-		$path = __asset_bundle_get_path(substr($reference, 0, $i));
+		$path = __asset_prefix_get_path(substr($reference, 0, $i));
 		$path .= substr($reference, $i + 2);
 
 		if ($extension)

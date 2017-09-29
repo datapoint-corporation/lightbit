@@ -25,15 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'] = [];
+$__LIGHTBIT_EVENT_LISTENER = [];
 
 function __event_raise(string $event, ...$arguments) : array
 {
+	global $__LIGHTBIT_EVENT_LISTENER;
+
 	$result = [];
 
-	if (isset($_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event]))
+	if (isset($__LIGHTBIT_EVENT_LISTENER[$event]))
 	{
-		foreach ($_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event] as $i => $callable)
+		foreach ($__LIGHTBIT_EVENT_LISTENER[$event] as $i => $callable)
 		{
 			$return = call_user_func_array($callable, $arguments);
 
@@ -49,5 +51,6 @@ function __event_raise(string $event, ...$arguments) : array
 
 function __event_subscribe(string $event, array $callable) : void
 {
-	$_SERVER['__LIGHTBIT_EVENT_SUBSCRIPTION'][$event][] = $callable;
+	global $__LIGHTBIT_EVENT_LISTENER;
+	$__LIGHTBIT_EVENT_LISTENER[$event][] = $callable;
 }

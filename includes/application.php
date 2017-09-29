@@ -27,37 +27,42 @@
 
 use \Lightbit\Base\Application;
 
-$_SERVER['__LIGHTBIT_APPLICATION'] = null;
+$__LIGHTBIT_APPLICATION = null;
 
 function __application() : Application
 {
-	if (!isset($_SERVER['__LIGHTBIT_APPLICATION']))
+	global $__LIGHTBIT_APPLICATION;
+
+	if (!isset($__LIGHTBIT_APPLICATION))
 	{
 		__throw_state('Can not get application, it does not exist.');
 	}
 
-	return $_SERVER['__LIGHTBIT_APPLICATION'];
+	return $__LIGHTBIT_APPLICATION;
 }
 
 function __application_get() : ?Application
 {
-	return $_SERVER['__LIGHTBIT_APPLICATION'];
+	global $__LIGHTBIT_APPLICATION;
+	return $__LIGHTBIT_APPLICATION;
 }
 
 function __application_register(Application $application) : void
 {
-	if (isset($_SERVER['__LIGHTBIT_APPLICATION']))
+	global $__LIGHTBIT_APPLICATION;
+
+	if (isset($__LIGHTBIT_APPLICATION))
 	{
 		__throw('Can not register application because it already exists.');
 	}
 
-	$_SERVER['__LIGHTBIT_APPLICATION'] = $application;
+	$__LIGHTBIT_APPLICATION = $application;
 }
 
 function __application_run(string $class, string $private, string $public, string $configuration = null) : int
 {
-	__asset_bundle_register('private', $private);
-	__asset_bundle_register('public', $public);
+	__asset_prefix_register('private', $private);
+	__asset_prefix_register('public', $public);
 
 	$properties = null;
 

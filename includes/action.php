@@ -27,24 +27,28 @@
 
 use \Lightbit\Base\Action;
 
-$_SERVER['__LIGHTBIT_ACTION'] = null;
+$__LIGHTBIT_ACTION = null;
 
 function __action() : Action
 {
-	if (!isset($_SERVER['__LIGHTBIT_ACTION']))
+	global $__LIGHTBIT_ACTION;
+
+	if (!isset($__LIGHTBIT_ACTION))
 	{
 		__throw_state('Action does not exist.');
 	}
 
-	return $_SERVER['__LIGHTBIT_ACTION'];
+	return $__LIGHTBIT_ACTION;
 }
 
 function __action_get() : ?Action
 {
- 	return $_SERVER['__LIGHTBIT_ACTION'];
+	global $__LIGHTBIT_ACTION;
+ 	return $__LIGHTBIT_ACTION;
 }
 
 function __action_set(?Action $action) : void
 {
-	$_SERVER['__LIGHTBIT_ACTION'] = $action;
+	global $__LIGHTBIT_ACTION;
+	$__LIGHTBIT_ACTION = $action;
 }

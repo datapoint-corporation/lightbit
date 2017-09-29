@@ -28,11 +28,13 @@
 use \Lightbit\NamespacePathResolutionException;
 use \Lightbit\IllegalStateException;
 
-$_SERVER['__LIGHTBIT_NAMESPACE_PATH'] = [];
+$__LIGHTBIT_NAMESPACE = [];
 
 function __namespace_path_resolve(string $namespace) : string
 {
-	if (!isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]))
+	global $__LIGHTBIT_NAMESPACE;
+
+	if (!isset($__LIGHTBIT_NAMESPACE[$namespace]))
 	{
 		$i;
 		$parent = $namespace;
@@ -41,27 +43,29 @@ function __namespace_path_resolve(string $namespace) : string
 		{
 			$parent = substr($namespace, 0, $i);
 
-			if (isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$parent]))
+			if (isset($__LIGHTBIT_NAMESPACE[$parent]))
 			{
-				return $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]
-					= $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$parent]
+				return $__LIGHTBIT_NAMESPACE[$namespace]
+					= $__LIGHTBIT_NAMESPACE[$parent]
 					. DIRECTORY_SEPARATOR
 					. strtr(substr($namespace, $i + 1), [ '\\' => DIRECTORY_SEPARATOR ]);
 			}
 		}
 
-		throw new NamespacePathResolutionException($namespace, sprintf('Namespace does not exist: namespace "%s"', $namespace));
+		throw new NamespacePathResolutionException($namespace, sprintf('Can not resolve namespace path: namespace "%s"', $namespace));
 	}
 
-	return $_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace];
+	return $__LIGHTBIT_NAMESPACE[$namespace];
 }
 
 function __namespace_register(string $namespace, string $path) : void
 {
-	if (isset($_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace]))
+	global $__LIGHTBIT_NAMESPACE;
+
+	if (isset($__LIGHTBIT_NAMESPACE[$namespace]))
 	{
-		throw new IllegalStateException(sprintf('Namespace already exists: namespace "%s"', $namespace));
+		throw new IllegalStateException(sprintf('Can not set namespace path, already set: namespace "%s", to path "%s"', $namespace, $path));
 	}
 
-	$_SERVER['__LIGHTBIT_NAMESPACE_PATH'][$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
+	$__LIGHTBIT_NAMESPACE[$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 }

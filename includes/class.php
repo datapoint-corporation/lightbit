@@ -28,7 +28,7 @@
 use \Lightbit\ClassNotFoundException;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
 
-$_SERVER['__LIGHTBIT_CLASS_PATH'] = [];
+$__LIGHTBIT_CLASS = [];
 
 function __class_load(string $class) : void
 {
@@ -51,7 +51,9 @@ function __class_load(string $class) : void
 
 function __class_exists(string $class) : bool
 {
-	if (isset($_SERVER['__LIGHTBIT_CLASS_PATH'][$class]))
+	global $__LIGHTBIT_CLASS;
+
+	if (isset($__LIGHTBIT_CLASS[$class]))
 	{
 		return true;
 	}
@@ -78,36 +80,40 @@ function __class_namespace(string $class) : string
 
 function __class_path_resolve(string $class) : string
 {
-	if (!isset($_SERVER['__LIGHTBIT_CLASS_PATH'][$class]))
+	global $__LIGHTBIT_CLASS;
+
+	if (!isset($__LIGHTBIT_CLASS[$class]))
 	{
 		if ($i = strrpos($class, '\\'))
 		{
-			return $_SERVER['__LIGHTBIT_CLASS_PATH'][$class]
+			return $__LIGHTBIT_CLASS[$class]
 				= __namespace_path_resolve(substr($class, 0, $i))
 			 	. strtr(substr($class, $i), [ '\\' => DIRECTORY_SEPARATOR ])
 				. '.php';
 		}
 
-		return $_SERVER['__LIGHTBIT_CLASS_PATH'][$class]
+		return $__LIGHTBIT_CLASS[$class]
 			= ($i = resolve_stream_include_path($j = ($class . '.php')))
 			? $i
 			: $j;
 	}
 
-	return $_SERVER['__LIGHTBIT_CLASS_PATH'][$class];
+	return $__LIGHTBIT_CLASS[$class];
 }
 
 function __class_register(string $class, string $path) : void
 {
-	if (isset($_SERVER['__LIGHTBIT_CLASS_PATH'][$class]))
+	global $__LIGHTBIT_CLASS;
+
+	if (isset($__LIGHTBIT_CLASS[$class]))
 	{
 		__throw
 		(
-			'Class already exists: class "%s", at path "%s"',
+			'Can not register class path, already set: class "%s", at path "%s"',
 			$class,
-			$_SERVER['__LIGHTBIT_CLASS_PATH'][$class]
+			$__LIGHTBIT_CLASS[$class]
 		);
 	}
 
-	$_SERVER['__LIGHTBIT_CLASS_PATH'][$class] = $path;
+	$__LIGHTBIT_CLASS[$class] = $path;
 }
