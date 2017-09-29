@@ -33,7 +33,7 @@ use \Lightbit\Base\ControllerNotFoundRouteException;
 use \Lightbit\Base\Application;
 use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Base\ModuleNotFoundRouteException;
-use \Lightbit\Data\Caching\NoCache;
+use \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\SqlConnection;
 use \Lightbit\Globalization\MessageSource;
@@ -82,10 +82,10 @@ class Application extends Context
 		$this->setComponentsConfiguration
 		(
 			[
-				'data.cache' => [ '@class' => NoCache::class ],
-				'data.cache.file' => [ '@class' => NoCache::class ],
-				'data.cache.memory' => [ '@class' => NoCache::class ],
-				'data.cache.network' => [ '@class' => NoCache::class ],
+				'data.cache' => [ '@class' => Cache::class ],
+				'data.cache.file' => [ '@class' => Cache::class ],
+				'data.cache.memory' => [ '@class' => Cache::class ],
+				'data.cache.network' => [ '@class' => Cache::class ],
 				'data.slug.manager' => [ '@class' => SlugManager::class ],
 				'data.sql.connection' => [ '@class' => SqlConnection::class ],
 				'globalization.message.source' => [ '@class' => MessageSource::class ],

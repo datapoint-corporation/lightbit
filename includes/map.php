@@ -44,35 +44,7 @@ function __map_get(?array $map, ?string $type, string $property) // : mixed
 {
 	if ($map)
 	{
-		$token;
-
-		// When attempting to access deeper properties, we'll have to go through
-		// each "node" to ensure the expected types are encountered.
-		if ($i = strrpos($property, '/'))
-		{
-			foreach (explode('/', substr($property, 0, $i)) as $k => $token)
-			{
-				if (!isset($map[$token]) || !is_array($map[$token]))
-				{
-					if ($type && $type[0] !== '?')
-					{
-						__throw('Can not get property from map, it is undefined: property "%s", expect "%s", "%s"', $property, $type);
-					}
-
-					return null;
-				}
-
-				$map = $map[$token];
-			}
-
-			$token = substr($property, $i + 1);
-		}
-		else
-		{
-			$token = $property;
-		}
-
-		if (!isset($map[$token]))
+		if (!isset($map[$property]))
 		{
 			if ($type && $type[0] !== '?')
 			{
@@ -82,12 +54,12 @@ function __map_get(?array $map, ?string $type, string $property) // : mixed
 			return null;
 		}
 
-		if ($type && !__type_match($type, $map[$token]))
+		if ($type && !__type_match($type, $map[$property]))
 		{
-			__throw('Can not get property from map, type mismatch: property "%s", expect "%s", got "%s"', $property, $type, __type_of($map[$token]));
+			__throw('Can not get property from map, type mismatch: property "%s", expect "%s", got "%s"', $property, $type, __type_of($map[$property]));
 		}
 
-		return $map[$token];
+		return $map[$property];
 	}
 
 	if ($type && $type[0] !== '?')

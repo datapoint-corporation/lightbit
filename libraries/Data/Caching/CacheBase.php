@@ -25,51 +25,78 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data;
+namespace Lightbit\Data\Caching;
 
-use \Lightbit\Data\IMap;
-use \Lightbit\Exception;
+use \Lightbit\Base\Component;
+use \Lightbit\Base\Context;
+use \Lightbit\Data\Caching\ICache;
 
 /**
- * MapException.
+ * CacheBase.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MapException extends Exception
+abstract class CacheBase extends Component implements ICache
 {
 	/**
-	 * The map.
+	 * Deletes a attribute.
+	 *
+	 * @param string $property
+	 *	The property.
 	 */
-	private $map;
+	abstract public function delete(string $property) : void;
+
+	/**
+	 * Gets a attribute.
+	 *
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	abstract public function get(?string $type, string $property); // : mixed
+
+	/**
+	 * Checks if a attribute is set.
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	abstract public function has(string $property) : bool;
+
+	/**
+	 * Sets a attribute.
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @param mixed $attribute
+	 *	The attribute.
+	 */
+	abstract public function set(string $property, $attribute) : void;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param IMap $map
-	 *	The map.
+	 * @param Context $context
+	 *	The component context.
 	 *
-	 * @param string $message
-	 *	The exception message.
+	 * @param string $id
+	 *	The component identifier.
 	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
+	 * @param array $configuration
+	 *	The component configuration.
 	 */
-	public function __construct(IMap $map, string $message, \Throwable $previous = null)
+	public function __construct(Context $context, string $id, array $configuration = null)
 	{
-		parent::__construct($message, $previous);
-
-		$this->map = $map;
-	}
-
-	/**
-	 * Gets the map.
-	 *
-	 * @return IMap
-	 *	The map.
-	 */
-	public final function getMap() : IMap
-	{
-		return $this->map;
+		parent::__construct($context, $id, $configuration);
 	}
 }

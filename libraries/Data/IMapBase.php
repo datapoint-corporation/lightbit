@@ -27,51 +27,36 @@
 
 namespace Lightbit\Data;
 
-use \Lightbit\Data\IMap;
-use \Lightbit\Data\MapException;
-
 /**
- * MapValueNotFoundException.
+ * IMapBase.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MapValueNotFoundException extends MapException
+interface IMapBase
 {
 	/**
-	 * The value key.
+	 * Checks if a attribute is set.
 	 *
-	 * @type string
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	private $key;
+	public function has(string $property) : bool;
 
 	/**
-	 * Constructor.
+	 * Gets a attribute.
 	 *
-	 * @param IMap $map
-	 *	The map.
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
 	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
-	 */
-	public function __construct(IMap $map, $key, string $message, \Throwable $previous = null)
-	{
-		parent::__construct($map, $message, $previous);
-
-		$this->key = $key;
-	}
-
-	/**
-	 * Gets the value key.
+	 * @param string $property
+	 *	The property.
 	 *
 	 * @return mixed
-	 *	The value key.
+	 *	The attribute.
 	 */
-	public final function getKey() : IMap
-	{
-		return $this->key;
-	}
+	public function get(?string $type, string $property); // : mixed
 }

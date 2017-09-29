@@ -60,86 +60,56 @@ final class HttpQueryString extends Component implements IHttpQueryString
 	}
 
 	/**
-	 * Checks for a value availability.
+	 * Checks if a attribute is set.
 	 *
-	 * @param string $key
-	 *	The value key.
+	 * @param string $property
+	 *	The property.
 	 *
 	 * @return bool
-	 *	The check result.
+	 *	The result.
 	 */
-	public function contains($key) : bool
+	public function has(string $property) : bool
 	{
-		return isset($_GET[$key]);
+		return isset($_GET[$property]);
 	}
 
 	/**
-	 * Attempts to read a value and, if not set, the default value
-	 * is returned instead.
+	 * Gets a attribute.
 	 *
-	 * @param mixed $key
-	 *	The value key.
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
 	 *
-	 * @param mixed $default
-	 *	The default value.
+	 * @param string $property
+	 *	The property.
 	 *
 	 * @return mixed
-	 *	The value.
+	 *	The attribute.
 	 */
-	public function fetch($key, $default = null) // : mixed
+	public function get(?string $type, string $property) // : mixed
 	{
-		if (isset($_GET[$key]))
+		try
 		{
-			return $_GET[$key];
+			return __map_get($_GET, $type, $property);
 		}
-
-		return $default;
+		catch (\Throwable $e)
+		{
+			throw new HttpStatusException
+			(
+				400,
+				sprintf('Can not get query string attribute: property "%s"', $property),
+				$e
+			);
+		}
 	}
 
 	/**
-	 * Reads a value.
-	 *
-	 * @param mixed $key
-	 *	The value key.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	public function read($key) // : mixed
-	{
-		if (isset($_GET[$key]))
-		{
-			$result = $_GET[$key];
-
-			if (is_array($result))
-			{
-				return new Map($result);
-			}
-
-			return $result;
-		}
-
-		throw new HttpQueryStringParameterNotFoundException($this, $key, sprintf('Query string parameter not found: "%s"', $key));
-	}
-
-	/**
-	 * Creates an array from this map.
+	 * Gets the query string attributes.
 	 *
 	 * @return array
-	 *	The result.
+	 *	The query string attributes.
 	 */
 	public function toArray() : array
 	{
 		return $_GET;
-	}
-
-	public function __get(string $property) // : mixed
-	{
-		return $this->read($property);
-	}
-
-	public function __isset(string $property) : bool
-	{
-		return isset($_GET[$property]);
 	}
 }

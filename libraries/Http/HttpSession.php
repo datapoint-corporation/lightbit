@@ -32,7 +32,6 @@ use \Lightbit\Base\Context;
 use \Lightbit\Base\IChannel;
 use \Lightbit\Http\HttpSessionException;
 use \Lightbit\Http\IHttpSession;
-use \Lightbit\Http\KeyNotFoundHttpSessionException;
 
 /**
  * HttpSession.
@@ -40,14 +39,14 @@ use \Lightbit\Http\KeyNotFoundHttpSessionException;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpSession extends Component implements IHttpSession, IChannel
+final class HttpSession extends Component implements IHttpSession, IChannel
 {
 	/**
 	 * The session name.
 	 *
 	 * @type string
 	 */
-	private $name = 'lightbit-session';
+	private $name = '__lb';
 
 	/**
 	 * Constructor.
@@ -75,46 +74,52 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	}
 
 	/**
-	 * Checks for a value availability.
+	 * Deletes a attribute.
 	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @return bool
-	 *	The check result.
+	 * @param string $property
+	 *	The property.
 	 */
-	public function contains($key) : bool
+	public function delete(string $property) : void
 	{
-		return isset($_SESSION[$key]);
+		unset($_SESSION[$property]);
 	}
 
 	/**
-	 * Attempts to read a value and, if not set, the default value
-	 * is returned instead.
+	 * Gets a attribute.
 	 *
-	 * @param mixed $key
-	 *	The value key.
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
 	 *
-	 * @param mixed $default
-	 *	The default value.
+	 * @param string $property
+	 *	The property.
 	 *
 	 * @return mixed
-	 *	The value.
+	 *	The attribute.
 	 */
-	public function fetch($key, $default = null) // : mixed
+	public function get(?string $type, string $property) // : mixed
 	{
-		return (isset($_SESSION[$key]) || array_key_exists($key, $_SESSION))
-			? $_SESSION[$key]
-			: $default;
+		try
+		{
+			return __map_get($_SESSION, $type, $property);
+		}
+		catch (\Throwable $e)
+		{
+			throw new HttpSessionException
+			(
+				$this,
+				sprintf('Can not get session attribute: property "%s"', $property),
+				$e
+			);
+		}
 	}
 
 	/**
-	 * Gets the session global unique identifier.
+	 * Gets the session client identifier.
 	 *
 	 * @return string
-	 *	The session global unique identifier.
+	 *	The session client identifier.
 	 */
-	public final function getGuid() : string
+	public function getClientID() : string
 	{
 		return session_id();
 	}
@@ -125,9 +130,23 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return string
 	 *	The name.
 	 */
-	public final function getName() : string
+	public function getName() : string
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Checks if a attribute is set.
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function has(string $property) : bool
+	{
+		return isset($_SESSION[$property]);
 	}
 
 	/**
@@ -138,53 +157,21 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 */
 	public function isClosed() : bool
 	{
-		return session_status() !== PHP_SESSION_ACTIVE;
+		return (session_status() !== PHP_SESSION_ACTIVE);
 	}
 
 	/**
-	 * Reads a value.
+	 * Sets a attribute.
 	 *
-	 * @param mixed $key
-	 *	The value key.
+	 * @param string $property
+	 *	The property.
 	 *
-	 * @return mixed
-	 *	The value.
+	 * @param mixed $attribute
+	 *	The attribute.
 	 */
-	public function read($key) // : mixed
+	public function set(string $property, $attribute) : void
 	{
-		if ($this->isClosed())
-		{
-			throw new HttpSessionException($this, sprintf('Http session status error: resource is closed'));
-		}
-
-		if (!isset($_SESSION[$key]) && !array_key_exists($key, $_SESSION))
-		{
-			throw new KeyNotFoundHttpSessionException($this, sprintf('Http session key not found: "%s"', $key));
-		}
-
-		return $_SESSION[$key];
-	}
-	
-	/**
-	 * Removes a value.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	public function remove($key) // : mixed
-	{
-		$result = null;
-
-		if (isset($_SESSION[$key]))
-		{
-			$result = $_SESSION[$key];
-			unset($_SESSION[$key]);
-		}
-
-		return $result;
+		$_SESSION[$property] = $attribute;
 	}
 
 	/**
@@ -193,7 +180,7 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 * @param string $name
 	 *	The name.
 	 */
-	public final function setName(string $name) : void
+	public function setName(string $name) : void
 	{
 		$this->name = $name;
 	}
@@ -203,16 +190,9 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	 */
 	public function start() : void
 	{
-		if (!$this->isClosed())
-		{
-			throw new HttpSessionException($this, sprintf('Http session start failure: already active'));
-		}
-
-		session_name($this->name);
-
 		if (!session_start())
 		{
-			throw new HttpSessionException($this, sprintf('Http session start failure: unknown error'));
+			throw new HttpSessionException($this, sprintf('Can not start session, unexpected error.'));
 		}
 	}
 	
@@ -225,19 +205,5 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	public function toArray() : array
 	{
 		return $_SESSION;
-	}
-
-	/**
-	 * Writes a value.
-	 *
-	 * @param mixed $key
-	 *	The value key.
-	 *
-	 * @param mixed $value
-	 *	The value.
-	 */
-	public function write($key, $value) : void
-	{
-		$_SESSION[$key] = $value;
 	}
 }

@@ -27,38 +27,32 @@
 
 namespace Lightbit\Data;
 
-use \Lightbit\Data\IMapStatic;
+use \Lightbit\Data\IMap;
 
 /**
  * IMap.
  *
- * This defines the base interface for a basic data map, from keys to values,
- * for read and write purposes.
- *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IMap extends IMapStatic
+interface IMap extends IMapBase
 {
 	/**
-	 * Removes a value.
+	 * Deletes a attribute.
 	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @return mixed
-	 *	The value.
+	 * @param string $property
+	 *	The property.
 	 */
-	public function remove($key); // : mixed
+	public function delete(string $property) : void;
 
 	/**
-	 * Writes a value.
+	 * Sets a attribute.
 	 *
-	 * @param mixed $key
-	 *	The value key.
+	 * @param string $property
+	 *	The property.
 	 *
-	 * @param mixed $value
-	 *	The value.
+	 * @param mixed $attribute
+	 *	The attribute.
 	 */
-	public function write($key, $value) : void;
+	public function set(string $property, $attribute) : void;
 }

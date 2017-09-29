@@ -69,7 +69,7 @@ class HttpRequest extends Component implements IHttpRequest
 	public final function export(IModel $model) : bool
 	{
 		$attributes = [];
-		$content = $this->getContentData();
+		$content = $this->getData();
 		$html = $this->getHtmlAdapter();
 
 		foreach ($model->getAttributesName() as $i => $attribute)
@@ -86,33 +86,33 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
-	 * Gets the request content data.
+	 * Gets the request form data.
 	 *
 	 * @return array
-	 *	The request content data.
+	 *	The request form data.
 	 */
-	public final function getContentData() : array
+	public final function getData() : array
 	{
-		static $contentData;
+		static $result;
 
-		if (!isset($contentData))
+		if (!isset($result))
 		{
 			switch ($_SERVER['REQUEST_METHOD'])
 			{
 				case 'GET':
-					$contentData = $_GET;
+					$result = $_GET;
 					break;
 
 				case 'POST':
-					$contentData = $_POST;
+					$result = $_POST;
 					break;
 
 				default:
-					$contentData = [];
+					$result = [];
 			}
 		}
 
-		return $contentData;
+		return $result;
 	}
 
 	/**

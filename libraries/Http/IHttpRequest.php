@@ -51,12 +51,12 @@ interface IHttpRequest extends IHttpMessage
 	public function export(IModel $model) : bool;
 
 	/**
-	 * Gets the request content.
+	 * Gets the request form data.
 	 *
 	 * @return array
-	 *	The request content.
+	 *	The request form data.
 	 */
-	public function getContentData() : array;
+	public function getData() : array;
 	
 	/**
 	 * Checks the request method for a match.

@@ -30,6 +30,9 @@ namespace Lightbit\Data\Caching;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
 use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\IFileCache;
+use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 
 /**
  * Cache.
@@ -37,74 +40,14 @@ use \Lightbit\Data\Caching\ICache;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Cache extends Component implements ICache
+final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetworkCache
 {
 	/**
-	 * Checks for a value availability.
+	 * The attributes.
 	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @return bool
-	 *	The check result.
+	 * @type array
 	 */
-	abstract public function contains($key) : bool;
-
-	/**
-	 * Attempts to read a value and, if not set, the default value
-	 * is returned instead.
-	 *
-	 * @param mixed $key
-	 *	The value key.
-	 *
-	 * @param mixed $default
-	 *	The default value.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	abstract public function fetch($key, $default = null); // : mixed
-
-	/**
-	 * Reads a value.
-	 *
-	 * @param mixed $key
-	 *	The value key.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	abstract public function read($key); // : mixed
-	
-	/**
-	 * Removes a value.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	abstract public function remove($key); // : mixed
-	
-	/**
-	 * Creates an array from this map.
-	 *
-	 * @return array
-	 *	The result.
-	 */
-	abstract public function toArray() : array;
-
-	/**
-	 * Writes a value.
-	 *
-	 * @param mixed $key
-	 *	The value key.
-	 *
-	 * @param mixed $value
-	 *	The value.
-	 */
-	abstract public function write($key, $value) : void;
+	private $attributes;
 
 	/**
 	 * Constructor.
@@ -120,6 +63,81 @@ abstract class Cache extends Component implements ICache
 	 */
 	public function __construct(Context $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context, $id, $configuration);
+		parent::__construct($context, $id);
+
+		$this->attributes = [];
+
+		if ($configuration)
+		{
+			__object_apply($this, $configuration);
+		}
+	}
+
+	/**
+	 * Deletes a attribute.
+	 *
+	 * @param string $property
+	 *	The property.
+	 */
+	public function delete(string $property) : void
+	{
+		unset($this->attributes[$property]);
+	}
+
+	/**
+	 * Gets a attribute.
+	 *
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function get(?string $type, string $property) // : mixed
+	{
+		try
+		{
+			return __map_get($this->attributes, $type, $property);
+		}
+		catch (\Throwable $e)
+		{
+			throw new CacheException
+			(
+				$this,
+				sprintf('Can not get session attribute: property "%s"', $property),
+				$e
+			);
+		}
+	}
+
+	/**
+	 * Checks if a attribute is set.
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function has(string $property) : bool
+	{
+		return isset($this->attributes[$property]);
+	}
+
+	/**
+	 * Sets a attribute.
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @param mixed $attribute
+	 *	The attribute.
+	 */
+	public function set(string $property, $attribute) : void
+	{
+		$this->attributes[$property] = $attribute;
 	}
 }

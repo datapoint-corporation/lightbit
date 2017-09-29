@@ -28,7 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Data\IMapStatic;
+use \Lightbit\Data\IMapBase;
 
 /**
  * IHttpQueryString.
@@ -36,13 +36,13 @@ use \Lightbit\Data\IMapStatic;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpQueryString extends IComponent, IMapStatic
+interface IHttpQueryString extends IComponent, IMapBase
 {
 	/**
-	 * Creates an array representation of this object.
+	 * Gets the query string attributes.
 	 *
 	 * @return array
-	 *	The array representation of this object.
+	 *	The query string attributes.
 	 */
 	public function toArray() : array;
 }
