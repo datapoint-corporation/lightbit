@@ -29,7 +29,7 @@ namespace Lightbit\Globalization;
 
 use \Lightbit\Base\Object;
 use \Lightbit\Exception;
-use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\Locale;
 
 /**
  * Locale.
@@ -37,7 +37,7 @@ use \Lightbit\Globalization\ILocale;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class Locale extends Object implements ILocale
+final class Locale extends Object
 {
 	/**
 	 * Gets a locale.

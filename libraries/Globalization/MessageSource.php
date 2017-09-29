@@ -30,7 +30,7 @@ namespace Lightbit\Globalization;
 use \Lightbit\Exception;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\Locale;
 use \Lightbit\Globalization\IMessageSource;
 
 /**

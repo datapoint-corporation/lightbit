@@ -32,7 +32,9 @@ use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\IEnvironment;
+use \Lightbit\Base\IView;
 use \Lightbit\Base\ModuleNotFoundException;
+use \Lightbit\Base\View;
 use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
@@ -40,9 +42,8 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
-use \Lightbit\Globalization\ILocale;
-use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Globalization\Locale;
+use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -107,30 +108,9 @@ abstract class Context extends Object
 	/**
 	 * The layout.
 	 *
-	 * @type string
+	 * @type View
 	 */
 	private $layout;
-
-	/**
-	 * The layout path.
-	 *
-	 * @type string
-	 */
-	private $layoutPath;
-
-	/**
-	 * The layout base path.
-	 *
-	 * @type string
-	 */
-	private $layoutBasePath;
-
-	/**
-	 * The layouts base path.
-	 *
-	 * @type string
-	 */
-	private $layoutsBasePath;
 
 	/**
 	 * The context locale.
@@ -543,65 +523,28 @@ abstract class Context extends Object
 	/**
 	 * Gets the layout.
 	 *
-	 * @return string
+	 * @return View
 	 *	The layout.
 	 */
-	public final function getLayout() : ?string
+	public final function getLayout() : ?View
 	{
-		return $this->layout;
-	}
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public final function getLayoutPath() : ?string
-	{
-		if (!$this->layoutPath && $this->layout)
+		if (!$this->layout)
 		{
-			$this->layoutPath = __asset_path_resolve($this->getLayoutsBasePath(), 'php', $this->layout);
-		}
+			$context = $this->context;
 
-		return $this->layoutPath;
-	}
-
-	/**
-	 * Gets the layout base path.
-	 *
-	 * @return string
-	 *	The layout base path.
-	 */
-	public final function getLayoutBasePath() : ?string
-	{
-		if (!$this->layoutBasePath && $this->layout)
-		{
-			if (!$this->layoutPath)
+			while ($context)
 			{
-				$this->layoutPath = __asset_path_resolve($this->getLayoutsBasePath(), 'php', $this->layout);
+				if ($context->layout)
+				{
+					$this->layout = $context->layout;
+					break;
+				}
+
+				$context = $context->context;
 			}
-
-			$this->layoutBasePath = dirname($this->layoutPath);
 		}
 
-		return $this->layoutBasePath;
-	}
-
-	/**
-	 * Gets the layouts base path.
-	 *
-	 * @return string
-	 *	The layouts base path.
-	 */
-	public final function getLayoutsBasePath() : string
-	{
-		if (!$this->layoutsBasePath)
-		{
-			$this->layoutsBasePath = $this->path . DIRECTORY_SEPARATOR . 'themes';
-		}
-
-		return $this->layoutsBasePath;
+		return $this->layout;
 	}
 
 	/**
@@ -610,7 +553,7 @@ abstract class Context extends Object
 	 * @return Locale
 	 *	The locale.
 	 */
-	public final function getLocale() : ILocale
+	public final function getLocale() : Locale
 	{
 		if ($this->locale)
 		{
@@ -622,7 +565,7 @@ abstract class Context extends Object
 			return $this->context->getLocale();
 		}
 
-		throw new Exception(sprintf('Locale is not defined for base context: "%s"', $this->getPrefix));
+		throw new Exception(sprintf('Can not get locale, not set: at context "%s"', $this->getPrefix()));
 	}
 
 	/**
@@ -1066,9 +1009,9 @@ abstract class Context extends Object
 	 */
 	public function setLayout(?string $layout) : void
 	{
-		$this->layout = $layout;
-		$this->layoutPath = null;
-		$this->layoutBasePath = null;
+		$this->layout = $layout 
+			? (new View($this, __asset_path_resolve($this->path, 'php', $layout)))
+			: null;
 	}
 
 	/**

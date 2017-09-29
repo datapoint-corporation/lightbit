@@ -30,7 +30,6 @@ namespace Lightbit\Base;
 use \Lightbit\Exception;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IWidget;
-use \Lightbit\Base\IView;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
 
 /**
@@ -39,7 +38,7 @@ use \Lightbit\IO\FileSystem\FileNotFoundException;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class View extends Element implements IView
+class View extends Element
 {
 	/**
 	 * The base path.
@@ -199,6 +198,8 @@ class View extends Element implements IView
 	 */
 	public final function run(array $parameters = null, bool $capture = false) : ?string
 	{
+		global $_LIGHTBIT_CONTEXT;
+
 		$ob;
 
 		if ($capture)
@@ -216,7 +217,12 @@ class View extends Element implements IView
 			throw new FileNotFoundException($this->path, sprintf('Can not render view, file not found: file path "%s"', $this->path));
 		}
 
+
+		// During the view script inclusion, the context is meant to be the
+		// one the view was originally created with.
+		$context = __context_replace($this->context);
 		__include_as($this, $this->path, $parameters);
+		__context_set($context);
 
 		if ($capture)
 		{
@@ -272,22 +278,5 @@ class View extends Element implements IView
 		}
 
 		return $widget->inflate();
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new View($this->context, $path, $configuration);
 	}
 }

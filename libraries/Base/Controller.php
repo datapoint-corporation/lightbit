@@ -32,7 +32,6 @@ use \Lightbit\Base\Element;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IllegalParameterRouteException;
-use \Lightbit\Base\IView;
 use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\SlugParseParameterRouteException;
@@ -73,16 +72,9 @@ abstract class Controller extends Element implements IController
 	/**
 	 * The layout.
 	 *
-	 * @type string
+	 * @type View
 	 */
 	private $layout;
-
-	/**
-	 * The layout path.
-	 *
-	 * @type string
-	 */
-	private $layoutPath;
 
 	/**
 	 * The views base paths.
@@ -141,11 +133,9 @@ abstract class Controller extends Element implements IController
 	{
 		$this->onDisplay();
 
-		$layoutPath = $this->getLayoutPath();
-
-		if ($layoutPath)
+		if ($layout = $this->getLayout())
 		{
-			$this->view($layoutPath)->run([ 'content' => $this->render($view, $parameters, true) ]);
+			$layout->run([ 'content' => $this->render($view, $parameters, true) ]);
 		}
 		else
 		{
@@ -229,7 +219,7 @@ abstract class Controller extends Element implements IController
 	 * @return string
 	 *	The layout.
 	 */
-	public final function getLayout() : ?string
+	public final function getLayout() : ?View
 	{
 		if (!$this->layout)
 		{
@@ -237,31 +227,6 @@ abstract class Controller extends Element implements IController
 		}
 
 		return $this->layout;
-	}
-
-	/**
-	 * Gets the layout path.
-	 *
-	 * @return string
-	 *	The layout path.
-	 */
-	public final function getLayoutPath() : ?string
-	{
-		if (!$this->layoutPath)
-		{
-			if (!$this->layout)
-			{
-				return $this->context->getLayoutPath();
-			}
-
-			$this->layoutPath = __asset_path_resolve
-			(
-				$this->context->getPath(),
-				'php', $this->layout
-			);
-		}
-
-		return $this->layoutPath;
 	}
 
 	/**
@@ -276,32 +241,14 @@ abstract class Controller extends Element implements IController
 		{
 			$this->viewsBasePaths = [];
 
-			// Each context, if it has a theme, can override the controller
-			// views by placing them in the proper directory next to the theme
-			// layout script.
 			$context = $this->context;
-			$prefix = '';
 			$suffix = DIRECTORY_SEPARATOR . strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
 
-			_getViewsBasePath0:
-			if ($layoutBasePath = $context->getLayoutBasePath())
+			if ($layout = $context->getLayout())
 			{
-				$this->viewsBasePaths[] = $layoutBasePath . $prefix . $suffix;
+				$this->viewsBasePaths[] = $layout->getBasePath() . $suffix;
 			}
 
-			if ($previous = $context->getContext())
-			{
-				$prefix = DIRECTORY_SEPARATOR . $context->getID();
-				$context = $previous;
-				goto _getViewsBasePath0;
-			}
-
-			if ($this->viewsBasePaths)
-			{
-				$this->viewsBasePaths = array_reverse($this->viewsBasePaths);
-			}
-
-			// Self
 			$this->viewsBasePaths[] = $this->context->getViewsBasePath() . $suffix;
 		}
 
@@ -328,8 +275,21 @@ abstract class Controller extends Element implements IController
 	{
 		$this->onRender();
 
-		$result = $this->view(__asset_path_resolve_array($this->getViewsBasePaths(), 'php', $view))
-			->run($parameters, $capture);
+		$result = 
+		(
+			new View
+			(
+				$this->context,
+				__asset_path_resolve_array
+				(
+					$this->getViewsBasePaths(),
+					'php',
+					$view
+				)
+			)
+		)
+
+		->run($parameters, $capture);
 
 		$this->onAfterRender();
 
@@ -443,6 +403,14 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function run(Action $action) // : mixed
 	{
+		global $_LIGHTBIT_ACTION;
+		global $_LIGHTBIT_CONTEXT;
+
+		// Save the previous action and context.
+		$pAction = __action_replace($action);
+		$pContext = __context_replace($this->context);
+
+		// Run
 		$this->onRun();
 
 		$controller = $action->getController();
@@ -456,6 +424,10 @@ abstract class Controller extends Element implements IController
 
 		$this->onAfterRun();
 
+		// Restore action and context.
+		__action_set($pAction);
+		__context_set($pContext);
+
 		return $result;
 	}
 
@@ -465,28 +437,11 @@ abstract class Controller extends Element implements IController
 	 * @param string $layout
 	 *	The layout.
 	 */
-	public final function setLayout(?string $layout) : void
+	public function setLayout(?string $layout) : void
 	{
-		$this->layout = $layout;
-		$this->layoutPath = null;
-		$this->viewsBasePath = null;
-	}
-
-	/**
-	 * Creates a view.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The view configuration.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	protected function view(string $path, array $configuration = null) : IView
-	{
-		return new View($this->context, $path, $configuration);
+		$this->layout = $layout 
+			? (new View($this, __asset_path_resolve($this->context->getPath(), 'php', $layout)))
+			: null;
 	}
 
 	/**

@@ -81,6 +81,14 @@ interface IController extends IElement
 	public function getGlobalID() : string;
 
 	/**
+	 * Gets the layout.
+	 *
+	 * @return View
+	 *	The layout.
+	 */
+	public function getLayout() : ?View;
+
+	/**
 	 * Gets the identifier.
 	 *
 	 * @return string

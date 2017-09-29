@@ -27,24 +27,38 @@
 
 use \Lightbit\Base\Context;
 
-$_SERVER['__LIGHTBIT_CONTEXT'] = null;
+$__LIGHTBIT_CONTEXT = null;
 
 function __context() : Context
 {
-	if (!isset($_SERVER['__LIGHTBIT_CONTEXT']))
+	global $__LIGHTBIT_CONTEXT;
+
+	if (!isset($__LIGHTBIT_CONTEXT))
 	{
 		__throw_state('Context does not exist.');
 	}
 
-	return $_SERVER['__LIGHTBIT_CONTEXT'];
+	return $__LIGHTBIT_CONTEXT;
 }
 
 function __context_get() : ?Context
 {
-	return $_SERVER['__LIGHTBIT_CONTEXT'];
+	global $__LIGHTBIT_CONTEXT;
+	return $__LIGHTBIT_CONTEXT;
+}
+
+function __context_replace(?Context $context) : ?Context
+{
+	global $__LIGHTBIT_CONTEXT;
+
+	$previous = $__LIGHTBIT_CONTEXT;
+	$__LIGHTBIT_CONTEXT = $context;
+
+	return $previous;
 }
 
 function __context_set(?Context $context) : void
 {
-	$_SERVER['__LIGHTBIT_CONTEXT'] = $context;
+	global $__LIGHTBIT_CONTEXT;
+	$__LIGHTBIT_CONTEXT = $context;
 }

@@ -237,15 +237,6 @@ final class Action extends Object
 	 */
 	public function run() // : mixed
 	{
-		$action = __action_get();
-		$context = __context_get();
-
-		__action_set($this);
-		__context_set($this->controller->getContext());
-		$result = $this->controller->run($this);
-
-		__action_set($action);
-		__context_set($context);
-		return $result;
+		return $this->controller->run($this);
 	}
 }

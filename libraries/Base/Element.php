@@ -38,7 +38,7 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
-use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\Locale;
 use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
@@ -232,7 +232,7 @@ abstract class Element extends Object implements IElement
 	 * @return Locale
 	 *	The locale.
 	 */
-	public function getLocale() : ILocale
+	public function getLocale() : Locale
 	{
 		return $this->getContext()->getLocale();
 	}

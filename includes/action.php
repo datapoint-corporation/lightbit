@@ -47,6 +47,16 @@ function __action_get() : ?Action
  	return $__LIGHTBIT_ACTION;
 }
 
+function __action_replace(?Action $action) : ?Action
+{
+	global $__LIGHTBIT_ACTION;
+
+	$previous = $__LIGHTBIT_ACTION;
+	$__LIGHTBIT_ACTION = $action;
+
+	return $action;
+}
+
 function __action_set(?Action $action) : void
 {
 	global $__LIGHTBIT_ACTION;

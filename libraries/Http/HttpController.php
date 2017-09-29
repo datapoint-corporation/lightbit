@@ -114,6 +114,9 @@ abstract class HttpController extends Controller implements IHttpController
 	/**
 	 * Creates a view.
 	 *
+	 * @param Context $context
+	 *	The view context.
+	 *
 	 * @param string $path
 	 *	The view path.
 	 *
@@ -123,8 +126,8 @@ abstract class HttpController extends Controller implements IHttpController
 	 * @return IView
 	 *	The view.
 	 */
-	protected function view(string $path, array $configuration = null) : IView
+	protected function view(Context $context, string $path, array $configuration = null) : IView
 	{
-		return new HtmlView($this->getContext(), $path, $configuration);
+		return new HtmlView($context, $path, $configuration);
 	}
 }

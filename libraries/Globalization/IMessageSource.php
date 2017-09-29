@@ -28,7 +28,7 @@
 namespace Lightbit\Globalization;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Globalization\ILocale;
+use \Lightbit\Globalization\Locale;
 
 /**
  * IMessageSource.
