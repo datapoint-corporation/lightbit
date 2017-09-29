@@ -122,7 +122,7 @@ class MessageSource extends Component implements IMessageSource
 	/**
 	 * Gets a message collection.
 	 *
-	 * @param ILocale $locale
+	 * @param Locale $locale
 	 *	The locale.
 	 *
 	 * @param string $category
@@ -130,7 +130,7 @@ class MessageSource extends Component implements IMessageSource
 	 *
 	 * @return string
 	 */
-	private function getMessageCollection(ILocale $locale, string $category) : array
+	private function getMessageCollection(Locale $locale, string $category) : array
 	{
 		$localeID = $locale->getID();
 
@@ -179,7 +179,7 @@ class MessageSource extends Component implements IMessageSource
 	 * Ultimately, if a message can not be found, the original message will
 	 * be returned instead.
 	 *
-	 * @param ILocale $locale
+	 * @param Locale $locale
 	 *	The message locale.
 	 *
 	 * @param string $category
@@ -191,7 +191,7 @@ class MessageSource extends Component implements IMessageSource
 	 * @return string
 	 *	The message.
 	 */
-	public function read(?ILocale $locale, string $category, string $message) : string
+	public function read(?Locale $locale, string $category, string $message) : string
 	{
 		$locale = $locale ?? $this->getLocale();
 		$collection = $this->getMessageCollection($locale, $category);

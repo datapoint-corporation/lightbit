@@ -32,7 +32,7 @@ use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IElement;
 use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\IView;
+use \Lightbit\Base\View;
 use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Base\View;
 use \Lightbit\Data\Caching\ICache;
@@ -115,7 +115,7 @@ abstract class Context extends Object
 	/**
 	 * The context locale.
 	 *
-	 * @type ILocale
+	 * @type Locale
 	 */
 	private $locale;
 

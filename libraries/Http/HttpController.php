@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Controller;
 use \Lightbit\Base\Context;
-use \Lightbit\Base\IView;
+use \Lightbit\Base\View;
 use \Lightbit\Data\IModel;
 use \Lightbit\Html\HtmlView;
 use \Lightbit\Http\IHttpController;
@@ -123,10 +123,10 @@ abstract class HttpController extends Controller implements IHttpController
 	 * @param array $configuration
 	 *	The view configuration.
 	 *
-	 * @return IView
+	 * @return View
 	 *	The view.
 	 */
-	protected function view(Context $context, string $path, array $configuration = null) : IView
+	protected function view(Context $context, string $path, array $configuration = null) : View
 	{
 		return new HtmlView($context, $path, $configuration);
 	}

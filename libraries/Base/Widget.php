@@ -92,10 +92,10 @@ class Widget extends Element implements IWidget
 	 * @param array $configuration
 	 *	The view configuration.
 	 *
-	 * @return IView
+	 * @return View
 	 *	The view.
 	 */
-	protected function view(string $path, array $configuration = null) : IView
+	protected function view(string $path, array $configuration = null) : View
 	{
 		return new View($this->getContext(), $path, $configuration);
 	}
