@@ -27,7 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
 use \Lightbit\Exception;
 
 /**

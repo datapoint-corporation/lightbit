@@ -27,7 +27,6 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
 use \Lightbit\Http\IHttpAssetManager;

@@ -27,7 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\Context;

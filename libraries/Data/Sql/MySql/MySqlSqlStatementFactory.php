@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\MySql;
 
-use \Lightbit;
 use \Lightbit\Base\Object;
 use \Lightbit\Data\IExpression;
 use \Lightbit\Data\Sql\ISqlConnection;

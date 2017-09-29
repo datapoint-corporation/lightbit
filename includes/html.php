@@ -25,6 +25,8 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
+use \Lightbit\Base\Object;
+
 function __html_attribute(string $property, $attribute) : string
 {
 	if ($attribute)
@@ -34,7 +36,7 @@ function __html_attribute(string $property, $attribute) : string
 			return ($attribute ? (' ' . __html_encode($property)) : '');
 		}
 
-		if (is_object($attribute))
+		if ($attribute instanceof Object)
 		{
 			$attribute = __html_encode(__context()->getSlugManager()->compose($attribute));
 		}

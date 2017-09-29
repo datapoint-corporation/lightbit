@@ -27,7 +27,6 @@
 
 namespace Lightbit\Globalization;
 
-use \Lightbit;
 use \Lightbit\Exception;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;

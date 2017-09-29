@@ -27,7 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\ControllerNotFoundRouteException;

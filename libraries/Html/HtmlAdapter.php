@@ -27,11 +27,8 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Base\Object;
-use \Lightbit\Data\IModel;
 use \Lightbit\Html\IHtmlAdapter;
 
 /**
@@ -103,7 +100,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	protected function activeInputID(IModel $model, string $attribute) : string
 	{
-		$session = $this->getAction()->getController()->getHttpSession();
+		$session = __contex()->getHttpSession();
 
 		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash . 'id';
@@ -117,201 +114,6 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Inflates an attribute.
-	 *
-	 * @param string $attribute
-	 *	The attribute name.
-	 *
-	 * @param string $value
-	 *	The attribute value.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function attribute(string $attribute, $value) : string
-	{
-		if (isset($value))
-		{
-			$typeName = __type_of($value);
-
-			if ($typeName === 'bool')
-			{
-				if ($value)
-				{
-					return strtr($this->escape($attribute), [ ' ' => '-' ]);
-				}
-
-				return '';
-			}
-
-			if ($typeName !== 'string')
-			{
-				$value = ($value instanceof Object)
-					? $this->getSlugManager()->compose($value)
-					: __type_to_string($value);
-			}
-
-			return strtr($this->escape($attribute), [ ' ' => '-' ]) . '="' . $this->escape($value) . '"';
-		}
-
-		return '';
-	}
-
-	/**
-	 * Inflates attributes.
-	 *
-	 * @param array $attributes
-	 *	The attributes.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function attributes(array $attributes) : string
-	{
-		$parts = '';
-
-		foreach ($attributes as $attribute => $value)
-		{
-			$part = $this->attribute($attribute, $value);
-
-			if ($part)
-			{
-				$parts .= ' ' . $part;
-			}
-		}
-
-		return ($parts ? substr($parts, 1) : '');
-	}
-
-	/**
-	 * Inflates the begin of an element.
-	 *
-	 * @param string $tag
-	 *	The element tag name.
-	 *
-	 * @param array $attributes
-	 *	The element attributes.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function begin(string $tag, array $attributes = null) : string
-	{
-		$result = '<' . $this->escape($tag);
-
-		if ($attributes)
-		{
-			$markup = $this->attributes($attributes);
-
-			if ($markup)
-			{
-				$result .= ' ' . $markup;
-			}
-		}
-
-		return $result . '>';
-	}
-
-	/**
-	 * Inflates a comment.
-	 *
-	 * @param string $content
-	 *	The comment content.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function comment(string $content) : string
-	{
-		return '<!-- ' . $this->escape($content) . ' //-->';
-	}
-
-	/**
-	 * Inflates the doctype declaration.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function doctype() : string
-	{
-		return '<!DOCTYPE html>';
-	}
-
-	/**
-	 * Inflates an element.
-	 *
-	 * @param string $tag
-	 *	The element tag name.
-	 *
-	 * @param array $attributes
-	 *	The element attributes.
-	 *
-	 * @param string $content
-	 *	The element content.
-	 *
-	 * @param bool $escape
-	 *	The escape flag which, when set, will cause the content to be escaped
-	 *	before being injected within the element.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function element(string $tag, array $attributes = null, string $content = null, bool $escape = true) : string
-	{
-		$result = '<' . $this->escape($tag);
-
-		if ($attributes)
-		{
-			$markup = $this->attributes($attributes);
-
-			if ($markup)
-			{
-				$result .= ' ' . $markup;
-			}
-		}
-
-		if ($this->isVoidElementTag($tag) && !$content)
-		{
-			return $result . ' />';
-		}
-
-		if ($content && $escape)
-		{
-			$content = $this->escape($content);
-		}
-
-		return $result . '>' . $content . '</' . $this->escape($tag) . '>';
-	}
-
-	/**
-	 * Inflates the end of an element.
-	 *
-	 * @param string $tag
-	 *	The element tag name.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function end(string $tag) : string
-	{
-		return '</' . $this->escape($tag) . '>';
-	}
-
-	/**
-	 * Escapes the given content.
-	 *
-	 * @param string $content
-	 *	The content.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public final function escape(string $content) : string
-	{
-		return __html_encode($content);
 	}
 
 	/**
@@ -374,74 +176,5 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 		}
 
 		return $activeInputsName[$className][$attribute];
-	}
-
-	/**
-	 * Checks for a void element tag.
-	 *
-	 * @param string $tag
-	 *	The element tag.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	protected function isVoidElementTag(string $tag) : bool
-	{
-		static $voidElementsTag =
-		[
-			'area' => true,
-			'base' => true,
-			'br' => true,
-			'col' => true,
-			'embed' => true,
-			'hr' => true,
-			'img' => true,
-			'input' => true,
-			'keygen' => true,
-			'link' => true,
-			'menuitem' => true,
-			'meta' => true,
-			'param' => true,
-			'source' => true,
-			'track' => true,
-			'wbr' => true
-		];
-
-		return isset($voidElementsTag[strtolower($tag)]);
-	}
-
-	/**
-	 * Merges attributes.
-	 *
-	 * @param array $attributes
-	 *	The attributes to merge.
-	 *
-	 * @return array
-	 *	The result.
-	 */
-	public function merge(...$attributes) : array
-	{
-		$result = [];
-
-		$classNames = [];
-		foreach ($attributes as $i => $node)
-		{
-			if ($node && is_array($node))
-			{
-				$result = $node + $result;
-
-				if (isset($node['class']) && $node['class'])
-				{
-					$classNames = array_merge($classNames, explode(' ', $node['class']));
-				}
-			}
-		}
-
-		if ($classNames)
-		{
-			$result['class'] = implode(' ', array_unique($classNames));
-		}
-
-		return $result;
 	}
 }

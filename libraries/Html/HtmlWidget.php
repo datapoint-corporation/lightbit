@@ -27,7 +27,6 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\Widget;
 

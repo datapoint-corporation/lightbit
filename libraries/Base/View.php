@@ -27,7 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit;
 use \Lightbit\Exception;
 use \Lightbit\Base\Element;
 use \Lightbit\Base\IWidget;

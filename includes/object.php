@@ -59,7 +59,7 @@ function __object_apply($object, array $properties) : void
 	}
 }
 
-function __object_call(Object $object, string $method, ...$arguments) // : mixed
+function __object_call($object, string $method, ...$arguments) // : mixed
 {
 	if ($arguments)
 	{
@@ -69,7 +69,7 @@ function __object_call(Object $object, string $method, ...$arguments) // : mixed
 	return $object->{$method}();
 }
 
-function __object_call_array(Object $object, string $method, array $arguments = null) // : mixed
+function __object_call_array($object, string $method, array $arguments = null) // : mixed
 {
 	if ($arguments)
 	{
@@ -242,12 +242,12 @@ function __object_create_a_ex(string $class, ?string $default, ?array $names, ar
 	return new $subject(...$arguments);
 }
 
-function __object_attribute_get(Object $object, string $property) // : mixed
+function __object_attribute_get($object, string $property) // : mixed
 {
 	return $object->{$property};
 }
 
-function __object_attribute_get_array(Object $object, array $properties) : array
+function __object_attribute_get_array($object, array $properties) : array
 {
 	$result = [];
 
@@ -259,17 +259,17 @@ function __object_attribute_get_array(Object $object, array $properties) : array
 	return $result;
 }
 
-function __object_attribute_is_set(Object $object, string $property) : bool
+function __object_attribute_is_set($object, string $property) : bool
 {
 	return isset($object->{$property});
 }
 
-function __object_attribute_set(Object $object, string $property, $attribute) : void
+function __object_attribute_set($object, string $property, $attribute) : void
 {
 	$object->{$property} = $attribute;
 }
 
-function __object_attribute_set_array(Object $object, array $attributes) : void
+function __object_attribute_set_array($object, array $attributes) : void
 {
 	foreach ($attributes as $property => $attribute)
 	{
