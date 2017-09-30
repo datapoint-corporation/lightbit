@@ -25,36 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Base\IElement;
-
-/**
- * IFilter.
- *
- * This defines the base interface for a validation filter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-interface IFilter extends IElement
-{
-	/**
-	 * Constructor.
-	 *
-	 * @param array $configuration
-	 *	The filter configuration.
-	 */
-	public function __construct(array $configuration = null);
+__type_filter_register
+(
+	'bool',
 
 	/**
-	 * Filters the given value.
+	 * Composes a variable.
 	 *
-	 * @param mixed $value
-	 *	The value to filter.
+	 * @param bool $variable
+	 *	The variable.
 	 *
-	 * @return mixed
-	 *	The value.
+	 * @return string
+	 *	The result.
 	 */
-	public function run($value); // : mixed
-}
+	function(bool $variable) : string
+	{
+		return implode(' ', $variable);
+	},
+
+	/**
+	 * Parses a variable.
+	 *
+	 * @param string $variable
+	 *	The variable.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	function(string $variable) : ?bool
+	{
+		if (preg_match('%^(true|false)$%', $variable))
+		{
+			return $variable === 'true';
+		}
+
+		return null;
+	}
+);

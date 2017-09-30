@@ -25,42 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Exception;
-
-/**
- * FilterException.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class FilterException extends Exception
-{
-	/**
-	 * The filter.
-	 *
-	 * @type IFilter
-	 */
-	private $filter;
+__type_filter_register
+(
+	'int',
 
 	/**
-	 * Constructor.
+	 * Composes a variable.
 	 *
-	 * @param IFilter $filter
-	 *	The filter.
+	 * @param int $variable
+	 *	The variable.
 	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
+	 * @return string
+	 *	The result.
 	 */
-	public function __construct(IFilter $filter, string $message, \Throwable $previous = null)
+	function(int $variable) : string
 	{
-		parent::__construct($message, $previous);
+		return number_format($variable, 0, '', '');
+	},
 
-		$this->filter = $filter;
+	/**
+	 * Parses a variable.
+	 *
+	 * @param string $variable
+	 *	The variable.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	function(string $variable) : ?int
+	{
+		if (preg_match('%^(?!0)\d+$%', $variable))
+		{
+			return intval($variable);
+		}
+
+		return null;	
 	}
-}
+);

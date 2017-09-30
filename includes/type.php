@@ -25,18 +25,100 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
+$_LIGHTBIT_TYPE_FILTER = [];
+
+function __type_filter(?string $type, $variable) // : mixed
+{
+	global $_LIGHTBIT_TYPE_FILTER;
+
+	if ($type)
+	{
+		$nullable = ($type[0] === '?');
+
+		if (!isset($variable) || ($variable === '' && is_string($variable)))
+		{
+			if (!$nullable)
+			{
+				__throw('Can not type filter variable, variable is empty string or null: expecting "%s"', $type);
+			}
+
+			return null;
+		}
+
+		$subject = ($nullable ? substr($type, 1) : $type);
+		$candidate = __type_of($variable);
+
+		if ($candidate === $subject)
+		{
+			return $variable;
+		}
+
+		if ($candidate === 'string')
+		{
+			if (isset($_LIGHTBIT_TYPE_FILTER[$subject]))
+			{
+				$variable = call_user_func($_LIGHTBIT_TYPE_FILTER[$subject][1], $variable);
+
+				if (!isset($variable))
+				{
+					__throw('Can not type filter variable, unsupported string format: expecting "%s", got "%s"', $subject, $candidate);
+				}
+
+				if ($subject !== __type_of($variable))
+				{
+					__throw('Can not type filter variable, bad type filter implementation: expecting "%s", got "%s"', $subject, __type_of($variable));
+				}
+
+				return $variable;
+			}
+		}
+
+		__throw('Can not type filter variable, unsupported type: expecting "%s", got "%s"', $subject, $candidate);
+		return;
+	}
+
+	return $variable;
+}
+
+function __type_filter_compose($variable) : string
+{
+	global $_LIGHTBIT_TYPE_FILTER;
+
+	$type = __type_of($variable);
+
+	if (!isset($_LIGHTBIT_TYPE_FILTER[$type]))
+	{
+		__throw('Can not compose variable through filter, not set: type "%s"', $type);
+	}
+
+	return call_user_func($_LIGHTBIT_TYPE_FILTER[$type][0], $variable);
+}
+
+function __type_filter_register(string $type, $compose, $parse) : void
+{
+	global $_LIGHTBIT_TYPE_FILTER;
+
+	if (isset($_LIGHTBIT_TYPE_FILTER[$type]))
+	{
+		__throw('Can not register type filter, already set: type "%s"', $type);
+	}
+
+	$_LIGHTBIT_TYPE_FILTER[$type] = [ $compose, $parse ];
+}
+
 /**
  * Checks if a type matches a class or interface.
  *
  * @param string $type
- *	The type name.
+ *	The type signature.
  *
  * @return bool
  *	The type.
  */
 function __type_is_object(string $type) : bool
 {
-	return class_exists($type) || interface_exists($type);
+	$subject = ($type[0] === '?' ? substr($type, 1) : $type);
+	return (class_exists($subject) || interface_exists($subject));
 }
 
 /**
@@ -111,7 +193,7 @@ function __type_is_basic(string $type) : bool
  * Checks if a type is scalar.
  *
  * @param string $type
- *	The type name.
+ *	The type signature.
  *
  * @return bool
  *	The result.
@@ -142,7 +224,7 @@ function __type_is_scalar(string $type) : bool
  * Checks if a type is nullable.
  *
  * @param string $type
- *	The type name.
+ *	The type signature.
  *
  * @return bool
  *	The result.
@@ -156,7 +238,7 @@ function __type_is_nullable(string $type) : bool
  * Checks a type against a variable.
  *
  * @param string $type
- *	The type name.
+ *	The type signature.
  *
  * @param mixed $variable
  *	The variable value.
@@ -225,6 +307,25 @@ function __type_of($variable) : string
 	}
 
 	return 'undefined';
+}
+
+/**
+ * Creates a type signature.
+ *
+ * @param ReflectionType $type
+ *	The type to create the signature from.
+ *
+ * @return string
+ *	The type signature.
+ */
+function __type_signature(?ReflectionType $type) : ?string
+{
+	if ($type)
+	{
+		$result = ($type->allowsNull() ? '?' : '') . ((string) $type);
+	}
+
+	return $result;
 }
 
 /**

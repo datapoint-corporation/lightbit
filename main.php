@@ -86,6 +86,13 @@ require __DIR__ . '/includes/throw.php';
 require __DIR__ . '/includes/type.php';
 require __DIR__ . '/includes/url.php';
 
+// Include the lightbit type filters manually, enabling basic support for
+// automatic query string argument binding.
+require __DIR__ . '/includes/type-filters/array.php';
+require __DIR__ . '/includes/type-filters/bool.php';
+require __DIR__ . '/includes/type-filters/float.php';
+require __DIR__ . '/includes/type-filters/int.php';
+
 // Register the Lightbit namespace and file system alias prefix path as
 // required by the framework.
 __asset_prefix_register('lightbit', __DIR__);

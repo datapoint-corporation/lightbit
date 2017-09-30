@@ -25,58 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
-
-/**
- * StringFilter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class StringFilter extends Filter
-{
-	/**
-	 * The expression.
-	 *
-	 * @type string
-	 */
-	private $expression;
+__type_filter_register
+(
+	'array',
 
 	/**
-	 * Constructor.
+	 * Composes a variable.
 	 *
-	 * @param array $configuration
-	 *	The filter configuration.
+	 * @param array $variable
+	 *	The variable.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function __construct(array $configuration = null)
+	function(array $variable) : string
 	{
-		parent::__construct($configuration);
-	}
+		return implode(' ', $variable);
+	},
 
 	/**
-	 * Runs the filter.
+	 * Parses a variable.
 	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
+	 * @param string $variable
+	 *	The variable.
 	 *
-	 * @return mixed
-	 *	The value.
+	 * @return array
+	 *	The result.
 	 */
-	public function run($value) : string
+	function(string $variable) : ?array
 	{
-		if (!is_string($value))
-		{
-			$value = __type_to_string($value);
-		}
-
-		if (isset($this->expression) && !preg_match($this->expression, $value))
-		{
-			throw new FilterException($this, sprintf('Bad string format: got "%s", must match "%s"', $value, $this->expression));
-		}
-
-		return $value;
+		return preg_split('%\\s+%', $variable, -1, PREG_SPLIT_NO_EMPTY);
 	}
-}
+);

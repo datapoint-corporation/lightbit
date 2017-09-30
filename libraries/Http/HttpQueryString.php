@@ -30,8 +30,7 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
 use \Lightbit\Base\Context;
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Http\HttpQueryStringParameterNotFoundException;
+use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\IHttpQueryString;
 
 /**
@@ -89,7 +88,7 @@ final class HttpQueryString extends Component implements IHttpQueryString
 	{
 		try
 		{
-			return __map_get($_GET, $type, $property);
+			return __type_filter($type, (isset($_GET[$property]) ? $_GET[$property] : null));
 		}
 		catch (\Throwable $e)
 		{

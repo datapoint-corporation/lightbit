@@ -25,78 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
-
-/**
- * IntegerFilter.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @version 1.0.0
- */
-class IntegerFilter extends Filter
-{
-	/**
-	 * The unsigned flag.
-	 *
-	 * @type bool
-	 */
-	private $unsigned = false;
+__type_filter_register
+(
+	'float',
 
 	/**
-	 * Constructor.
+	 * Composes a variable.
 	 *
-	 * @param array $configuration
-	 *	The filter configuration.
+	 * @param float $variable
+	 *	The variable.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function __construct(array $configuration = null)
+	function(float $variable) : string
 	{
-		parent::__construct($configuration);
-	}
+		return implode(' ', $variable);
+	},
 
 	/**
-	 * Runs the filter.
+	 * Parses a variable.
 	 *
-	 * @param mixed $value
-	 *	The value to run the filter on.
+	 * @param string $variable
+	 *	The variable.
 	 *
-	 * @return int
-	 *	The value.
+	 * @return array
+	 *	The result.
 	 */
-	public function run($value) : int
+	function(string $variable) : ?float
 	{
-		while (!is_int($value))
+		if (preg_match('%^(?!0)\d+(\.\d+)?$%', $variable))
 		{
-			if (is_string($value))
-			{
-				if (preg_match('%^(\\-|\\+)?\\d+$%', $value))
-				{
-					$value = intval($value);
-					break;
-				}
-			}
-
-			throw new FilterException($this, sprintf('Bad filter value data type: expecting "%s", found "%s"', 'int', __type_of($value)));
+			return floatval($variable);
 		}
 
-		if ($this->unsigned && $value < 0)
-		{
-			throw new FilterException($this, sprintf('Out of range value: expecting unsigned integer, got signed integer instead.'));
-		}
-
-		return $value;
+		return null;
 	}
-
-	/**
-	 * Defines the unsigned flag.
-	 *
-	 * @param bool $unsigned
-	 *	The unsigned flag value.
-	 */
-	public final function setUnsigned(bool $unsigned) : void
-	{
-		$this->unsigned = $unsigned;
-	}
-}
+);

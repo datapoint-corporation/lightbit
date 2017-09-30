@@ -36,8 +36,6 @@ use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\SlugParseParameterRouteException;
 use \Lightbit\Base\View;
-use \Lightbit\Data\Filtering\Filter;
-use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Exception;
 
 /**
@@ -357,8 +355,34 @@ abstract class Controller extends Element implements IController
 
 			if (isset($parameters[$parameterName]))
 			{
-				$arguments[] = $this->argument($id, $parameters, $methodName, $parameter->getType(), $parameterName, $parameters[$parameterName]);
-				continue;
+				try
+				{
+					$arguments[] = __type_filter
+					(
+						__type_signature($parameter->getType()),
+						$parameters[$parameterName]
+					);
+
+					continue;
+				}
+				catch (\Throwable $e)
+				{
+					throw new IllegalParameterRouteException
+					(
+						$this->context,
+						($route = ([ $this->id . '/' . $id ] + $parameters)),
+						$parameterName,
+						sprintf
+						(
+							'Can not resolve to action, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"',
+							$parameterName,
+							$id,
+							$this->id,
+							$this->context->getPrefix()
+						),
+						$e
+					);
+				}
 			}
 
 			if ($parameter->isDefaultValueAvailable())
@@ -442,152 +466,6 @@ abstract class Controller extends Element implements IController
 		$this->layout = $layout 
 			? (new View($this, __asset_path_resolve($this->context->getPath(), 'php', $layout)))
 			: null;
-	}
-
-	/**
-	 * Creates an action argument.
-	 *
-	 * @param string $id
-	 *	The identifier.
-	 *
-	 * @param array $parameters
-	 *	The parameters.
-	 *
-	 * @param string $methodName
-	 *	The method name.
-	 *
-	 * @param string $typeName
-	 *	The type name.
-	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param mixed $value
-	 *	The value.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	private function argument(string $id, array $parameters, string $methodName, ?string $typeName, string $parameterName, $value)
-	{
-		// When a type name is not defined, only scalar values will be accepted
-		// as action parameters.
-		if (!$typeName)
-		{
-			if (!__type_is_scalar($typeName))
-			{
-				throw new IllegalParameterRouteException
-				(
-					($route = ([ $this->id . '/' . $id ] + $parameters)),
-					$parameterName,
-					sprintf
-					(
-						'Action binding failure, not a scalar: "%s", at action, "%s", at controller "%s", at context "%s"',
-						$parameterName,
-						$id,
-						$this->id,
-						$this->context->getPrefix()
-					)
-				);
-			}
-		}
-
-		$valueTypeName = __type_of($value);
-
-		if ($typeName == $valueTypeName)
-		{
-			return $value;
-		}
-
-		if (__type_is_scalar($typeName))
-		{
-			try
-			{
-				return Filter::create($typeName)->run($value);
-			}
-			catch (FilterException $e)
-			{
-				throw new IllegalParameterRouteException
-				(
-					$this->context,
-					($route = ([ $this->id . '/' . $id ] + $parameters)),
-					sprintf
-					(
-						'Action binding failure, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"',
-						$parameterName,
-						$id,
-						$this->id,
-						$this->context->getPrefix()
-					),
-					$e
-				);
-			}
-		}
-
-		if (is_string($value))
-		{
-			$result;
-
-			try
-			{
-				$result = $this->getSlugManager()->parse($typeName, $value);
-
-				if (!isset($result))
-				{
-					throw new IllegalParameterRouteException
-					(
-						$this->context,
-						($route = ([ $this->id . '/' . $id ] + $parameters)),
-						$parameterName,
-						sprintf
-						(
-							'Action parameter bind failure, slug is invalid: "%s", at action, "%s", at controller "%s", at context "%s"',
-							$parameterName,
-							$id,
-							$this->id,
-							$this->context->getPrefix()
-						)
-					);
-				}
-
-				return $result;
-			}
-			catch (\Throwable $e)
-			{
-				throw new SlugParseParameterRouteException
-				(
-					$this->context,
-					($route = ([ $this->id . '/' . $id ] + $parameters)),
-					$parameterName,
-					$typeName,
-					$value,
-					sprintf
-					(
-						'Action parameter bind failure, slug parse failure: "%s", at action, "%s", at controller "%s", at context "%s"',
-						$parameterName,
-						$id,
-						$this->id,
-						$this->context->getPrefix()
-					),
-					$e
-				);
-			}
-		}
-
-		throw new IllegalParameterRouteException
-		(
-			$this->context,
-			($route = ([ $this->id . '/' . $id ] + $parameters)),
-			$parameterName,
-			sprintf
-			(
-				'Action parameter bind failure, parameter is invalid: "%s", at action, "%s", at controller "%s", at context "%s"',
-				$parameterName,
-				$id,
-				$this->id,
-				$this->context->getPrefix()
-			)
-		);
 	}
 
 	/**
