@@ -69,14 +69,14 @@ class HttpRouter extends HttpRouterBase
 		parent::__construct($context, $id);
 
 		if (isset($_SERVER['SCRIPT_NAME']))
-    	{
+		{
 			$this->scriptName = basename($_SERVER['SCRIPT_NAME']);
-    	}
+		}
 
-    	if ($configuration)
-    	{
-    		__object_apply($this, $configuration);
-    	}
+		if ($configuration)
+		{
+			__object_apply($this, $configuration);
+		}
 	}
 
 	/**
