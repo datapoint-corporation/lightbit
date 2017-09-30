@@ -82,6 +82,13 @@ final class Action extends Object
 	private $name;
 
 	/**
+	 * The parameters.
+	 *
+	 * @type array
+	 */
+	private $parameters;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IController $controller
@@ -90,12 +97,12 @@ final class Action extends Object
 	 * @param string $name
 	 *	The action name.
 	 *
-	 * @param array $arguments
-	 *	The action arguments.
+	 * @param array $parameters
+	 *	The action parameters.
 	 */
-	public function __construct(IController $controller, string $name, array $arguments)
+	public function __construct(IController $controller, string $name, array $parameters)
 	{
-		$this->arguments = $arguments;
+		$this->parameters = $parameters;
 		$this->controller = $controller;
 		$this->name = $name;
 	}
@@ -112,7 +119,7 @@ final class Action extends Object
 	 *		same context or at one of the parent modules.
 	 *
 	 *	1)	The route resolves to the same context and controller with a
-	 *		a matching action name - arguments may differ.
+	 *		a matching action name - parameters may differ.
 	 *
 	 *	2)	The route resolves to an action within the same context and
 	 *		controller.
@@ -159,7 +166,23 @@ final class Action extends Object
 	 */
 	public function getArguments() : array
 	{
+		if (!isset($this->arguments))
+		{
+			$this->arguments = array_values($parameters);
+		}
+
 		return $this->arguments;
+	}
+
+	/**
+	 * Gets the parameters.
+	 *
+	 * @return array
+	 *	The parameters.
+	 */
+	public function getParameters() : array
+	{
+		return $this->parameters;
 	}
 
 	/**

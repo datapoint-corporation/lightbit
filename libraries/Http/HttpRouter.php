@@ -109,26 +109,15 @@ class HttpRouter extends HttpRouterBase
 	 */
 	public final function resolve() : Action
 	{
-		$path = null;
-
-		if (!empty($_GET['action']))
-		{
-			if (!is_string($_GET['action']))
-			{
-				throw new HttpStatusException(400, sprintf('Bad data type for query string parameter: "%s"', 'action'));
-			}
-
-			if (!preg_match('%^\\w+(\\.\\w+)*$%', $_GET['action']))
-			{
-				throw new HttpStatusException(404, sprintf('Bad format for query string parameter: "%s"', 'action'));
-			}
-
-			$path = '/' . strtr($_GET['action'], [ '.' => '/', '_' => '-' ]);
-		}
+		$path = strtr
+		(
+			'/' . $this->getHttpQueryString()->get('?string', 'action'),
+			[ '.' => '/', '_' => '-' ]
+		);
 
 		try
 		{
-			return $this->getApplication()->resolve([ $path ] + $_GET);
+			return __application()->resolve([ ($path === '/' ? null : $path) ] + $_GET);
 		}
 		catch (IllegalParameterRouteException $e)
 		{
@@ -164,7 +153,7 @@ class HttpRouter extends HttpRouterBase
 		$result = '' . $this->getScriptName();
 
 		$arguments = [ 'action' => strtr($action->getID(), '/-', '._') ]
-			+ $action->getArguments()
+			+ $action->getParameters()
 			+ $route;
 
 		unset($arguments[0]);

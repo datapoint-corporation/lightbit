@@ -111,22 +111,19 @@ function __http_query_encode(array $parameters) : string
 
 function __http_query_encode_recursive(array $parameters) : array
 {
-	foreach ($parameters as $key => $value)
+	$result = [];
+
+	foreach ($parameters as $property => $attribute)
 	{
-		if (is_array($value))
+		$attribute = is_array($attribute)
+			? __http_query_encode_recursive($attribute)
+			: __type_filter_compose($attribute);
+		
+		if ($attribute)
 		{
-			$content[$key] = __http_query_encode_recursive($value);
-			continue;
+			$result[$property] = $attribute;
 		}
-
-		if ($value instanceof Object)
-		{
-			$content[$key] = __application()->getSlugManager()->compose($value);
-			continue;
-		}
-
-		$parameters[$key] = __type_to_string($value);
 	}
 
-	return $parameters;
+	return $result;
 }

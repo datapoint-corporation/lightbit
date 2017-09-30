@@ -308,12 +308,12 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function resolve(string $id, array $parameters) : Action
 	{
-		$methodName = $this->getActionMethodName($id);
 		$method;
 
 		try
 		{
-			$method = (new \ReflectionClass($this))->getMethod($methodName);
+			$method = (new \ReflectionClass($this))
+				->getMethod($this->getActionMethodName($id));
 		}
 		catch (\ReflectionException $e)
 		{
@@ -339,7 +339,7 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Can not resolve to action, method signature mismatch: "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, method signature mismatch: action "%s", at controller "%s", at context "%s"',
 					$id,
 					$this->id,
 					$this->context->getPrefix()
@@ -347,8 +347,7 @@ abstract class Controller extends Element implements IController
 			);
 		}
 
-		$arguments = [];
-
+		$params = [];
 		foreach ($method->getParameters() as $i => $parameter)
 		{
 			$parameterName = $parameter->getName();
@@ -357,7 +356,7 @@ abstract class Controller extends Element implements IController
 			{
 				try
 				{
-					$arguments[] = __type_filter
+					$params[$parameterName] = __type_filter
 					(
 						__type_signature($parameter->getType()),
 						$parameters[$parameterName]
@@ -387,13 +386,13 @@ abstract class Controller extends Element implements IController
 
 			if ($parameter->isDefaultValueAvailable())
 			{
-				$arguments[] = $parameter->getDefaultValue();
+				$params[$parameterName] = $parameter->getDefaultValue();
 				continue;
 			}
 
 			if ($parameter->allowsNull())
 			{
-				$arguments[] = null;
+				$params[$parameterName] = null;
 				continue;
 			}
 
@@ -413,7 +412,7 @@ abstract class Controller extends Element implements IController
 			);
 		}
 
-		return new Action($this, $id, $arguments);
+		return new Action($this, $id, $params);
 	}
 
 	/**
@@ -443,7 +442,7 @@ abstract class Controller extends Element implements IController
 		(
 			$controller,
 			$controller->getActionMethodName($action->getName()),
-			$action->getArguments()
+			array_values($action->getParameters())
 		);
 
 		$this->onAfterRun();

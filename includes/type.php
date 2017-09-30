@@ -86,6 +86,15 @@ function __type_filter_compose($variable) : string
 
 	$type = __type_of($variable);
 
+	switch ($type)
+	{
+		case 'null':
+			return '';
+
+		case 'string':
+			return $variable;
+	}
+
 	if (!isset($_LIGHTBIT_TYPE_FILTER[$type]))
 	{
 		__throw('Can not compose variable through filter, not set: type "%s"', $type);

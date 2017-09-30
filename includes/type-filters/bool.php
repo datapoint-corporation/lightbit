@@ -40,7 +40,7 @@ __type_filter_register
 	 */
 	function(bool $variable) : string
 	{
-		return implode(' ', $variable);
+		return ($variable ? 'true' : 'false');
 	},
 
 	/**
