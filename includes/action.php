@@ -35,10 +35,22 @@ function __action() : Action
 
 	if (!isset($__LIGHTBIT_ACTION))
 	{
-		__throw_state('Action does not exist.');
+		__throw_state('Can not get current action, not set.');
 	}
 
 	return $__LIGHTBIT_ACTION;
+}
+
+function __action_context() : Context
+{
+	global $__LIGHTBIT_ACTION;
+
+	if (!isset($__LIGHTBIT_ACTION))
+	{
+		__throw_state('Can not get current action, not set.');
+	}
+
+	return $__LIGHTBIT_ACTION->getContext();
 }
 
 function __action_get() : ?Action

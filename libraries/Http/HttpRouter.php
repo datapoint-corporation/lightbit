@@ -148,19 +148,19 @@ class HttpRouter extends HttpRouterBase
 	 */
 	public function url(array $route, bool $absolute = false) : string
 	{
-		$action = $this->getContext()->resolve($route);
+		$action = __action_context()->resolve($route);
 
-		$result = '' . $this->getScriptName();
+		$result = '' . $this->scriptName;
 
-		$arguments = [ 'action' => strtr($action->getID(), '/-', '._') ]
+		$parameters = [ 'action' => strtr($action->getID(), '/-', '._') ]
 			+ $action->getParameters()
 			+ $route;
 
-		unset($arguments[0]);
+		unset($parameters[0]);
 
-		if ($arguments)
+		if ($parameters)
 		{
-			$result .= '?' . __http_query_encode($arguments);
+			$result .= '?' . __http_query_encode($parameters);
 		}
 
 		if ($absolute)
