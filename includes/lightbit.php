@@ -32,18 +32,19 @@ function __exit(int $code) : void
 		$application->dispose();
 	}
 
+	__state_save();
 	exit($code);
 }
 
-function __lightbit_autoload(string $class) : void
+function __lightbit_autoload(string $__CLASS__) : void
 {
 	try
 	{
-		__include_file(__class_path_resolve($class));
+		__include_file(__class_path_resolve($__CLASS__));
 	}
 	catch (Throwable $e)
 	{
-		__throw_class_not_found($class, sprintf('Can not load class: class %s', $class), $e);
+		__throw_class_not_found($__CLASS__, sprintf('Can not load class: class %s', $__CLASS__), $e);
 	}
 }
 
@@ -113,6 +114,7 @@ function __lightbit_exception_handler(Throwable $e) : bool
 	if ($application = __application_get())
 	{
 		$application->throwable($e);
+		__exit(1);
 	}
 
 	else if (__environment_is_cli())

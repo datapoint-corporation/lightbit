@@ -84,6 +84,7 @@ require __DIR__ . '/includes/namespace.php';
 require __DIR__ . '/includes/number.php';
 require __DIR__ . '/includes/object.php';
 require __DIR__ . '/includes/path.php';
+require __DIR__ . '/includes/state.php';
 require __DIR__ . '/includes/string.php';
 require __DIR__ . '/includes/throw.php';
 require __DIR__ . '/includes/type.php';
@@ -96,13 +97,17 @@ require __DIR__ . '/includes/type-filters/bool.php';
 require __DIR__ . '/includes/type-filters/float.php';
 require __DIR__ . '/includes/type-filters/int.php';
 
-// Register the Lightbit namespace and file system alias prefix path as
-// required by the framework.
-__asset_prefix_register('lightbit', __DIR__);
-__namespace_register('Lightbit', __DIR__ . '/libraries');
-
 // Register the lightbit autoloader, exception and error handler
 // to enable the expected core behaviours.
 spl_autoload_register('__lightbit_autoload', true, true);
 set_error_handler('__lightbit_error_handler', E_ALL);
 set_exception_handler('__lightbit_exception_handler');
+
+// Resume the internal state, which should save a lot of trouble with
+// tasks that would otherwise repeat for every request.
+__state_resume();
+
+// Register the Lightbit namespace and file system alias prefix path as
+// required by the framework.
+__asset_prefix_register('lightbit', __DIR__);
+__namespace_register('Lightbit', __DIR__ . '/libraries');
