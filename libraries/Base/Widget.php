@@ -27,10 +27,9 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Context;
 use \Lightbit\Base\Element;
+
 use \Lightbit\Base\IWidget;
-use \Lightbit\Base\View;
 
 /**
  * IWidget.

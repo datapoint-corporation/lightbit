@@ -28,8 +28,8 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\ContextException;
-use \Lightbit\Base\Context;
-use \Lightbit\Exception;
+
+use \Lightbit\Base\IContext;
 
 /**
  * ModuleNotFoundException.

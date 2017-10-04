@@ -27,6 +27,7 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 
 /**

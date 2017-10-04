@@ -29,15 +29,15 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Element;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\IController;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
-use \Lightbit\Base\SlugParseParameterRouteException;
 use \Lightbit\Base\View;
-use \Lightbit\Exception;
 
+use \Lightbit\Base\IAction;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
+use \Lightbit\Base\IView;
 /**
  * Controller.
  *

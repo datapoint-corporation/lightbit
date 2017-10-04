@@ -27,23 +27,28 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
+use \Lightbit\Base\ComponentConfigurationException;
+use \Lightbit\Base\ComponentNotFoundException;
 use \Lightbit\Base\ControllerNotFoundException;
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IElement;
-use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\ModuleNotFoundException;
-use \Lightbit\Base\View;
-use \Lightbit\Data\Caching\ICache;
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Base\Object;
+use \Lightbit\Globalization\Locale;
+use \Lightbit\IllegalStateException;
+
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
+use \Lightbit\Base\IEnvironment;
+use \Lightbit\Base\IFileCache;
+use \Lightbit\Base\IModule;
+use \Lightbit\Base\IView;
+use \Lightbit\Data\ICache;
+use \Lightbit\Data\IMemoryCache;
+use \Lightbit\Data\IMessageSource;
+use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
-use \Lightbit\Globalization\IMessageSource;
-use \Lightbit\Globalization\Locale;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -52,7 +57,6 @@ use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpSession;
-use \Lightbit\IllegalStateException;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
@@ -531,7 +535,7 @@ abstract class Context extends Object implements IContext
 	 * @return View
 	 *	The layout.
 	 */
-	public final function getLayout() : ?View
+	public final function getLayout() : ?IView
 	{
 		if (!$this->layout)
 		{
@@ -539,13 +543,13 @@ abstract class Context extends Object implements IContext
 
 			while ($context)
 			{
-				if ($context->layout)
+				if ($result = $context->getLayout())
 				{
-					$this->layout = $context->layout;
+					$this->layout = $result;
 					break;
 				}
 
-				$context = $context->context;
+				$context = $context->getContext();
 			}
 		}
 
@@ -686,7 +690,7 @@ abstract class Context extends Object implements IContext
 
 				$this->modules[$id] = __object_construct_a
 				(
-					Module::class,
+					IModule::class,
 					__map_get($configuration, 'string', '@class'),
 					$this,
 					$id,
@@ -696,7 +700,7 @@ abstract class Context extends Object implements IContext
 			}
 			catch (\Throwable $e)
 			{
-				throw new ModuleNotFoundException
+				throw new ModuleConfigurationException
 				(
 					$this,
 					$id,

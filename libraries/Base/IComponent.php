@@ -27,7 +27,7 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
 
 /**

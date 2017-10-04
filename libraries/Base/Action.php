@@ -27,7 +27,11 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\IllegalStateException;
+use \Lightbit\Base\Object;
+
+use \Lightbit\Base\IAction;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
 
 /**
  * Action.

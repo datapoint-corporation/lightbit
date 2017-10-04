@@ -27,6 +27,11 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit\Base\Element;
+
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IContext;
+
 /**
  * Component.
  *

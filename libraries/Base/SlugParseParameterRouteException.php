@@ -29,6 +29,8 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\ParameterRouteException;
 
+use \Lightbit\Base\IContext;
+
 /**
  * SlugParseParameterRouteException.
  *
@@ -54,7 +56,7 @@ class SlugParseParameterRouteException extends ParameterRouteException
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The context.
 	 *
 	 * @param array $route
@@ -75,7 +77,7 @@ class SlugParseParameterRouteException extends ParameterRouteException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(Context $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, array $route, string $parameterName, string $className, string $slug, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $route, $parameterName, $message, $previous);
 

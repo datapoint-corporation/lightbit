@@ -27,19 +27,24 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
+use \Lightbit\Base\Object;
+
+use \Lightbit\Base\IAction;
+use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IElement;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
 use \Lightbit\Base\IEnvironment;
-use \Lightbit\Data\Caching\ICache;
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Base\IFileCache;
+use \Lightbit\Base\IModule;
+use \Lightbit\Base\IView;
+use \Lightbit\Data\ICache;
+use \Lightbit\Data\IMemoryCache;
+use \Lightbit\Data\IMessageSource;
+use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Exception;
 use \Lightbit\Globalization\ILocale;
-use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;

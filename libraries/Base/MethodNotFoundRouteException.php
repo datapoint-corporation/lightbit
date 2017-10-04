@@ -27,8 +27,10 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Context;
+use \Lightbit\Base\RouteException;
 use \Lightbit\Exception;
+
+use \Lightbit\Base\IContext;
 
 /**
  * MethodNotFoundRouteException.

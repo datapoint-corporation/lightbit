@@ -27,21 +27,53 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IWidget;
+use \Lightbit\Base\ContextException;
+
+use \Lightbit\Base\IContext;
 
 /**
- * IInlineWidget.
+ * ModuleConfigurationException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IInlineWidget extends IWidget
+class ModuleConfigurationException extends ContextException
 {
 	/**
-	 * Inflates the widget content.
+	 * The module identifier.
+	 *
+	 * @type string
+	 */
+	private $moduleID;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The context.
+	 *
+	 * @param string $moduleID
+	 *	The module identifier.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
+	 */
+	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($context, $message, $previous);
+	}
+
+	/**
+	 * Gets the module identifier.
 	 *
 	 * @return string
-	 *	The content.
+	 *	The module identifier.
 	 */
-	public function inflate() : string;
+	public final function getModuleID() : string
+	{
+		return $this->moduleID;
+	}
 }

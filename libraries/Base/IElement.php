@@ -27,10 +27,10 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
-use \Lightbit\Base\Application;
+use \Lightbit\Base\IAction;
+use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IBase;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 
 /**
  * IElement.

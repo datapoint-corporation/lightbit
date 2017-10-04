@@ -28,6 +28,9 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\ParameterRouteException;
+use \Lightbit\Exception;
+
+use \Lightbit\Base\IContext;
 
 /**
  * MissingParameterRouteException.

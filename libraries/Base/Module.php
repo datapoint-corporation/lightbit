@@ -27,15 +27,11 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
 use \Lightbit\Base\Context;
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\Module;
-use \Lightbit\Data\SlugManager;
-use \Lightbit\Globalization\Locale;
-use \Lightbit\Globalization\MessageSource;
-use \Lightbit\Security\Cryptography\PasswordDigest;
-use \Lightbit\Exception;
+
+use \Lightbit\Base\IApplication;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IModule;
 
 /**
  * Module.

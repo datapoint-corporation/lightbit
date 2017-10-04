@@ -27,61 +27,21 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\RouteException;
-
-use \Lightbit\Base\IContext;
+use \Lightbit\Base\IWidget;
 
 /**
- * ParameterRouteException.
- *
- * This exception is thrown when a given route fails to be resolved
- * to an action due to an invalid or missing parameter.
+ * IWidgetInline.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class ParameterRouteException extends RouteException
+interface IWidgetInline extends IWidget
 {
 	/**
-	 * The parameter name.
-	 *
-	 * @type string
-	 */
-	private $parameterName;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The context.
-	 *
-	 * @param array $route
-	 *	The route.
-	 *
-	 * @param string $parameterName
-	 *	The parameter name.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
-	 */
-	public function __construct(IContext $context, array $route, string $parameterName, string $message, \Throwable $previous = null)
-	{
-		parent::__construct($context, $route, $message, $previous);
-
-		$this->parameterName = $parameterName;
-	}
-
-	/**
-	 * Gets the parameter name.
+	 * Inflates the widget content.
 	 *
 	 * @return string
-	 *	The parameter name.
+	 *	The content.
 	 */
-	public final function getParameterName() : string
-	{
-		return $this->parameterName;
-	}
+	public function inflate() : string;
 }

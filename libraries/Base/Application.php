@@ -28,11 +28,10 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
-use \Lightbit\Base\IApplication;
-use \Lightbit\Data\Caching\Cache;
+use \Lightbit\Base\View;
+USE \Ligbtbit\Data\Caching\Cache;
 use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\SqlConnection;
-use \Lightbit\Exception;
 use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
@@ -44,6 +43,8 @@ use \Lightbit\Http\HttpRouter;
 use \Lightbit\Http\HttpSession;
 use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Security\Cryptography\PasswordDigest;
+
+use \Lightbit\Base\IApplication;
 
 /**
  * Application.
@@ -231,9 +232,7 @@ class Application extends Context implements IApplication
 	 */
 	public final function terminate(int $status = 0) : void
 	{
-		$this->dispose();
-
-		exit($status);
+		__exit($status);
 	}
 
 	/**

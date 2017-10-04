@@ -27,10 +27,11 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Exception;
 use \Lightbit\Base\Element;
-use \Lightbit\Base\IWidget;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
+
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IView;
 
 /**
  * View.
@@ -272,9 +273,9 @@ class View extends Element implements IView
 	{
 		$widget = $this->widget($className, ...$arguments);
 
-		if (! ($widget instanceof IInlineWidget))
+		if (! ($widget instanceof IWidgetInline))
 		{
-			throw new Exception(sprintf('Can not inflate widget: %s', $className));
+			throw new Exception(sprintf('Can not inflate inline widget: %s', $className));
 		}
 
 		return $widget->inflate();

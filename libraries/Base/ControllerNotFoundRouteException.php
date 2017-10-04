@@ -27,9 +27,9 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Context;
-use \Lightbit\Base\RouteException;
-use \Lightbit\Exception;
+use \Lightbit\Base\ContextException;
+
+use \Lightbit\Base\IContext;
 
 /**
  * ControllerNotFoundRouteException.

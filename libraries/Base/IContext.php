@@ -27,33 +27,13 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
-use \Lightbit\Base\ControllerNotFoundException;
+use \Lightbit\Base\IAction;
 use \Lightbit\Base\IBase;
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IElement;
-use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\ModuleNotFoundException;
-use \Lightbit\Base\View;
-use \Lightbit\Data\Caching\ICache;
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
-use \Lightbit\Data\ISlugManager;
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Exception;
+use \Lightbit\Base\IController;
+use \Lightbit\Base\IModule;
+use \Lightbit\Base\IView;
 use \Lightbit\Globalization\ILocale;
-use \Lightbit\Globalization\IMessageSource;
-use \Lightbit\Html\IHtmlAdapter;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpAssetManager;
-use \Lightbit\Http\IHttpQueryString;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpResponse;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpSession;
-use \Lightbit\IllegalStateException;
-use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * IContext.
@@ -128,7 +108,7 @@ interface IContext extends IBase
 	 * @return View
 	 *	The layout.
 	 */
-	public function getLayout() : ?View;
+	public function getLayout() : ?IView;
 
 	/**
 	 * Gets the locale.
