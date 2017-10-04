@@ -25,75 +25,39 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\ClassNotFoundException;
+$__LIGHTBIT_DEBUG = false;
 
-$__LIGHTBIT_CLASS = [];
-
-function __class_exists(string $class) : bool
+function __debug() : bool
 {
-	global $__LIGHTBIT_CLASS;
-
-	if (isset($__LIGHTBIT_CLASS[$class]))
-	{
-		return true;
-	}
-
-	return class_exists($class, false)
-		|| interface_exists($class, false)
-		|| is_file(__class_path_resolve($class));
+	global $__LIGHTBIT_DEBUG;
+	return $__LIGHTBIT_DEBUG;
 }
 
-function __class_is_a(string $subject, string $candidate) : string
+function __debug_set(bool $debug) : void
 {
-	return ($subject === $candidate || is_subclass_of($candidate, $subject));
+	global $__LIGHTBIT_DEBUG;
+	$__LIGHTBIT_DEBUG = $debug;
 }
 
-function __class_namespace(string $class) : string
+function __debug_trace() : array
 {
-	if ($i = strrpos($class, '\\'))
-	{
-		return substr($class, 0, $i);
-	}
-
-	return '';
+	return array_slice(debug_backtrace(0, 0), 1);
 }
 
-function __class_path_resolve(string $class) : string
+function __debug_trace_call(?string $class, string $function) : ?array
 {
-	global $__LIGHTBIT_CLASS;
+	$trace = array_slice(debug_backtrace(0, 0), 1);
 
-	if (!isset($__LIGHTBIT_CLASS[$class]))
+	foreach ($trace as $i => $breakpoint)
 	{
-		if ($i = strrpos($class, '\\'))
+		if (!$class || (isset($breakpoint['class']) && $class === $breakpoint['class']))
 		{
-			return $__LIGHTBIT_CLASS[$class]
-				= __namespace_path_resolve(substr($class, 0, $i))
-			 	. strtr(substr($class, $i), [ '\\' => DIRECTORY_SEPARATOR ])
-				. '.php';
+			if (!$function || (isset($breakpoint['function']) && $function === $breakpoint['function']))
+			{
+				return array_slice($trace, $i);
+			}
 		}
-
-		return $__LIGHTBIT_CLASS[$class]
-			= ($i = resolve_stream_include_path($j = ($class . '.php')))
-			? $i
-			: $j;
 	}
 
-	return $__LIGHTBIT_CLASS[$class];
-}
-
-function __class_register(string $class, string $path) : void
-{
-	global $__LIGHTBIT_CLASS;
-
-	if (isset($__LIGHTBIT_CLASS[$class]))
-	{
-		__throw
-		(
-			'Can not register class path, already set: class %s, at path %s',
-			$class,
-			$__LIGHTBIT_CLASS[$class]
-		);
-	}
-
-	$__LIGHTBIT_CLASS[$class] = $path;
+	return $trace;
 }

@@ -49,7 +49,7 @@ abstract class Controller extends Element implements IController
 	/**
 	 * The context.
 	 *
-	 * @type Context
+	 * @type IContext
 	 */
 	private $context;
 
@@ -84,7 +84,7 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The context.
 	 *
 	 * @param string $id
@@ -93,7 +93,7 @@ abstract class Controller extends Element implements IController
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
@@ -167,10 +167,10 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
-	public final function getContext() : Context
+	public final function getContext() : IContext
 	{
 		return $this->context;
 	}
@@ -228,6 +228,36 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public final function getView(string $view) : IView
+	{
+		static $views = [];
+
+		if (!isset($views[$view]))
+		{
+			$views[$view] = new View
+			(
+				$this->context,
+				__asset_path_resolve_array
+				(
+					$this->getViewsBasePaths(),
+					'php',
+					$view
+				)
+			);
+		}
+		
+		return $views[$view];
+	}
+
+	/**
 	 * Gets the views base paths.
 	 *
 	 * @return array
@@ -273,21 +303,7 @@ abstract class Controller extends Element implements IController
 	{
 		$this->onRender();
 
-		$result = 
-		(
-			new View
-			(
-				$this->context,
-				__asset_path_resolve_array
-				(
-					$this->getViewsBasePaths(),
-					'php',
-					$view
-				)
-			)
-		)
-
-		->run($parameters, $capture);
+		$result = ($this->getView($view))->run($parameters, $capture);
 
 		$this->onAfterRender();
 
@@ -303,10 +319,10 @@ abstract class Controller extends Element implements IController
 	 * @param array $parameters
 	 *	The action parameters.
 	 *
-	 * @return Action
+	 * @return IAction
 	 *	The result.
 	 */
-	public final function resolve(string $id, array $parameters) : Action
+	public final function resolve(string $id, array $parameters) : IAction
 	{
 		$method;
 
@@ -323,10 +339,10 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Can not resolve to action, method is undefined: "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, method is undefined: action %s, at controller %s, at context %s',
 					$id,
 					$this->id,
-					$this->context->getPrefix()
+					$this->context->getGlobalID()
 				)
 			);
 		}
@@ -339,10 +355,10 @@ abstract class Controller extends Element implements IController
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
-					'Can not resolve to action, method signature mismatch: action "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, method signature mismatch: action %s, at controller %s, at context %s',
 					$id,
 					$this->id,
-					$this->context->getPrefix()
+					$this->context->getGlobalID()
 				)
 			);
 		}
@@ -373,7 +389,7 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						sprintf
 						(
-							'Can not resolve to action, filter failure: "%s", at action, "%s", at controller "%s", at context "%s"',
+							'Can not resolve to action, filter failure: %s, at action, %s, at controller %s, at context %s',
 							$parameterName,
 							$id,
 							$this->id,
@@ -403,7 +419,7 @@ abstract class Controller extends Element implements IController
 				$parameterName,
 				sprintf
 				(
-					'Can not resolve to action, parameter missing: "%s", at action, "%s", at controller "%s", at context "%s"',
+					'Can not resolve to action, parameter missing: %s, at action, %s, at controller %s, at context %s',
 					$parameterName,
 					$id,
 					$this->id,
@@ -418,13 +434,13 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Runs an action.
 	 *
-	 * @param Action $action
+	 * @param IAction $action
 	 *	The action.
 	 *
 	 * @return mixed
 	 *	The result.
 	 */
-	public final function run(Action $action) // : mixed
+	public final function run(IAction $action) // : mixed
 	{
 		global $_LIGHTBIT_ACTION;
 		global $_LIGHTBIT_CONTEXT;

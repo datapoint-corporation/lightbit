@@ -72,7 +72,7 @@ function __string_transliterate(string $content) : string
 
 		if (!$transliterator)
 		{
-			__throw('String transliterator does not exist: transliterator "%s"', 'Any-Latin; Latin-ASCII');
+			__throw('String transliterator does not exist: transliterator %s', 'Any-Latin; Latin-ASCII');
 		}
 	}
 

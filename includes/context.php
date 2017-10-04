@@ -35,7 +35,7 @@ function __context() : Context
 
 	if (!isset($__LIGHTBIT_CONTEXT))
 	{
-		__throw_state('Context does not exist.');
+		__throw_illegal_state('Context does not exist.');
 	}
 
 	return $__LIGHTBIT_CONTEXT;

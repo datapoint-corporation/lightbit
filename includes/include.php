@@ -25,7 +25,115 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __include(string $__PATH__, array $__DATA__ = null) // : mixed
+function __include(string $library, string $extension = 'php') // : mixed
+{
+	$backtrace = debug_backtrace(0, 1)[0];
+	$context = dirname($backtrace['file']);
+	$file;
+
+	if (($i = strpos($library, './')) === 0)
+	{
+		$file = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]);
+
+		if ($extension)
+		{
+			$file .= '.' . $extension;
+		}
+	}
+	else
+	{
+		$file = __asset_path_resolve($context, $extension, $library);
+	}
+
+	if (!is_file($file))
+	{
+		__throw_file_not_found
+		(
+			$file,
+			sprintf
+			(
+				'Can not include library, file not found: file %s', 
+				$file
+			)
+		);
+	}
+
+	return __include_file_ex($file);
+}
+
+function __include_as($scope, string $library, string $extension = 'php') // : mixed
+{
+	$backtrace = debug_backtrace(0, 1)[0];
+	$context = dirname($backtrace['file']);
+	$file;
+
+	if (($i = strpos($library, './')) === 0)
+	{
+		$file = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]);
+
+		if ($extension)
+		{
+			$file .= '.' . $extension;
+		}
+	}
+	else
+	{
+		$file = __asset_path_resolve($context, $extension, $library);
+	}
+
+	if (!is_file($file))
+	{
+		__throw_file_not_found
+		(
+			$file,
+			sprintf
+			(
+				'Can not include library, file not found: file %s', 
+				$file
+			)
+		);
+	}
+
+	return __include_file_as_ex($scope, $file);
+}
+
+function __include_file(string $path, array $variables = null) // : mixed
+{
+	if (!is_file($path))
+	{
+		__throw_file_not_found
+		(
+			$path,
+			sprintf
+			(
+				'Can not include library, file not found: file %s', 
+				$path
+			)
+		);
+	}
+
+	return __include_file_ex($path, $variables);
+}
+
+function __include_file_as($object, string $path, array $variables = null) // : mixed
+{
+	if (!is_file($path))
+	{
+		__throw_file_not_found
+		(
+			$path,
+			sprintf
+			(
+				'Can not include library, file not found: file %s', 
+				$path
+			)
+		);
+	}
+
+	return __include_file_as_ex($object, $path, $variables);
+}
+
+function __include_file_ex(string $__PATH__, array $__DATA__ = null) // : mixed
 {
 	if (isset($__DATA__))
 	{
@@ -44,7 +152,7 @@ function __include(string $__PATH__, array $__DATA__ = null) // : mixed
 	return include($__PATH__);
 }
 
-function __include_as($__THIS__, string $__PATH__, array $__DATA__ = null) // : mixed
+function __include_file_as_ex($__THIS__, string $__PATH__, array $__DATA__ = null) // : mixed
 {
 	static $closure;
 

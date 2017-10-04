@@ -25,29 +25,85 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\UI;
+namespace Lightbit\Globalization;
 
-use \Lightbit\Html\IHtmlWidget;
+use \Lightbit\Base\Object;
+use \Lightbit\Exception;
 
 /**
- * IFormHtmlWidget.
+ * ILocale.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IFormHtmlWidget extends IHtmlWidget
+interface ILocale
 {
 	/**
-	 * Creates a text input.
+	 * Formats a number as currency.
 	 *
-	 * @param string $name
-	 *	The input name.
+	 * @param string $currency
+	 *	The currency to format as.
 	 *
-	 * @param array $attributes
-	 *	The input attributes.
+	 * @param string $number
+	 *	The number to format.
+	 *
+	 * @param int $precision
+	 *	The number precision.
 	 *
 	 * @return string
-	 *	The input markup.
+	 *	The result.
 	 */
-	public function text(string $name, array $attributes = null) : string
+	public function currency(string $currency, string $number, int $precision = null) : string;
+
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public function getID() : string;
+
+	/**
+	 * Gets the language code.
+	 *
+	 * @return string
+	 *	The language code.
+	 */
+	public function getLanguageCode() : string;
+
+	/**
+	 * Gets the region code.
+	 *
+	 * @return string
+	 *	The region code.
+	 */
+	public function getRegionCode() : string;
+
+	/**
+	 * Formats a message.
+	 *
+	 * @param string $message
+	 *	The message to format.
+	 *
+	 * @param array $arguments
+	 *	The message arguments.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public function message(string $message, array $arguments = null) : string;
+
+	/**
+	 * Formats a number.
+	 *
+	 * @param string $number
+	 *	The number to format.
+	 *
+	 * @param int $precision
+	 *	The number precision.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public function number(string $number, int $precision = null) : string;
 }

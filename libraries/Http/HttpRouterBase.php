@@ -27,9 +27,9 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\Action;
+use \Lightbit\Base\IAction;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\Object;
 use \Lightbit\Http\IHttpRouter;
 
@@ -44,10 +44,10 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 	/**
 	 * Resolves the current request to a controller action.
 	 *
-	 * @return Action
+	 * @return IAction
 	 *	The action.
 	 */
-	abstract public function resolve() : Action;
+	abstract public function resolve() : IAction;
 
 	/**
 	 * Creates an url.
@@ -74,7 +74,7 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -83,7 +83,7 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}
@@ -118,12 +118,12 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
         {
         	if (!isset($_SERVER['HTTP_HOST']))
         	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'HTTP_HOST'));
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'HTTP_HOST'));
         	}
 
         	if (!isset($_SERVER['SCRIPT_NAME']))
         	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'SCRIPT_NAME'));
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'SCRIPT_NAME'));
         	}
 
         	$this->baseUrl
@@ -150,7 +150,7 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 		{
 			if (!isset($_SERVER['HTTP_HOST']))
         	{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'HTTP_HOST'));
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'HTTP_HOST'));
         	}
 
         	$host = $_SERVER['HTTP_HOST'];
@@ -173,7 +173,7 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 		{
 			if (!isset($_SERVER['SERVER_PORT']))
 			{
-				throw new Exception(sprintf('Bad environment, missing variable: "%s"', 'SERVER_PORT'));
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'SERVER_PORT'));
 			}
 
 			$port = intval($_SERVER['SERVER_PORT']);

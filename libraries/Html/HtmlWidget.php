@@ -85,7 +85,7 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	{
 		if ($this->id)
 		{
-			throw new Exception(sprintf('Widget identifier is already set: current "%s", next "%s", class "%s"', $this->id, $id, static::class));
+			throw new Exception(sprintf('Widget identifier is already set: current %s, next %s, class %s', $this->id, $id, static::class));
 		}
 
 		$this->id = $id;

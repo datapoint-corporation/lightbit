@@ -63,17 +63,20 @@ const LIGHTBIT_VERSION_BUILD = 201709240118;
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
 require __DIR__ . '/includes/lightbit.php';
+
 require __DIR__ . '/includes/action.php';
 require __DIR__ . '/includes/application.php';
 require __DIR__ . '/includes/asset.php';
 require __DIR__ . '/includes/class.php';
 require __DIR__ . '/includes/context.php';
 require __DIR__ . '/includes/data.php';
+require __DIR__ . '/includes/debug.php';
 require __DIR__ . '/includes/environment.php';
 require __DIR__ . '/includes/event.php';
 require __DIR__ . '/includes/globalization.php';
 require __DIR__ . '/includes/html.php';
 require __DIR__ . '/includes/http.php';
+require __DIR__ . '/includes/import.php';
 require __DIR__ . '/includes/include.php';
 require __DIR__ . '/includes/map.php';
 require __DIR__ . '/includes/math.php';

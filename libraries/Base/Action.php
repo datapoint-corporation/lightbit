@@ -27,8 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IController;
-use \Lightbit\Base\Object;
 use \Lightbit\IllegalStateException;
 
 /**
@@ -37,7 +35,7 @@ use \Lightbit\IllegalStateException;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class Action extends Object
+final class Action extends Object implements IAction
 {
 	/**
 	 * The arguments.
@@ -191,7 +189,7 @@ final class Action extends Object
 	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : Context
+	public function getContext() : IContext
 	{
 		return $this->controller->getContext();
 	}

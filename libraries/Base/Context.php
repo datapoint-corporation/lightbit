@@ -41,8 +41,9 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
-use \Lightbit\Globalization\Locale;
+use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
+use \Lightbit\Globalization\Locale;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpAssetManager;
@@ -60,7 +61,7 @@ use \Lightbit\Security\Cryptography\IPasswordDigest;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Context extends Object
+abstract class Context extends Object implements IContext
 {
 	/**
 	 * The components.
@@ -79,7 +80,7 @@ abstract class Context extends Object
 	/**
 	 * The context.
 	 *
-	 * @type Context
+	 * @type IContext
 	 */
 	private $context;
 
@@ -169,7 +170,7 @@ abstract class Context extends Object
 	 * @param array $configuration
 	 *	The application configuration.
 	 */
-	protected function __construct(?Context $context, string $id, string $path, array $configuration = null)
+	protected function __construct(?IContext $context, string $id, string $path, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
@@ -196,6 +197,11 @@ abstract class Context extends Object
 
 				$this->getModule($id);
 			}
+		}
+
+		if ($configuration)
+		{
+			__object_apply($this, $configuration);
 		}
 	}
 
@@ -280,12 +286,12 @@ abstract class Context extends Object
 					return $this->context->getComponent($id);
 				}
 
-				throw new ComponentNotFoundException($this, $id, sprintf('Component configuration not found: "%s"', $id));
+				throw new ComponentNotFoundException($this, $id, sprintf('Component configuration not found: %s', $id));
 			}
 
 			if (!isset($this->componentsConfiguration[$id]['@class']))
 			{
-				throw new ComponentConfigurationException($this, $id, sprintf('Component class name is undefined: "%s"', $id));
+				throw new ComponentConfigurationException($this, $id, sprintf('Component class name is undefined: %s', $id));
 			}
 
 			$className = $this->componentsConfiguration[$id]['@class'];
@@ -306,10 +312,10 @@ abstract class Context extends Object
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
-	public final function getContext() : ?Context
+	public final function getContext() : ?IContext
 	{
 		return $this->context;
 	}
@@ -329,7 +335,7 @@ abstract class Context extends Object
 		{
 			if (!$this->hasController($id))
 			{
-				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: "%s", at context "%s"', $id, $this->getPrefix()));
+				throw new ControllerNotFoundException($this, $id, sprintf('Controller not found: %s, at context %s', $id, $this->getPrefix()));
 			}
 
 			$className = $this->getControllerClassName($id);
@@ -549,10 +555,10 @@ abstract class Context extends Object
 	/**
 	 * Gets the locale.
 	 *
-	 * @return Locale
+	 * @return ILocale
 	 *	The locale.
 	 */
-	public final function getLocale() : Locale
+	public final function getLocale() : ILocale
 	{
 		if ($this->locale)
 		{
@@ -564,7 +570,7 @@ abstract class Context extends Object
 			return $this->context->getLocale();
 		}
 
-		throw new Exception(sprintf('Can not get locale, not set: at context "%s"', $this->getPrefix()));
+		throw new Exception(sprintf('Can not get locale, not set: at context %s', $this->getPrefix()));
 	}
 
 	/**
@@ -624,10 +630,10 @@ abstract class Context extends Object
 	 * @param string $id
 	 *	The module identifier.
 	 *
-	 * @return Module
+	 * @return IModule
 	 *	The module.
 	 */
-	public final function getModule(string $id) : Module
+	public final function getModule(string $id) : IModule
 	{
 		if (!isset($this->modules[$id]))
 		{
@@ -643,7 +649,7 @@ abstract class Context extends Object
 					$id,
 					sprintf
 					(
-						'Context module not found, not available: module "%s", at context "%s"',
+						'Context module not found, not available: module %s, at context %s',
 						$id,
 						$this->getGlobalID()
 					)
@@ -662,7 +668,7 @@ abstract class Context extends Object
 					$id,
 					sprintf
 					(
-						'Context module not found, missing configuration: module "%s", at context "%s"',
+						'Context module not found, missing configuration: module %s, at context %s',
 						$id,
 						$this->getGlobalID()
 					)
@@ -671,7 +677,7 @@ abstract class Context extends Object
 
 			try
 			{
-				$configuration = __include($configurationPath);
+				$configuration = __include_file($configurationPath);
 
 				if ($require = __map_get($configuration, '?array', '@require'))
 				{
@@ -696,7 +702,7 @@ abstract class Context extends Object
 					$id,
 					sprintf
 					(
-						'Can not get module, unexpected error: module "%s", at context "%s"',
+						'Can not get module, unexpected error: module %s, at context %s',
 						$id,
 						$this->getGlobalID()
 					),
@@ -864,10 +870,10 @@ abstract class Context extends Object
 	 * @param array $route
 	 *	The route.
 	 *
-	 * @return Action
+	 * @return IAction
 	 *	The action.
 	 */
-	public final function resolve(?array $route) : Action
+	public final function resolve(?array $route) : IAction
 	{
 		$context = $this;
 
@@ -956,7 +962,7 @@ abstract class Context extends Object
 					$controllerID,
 					sprintf
 					(
-						'Context controller not found: controller "%s", at context "%s"',
+						'Context controller not found: controller %s, at context %s',
 						$controllerID,
 						$context->getGlobalID()
 					)

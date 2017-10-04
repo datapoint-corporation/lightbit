@@ -26,6 +26,7 @@
 // -----------------------------------------------------------------------------
 
 use \Lightbit\Base\Action;
+use \Lightbit\Base\Context;
 
 $__LIGHTBIT_ACTION = null;
 
@@ -35,7 +36,7 @@ function __action() : Action
 
 	if (!isset($__LIGHTBIT_ACTION))
 	{
-		__throw_state('Can not get current action, not set.');
+		__throw_illegal_state('Can not get current action, it is not set.');
 	}
 
 	return $__LIGHTBIT_ACTION;
@@ -47,7 +48,7 @@ function __action_context() : Context
 
 	if (!isset($__LIGHTBIT_ACTION))
 	{
-		__throw_state('Can not get current action, not set.');
+		__throw_illegal_state('Can not get current action, it is not set.');
 	}
 
 	return $__LIGHTBIT_ACTION->getContext();

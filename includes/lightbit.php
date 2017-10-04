@@ -37,7 +37,14 @@ function __exit(int $code) : void
 
 function __lightbit_autoload(string $class) : void
 {
-	__class_load($class);
+	try
+	{
+		__include_file(__class_path_resolve($class));
+	}
+	catch (Throwable $e)
+	{
+		__throw_class_not_found($class, sprintf('Can not load class: class %s', $class), $e);
+	}
 }
 
 function __lightbit_error_handler(int $code, string $message, string $file, int $line) : bool

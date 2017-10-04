@@ -107,7 +107,7 @@ abstract class Object
 	 */
 	public function __call(string $method, array $arguments) // : mixed
 	{
-		throw new Exception(sprintf('Method does not exist: "%s", class "%s"', $method, static::class));
+		throw new Exception(sprintf('Method does not exist: %s, class %s', $method, static::class));
 	}
 
 	/**
@@ -121,7 +121,7 @@ abstract class Object
 	 */
 	public function __get(string $property) // : mixed
 	{
-		throw new Exception(sprintf('Property does not exist: "%s", class "%s"', $property, static::class));
+		throw new Exception(sprintf('Property does not exist: %s, class %s', $property, static::class));
 	}
 
 	/**
@@ -135,7 +135,7 @@ abstract class Object
 	 */
 	public function __isset(string $property) : bool
 	{
-		throw new Exception(sprintf('Property does not exist: "%s", class "%s"', $property, static::class));
+		throw new Exception(sprintf('Property does not exist: %s, class %s', $property, static::class));
 	}
 
 	/**
@@ -149,7 +149,7 @@ abstract class Object
 	 */
 	public function __set(string $property, $mixed) : void
 	{
-		throw new Exception(sprintf('Property does not exist: "%s", class "%s"', $property, static::class));
+		throw new Exception(sprintf('Property does not exist: %s, class %s', $property, static::class));
 	}
 
 	/**
@@ -160,7 +160,7 @@ abstract class Object
 	 */
 	public function __unset(string $property) : void
 	{
-		throw new Exception(sprintf('Property does not exist: "%s", class "%s"', $property, static::class));
+		throw new Exception(sprintf('Property does not exist: %s, class %s', $property, static::class));
 	}
 
 	/**

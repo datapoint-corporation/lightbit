@@ -140,7 +140,7 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 	{
 		if (!isset($this->tables[$table]))
 		{
-			throw new Exception(sprintf('Database table not found: database "%s", table "%s"', $this->name, $table));
+			throw new Exception(sprintf('Database table not found: database %s, table %s', $this->name, $table));
 		}
 
 		return $this->tables[$table];

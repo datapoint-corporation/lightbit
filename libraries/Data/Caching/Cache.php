@@ -107,7 +107,7 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 			throw new CacheException
 			(
 				$this,
-				sprintf('Can not get session attribute: property "%s"', $property),
+				sprintf('Can not get session attribute: property %s', $property),
 				$e
 			);
 		}

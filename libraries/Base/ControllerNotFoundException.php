@@ -49,7 +49,7 @@ class ControllerNotFoundException extends ContextException
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The context.
 	 *
 	 * @param string $controllerID
@@ -61,7 +61,7 @@ class ControllerNotFoundException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(Context $context, string $controllerID, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $controllerID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
 	}

@@ -75,7 +75,7 @@ abstract class Rule extends Element implements IRule
 
 		if (!isset($configuration['@class']))
 		{
-			throw new Exception(sprintf('Bad validation rule configuration, missing class name: "%s", at model "%s"', $id, get_class($model)));
+			throw new Exception(sprintf('Bad validation rule configuration, missing class name: %s, at model %s', $id, get_class($model)));
 		}
 
 		$ruleClassName = isset($rulesClassName[$configuration['@class']])

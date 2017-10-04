@@ -27,42 +27,59 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\IElement;
+use \Lightbit\Base\IController;
 
 /**
- * IController.
+ * IAction.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IController extends IElement
+interface IAction
 {
 	/**
-	 * Constructor.
+	 * Compares to a route.
 	 *
-	 * @param Context $context
-	 *	The controller context.
+	 * Comparison is based on the resolution of the given route through the
+	 * context this action is attached to.
 	 *
-	 * @param string $id
-	 *	The controller identifier.
+	 * The following list of integers can be returned:
 	 *
-	 * @param array $configuration
-	 *	The component configuration.
+	 *	0)	The route resolves to a different controller, either within the
+	 *		same context or at one of the parent modules.
+	 *
+	 *	1)	The route resolves to the same context and controller with a
+	 *		a matching action name - parameters may differ.
+	 *
+	 *	2)	The route resolves to an action within the same context and
+	 *		controller.
+	 *
+	 *	3)	The route resolves to an action in a different controller, that
+	 *		may be part of either the same context or a child of it.
+	 *
+	 * @param array $route
+	 *	The route to compare against.
+	 *
+	 * @return int
+	 *	The result.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null);
+	public function compare(array $route) : int;
 
 	/**
-	 * Gets an action method name.
+	 * Gets the arguments.
 	 *
-	 * @param string $action
-	 *	The action name.
-	 *
-	 * @return string
-	 *	The action method name.
+	 * @return array
+	 *	The arguments.
 	 */
-	public function getActionMethodName(string $action) : string;
+	public function getArguments() : array;
+
+	/**
+	 * Gets the parameters.
+	 *
+	 * @return array
+	 *	The parameters.
+	 */
+	public function getParameters() : array;
 
 	/**
 	 * Gets the context.
@@ -73,12 +90,12 @@ interface IController extends IElement
 	public function getContext() : IContext;
 
 	/**
-	 * Gets the global identifier.
+	 * Gets the controller.
 	 *
-	 * @return string
-	 *	The global identifier.
+	 * @return IController
+	 *	The controller.
 	 */
-	public function getGlobalID() : string;
+	public function getController() : IController;
 
 	/**
 	 * Gets the identifier.
@@ -89,27 +106,26 @@ interface IController extends IElement
 	public function getID() : string;
 
 	/**
-	 * Resolves to an action.
+	 * Gets the global identifier.
 	 *
-	 * @param string $id
-	 *	The action identifier.
-	 *
-	 * @param array $parameters
-	 *	The action parameters.
-	 *
-	 * @return Action
-	 *	The action.
+	 * @return string
+	 *	The global identifier.
 	 */
-	public function resolve(string $id, array $parameters) : IAction;
+	public function getGlobalID() : string;
 
 	/**
-	 * Runs an action.
+	 * Gets the name.
 	 *
-	 * @param IAction $action
-	 *	The action.
+	 * @return string
+	 *	The name.
+	 */
+	public function getName() : string;
+
+	/**
+	 * Runs the action.
 	 *
 	 * @return mixed
 	 *	The result.
 	 */
-	public function run(IAction $action); // : mixed
+	public function run();
 }

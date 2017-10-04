@@ -57,7 +57,7 @@ class ContextException extends Exception
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(Context $context, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 
@@ -67,10 +67,10 @@ class ContextException extends Exception
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
-	public final function getContext() : Context
+	public final function getContext() : IContext
 	{
 		return $this->context;
 	}

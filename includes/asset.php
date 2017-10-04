@@ -39,7 +39,7 @@ function __asset_prefix_get_path(string $id) : string
 
 	if (!isset($__LIGHTBIT_ASSET_PREFIX[$id]))
 	{
-		__throw('Can not get asset prefix path, not set: prefix "%s"', $id);
+		__throw(sprintf('Can not get asset prefix path, it is not set: prefix %s', $id));
 	}
 
 	return $__LIGHTBIT_ASSET_PREFIX[$id];
@@ -53,9 +53,12 @@ function __asset_prefix_register(string $id, string $path) : void
 	{
 		__throw
 		(
-			'Can not register asset prefix, already set: prefix "%s", to path "%s"',
-			$id,
-			$__LIGHTBIT_ASSET_PREFIX[$id]
+			sprintf
+			(
+				'Can not set asset prefix path, it is already set: prefix %s, to path %s',
+				$id,
+				$__LIGHTBIT_ASSET_PREFIX[$id]
+			)
 		);
 	}
 
@@ -77,7 +80,17 @@ function __asset_path_resolve(?string $context, ?string $extension, string $refe
 	}
 	else
 	{
-		__throw('Can not resolve asset from static context: asset "%s"', $reference);
+		$backtrace = debug_backtrace(0, 1)[0];
+
+		__throw
+		(
+			sprintf
+			(
+				'Can not get asset path from static context, please use a prefix: asset %s, from %s (:%d)',
+				$backtrace['file'],
+				$backtrace['line']
+			)
+		);
 	}
 
 	if ($extension)
@@ -85,7 +98,7 @@ function __asset_path_resolve(?string $context, ?string $extension, string $refe
 		$path .= '.' . $extension;
 	}
 
-	return $path;
+	return strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 }
 
 function __asset_path_resolve_array(array $context, ?string $extension, string $reference) : string
@@ -105,7 +118,7 @@ function __asset_path_resolve_array(array $context, ?string $extension, string $
 
 	if (!$context)
 	{
-		__throw('Can not resolve asset from static context: asset "%s"', $reference);
+		__throw('Can not resolve asset from static context: asset %s', $reference);
 	}
 
 	$path;

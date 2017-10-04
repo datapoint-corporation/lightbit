@@ -52,7 +52,7 @@ function __namespace_path_resolve(string $namespace) : string
 			}
 		}
 
-		throw new NamespacePathResolutionException($namespace, sprintf('Can not resolve namespace path: namespace "%s"', $namespace));
+		throw new NamespacePathResolutionException($namespace, sprintf('Can not resolve namespace path: namespace %s', $namespace));
 	}
 
 	return $__LIGHTBIT_NAMESPACE[$namespace];
@@ -64,7 +64,7 @@ function __namespace_register(string $namespace, string $path) : void
 
 	if (isset($__LIGHTBIT_NAMESPACE[$namespace]))
 	{
-		throw new IllegalStateException(sprintf('Can not set namespace path, already set: namespace "%s", to path "%s"', $namespace, $path));
+		throw new IllegalStateException(sprintf('Can not set namespace path, already set: namespace %s, to path %s', $namespace, $path));
 	}
 
 	$__LIGHTBIT_NAMESPACE[$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);

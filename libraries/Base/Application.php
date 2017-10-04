@@ -27,26 +27,22 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
 use \Lightbit\Base\Context;
-use \Lightbit\Base\ControllerNotFoundRouteException;
-use \Lightbit\Base\Application;
-use \Lightbit\Base\ModuleNotFoundException;
-use \Lightbit\Base\ModuleNotFoundRouteException;
+use \Lightbit\Base\IApplication;
 use \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\SqlConnection;
-use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Exception;
+use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
 use \Lightbit\Http\HttpAssetManager;
-use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\HttpQueryString;
 use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpRouter;
 use \Lightbit\Http\HttpSession;
+use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Security\Cryptography\PasswordDigest;
 
 /**
@@ -55,7 +51,7 @@ use \Lightbit\Security\Cryptography\PasswordDigest;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Application extends Context
+class Application extends Context implements IApplication
 {
 	/**
 	 * The HTTP error documents.
@@ -152,7 +148,7 @@ class Application extends Context
 	 */
 	public final function isDebug() : bool
 	{
-		return __environment_debug_get();
+		return __debug();
 	}
 
 	/**
@@ -194,7 +190,7 @@ class Application extends Context
 	 */
 	public final function setDebug(bool $debug) : void
 	{
-		__environment_debug_set($debug);
+		__debug_set($debug);
 	}
 
 	/**

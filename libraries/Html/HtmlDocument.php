@@ -28,7 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Navigation\HtmlBreadcrumb;
 use \Lightbit\Html\Navigation\IHtmlBreadcrumb;
@@ -100,7 +100,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -109,7 +109,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, null);
 
@@ -340,54 +340,54 @@ class HtmlDocument extends Component implements IHtmlDocument
 
 		if ($position === 'head')
 		{
-			$result .= $html->element('base', [ 'href' => $this->getHttpRouter()->getBaseUrl() ]);
+			$result .= __html_element('base', [ 'href' => $this->getHttpRouter()->getBaseUrl() ]) . PHP_EOL;
 
 			foreach ($this->tags as $i => $tag)
 			{
-				$result .= $html->element($tag['tag'], $tag['attributes']) . PHP_EOL;
+				$result .= __html_element($tag['tag'], $tag['attributes']) . PHP_EOL;
 			}
 
 			foreach ($this->metaAttributes as $i => $attributes)
 			{
-				$result .= $html->element('meta', $attributes) . PHP_EOL;
+				$result .= __html_element('meta', $attributes) . PHP_EOL;
 			}
 
 			if ($this->title)
 			{
-				$result .= $html->element('title', null, $this->title) . PHP_EOL;
+				$result .= __html_element('title', null, $this->title) . PHP_EOL;
 			}
 
 			foreach ($this->styles as $i => $style)
 			{
 				$result .=
 
-					$html->element
+				__html_element
+				(
+					'link',
+					__html_attribute_array_merge
 					(
-						'link',
-						$html->merge
-						(
-							[ 'rel' => 'stylesheet', 'type' => 'text/css' ],
-							$style['attributes'],
-							[ 'href' => $style['location'] ]
-						)
+						[ 'rel' => 'stylesheet', 'type' => 'text/css' ],
+						$style['attributes'],
+						[ 'href' => $style['location'] ]
 					)
+				)
 
-					. PHP_EOL;
+				. PHP_EOL;
 			}
 
 			foreach ($this->inlineStyles as $i => $style)
 			{
 				$result .=
 
-					$html->element
-					(
-						'style',
-						$html->merge([ 'type' => 'text/css' ], $style['attributes']),
-						(new View($this->getContext(), (__asset_path_resolve(null, 'php', $style['style']))))->run(null, true),
-						false
-					)
+				__html_element
+				(
+					'style',
+					__html_attribute_array_merge([ 'type' => 'text/css' ], $style['attributes']),
+					(new View($this->getContext(), (__asset_path_resolve(null, 'php', $style['style']))))->run(null, true),
+					false
+				)
 
-					. PHP_EOL;
+				. PHP_EOL;
 			}
 		}
 
@@ -397,23 +397,23 @@ class HtmlDocument extends Component implements IHtmlDocument
 			{
 				$result .=
 
-					$html->element
+				__html_element
+				(
+					'script',
+					__html_attribute_array_merge
 					(
-						'script',
-						$html->merge
-						(
-							[
-								'language' => 'javascript',
-								'type' => 'text/javascript'
-							],
-							$script['attributes'],
-							[
-								'src' => $script['location']
-							]
-						)
+						[
+							'language' => 'javascript',
+							'type' => 'text/javascript'
+						],
+						$script['attributes'],
+						[
+							'src' => $script['location']
+						]
 					)
+				)
 
-					. PHP_EOL;
+				. PHP_EOL;
 			}
 		}
 
@@ -423,15 +423,15 @@ class HtmlDocument extends Component implements IHtmlDocument
 			{
 				$result .=
 
-					$html->element
-					(
-						'script',
-						$html->merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']),
-						(new View($this->getContext(), (__asset_path_resolve(null, 'php', $script['script']))))->run(null, true),
-						false
-					)
+				__html_element
+				(
+					'script',
+					__html_attribute_array_merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']),
+					(new View($this->getContext(), (__asset_path_resolve(null, 'php', $script['script']))))->run(null, true),
+					false
+				)
 
-					. PHP_EOL;
+				. PHP_EOL;
 			}
 		}
 

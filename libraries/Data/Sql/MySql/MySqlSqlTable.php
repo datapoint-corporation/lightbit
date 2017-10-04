@@ -136,7 +136,7 @@ class MySqlSqlTable extends Object implements ISqlTable
 	{
 		if (!isset($this->columns[$column]))
 		{
-			throw new Exception(sprintf('Column is not defined: table "%s", column "%s"', $this->name, $column));
+			throw new Exception(sprintf('Column is not defined: table %s, column %s', $this->name, $column));
 		}
 
 		return $this->columns[$column];

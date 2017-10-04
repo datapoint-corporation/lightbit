@@ -87,7 +87,7 @@ class SqlStatement extends Object implements ISqlStatement
 			throw new SqlStatementException
 			(
 				$this,
-				sprintf('Can not prepare statement for execution: statement "%s"', $statement),
+				sprintf('Can not prepare statement for execution: statement %s', $statement),
 				$e
 			);
 		}
@@ -233,7 +233,7 @@ class SqlStatement extends Object implements ISqlStatement
 			throw new SqlStatementException
 			(
 				$this,
-				sprintf('Statement argument can not be set: parameter "%s", because %s', $parameter, lcfirst($e->getMessage())),
+				sprintf('Statement argument can not be set: parameter %s, because %s', $parameter, lcfirst($e->getMessage())),
 				$e
 			);
 		}

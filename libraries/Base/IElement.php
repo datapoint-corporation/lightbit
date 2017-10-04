@@ -46,7 +46,7 @@ interface IElement extends IBase
 	 * @return Action
 	 *	The action.
 	 */
-	public function getAction() : Action;
+	public function getAction() : IAction;
 
 	/**
 	 * Gets the application.
@@ -54,7 +54,7 @@ interface IElement extends IBase
 	 * @return Application
 	 *	The application.
 	 */
-	public function getApplication() : Application;
+	public function getApplication() : IApplication;
 
 	/**
 	 * Gets the context.
@@ -62,5 +62,5 @@ interface IElement extends IBase
 	 * @return Context
 	 *	The context.
 	 */
-	public function getContext() : Context;
+	public function getContext() : IContext;
 }

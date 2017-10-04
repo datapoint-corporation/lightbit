@@ -28,7 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\ContextException;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 
 /**
  * ComponentNotFoundException.
@@ -60,7 +60,7 @@ class ComponentNotFoundException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(Context $context, string $componentID, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $componentID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
 	}

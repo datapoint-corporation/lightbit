@@ -25,36 +25,48 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __environment_is_windows() : bool
+namespace Lightbit\Base;
+
+use \Lightbit\Base\Action;
+use \Lightbit\Base\Context;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\Module;
+use \Lightbit\Data\SlugManager;
+use \Lightbit\Globalization\Locale;
+use \Lightbit\Globalization\MessageSource;
+use \Lightbit\Security\Cryptography\PasswordDigest;
+use \Lightbit\Exception;
+
+/**
+ * IModule.
+ *
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @since 1.0.0
+ */
+interface IModule extends IContext
 {
-	static $windows;
+	/**
+	 * Constructor.
+	 *
+	 * @param Context $context
+	 *	The module context.
+	 *
+	 * @param string $id
+	 *	The module identifier.
+	 *
+	 * @param string $path
+	 *	The module path.
+	 *
+	 * @param array $configuration
+	 *	The module configuration.
+	 */
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
 
-	if (!isset($windows))
-	{
-		$windows = (strpos(strtoupper(PHP_OS), 'WIN') === 0);
-	}
-
-	return $windows;
-}
-
-function __environment_is_cli() : bool
-{
-	static $cli;
-
-	if (!isset($cli))
-	{
-		$cli = (strpos('cli', php_sapi_name()) !== false);
-	}
-
-	return $cli;
-}
-
-function __environment_is_linux() : bool
-{
-	static $linux;
-
-	if (!isset($linux))
-	{
-		$linux = (strtoupper(PHP_OS) === 'linux');
-	}
+	/**
+	 * Gets the application.
+	 *
+	 * @return IApplication
+	 *	The application.
+	 */
+	public function getApplication() : IApplication;
 }

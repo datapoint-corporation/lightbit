@@ -25,66 +25,43 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\UI;
+$_LIGHTBIT_IMPORT = [];
 
-use \Lightbit\Base\Context;
-use \Lightbit\Html\HtmlWidget;
-use \Lightbit\Html\IHtmlAdapter;
-
-/**
- * IFormHtmlWidget.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-class FormHtmlWidget extends HtmlWidget
+function __import(string $library) // : mixed
 {
-	/**
-	 * The html adapter.
-	 *
-	 * @type IHtmlAdapter
-	 */
-	private $html;
+	global $_LIGHTBIT_IMPORT;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The html widget context.
-	 *
-	 * @param array $configuration
-	 *	The html widget configuration.
-	 */
-	public function __construct(Context $context, array $configuration = null)
+	$context = dirname(debug_backtrace(0, 1)[0]['file']);
+	$path;
+
+	if (($i = strpos($library, './')) === 0)
 	{
-		parent::__construct($context, $configuration);
-
-		$this->html = $this->getHtmlAdapter();
+		$path = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]) . '.php';
+	}
+	else
+	{
+		$path = __asset_path_resolve($context, 'php', $library);
 	}
 
-	/**
-	 * Creates a text input.
-	 *
-	 * @param string $name
-	 *	The input name.
-	 *
-	 * @param array $attributes
-	 *	The input attributes.
-	 *
-	 * @return string
-	 *	The input markup.
-	 */
-	public function text(string $name, array $attributes = null) : string
+	if (!isset($_LIGHTBIT_IMPORT[$library]) && !array_key_exists($path, $_LIGHTBIT_IMPORT))
 	{
-		return $this->html->element
-		(
-			'input',
-			$this->html->merge
+		if (!is_file($path))
+		{
+			$breakpoint = __debug_trace_call(null, __FUNCTION__)[0];
+
+			__throw_file_not_found
 			(
-				[ 'type' => 'text' ],
-				$attributes,
-				[ 'name' => $name ]
-			)
-		);
+				$path,
+				sprintf
+				(
+					'Can not import library, file not found: file %s', 
+					$path
+				)
+			);
+		}
+
+		$_LIGHTBIT_IMPORT[$library] = __include_file_ex($path);
 	}
+
+	return $_LIGHTBIT_IMPORT[$library];
 }

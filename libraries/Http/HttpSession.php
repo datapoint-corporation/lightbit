@@ -60,7 +60,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}
@@ -107,7 +107,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 			throw new HttpSessionException
 			(
 				$this,
-				sprintf('Can not get session attribute: property "%s"', $property),
+				sprintf('Can not get session attribute: property %s', $property),
 				$e
 			);
 		}

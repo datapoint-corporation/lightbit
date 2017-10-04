@@ -50,7 +50,7 @@ interface IComponent extends IElement
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null);
+	public function __construct(IContext $context, string $id, array $configuration = null);
 
 	/**
 	 * Gets the identifier.

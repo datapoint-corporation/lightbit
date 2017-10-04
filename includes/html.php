@@ -72,7 +72,7 @@ function __html_attribute_array(?array $attributes) : string
 	return $result;
 }
 
-function __html_attribute_array_ex(?array ...$attributes) : string
+function __html_attribute_array_merge(?array ...$attributes) : array
 {
 	$result = [];
 	$class = [];
@@ -95,7 +95,7 @@ function __html_attribute_array_ex(?array ...$attributes) : string
 		$result['class'] = implode(' ', array_unique($class));
 	}
 
-	return __html_attribute_array($result);
+	return $result;
 }
 
 function __html_begin(string $tag, array $attributes = null) : string

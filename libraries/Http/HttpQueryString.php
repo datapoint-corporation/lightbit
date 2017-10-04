@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Base\Action;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\IHttpQueryString;
 
@@ -44,7 +44,7 @@ final class HttpQueryString extends Component implements IHttpQueryString
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -53,7 +53,7 @@ final class HttpQueryString extends Component implements IHttpQueryString
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}
@@ -95,7 +95,7 @@ final class HttpQueryString extends Component implements IHttpQueryString
 			throw new HttpStatusException
 			(
 				400,
-				sprintf('Can not get query string attribute: property "%s"', $property),
+				sprintf('Can not get query string attribute: property %s', $property),
 				$e
 			);
 		}

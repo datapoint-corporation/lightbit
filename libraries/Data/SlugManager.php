@@ -53,7 +53,7 @@ final class SlugManager extends Component implements ISlugManager
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

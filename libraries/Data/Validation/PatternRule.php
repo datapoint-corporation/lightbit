@@ -111,7 +111,7 @@ class PatternRule extends Rule
 
 		if ($result === false)
 		{
-			throw new Exception(sprintf('Can not match against attribute, invalid pattern: "%s"', $this->pattern));
+			throw new Exception(sprintf('Can not match against attribute, invalid pattern: %s', $this->pattern));
 		}
 
 		if ($result === 0)

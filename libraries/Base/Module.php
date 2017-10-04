@@ -43,7 +43,7 @@ use \Lightbit\Exception;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Module extends Context
+abstract class Module extends Context implements IModule
 {
 	/**
 	 * Constructor.
@@ -60,7 +60,7 @@ abstract class Module extends Context
 	 * @param array $configuration
 	 *	The module configuration.
 	 */
-	public function __construct(Context $context, string $id, string $path, array $configuration = null)
+	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
 	{
 		parent::__construct($context, $id, $path);
 
@@ -85,7 +85,7 @@ abstract class Module extends Context
 	 * @return Application
 	 *	The application.
 	 */
-	public final function getApplication() : Application
+	public final function getApplication() : IApplication
 	{
 		return __application();
 	}

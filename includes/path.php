@@ -44,7 +44,7 @@ function __path_resolve(string $path) : string
 
 	if ($result === false)
 	{
-		__throw('Can not resolve path: path "%s"', $path);
+		__throw('Can not resolve path: path %s', $path);
 	}
 
 	return $result;

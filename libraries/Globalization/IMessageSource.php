@@ -41,7 +41,7 @@ interface IMessageSource extends IComponent
 	/**
 	 * Reads a message.
 	 *
-	 * @param Locale $locale
+	 * @param ILocale $locale
 	 *	The message locale.
 	 *
 	 * @param string $category
@@ -53,5 +53,5 @@ interface IMessageSource extends IComponent
 	 * @return string
 	 *	The message.
 	 */
-	public function read(?Locale $locale, string $category, string $message) : string;
+	public function read(?ILocale $locale, string $category, string $message) : string;
 }

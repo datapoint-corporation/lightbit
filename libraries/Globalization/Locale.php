@@ -37,7 +37,7 @@ use \Lightbit\Globalization\Locale;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class Locale extends Object
+final class Locale extends Object implements ILocale
 {
 	/**
 	 * Gets a locale.
@@ -184,7 +184,7 @@ final class Locale extends Object
 
 			if ($result === false)
 			{
-				throw new Exception(sprintf('Can not format message: locale "%s", message "%s"', $this->id, $message));
+				throw new Exception(sprintf('Can not format message: locale %s, message %s', $this->id, $message));
 			}
 
 			return $result;

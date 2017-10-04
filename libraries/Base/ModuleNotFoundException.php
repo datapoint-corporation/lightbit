@@ -52,9 +52,6 @@ class ModuleNotFoundException extends ContextException
 	 * @param Context $context
 	 *	The context.
 	 *
-	 * @param Context $context
-	 *	The context.
-	 *
 	 * @param string $moduleID
 	 *	The module identifier.
 	 *
@@ -64,7 +61,7 @@ class ModuleNotFoundException extends ContextException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(Context $context, string $moduleID, string $message, \Throwable $previous = null)
+	public function __construct(IContext $context, string $moduleID, string $message, \Throwable $previous = null)
 	{
 		parent::__construct($context, $message, $previous);
 

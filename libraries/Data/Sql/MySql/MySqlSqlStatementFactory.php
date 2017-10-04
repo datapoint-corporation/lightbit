@@ -172,7 +172,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 
 			else if ($criteria->hasJoin())
 			{
-				throw new Exception(sprintf('Can not use join without table alias for delete statement: table "%s", join "%s"', $table, $criteria->getJoin()));
+				throw new Exception(sprintf('Can not use join without table alias for delete statement: table %s, join %s', $table, $criteria->getJoin()));
 			}
 
 			else
@@ -373,7 +373,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 
 			else if ($criteria->hasJoin())
 			{
-				throw new Exception(sprintf('Can not use join without table alias for delete statement: table "%s", join "%s"', $table, $criteria->getJoin()));
+				throw new Exception(sprintf('Can not use join without table alias for delete statement: table %s, join %s', $table, $criteria->getJoin()));
 			}
 
 			else

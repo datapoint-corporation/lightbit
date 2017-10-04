@@ -289,7 +289,7 @@ class Model extends Element implements IModel
 
 		if (!isset($rules[$id]))
 		{
-			throw new Exception('Can not get model rule, not defined: "%s"', $id);
+			throw new Exception('Can not get model rule, not defined: %s', $id);
 		}
 
 		return $rules[$id];

@@ -67,7 +67,7 @@ if ($throwable instanceof Lightbit\Http\HttpStatusException)
 				line-height: 1.5em;
 			}
 
-			<?php if (__environment_debug_get()) : ?>
+			<?php if (__debug()) : ?>
 			h1, h2{
 				margin: 2em 0 1em 0;
 			}
@@ -101,7 +101,7 @@ if ($throwable instanceof Lightbit\Http\HttpStatusException)
 	</head>
 	<body>
 		<h1><?= htmlspecialchars($title) ?></h1>
-		<?php if (__environment_debug_get()) : ?>
+		<?php if (__debug()) : ?>
 		<?php while ($throwable) : ++$counter; ?>
 		<div class="throwable">
 			<h2><?= htmlspecialchars($throwable->getMessage()) ?></h2>

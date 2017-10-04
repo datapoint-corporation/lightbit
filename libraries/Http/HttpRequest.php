@@ -43,7 +43,7 @@ class HttpRequest extends Component implements IHttpRequest
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -52,7 +52,7 @@ class HttpRequest extends Component implements IHttpRequest
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, $configuration);
 	}

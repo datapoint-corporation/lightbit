@@ -38,7 +38,7 @@ use \Lightbit\Data\Caching\INetworkCache;
 use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Exception;
-use \Lightbit\Globalization\Locale;
+use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 use \Lightbit\Html\IHtmlAdapter;
 use \Lightbit\Html\IHtmlDocument;
@@ -61,10 +61,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the action.
 	 *
-	 * @return Action
+	 * @return IAction
 	 *	The action.
 	 */
-	public final function getAction() : Action
+	public final function getAction() : IAction
 	{
 		return __action();
 	}
@@ -72,10 +72,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the application.
 	 *
-	 * @return Application
+	 * @return IApplication
 	 *	The application.
 	 */
-	public final function getApplication() : Application
+	public final function getApplication() : IApplication
 	{
 		return __application();
 	}
@@ -108,10 +108,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
-	public function getContext() : Context
+	public function getContext() : IContext
 	{
 		return __context();
 	}
@@ -229,10 +229,10 @@ abstract class Element extends Object implements IElement
 	/**
 	 * Gets the locale.
 	 *
-	 * @return Locale
+	 * @return ILocale
 	 *	The locale.
 	 */
-	public function getLocale() : Locale
+	public function getLocale() : ILocale
 	{
 		return $this->getContext()->getLocale();
 	}

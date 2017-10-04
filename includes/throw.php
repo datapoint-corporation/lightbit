@@ -25,31 +25,43 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-/**
- * Throws an exception.
- *
- * @param string $message
- *	The exception message.
- *
- * @param array $arguments
- *	The exception message arguments.
- */
-function __throw(string $message, ...$arguments) : void
+function __throw(string $message, Throwable $previous = null) : void
 {
 	if (class_exists(Lightbit\Exception::class))
 	{
-		throw new \Lightbit\Exception(sprintf($message, ...$arguments));
+		throw new Lightbit\Exception($message, $previous);
 	}
 
-	throw new Exception(sprintf($message, ...$arguments));
+	throw new Exception($message, 0, $previous);
 }
 
-function __throw_state(string $message, ...$arguments) : void
+function __throw_class_not_found(string $class, string $message, Throwable $previous = null) : void
+{
+	if (class_exists(Lightbit\ClassNotFoundException::class))
+	{
+		throw new Lightbit\ClassNotFoundException($class, $message, $previous);
+	}
+
+	throw new Exception($message, 0, $previous);
+}
+
+
+function __throw_file_not_found(string $path, string $message, Throwable $previous = null) : void
+{
+	if (class_exists(Lightbit\IO\FileSystem\FileNotFoundException::class))
+	{
+		throw new Lightbit\IO\FileSystem\FileNotFoundException($path, $message, $previous);
+	}
+
+	throw new Exception($message, 0, $previous);
+}
+
+function __throw_illegal_state(string $message, Throwable $previous = null) : void
 {
 	if (class_exists(Lightbit\IllegalStateException::class))
 	{
-		throw new \Lightbit\IllegalStateException(sprintf($message, ...$arguments));
+		throw new Lightbit\IllegalStateException($message, $previous);
 	}
 
-	throw new IllegalStateException(sprintf($message, ...$arguments));
+	throw new Exception($message, 0, $previous);
 }

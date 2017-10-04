@@ -69,7 +69,7 @@ class MySqlSqlTransaction extends SqlTransaction
 	{
 		if ($this->closed)
 		{
-			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is closed, transaction "%s"', $this->getID()));
+			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is closed, transaction %s', $this->getID()));
 		}
 
 		$this->getConnection()->run('COMMIT');
@@ -97,7 +97,7 @@ class MySqlSqlTransaction extends SqlTransaction
 	{
 		if ($this->closed)
 		{
-			throw new SqlTransactionException($this, sprintf('Can not rollback transaction: transaction is closed, transaction "%s"', $this->getID()));
+			throw new SqlTransactionException($this, sprintf('Can not rollback transaction: transaction is closed, transaction %s', $this->getID()));
 		}
 
 		$this->getConnection()->run('ROLLBACK');
@@ -111,7 +111,7 @@ class MySqlSqlTransaction extends SqlTransaction
 	{
 		if (!$this->closed)
 		{
-			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is active, transaction "%s"', $this->getID()));
+			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is active, transaction %s', $this->getID()));
 		}
 
 		$this->getConnection()->run('START TRANSACTION');

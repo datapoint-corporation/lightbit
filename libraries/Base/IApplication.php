@@ -25,33 +25,60 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\UI;
+namespace Lightbit\Base;
 
-use \Lightbit\Data\IModel;
-use \Lightbit\Html\IHtmlWidget;
+use \Lightbit\Base\IContext;
 
 /**
- * IActiveFormHtmlWidget.
+ * IApplication.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IActiveFormHtmlWidget extends IHtmlWidget
+interface IApplication extends IContext
 {
 	/**
-	 * Creates a text input.
+	 * Constructor.
 	 *
-	 * @param IModel $model
-	 *	The input model.
+	 * @param string $path
+	 *	The application path.
 	 *
-	 * @param string $attribute
-	 *	The input attribute name.
-	 *
-	 * @param array $attributes
-	 *	The input attributes.
-	 *
-	 * @return string
-	 *	The input markup.
+	 * @param array $configuration
+	 *	The application configuration.
 	 */
-	public function text(IModel $model, string $attribute, array $attributes = null) : string;
+	public function __construct(string $path, array $configuration = null);
+
+	/**
+	 * Gets the default route.
+	 *
+	 * @return array
+	 *	The default route.
+	 */
+	public function getDefaultRoute() : array;
+
+	/**
+	 * Runs the application.
+	 *
+	 * @return int
+	 *	The exit status code.
+	 */
+	public function run() : int;
+
+	/**
+	 * Safely terminates the script execution after disposing of all
+	 * application elements.
+	 *
+	 * @param int $status
+	 *	The script exit status code.
+	 */
+	public function terminate(int $status = 0) : void;
+
+	/**
+	 * Safely terminates the script execution after disposing of all
+	 * application elements when an uncaught throwable object is found.
+	 *
+	 * @param Throwable $throwable
+	 *	The throwable object.
+	 */
+	public function throwable(\Throwable $throwable) : void;
 }

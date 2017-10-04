@@ -27,10 +27,6 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Component;
-use \Lightbit\Base\Element;
-use \Lightbit\Base\Context;
-
 /**
  * Component.
  *
@@ -42,7 +38,7 @@ abstract class Component extends Element implements IComponent
 	/**
 	 * The context.
 	 *
-	 * @type Context
+	 * @type IContext
 	 */
 	private $context;
 
@@ -56,7 +52,7 @@ abstract class Component extends Element implements IComponent
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -65,7 +61,7 @@ abstract class Component extends Element implements IComponent
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
@@ -79,10 +75,10 @@ abstract class Component extends Element implements IComponent
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
-	public final function getContext() : Context
+	public final function getContext() : IContext
 	{
 		return $this->context;
 	}

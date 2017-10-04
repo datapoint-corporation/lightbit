@@ -49,7 +49,7 @@ class PasswordDigest extends Component implements IPasswordDigest
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -58,7 +58,7 @@ class PasswordDigest extends Component implements IPasswordDigest
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id);
 

@@ -36,3 +36,14 @@ function __array_case_insensitive_map(array $content) : array
 
 	return $result;
 }
+
+function __array_filter(?array &$content, string $type) : void
+{
+	if ($content)
+	{
+		foreach ($content as $i => $j)
+		{
+			$content[$i] = __type_filter($type, $j);
+		}
+	}
+}

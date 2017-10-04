@@ -74,7 +74,7 @@ class MessageSource extends Component implements IMessageSource
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, null);
 
@@ -130,7 +130,7 @@ class MessageSource extends Component implements IMessageSource
 	 *
 	 * @return string
 	 */
-	private function getMessageCollection(Locale $locale, string $category) : array
+	private function getMessageCollection(ILocale $locale, string $category) : array
 	{
 		$localeID = $locale->getID();
 
@@ -154,11 +154,11 @@ class MessageSource extends Component implements IMessageSource
 
 				if (file_exists($filePath))
 				{
-					$extension = __include($filePath, [ 'locale' => $locale ]);
+					$extension = __include_file($filePath, [ 'locale' => $locale ]);
 
 					if (!is_array($extension))
 					{
-						throw new Exception(sprintf('Locale message script must return an array: "%s", at "%s"', $locale->getID(), $filePath));
+						throw new Exception(sprintf('Locale message script must return an array: %s, at %s', $locale->getID(), $filePath));
 					}
 
 					$this->messageCollections[$localeID][$category] += $extension;
@@ -191,7 +191,7 @@ class MessageSource extends Component implements IMessageSource
 	 * @return string
 	 *	The message.
 	 */
-	public function read(?Locale $locale, string $category, string $message) : string
+	public function read(?ILocale $locale, string $category, string $message) : string
 	{
 		$locale = $locale ?? $this->getLocale();
 		$collection = $this->getMessageCollection($locale, $category);

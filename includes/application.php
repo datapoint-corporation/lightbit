@@ -27,36 +27,36 @@
 
 use \Lightbit\Base\Application;
 
-$__LIGHTBIT_APPLICATION = null;
+$__lightbit_application = null;
 
 function __application() : Application
 {
-	global $__LIGHTBIT_APPLICATION;
+	global $__lightbit_application;
 
-	if (!isset($__LIGHTBIT_APPLICATION))
+	if (!isset($__lightbit_application))
 	{
-		__throw_state('Can not get application, it does not exist.');
+		__throw_illegal_state('Can not get current application, it is not set.');
 	}
 
-	return $__LIGHTBIT_APPLICATION;
+	return $__lightbit_application;
 }
 
 function __application_get() : ?Application
 {
-	global $__LIGHTBIT_APPLICATION;
-	return $__LIGHTBIT_APPLICATION;
+	global $__lightbit_application;
+	return $__lightbit_application;
 }
 
 function __application_register(Application $application) : void
 {
-	global $__LIGHTBIT_APPLICATION;
+	global $__lightbit_application;
 
-	if (isset($__LIGHTBIT_APPLICATION))
+	if (isset($__lightbit_application))
 	{
-		__throw('Can not register application because it already exists.');
+		__throw('Can not set current application, it is already set.');
 	}
 
-	$__LIGHTBIT_APPLICATION = $application;
+	$__lightbit_application = $application;
 }
 
 function __application_run(string $class, string $private, string $public, string $configuration = null) : int
@@ -68,11 +68,19 @@ function __application_run(string $class, string $private, string $public, strin
 
 	if ($configuration)
 	{
-		$properties = __include(__asset_path_resolve($private, 'php', $configuration));
+		$properties = __include_file(__asset_path_resolve($private, 'php', $configuration));
 
 		if (!is_array($properties))
 		{
-			__throw('Configuration script did not return properties array: asset "%s", script "%s"', $configuration, __asset_path_resolve($private, 'php', $configuration));
+			__throw
+			(
+				sprintf
+				(
+					'Configuration script did not return a array: asset %s, script %s', 
+					$configuration, 
+					__asset_path_resolve($private, 'php', $configuration)
+				)
+			);
 		}
 	}
 

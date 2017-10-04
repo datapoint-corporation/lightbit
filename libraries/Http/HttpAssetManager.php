@@ -28,7 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Http\IHttpAssetManager;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
 use \Lightbit\IO\IOException;
@@ -79,7 +79,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -88,12 +88,12 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id);
 
 		$this->publishDirectory = 'public://assets';
-		$this->refresh = __environment_debug_get();
+		$this->refresh = __debug();
 
 		if ($configuration)
 		{
@@ -121,7 +121,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 			(
 				sprintf
 				(
-					'Can not publish asset, publish path creation failure: "%s", publish path "%s", from context "%s"',
+					'Can not publish asset, publish path creation failure: %s, publish path %s, from context %s',
 					$asset,
 					$destination,
 					$this->getContext()->getPrefix()
@@ -151,7 +151,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 				(
 					sprintf
 					(
-						'Can not publish asset, file copy failure: "%s", source "%s", destination "%s", from context "%s"',
+						'Can not publish asset, file copy failure: %s, source %s, destination %s, from context %s',
 						$asset,
 						$privatePath,
 						$publishPath,
@@ -345,7 +345,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 					$privatePath,
 					sprintf
 					(
-						'Can not publish asset, file not found: "%s", expected at file "%s", at context "%s"',
+						'Can not publish asset, file not found: %s, expected at file %s, at context %s',
 						$asset,
 						$privatePath,
 						$this->getContext()->getPrefix()
@@ -361,7 +361,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 					(
 						sprintf
 						(
-							'Can not publish asset, publish path creation failure: "%s", at file "%s", at context "%s"',
+							'Can not publish asset, publish path creation failure: %s, at file %s, at context %s',
 							$asset,
 							$publishDirectoryPath,
 							$this->getContext()->getPrefix()
@@ -375,7 +375,7 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 					(
 						sprintf
 						(
-							'Can not publish asset, file copy failure: "%s", source "%s", destination "%s", from context "%s"',
+							'Can not publish asset, file copy failure: %s, source %s, destination %s, from context %s',
 							$asset,
 							$privatePath,
 							$publishPath,

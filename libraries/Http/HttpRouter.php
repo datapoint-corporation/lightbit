@@ -27,9 +27,9 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\Action;
+use \Lightbit\Base\IAction;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
 use \Lightbit\Base\ParameterRouteException;
@@ -55,7 +55,7 @@ class HttpRouter extends HttpRouterBase
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -64,7 +64,7 @@ class HttpRouter extends HttpRouterBase
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id);
 
@@ -104,10 +104,10 @@ class HttpRouter extends HttpRouterBase
 	/**
 	 * Resolves the current request to a controller action.
 	 *
-	 * @return Action
+	 * @return IAction
 	 *	The action.
 	 */
-	public final function resolve() : Action
+	public final function resolve() : IAction
 	{
 		$path = strtr
 		(

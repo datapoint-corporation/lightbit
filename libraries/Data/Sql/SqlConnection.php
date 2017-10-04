@@ -78,7 +78,7 @@ class SqlConnection extends Component implements ISqlConnection
 	{
 		if (!isset(self::$driversClassName[$id]))
 		{
-			throw new Exception(sprintf('Sql connection driver is not available: "%s"', $id));
+			throw new Exception(sprintf('Sql connection driver is not available: %s', $id));
 		}
 
 		return self::$driversClassName[$id];
@@ -211,7 +211,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, already started: "%s", at context "%s"',
+					'Bad SQL connection status, already started: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
@@ -293,7 +293,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, already closed: "%s", at context "%s"',
+					'Bad SQL connection status, already closed: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
@@ -318,7 +318,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"',
+					'Bad SQL connection status, closed: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
@@ -343,7 +343,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"',
+					'Bad SQL connection status, closed: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
@@ -460,7 +460,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"',
+					'Bad SQL connection status, closed: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)
@@ -582,7 +582,7 @@ class SqlConnection extends Component implements ISqlConnection
 				$this,
 				sprintf
 				(
-					'Bad SQL connection status, closed: "%s", at context "%s"',
+					'Bad SQL connection status, closed: %s, at context %s',
 					$this->getID(),
 					$this->getContext()->getPrefix()
 				)

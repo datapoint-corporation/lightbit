@@ -38,33 +38,12 @@ use \Lightbit\IO\FileSystem\FileNotFoundException;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class View extends Element implements IView
+interface IView extends IElement
 {
-	/**
-	 * The base path.
-	 *
-	 * @type string
-	 */
-	private $basePath;
-
-	/**
-	 * The context.
-	 *
-	 * @type Context
-	 */
-	private $context;
-
-	/**
-	 * The path.
-	 *
-	 * @type string
-	 */
-	private $path;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
+	 * @param Context $context
 	 *	The view context.
 	 *
 	 * @param string $path
@@ -73,16 +52,7 @@ class View extends Element implements IView
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
-	{
-		$this->context = $context;
-		$this->path = $path;
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
+	public function __construct(?IContext $context, string $path, array $configuration = null);
 
 	/**
 	 * Gets the base path.
@@ -90,15 +60,7 @@ class View extends Element implements IView
 	 * @return string
 	 *	The base path.
 	 */
-	public final function getBasePath() : string
-	{
-		if (!$this->basePath)
-		{
-			$this->basePath = dirname($this->path);
-		}
-
-		return $this->basePath;
-	}
+	public function getBasePath() : string;
 
 	/**
 	 * Gets the context.
@@ -106,15 +68,7 @@ class View extends Element implements IView
 	 * @return Context
 	 *	The context.
 	 */
-	public final function getContext() : IContext
-	{
-		if ($this->context)
-		{
-			return $this->context;
-		}
-
-		return parent::getContext();
-	}
+	public function getContext() : IContext;
 
 	/**
 	 * Gets the path.
@@ -122,10 +76,7 @@ class View extends Element implements IView
 	 * @return string
 	 *	The path.
 	 */
-	public final function getPath() : string
-	{
-		return $this->path;
-	}
+	public function getPath() : string;
 
 	/**
 	 * Imports a variable.
@@ -139,27 +90,7 @@ class View extends Element implements IView
 	 * @param Closure $closure
 	 *	The variable validation closure.
 	 */
-	public final function import(&$variable, \Closure $closure = null) : void
-	{
-		if ($closure)
-		{
-			$result = false;
-
-			try
-			{
-				$result = ($closure($variable) === true);
-			}
-			catch (\Throwable $e)
-			{
-				throw new Exception(sprintf('View variable validation failure, %s: %s, at context %s', lcfirst($e->getMessage()), $this->path, $this->getContext()->getPrefix()));
-			}
-
-			if (!$result)
-			{
-				throw new Exception(sprintf('View variable validation failure: %s, at context %s', $this->path, $this->getContext()->getPrefix()));
-			}
-		}
-	}
+	public function import(&$variable, \Closure $closure = null) : void;
 
 	/**
 	 * Renders a view.
@@ -177,11 +108,7 @@ class View extends Element implements IView
 	 * @return string
 	 *	The captured content.
 	 */
-	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
-	{
-		return $this->view(__asset_path_resolve($this->getBasePath(), 'php', $view))
-			->run($parameters, $capture);
-	}
+	public function render(string $view, array $parameters = null, bool $capture = false) : ?string;
 
 	/**
 	 * Runs the view.
@@ -196,48 +123,7 @@ class View extends Element implements IView
 	 * @return string
 	 *	The captured content.
 	 */
-	public final function run(array $parameters = null, bool $capture = false) : ?string
-	{
-		global $_LIGHTBIT_CONTEXT;
-
-		$ob;
-
-		if ($capture)
-		{
-			$ob = ob_get_level();
-
-			if (!ob_start())
-			{
-				throw new Exception('View output buffer can not start: unknown error');
-			}
-		}
-
-		if (!is_file($this->path))
-		{
-			throw new FileNotFoundException($this->path, sprintf('Can not render view, file not found: file path %s', $this->path));
-		}
-
-
-		// During the view script inclusion, the context is meant to be the
-		// one the view was originally created with.
-		$context = __context_replace($this->context);
-		__include_file_as($this, $this->path, $parameters);
-		__context_set($context);
-
-		if ($capture)
-		{
-			$result = '';
-
-			while ($ob < ob_get_level())
-			{
-				$result .= ob_get_clean();
-			}
-
-			return $result;
-		}
-
-		return null;
-	}
+	public function run(array $parameters = null, bool $capture = false) : ?string;
 
 	/**
 	 * Creates a widget.
@@ -251,10 +137,7 @@ class View extends Element implements IView
 	 * @return IWidget
 	 *	The widget.
 	 */
-	public function widget(string $className, ...$arguments) : IWidget
-	{
-		return new $className(...$arguments);
-	}
+	public function widget(string $className, ...$arguments) : IWidget;
 
 	/**
 	 * Creates and instantly inflates an inline widget.
@@ -268,15 +151,5 @@ class View extends Element implements IView
 	 * @return string
 	 *	The content.
 	 */
-	public function inflate(string $className, ...$arguments) : string
-	{
-		$widget = $this->widget($className, ...$arguments);
-
-		if (! ($widget instanceof IInlineWidget))
-		{
-			throw new Exception(sprintf('Can not inflate widget: %s', $className));
-		}
-
-		return $widget->inflate();
-	}
+	public function inflate(string $className, ...$arguments) : string;
 }

@@ -315,7 +315,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	{
 		if (!$this->id)
 		{
-			throw new Exception(sprintf('Active record identity is not available: instance is new, class "%s"', static::class));
+			throw new Exception(sprintf('Active record identity is not available: instance is new, class %s', static::class));
 		}
 
 		return $this->id;
@@ -335,7 +335,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 			if (!$primaryKey)
 			{
-				throw new Exception(sprintf('Active record primary key is not available: "%s"', static::class));
+				throw new Exception(sprintf('Active record primary key is not available: %s', static::class));
 			}
 
 			self::$schema[static::class]['primary-key'] = $primaryKey;
@@ -495,7 +495,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	{
 		if (!isset($this->attributes))
 		{
-			throw Exception(sprintf('Can not rollback, no commit: class "%s"', static::class));
+			throw Exception(sprintf('Can not rollback, no commit: class %s', static::class));
 		}
 
 		$this->setAttributes($this->attributes);
@@ -553,7 +553,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 		else if (!$this->id)
 		{
-			throw new Exception(sprintf('Active record can not be saved: insufficient number of properties, class "%s"', static::class));
+			throw new Exception(sprintf('Active record can not be saved: insufficient number of properties, class %s', static::class));
 		}
 
 		$this->onAfterSave();
