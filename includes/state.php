@@ -51,7 +51,7 @@ function __state_resume()
 
 		if (apcu_exists('__lightbit.state.namespace'))
 		{
-			$__LIGHTBIT_NAMESPACE = apcu_store('__lightbit.state.namespace');
+			$__LIGHTBIT_NAMESPACE = apcu_fetch('__lightbit.state.namespace');
 		}
 	}
 }
