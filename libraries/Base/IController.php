@@ -30,6 +30,7 @@ namespace Lightbit\Base;
 use \Lightbit\Base\IAction;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
+use \Lightbit\Base\IView;
 
 /**
  * IController.
@@ -87,6 +88,17 @@ interface IController extends IElement
 	 *	The identifier.
 	 */
 	public function getID() : string;
+
+	/**
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public function getView(string $view) : IView;
 
 	/**
 	 * Resolves to an action.

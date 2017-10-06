@@ -199,8 +199,6 @@ class View extends Element implements IView
 	 */
 	public final function run(array $parameters = null, bool $capture = false) : ?string
 	{
-		global $_LIGHTBIT_CONTEXT;
-
 		$ob;
 
 		if ($capture)
@@ -209,7 +207,7 @@ class View extends Element implements IView
 
 			if (!ob_start())
 			{
-				throw new Exception('View output buffer can not start: unknown error');
+				throw new Exception('Can not render view, unknown error during output buffer startup: unknown error');
 			}
 		}
 
