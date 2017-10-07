@@ -43,13 +43,13 @@ interface IHtmlDocument extends IComponent
 	 * @param string $script
 	 *	The inline script file system alias.
 	 *
-	 * @param string $position
-	 *	The script position.
-	 *
 	 * @param array $attributes
 	 *	The script attributes.
+	 *
+	 * @param string $position
+	 *	The script position.
 	 */
-	public function addInlineScript(string $script, string $position = 'head', array $attributes = null) : void;
+	public function addInlineScript(string $script, array $attributes = null, string $position = 'head') : void;
 
 	/**
 	 * Sets an additional inline style.
@@ -76,13 +76,13 @@ interface IHtmlDocument extends IComponent
 	 * @param string $location
 	 *	The script location.
 	 *
-	 * @param string $position
-	 *	The script position.
-	 *
 	 * @param array $attributes
 	 *	The script attributes.
+	 *
+	 * @param string $position
+	 *	The script position.
 	 */
-	public function addScript(string $location, string $position = 'head', array $attributes = null) : void;
+	public function addScript(string $location, array $attributes = null, string $position = 'head') : void;
 
 	/**
 	 * Sets an additional style.

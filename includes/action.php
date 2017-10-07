@@ -54,6 +54,18 @@ function __action_context() : Context
 	return $__LIGHTBIT_ACTION->getContext();
 }
 
+function __action_theme() : ?ITheme
+{
+	global $__LIGHTBIT_ACTION;
+
+	if (!isset($__LIGHTBIT_ACTION))
+	{
+		__throw_illegal_state('Can not get current action, it is not set.');
+	}
+
+	return $__LIGHTBIT_ACTION->getTheme(); 
+}
+
 function __action_get() : ?Action
 {
 	global $__LIGHTBIT_ACTION;

@@ -25,25 +25,15 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$_LIGHTBIT_IMPORT = [];
+$__LIGHTBIT_IMPORT = [];
 
 function __import(string $library) // : mixed
 {
-	global $_LIGHTBIT_IMPORT;
+	global $__LIGHTBIT_IMPORT;
 
-	$context = dirname(debug_backtrace(0, 1)[0]['file']);
-	$path;
+	$path = __asset_path_resolve(null, 'php', $library);
 
-	if (($i = strpos($library, './')) === 0)
-	{
-		$path = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]) . '.php';
-	}
-	else
-	{
-		$path = __asset_path_resolve($context, 'php', $library);
-	}
-
-	if (!isset($_LIGHTBIT_IMPORT[$library]) && !array_key_exists($path, $_LIGHTBIT_IMPORT))
+	if (!isset($__LIGHTBIT_IMPORT[$path]) && !array_key_exists($path, $__LIGHTBIT_IMPORT))
 	{
 		if (!is_file($path))
 		{
@@ -54,14 +44,16 @@ function __import(string $library) // : mixed
 				$path,
 				sprintf
 				(
-					'Can not import library, file not found: file %s', 
-					$path
+					'Can not import library, file not found: file %s, at %s (:%d)', 
+					$path,
+					$breakpoint['file'],
+					$breakpoint['line']
 				)
 			);
 		}
 
-		$_LIGHTBIT_IMPORT[$library] = __include_file_ex($path);
+		$__LIGHTBIT_IMPORT[$library] = __include_file_ex($path);
 	}
 
-	return $_LIGHTBIT_IMPORT[$library];
+	return $__LIGHTBIT_IMPORT[$library];
 }

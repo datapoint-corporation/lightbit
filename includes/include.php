@@ -27,74 +27,68 @@
 
 function __include(string $library, string $extension = 'php') // : mixed
 {
-	$backtrace = debug_backtrace(0, 1)[0];
-	$context = dirname($backtrace['file']);
-	$file;
+	global $__LIGHTBIT_IMPORT;
 
-	if (($i = strpos($library, './')) === 0)
-	{
-		$file = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]);
+	$path = __asset_path_resolve(null, 'php', $library);
 
-		if ($extension)
-		{
-			$file .= '.' . $extension;
-		}
-	}
-	else
+	if (!is_file($path))
 	{
-		$file = __asset_path_resolve($context, $extension, $library);
-	}
+		$breakpoint = __debug_trace_call(null, __FUNCTION__)[0];
 
-	if (!is_file($file))
-	{
 		__throw_file_not_found
 		(
-			$file,
+			$path,
 			sprintf
 			(
-				'Can not include library, file not found: file %s', 
-				$file
+				'Can not import library, file not found: file %s, at %s (:%d)', 
+				$path,
+				$breakpoint['file'],
+				$breakpoint['line']
 			)
 		);
 	}
 
-	return __include_file_ex($file);
+	$result = __include_file_ex($path);
+
+	if (!isset($__LIGHTBIT_IMPORT[$path]) && !array_key_exists($path, $__LIGHTBIT_IMPORT))
+	{
+		$__LIGHTBIT_IMPORT[$path] = $result;
+	}
+
+	return $result;
 }
 
 function __include_as($scope, string $library, string $extension = 'php') // : mixed
 {
-	$backtrace = debug_backtrace(0, 1)[0];
-	$context = dirname($backtrace['file']);
-	$file;
+	global $__LIGHTBIT_IMPORT;
 
-	if (($i = strpos($library, './')) === 0)
-	{
-		$file = $context . strtr(substr($library, 1), [ '/' => DIRECTORY_SEPARATOR ]);
+	$path = __asset_path_resolve(null, 'php', $library);
 
-		if ($extension)
-		{
-			$file .= '.' . $extension;
-		}
-	}
-	else
+	if (!is_file($path))
 	{
-		$file = __asset_path_resolve($context, $extension, $library);
-	}
+		$breakpoint = __debug_trace_call(null, __FUNCTION__)[0];
 
-	if (!is_file($file))
-	{
 		__throw_file_not_found
 		(
-			$file,
+			$path,
 			sprintf
 			(
-				'Can not include library, file not found: file %s', 
-				$file
+				'Can not import library, file not found: file %s, at %s (:%d)', 
+				$path,
+				$breakpoint['file'],
+				$breakpoint['line']
 			)
 		);
 	}
 
-	return __include_file_as_ex($scope, $file);
+	$result = __include_file_as_ex($scope, $path);
+
+	if (!isset($__LIGHTBIT_IMPORT[$path]) && !array_key_exists($path, $__LIGHTBIT_IMPORT))
+	{
+		$__LIGHTBIT_IMPORT[$path] = $result;
+	}
+
+	return $result;
 }
 
 function __include_file(string $path, array $variables = null) // : mixed
