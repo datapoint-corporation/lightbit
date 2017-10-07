@@ -27,11 +27,13 @@
 
 function __state_save()
 {
+	global $__LIGHTBIT_ASSET;
 	global $__LIGHTBIT_CLASS;
 	global $__LIGHTBIT_NAMESPACE;
 
-	if (function_exists('apcu_store'))
+	if (__state_allow_save())
 	{
+		apcu_store('__lightbit.state.asset', $__LIGHTBIT_ASSET);
 		apcu_store('__lightbit.state.class', $__LIGHTBIT_CLASS);
 		apcu_store('__lightbit.state.namespace', $__LIGHTBIT_NAMESPACE);
 	}
@@ -39,11 +41,17 @@ function __state_save()
 
 function __state_resume()
 {
+	global $__LIGHTBIT_ASSET;
 	global $__LIGHTBIT_CLASS;
 	global $__LIGHTBIT_NAMESPACE;
 
-	if (!__debug() && function_exists('apcu_store'))
+	if (__state_allow_save())
 	{
+		if (apcu_exists('__lightbit.state.asset'))
+		{
+			$__LIGHTBIT_ASSET = apcu_fetch('__lightbit.state.asset');
+		}
+
 		if (apcu_exists('__lightbit.state.class'))
 		{
 			$__LIGHTBIT_CLASS = apcu_fetch('__lightbit.state.class');
@@ -54,4 +62,16 @@ function __state_resume()
 			$__LIGHTBIT_NAMESPACE = apcu_fetch('__lightbit.state.namespace');
 		}
 	}
+}
+
+function __state_allow_save()
+{
+	static $result;
+
+	if (!isset($result))
+	{
+		$result = (!__debug() && extension_loaded('apcu'));
+	}
+	
+	return $result;
 }

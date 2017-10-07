@@ -89,6 +89,8 @@ class Model extends Element implements IModel
 	 */
 	public function __construct(string $scenario = 'default', array $attributes = null, array $configuration = null)
 	{
+		parent::__construct();
+
 		$this->attributesErrors = [];
 		$this->scenario = $scenario;
 

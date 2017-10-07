@@ -29,8 +29,9 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\IFileCache;
+use \Lightbit\Base\ITheme;
 use \Lightbit\Data\ICache;
+use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
 use \Lightbit\Data\IMessageSource;
 use \Lightbit\Data\INetworkCache;
@@ -200,4 +201,12 @@ interface IBase
 	 *	The sql connection.
 	 */
 	public function getSqlConnection() : ISqlConnection;
+
+	/**
+	 * Gets the theme.
+	 *
+	 * @return ITheme
+	 *	The theme.
+	 */
+	public function getTheme() : ?ITheme;
 }

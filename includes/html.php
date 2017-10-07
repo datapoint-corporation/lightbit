@@ -26,6 +26,7 @@
 // -----------------------------------------------------------------------------
 
 use \Lightbit\Base\Object;
+use \Lightbit\Base\ITheme;
 
 function __html_attribute(string $property, $attribute) : string
 {
@@ -54,8 +55,10 @@ function __html_attribute(string $property, $attribute) : string
 	return '';
 }
 
-function __html_attribute_array(?array $attributes) : string
+function __html_attribute_array(?array ...$attributes) : string
 {
+	$attributes = __html_attribute_array_merge(...$attributes);
+
 	$result = '';
 
 	if ($attributes)
@@ -108,6 +111,36 @@ function __html_begin(string $tag, array $attributes = null) : string
 	}
 
 	return $result . '>';
+}
+
+function __html_body_begin(array $attributes = null) : string
+{
+	$context = __context();
+	$theme = $context->getTheme();
+
+	if ($theme)
+	{
+		return __html_begin
+		(
+			'body',
+			__html_attribute_array_merge
+			(
+				$theme->getAttributes('body'),
+				$attributes
+			)
+		);
+	}
+
+	return __html_begin('body', $attributes);
+}
+
+function __html_body_end() : string
+{
+	$context = __context();
+	$document = $context->getHtmlDocument();
+
+	return $document->inflate('body')
+		. __html_end('body');
 }
 
 function __html_comment(string $content) : string
@@ -195,4 +228,18 @@ function __html_end(string $tag) : string
 function __html_encode(string $content) : string
 {
 	return htmlspecialchars($content, (ENT_QUOTES | ENT_HTML5), 'UTF-8');
+}
+
+function __html_head() : string
+{
+	$context = __context();
+	$document = $context->getHtmlDocument();
+
+	return __html_element
+	(
+		'head',
+		null,
+		$document->inflate('head'),
+		false
+	);
 }

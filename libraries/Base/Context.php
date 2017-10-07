@@ -32,6 +32,7 @@ use \Lightbit\Base\ComponentNotFoundException;
 use \Lightbit\Base\ControllerNotFoundException;
 use \Lightbit\Base\ModuleNotFoundException;
 use \Lightbit\Base\Object;
+use \Lightbit\Base\Theme;
 use \Lightbit\Globalization\Locale;
 use \Lightbit\IllegalStateException;
 
@@ -39,14 +40,14 @@ use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\IFileCache;
 use \Lightbit\Base\IModule;
-use \Lightbit\Base\IView;
 use \Lightbit\Data\ICache;
+use \Lightbit\Data\IFileCache;
 use \Lightbit\Data\IMemoryCache;
 use \Lightbit\Data\IMessageSource;
 use \Lightbit\Data\INetworkCache;
 use \Lightbit\Data\ISlugManager;
+use \Lightbit\Base\ITheme;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Html\IHtmlAdapter;
@@ -110,13 +111,6 @@ abstract class Context extends Object implements IContext
 	private $id;
 
 	/**
-	 * The layout.
-	 *
-	 * @type View
-	 */
-	private $layout;
-
-	/**
 	 * The context locale.
 	 *
 	 * @type Locale
@@ -157,6 +151,20 @@ abstract class Context extends Object implements IContext
 	 * @type string
 	 */
 	private $prefix;
+
+	/**
+	 * The theme.
+	 *
+	 * @type ITheme
+	 */
+	private $theme;
+
+	/**
+	 * The themes base path.
+	 *
+	 * @type string
+	 */
+	private $themesBasePath;
 
 	/**
 	 * The views base path.
@@ -530,33 +538,6 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
-	 * Gets the layout.
-	 *
-	 * @return View
-	 *	The layout.
-	 */
-	public final function getLayout() : ?IView
-	{
-		if (!$this->layout)
-		{
-			$context = $this->context;
-
-			while ($context)
-			{
-				if ($result = $context->getLayout())
-				{
-					$this->layout = $result;
-					break;
-				}
-
-				$context = $context->getContext();
-			}
-		}
-
-		return $this->layout;
-	}
-
-	/**
 	 * Gets the locale.
 	 *
 	 * @return ILocale
@@ -804,6 +785,49 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
+	 * Gets the theme.
+	 *
+	 * @return ITheme
+	 *	The theme.
+	 */
+	public final function getTheme() : ?ITheme
+	{
+		if (!$this->theme)
+		{
+			$context = $this->context;
+
+			while ($context)
+			{
+				if ($result = $context->getTheme())
+				{
+					$this->theme = $result;
+					break;
+				}
+
+				$context = $context->getContext();
+			}
+		}
+
+		return $this->theme;
+	}
+
+	/**
+	 * Gets the themes base path.
+	 *
+	 * @return string
+	 *	The themes base path.
+	 */
+	public final function getThemesBasePath() : string
+	{
+		if (!$this->themesBasePath)
+		{
+			$this->themesBasePath = $this->path . DIRECTORY_SEPARATOR . 'themes';
+		}
+
+		return $this->themesBasePath;
+	}
+
+	/**
 	 * Gets the views base paths.
 	 *
 	 * @return string
@@ -1011,19 +1035,6 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(?string $layout) : void
-	{
-		$this->layout = $layout 
-			? (new View($this, __asset_path_resolve($this->path, 'php', $layout)))
-			: null;
-	}
-
-	/**
 	 * Sets the locale.
 	 *
 	 * @param string $id
@@ -1059,6 +1070,34 @@ abstract class Context extends Object implements IContext
 		foreach ($modulesConfiguration as $id => $configuration)
 		{
 			$this->setModuleConfiguration($id, $configuration);
+		}
+	}
+
+	/**
+	 * Sets the theme.
+	 *
+	 * @param string $theme
+	 *	The theme.
+	 */
+	public final function setTheme(?string $theme) : void
+	{
+		if ($theme)
+		{
+			$this->theme = new Theme
+			(
+				$this, 
+				$theme,
+				__asset_path_resolve_token
+				(
+					$this->getThemesBasePath(),
+					null,
+					$theme
+				)
+			);
+		}
+		else
+		{
+			$this->theme = null;
 		}
 	}
 }

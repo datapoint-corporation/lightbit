@@ -32,7 +32,6 @@ use \Lightbit\Base\IBase;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IModule;
-use \Lightbit\Base\IView;
 use \Lightbit\Globalization\ILocale;
 
 /**
@@ -101,14 +100,6 @@ interface IContext extends IBase
 	 *	The identifier.
 	 */
 	public function getID() : string;
-
-	/**
-	 * Gets the layout.
-	 *
-	 * @return View
-	 *	The layout.
-	 */
-	public function getLayout() : ?IView;
 
 	/**
 	 * Gets the locale.
@@ -204,58 +195,4 @@ interface IContext extends IBase
 	 *	The action.
 	 */
 	public function resolve(?array $route) : IAction;
-
-	/**
-	 * Sets a component configuration.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function setComponentConfiguration(string $id, array $configuration) : void;
-
-	/**
-	 * Sets the components configuration.
-	 *
-	 * @param array $componentsConfiguration
-	 *	The components configuration.
-	 */
-	public function setComponentsConfiguration(array $componentsConfiguration) : void;
-
-	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(?string $layout) : void;
-
-	/**
-	 * Sets the locale.
-	 *
-	 * @param string $id
-	 *	The locale identifier.
-	 */
-	public function setLocale(string $id) : void;
-
-	/**
-	 * Sets a module configuration.
-	 *
-	 * @param string $id
-	 *	The module identifier.
-	 *
-	 * @param array $configuration
-	 *	The module configuration.
-	 */
-	public function setModuleConfiguration(string $id, array $configuration) : void;
-
-	/**
-	 * Sets the modules configuration.
-	 *
-	 * @param array $modulesConfiguration
-	 *	The modules configuration.
-	 */
-	public function setModulesConfiguration(array $modulesConfiguration) : void;
 }

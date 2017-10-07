@@ -148,6 +148,8 @@ abstract class Rule extends Element implements IRule
 	 */
 	public function __construct(IModel $model, string $id, array $configuration = null)
 	{
+		parent::__construct();
+
 		$this->model = $model;
 		$this->id = $id;
 		$this->required = false;

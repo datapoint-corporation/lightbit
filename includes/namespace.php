@@ -62,10 +62,8 @@ function __namespace_register(string $namespace, string $path) : void
 {
 	global $__LIGHTBIT_NAMESPACE;
 
-	if (isset($__LIGHTBIT_NAMESPACE[$namespace]))
+	if (!isset($__LIGHTBIT_NAMESPACE[$namespace]))
 	{
-		throw new IllegalStateException(sprintf('Can not set namespace path, already set: namespace %s, to path %s', $namespace, $path));
+		$__LIGHTBIT_NAMESPACE[$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 	}
-
-	$__LIGHTBIT_NAMESPACE[$namespace] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 }

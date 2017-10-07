@@ -49,13 +49,6 @@ class View extends Element implements IView
 	private $basePath;
 
 	/**
-	 * The context.
-	 *
-	 * @type Context
-	 */
-	private $context;
-
-	/**
 	 * The path.
 	 *
 	 * @type string
@@ -76,7 +69,8 @@ class View extends Element implements IView
 	 */
 	public function __construct(?IContext $context, string $path, array $configuration = null)
 	{
-		$this->context = $context;
+		parent::__construct($context);
+
 		$this->path = $path;
 
 		if ($configuration)
@@ -99,22 +93,6 @@ class View extends Element implements IView
 		}
 
 		return $this->basePath;
-	}
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return Context
-	 *	The context.
-	 */
-	public final function getContext() : IContext
-	{
-		if ($this->context)
-		{
-			return $this->context;
-		}
-
-		return parent::getContext();
 	}
 
 	/**
@@ -219,7 +197,7 @@ class View extends Element implements IView
 
 		// During the view script inclusion, the context is meant to be the
 		// one the view was originally created with.
-		$context = __context_replace($this->context);
+		$context = __context_replace($this->getContext());
 		__include_file_as($this, $this->path, $parameters);
 		__context_set($context);
 

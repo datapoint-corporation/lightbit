@@ -47,9 +47,11 @@ class Widget extends Element implements IWidget
 	 */
 	public function __construct(array $configuration = null)
 	{
+		parent::__construct();
+
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			__object_apply($this, $configuration);
 		}
 	}
 

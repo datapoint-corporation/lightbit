@@ -31,16 +31,7 @@ $__LIGHTBIT_CLASS = [];
 
 function __class_exists(string $class) : bool
 {
-	global $__LIGHTBIT_CLASS;
-
-	if (isset($__LIGHTBIT_CLASS[$class]))
-	{
-		return true;
-	}
-
-	return class_exists($class, false)
-		|| interface_exists($class, false)
-		|| is_file(__class_path_resolve($class));
+	return is_file(__class_path_resolve($class));
 }
 
 function __class_is_a(string $subject, string $candidate) : string
@@ -85,15 +76,8 @@ function __class_register(string $class, string $path) : void
 {
 	global $__LIGHTBIT_CLASS;
 
-	if (isset($__LIGHTBIT_CLASS[$class]))
+	if (!isset($__LIGHTBIT_CLASS[$class]))
 	{
-		__throw
-		(
-			'Can not register class path, already set: class %s, at path %s',
-			$class,
-			$__LIGHTBIT_CLASS[$class]
-		);
+		$__LIGHTBIT_CLASS[$class] = $path;
 	}
-
-	$__LIGHTBIT_CLASS[$class] = $path;
 }
