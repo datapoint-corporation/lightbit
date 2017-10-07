@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __exit(int $code) : void
+function __exit(int $code = 0) : void
 {
 	if ($application = __application_get())
 	{

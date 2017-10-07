@@ -144,6 +144,40 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * Exports the current http request.
+	 *
+	 * @param string $method
+	 *	The http request method.
+	 *
+	 * @param IModel $model
+	 *	The http request model.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function export(string $method, IModel ...$model) : bool
+	{
+		$request = $this->getHttpRequest();
+
+		if ($request->isOfMethod($method))
+		{
+			$result = true;
+
+			foreach ($model as $i => $subject)
+			{
+				if (!$request->export($subject))
+				{
+					$result = false;
+				}
+			}
+
+			return $result;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Gets an action method name.
 	 *
 	 * @param string $id
@@ -263,6 +297,23 @@ abstract class Controller extends Element implements IController
 		}
 
 		return $this->viewsBasePaths;
+	}
+
+	/**
+	 * Sets a response redirection.
+	 *
+	 * @param array $route
+	 *	The response redirection route.
+	 *
+	 * @param int $statusCode
+	 *	The response redirection status code.
+	 */
+	public final function redirect(array $route, int $statusCode = 303) : void
+	{
+		$response = $this->getHttpResponse();
+		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
+		$response->setStatusCode($statusCode);
+		__exit();
 	}
 
 	/**
