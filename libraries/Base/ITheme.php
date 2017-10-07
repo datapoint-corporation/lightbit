@@ -50,17 +50,6 @@ interface ITheme extends IElement
 	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
 
 	/**
-	 * Gets the attributes.
-	 *
-	 * @param string $position
-	 *	The position to get the attributes for.
-	 *
-	 * @return array
-	 *	The attributes.
-	 */
-	public function getAttributes(string $position = 'body') : array;
-
-	/**
 	 * Gets the global identifier.
 	 *
 	 * @return string

@@ -43,13 +43,6 @@ use \Lightbit\Base\IView;
 class Theme extends Element implements ITheme
 {
 	/**
-	 * The attributes.
-	 *
-	 * @type array
-	 */
-	private $attributes;
-
-	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -97,7 +90,6 @@ class Theme extends Element implements ITheme
 	{
 		parent::__construct($context);
 
-		$this->attributes = [];
 		$this->id = $id;
 		$this->layout = 'main';
 		$this->path = $path;
@@ -106,20 +98,6 @@ class Theme extends Element implements ITheme
 		{
 			__object_apply($this, $configuration);
 		}
-	}
-
-	/**
-	 * Gets the attributes.
-	 *
-	 * @param string $position
-	 *	The position to get the attributes for.
-	 *
-	 * @return array
-	 *	The attributes.
-	 */
-	public final function getAttributes(string $position = 'body') : array
-	{
-		return __map_get($this->attributes, '?array', '@' . $position) ?? [];
 	}
 
 	/**
@@ -219,17 +197,6 @@ class Theme extends Element implements ITheme
 	public final function hasLayout(string $layout) : bool
 	{
 		return is_file(__asset_path_resolve($this->path, 'php', $layout));
-	}
-
-	/**
-	 * Sets the attributes.
-	 *
-	 * @param array $attributes
-	 *	The attributes.
-	 */
-	public final function setAttributes(array $attributes) : void
-	{
-		$this->attributes = $attributes + $this->attributes;
 	}
 
 	/**

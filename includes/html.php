@@ -120,15 +120,7 @@ function __html_body_begin(array $attributes = null) : string
 
 	if ($theme)
 	{
-		return __html_begin
-		(
-			'body',
-			__html_attribute_array_merge
-			(
-				$theme->getAttributes('body'),
-				$attributes
-			)
-		);
+		return __html_begin('body', $attributes);
 	}
 
 	return __html_begin('body', $attributes);
@@ -139,8 +131,7 @@ function __html_body_end() : string
 	$context = __context();
 	$document = $context->getHtmlDocument();
 
-	return $document->inflate('body')
-		. __html_end('body');
+	return $document->inflate('body') . __html_end('body');
 }
 
 function __html_comment(string $content) : string
