@@ -32,7 +32,7 @@ function __(string $category, string $message, array $attributes = null) : strin
 
 	return $locale->message
 	(
-		$message = $context->getMessageSource()->read($locale, $category, $message),
+		$context->getMessageSource()->read($locale, $category, $message),
 		$attributes
 	);
 }

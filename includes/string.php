@@ -40,7 +40,7 @@ function __string_match(string $subject, string $candidate, bool $insensitive = 
 	return $subject === $candidate;
 }
 
-function __string_slug(string $content) : string
+function __string_slug(string $content, string $delimiter = '-') : string
 {
 	return strtolower
 	(

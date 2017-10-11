@@ -76,7 +76,7 @@ abstract class Element extends Object implements IElement
 	 * @param IContext $context
 	 *	The element context.
 	 */
-	protected function __construct(?IContext $context)
+	protected function __construct(IContext $context = null)
 	{
 		$this->context = ($context ?? __context());
 	}

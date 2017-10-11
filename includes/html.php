@@ -221,6 +221,39 @@ function __html_encode(string $content) : string
 	return htmlspecialchars($content, (ENT_QUOTES | ENT_HTML5), 'UTF-8');
 }
 
+function __html_form_begin(array $attributes = null) : string
+{
+	if (!isset($attributes))
+	{
+		$attributes = [];
+	}
+
+	// Set the default action
+	if (!isset($attributes['action']))
+	{
+		$attributes['action'] = __url(__action()->getRoute());
+	}
+
+	// Set action as the resolved url.
+	else if (is_array($attributes['action']))
+	{
+		$attributes['action'] = __url($attributes['action']);
+	}
+
+	// Set the default method
+	if (!isset($attributes['method']))
+	{
+		$attributes['method'] = 'POST';
+	}
+
+	return __html_begin('form', $attributes);
+}
+
+function __html_form_end() : string
+{
+	return __html_end('form');
+}
+
 function __html_head() : string
 {
 	$context = __context();

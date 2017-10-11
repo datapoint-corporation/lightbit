@@ -219,7 +219,7 @@ final class Action extends Object implements IAction
 	{
 		if (!$this->id)
 		{
-			$this->id = $this->controller->getGlobalID() . '/' . $this->name;
+			$this->id = $this->controller->getID() . '/' . $this->name;
 		}
 
 		return $this->id;
@@ -235,9 +235,21 @@ final class Action extends Object implements IAction
 	{
 		if (!$this->globalID)
 		{
-			$this->globalID = $this->controller->getContext()->getID()
-				. '/' . $this->controller->getID()
-				. '/' . $this->name;
+			$this->globalID = $this->getID();
+
+			$context = $this->controller->getContext();
+
+			while ($previous = $context->getContext())
+			{
+				$this->globalID = ($context->getID() . '/' . $this->globalID);
+
+				if (!$previous)
+				{
+					break;
+				}
+				
+				$context = $previous;
+			}
 		}
 
 		return $this->globalID;
@@ -252,6 +264,18 @@ final class Action extends Object implements IAction
 	public function getName() : string
 	{
 		return $this->name;
+	}
+
+	/**
+	 * Gets the route.
+	 *
+	 * @return array
+	 *	The route.
+	 */
+	public function getRoute() : array
+	{
+		return [ '/' . $this->getGlobalID() ]
+			+ $this->parameters;
 	}
 
 	/**
