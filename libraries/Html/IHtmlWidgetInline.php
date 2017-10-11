@@ -25,34 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Html;
 
-use \Lightbit\Base\Object;
-
-use \Lightbit\Base\IComponent;
-use \Lightbit\Data\IMap;
+use \Lightbit\Base\IWidgetInline;
 
 /**
- * IHttpSession.
+ * IHtmlWidgetInline.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpSession extends IComponent, IMap
+interface IHtmlWidgetInline extends IHtmlWidget, IWidgetInline
 {
-	/**
-	 * Gets the client identifier.
-	 *
-	 * @return string
-	 *	The client identifier.
-	 */
-	public function getClientID() : string;
-
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
-	public function getName() : string;
+	
 }

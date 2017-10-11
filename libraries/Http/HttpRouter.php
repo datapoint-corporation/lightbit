@@ -152,7 +152,7 @@ class HttpRouter extends HttpRouterBase
 
 		$result = '' . $this->scriptName;
 
-		$parameters = [ 'action' => strtr($action->getID(), '/-', '._') ]
+		$parameters = [ 'action' => strtr($action->getGlobalID(), '/-', '._') ]
 			+ $action->getParameters()
 			+ $route;
 

@@ -37,6 +37,7 @@ use \Lightbit\Base\IAction;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\ITheme;
+use \Lightbit\Data\IModel;
 
 /**
  * Controller.

@@ -28,6 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
+
 use \Lightbit\Base\IContext;
 use \Lightbit\Data\IModel;
 use \Lightbit\Html\IHtmlAdapter;
@@ -76,12 +77,12 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash;
 
-		$result = $session->fetch($id);
+		$result = $session->get('?string', $id);
 
 		if (!$result)
 		{
-			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getGuid()))));
-			$session->write($id, $result);
+			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID()))));
+			$session->set($id, $result);
 		}
 
 		return $result;
@@ -101,17 +102,17 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 */
 	protected function activeInputID(IModel $model, string $attribute) : string
 	{
-		$session = __contex()->getHttpSession();
+		$session = __context()->getHttpSession();
 
 		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
 		$id = 'lightbit.html.adapter.input.' . $hash . 'id';
 
-		$result = $session->fetch($id);
+		$result = $session->get('?string', $id);
 
 		if (!$result)
 		{
-			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getGuid() . '/id'))));
-			$session->write($id, $result);
+			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID() . '/id'))));
+			$session->set($id, $result);
 		}
 
 		return $result;

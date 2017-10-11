@@ -28,7 +28,8 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+
+use \Lightbit\Base\IContext;
 use \Lightbit\Data\IModel;
 use \Lightbit\Http\IHttpRequest;
 
