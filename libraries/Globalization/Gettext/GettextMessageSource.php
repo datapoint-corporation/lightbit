@@ -167,6 +167,7 @@ class GettextMessageSource extends Component implements IMessageSource
 								->getMessages();
 
 						$cache->set($guid, $this->messages[$localeID]);
+						break;
 					}
 				}
 			}
