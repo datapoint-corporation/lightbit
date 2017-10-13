@@ -28,6 +28,9 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
+use \Lightbit\Data\SlugManager;
+use \Lightbit\Globalization\MessageSource;
+use \Lightbit\Security\Cryptography\PasswordDigest;
 
 use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IContext;

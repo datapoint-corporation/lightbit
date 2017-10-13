@@ -25,23 +25,24 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Globalization;
+namespace Lightbit\Globalization\Gettext;
 
 use \Lightbit\Exception;
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Globalization\Gettext\GettextMachineObject;
 use \Lightbit\Globalization\Locale;
 
 use \Lightbit\Base\IContext;
+use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
 
 /**
- * MessageSource.
+ * GettextMessageSource.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MessageSource extends Component implements IMessageSource
+class GettextMessageSource extends Component implements IMessageSource
 {
 	/**
 	 * The directory.
@@ -122,47 +123,6 @@ class MessageSource extends Component implements IMessageSource
 	}
 
 	/**
-	 * Gets a message collection.
-	 *
-	 * @param Locale $locale
-	 *	The locale.
-	 *
-	 * @return array
-	 *	The message collection.
-	 */
-	private function getMessageCollection(ILocale $locale) : array
-	{
-		$localeID = $locale->getID();
-
-		if (!isset($this->messages[$localeID]))
-		{
-			$filePathPrefix = $this->getDirectoryPath() . DIRECTORY_SEPARATOR;
-			$filePathSuffix = '.php';
-
-			foreach ([ $locale->getLanguageCode(), $locale->getID() ] as $i => $token)
-			{
-				$filePath = $filePathPrefix . $token . $filePathSuffix;
-
-				if (file_exists($filePath))
-				{
-					$translation = __include_file_ex($filePath);
-
-					if (!is_array($translation))
-					{
-						throw new Exception(sprintf('Locale message translation table script must return an array: %s, at %s', $locale->getID(), $filePath));
-					}
-
-					return $this->messages[$localeID] = $translation;
-				}
-			}
-
-			$this->messages[$localeID] = [];
-		}
-
-		return $this->messages[$localeID];
-	}
-
-	/**
 	 * Reads a message.
 	 *
 	 * @param ILocale $locale
@@ -177,14 +137,49 @@ class MessageSource extends Component implements IMessageSource
 	public function read(?ILocale $locale, string $message) : string
 	{
 		$locale = $locale ?? $this->getLocale();
-		$collection = $this->getMessageCollection($locale);
+		$localeID = $locale->getID();
 
-		if (isset($collection[$message]))
+		if (!isset($this->messages[$localeID]))
 		{
-			return $collection[$message];
+			// Gettext parsing is a bit taxing if done every request, so we
+			// simply keep the entire message collection cached in-memory,
+			// just like the real thing, in order to speed things up.
+			$cache = $this->getMemoryCache();
+			$guid = '__lightbit.globalization.gettext.message.read://' . $localeID;
+
+			$this->messages[$localeID] = $cache->get('?array', $guid);
+
+			if (!isset($this->messages[$localeID]))
+			{
+				$this->messages[$localeID] = [];
+
+				$filePathPrefix = $this->getDirectoryPath() . DIRECTORY_SEPARATOR;
+				$filePathSuffix = '.mo';
+
+				foreach ([ $locale->getLanguageCode(), $locale->getID() ] as $i => $token)
+				{
+					$filePath = $filePathPrefix . $token . $filePathSuffix;
+
+					if (is_file($filePath))
+					{
+						$this->messages[$localeID] 
+							+= (new GettextMachineObject($filePath))
+								->getMessages();
+
+						$cache->set($guid, $this->messages[$localeID]);
+					}
+				}
+			}
+		}
+
+		// Even if we get the messages from the MO file, there's still a
+		// big chance the message is not defined in it.
+		if (!isset($this->messages[$localeID][$message]))
+		{
+			return $message;
 		}
 		
-		return $message;
+		return $this->messages[$localeID][$message];
 	}
 
 	/**

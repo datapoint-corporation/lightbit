@@ -44,14 +44,11 @@ interface IMessageSource extends IComponent
 	 * @param ILocale $locale
 	 *	The message locale.
 	 *
-	 * @param string $category
-	 *	The message category.
-	 *
 	 * @param string $message
 	 *	The message to read.
 	 *
 	 * @return string
 	 *	The message.
 	 */
-	public function read(?ILocale $locale, string $category, string $message) : string;
+	public function read(?ILocale $locale, string $message) : string;
 }

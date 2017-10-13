@@ -25,14 +25,14 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __(string $category, string $message, array $attributes = null) : string
+function __(string $message, array $attributes = null) : string
 {
 	$context = __context();
 	$locale = $context->getLocale();
 
 	return $locale->message
 	(
-		$context->getMessageSource()->read($locale, $category, $message),
+		$context->getMessageSource()->read($locale, $message),
 		$attributes
 	);
 }

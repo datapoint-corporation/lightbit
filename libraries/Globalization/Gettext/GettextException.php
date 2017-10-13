@@ -25,79 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Caching;
+namespace Lightbit\Globalization\Gettext;
 
-use \Lightbit\Base\Component;
-
-use \Lightbit\Base\IContext;
-use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Exception;
 
 /**
- * CacheBase.
+ * GettextException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class CacheBase extends Component implements ICache
+class GettextException extends Exception
 {
-	/**
-	 * Deletes a attribute.
-	 *
-	 * @param string $property
-	 *	The property.
-	 */
-	abstract public function delete(string $property) : void;
-
-	/**
-	 * Gets a attribute.
-	 *
-	 * @param string $type
-	 *	The property data type (e.g.: '?string').
-	 *
-	 * @param string $property
-	 *	The property.
-	 *
-	 * @return mixed
-	 *	The attribute.
-	 */
-	abstract public function get(?string $type, string $property); // : mixed
-
-	/**
-	 * Checks if a attribute is set.
-	 *
-	 * @param string $property
-	 *	The property.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	abstract public function has(string $property) : bool;
-
-	/**
-	 * Sets a attribute.
-	 *
-	 * @param string $property
-	 *	The property.
-	 *
-	 * @param mixed $attribute
-	 *	The attribute.
-	 */
-	abstract public function set(string $property, $attribute) : void;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The component context.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(string $message, \Throwable $previous = null)
 	{
-		parent::__construct($context, $id, $configuration);
+		parent::__construct($message, $previous);
 	}
 }

@@ -29,7 +29,7 @@ namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
 use \Lightbit\Base\View;
-USE \Ligbtbit\Data\Caching\Cache;
+USE \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\SqlConnection;
 use \Lightbit\Globalization\MessageSource;

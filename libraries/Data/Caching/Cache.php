@@ -28,7 +28,9 @@
 namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+use \Lightbit\Data\Caching\CacheBase;
+
+use \Lightbit\Base\IContext;
 use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
@@ -52,7 +54,7 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -61,7 +63,7 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(Context $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id);
 

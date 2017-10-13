@@ -147,6 +147,17 @@ class Model extends Element implements IModel
 	}
 
 	/**
+	 * Creates the attributes placeholder schema.
+	 *
+	 * @return array
+	 *	The attributes placeholder schema.
+	 */
+	protected function attributesPlaceholder() : array
+	{
+		return [];
+	}
+
+	/**
 	 * Gets an attribute.
 	 *
 	 * @param string $attribute
@@ -179,6 +190,27 @@ class Model extends Element implements IModel
 		}
 
 		return ucwords(implode(' ', __string_split_word($attribute)));
+	}
+
+	/**
+	 * Gets an attribute placeholder.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return string
+	 *	The attribute label.
+	 */
+	public function getAttributePlaceholder(string $attribute) : ?string
+	{
+		$placeholders = $this->getAttributesPlaceholder();
+
+		if (isset($placeholders[$attribute]))
+		{
+			return $placeholders[$attribute];
+		}
+
+		return null;
 	}
 
 	/**
@@ -237,6 +269,26 @@ class Model extends Element implements IModel
 		}
 
 		return $attributesLabel[$locale];
+	}
+
+	/**
+	 * Gets the attributes placeholder.
+	 *
+	 * @return array
+	 *	The attributes placeholder.
+	 */
+	public function getAttributesPlaceholder() : array
+	{
+		static $attributesPlaceholder = [];
+
+		$locale = $this->getLocale()->getID();
+
+		if (!isset($attributesPlaceholder[$locale]))
+		{
+			$attributesPlaceholder[$locale] = $this->attributesPlaceholder();
+		}
+
+		return $attributesPlaceholder[$locale];
 	}
 
 	/**

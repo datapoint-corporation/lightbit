@@ -108,6 +108,17 @@ interface IModel extends IElement
 	public function getAttributeLabel(string $attribute) : string;
 
 	/**
+	 * Gets an attribute placeholder.
+	 *
+	 * @param string $attribute
+	 *	The attribute name.
+	 *
+	 * @return string
+	 *	The attribute label.
+	 */
+	public function getAttributePlaceholder(string $attribute) : ?string;
+
+	/**
 	 * Gets the attributes.
 	 *
 	 * @return array
@@ -130,6 +141,14 @@ interface IModel extends IElement
 	 *	The attributes label.
 	 */
 	public function getAttributesLabel() : array;
+
+	/**
+	 * Gets the attributes placeholder.
+	 *
+	 * @return array
+	 *	The attributes placeholder.
+	 */
+	public function getAttributesPlaceholder() : array;
 
 	/**
 	 * Gets the attributes name.
