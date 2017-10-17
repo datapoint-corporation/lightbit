@@ -69,7 +69,7 @@ class LengthRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->setMessage('length', 'Value of "{attribute-label}" does not meet the expected length.');		
+		$this->setMessage('length', 'Value of "{attribute}" does not meet the expected length.');		
 
 		if ($configuration)
 		{
@@ -126,20 +126,24 @@ class LengthRule extends Rule
 		if ($this->minimum || $this->maximum)
 		{
 			$length = strlen($subject);
+			$minimum = ($this->minimum && $length < $this->minimum);
+			$maximum = ($this->maximum && $length > $this->maximum);
 
-			if (($this->minimum && $length < $this->minimum)
-				|| ($this->maximum && $length > $this->maximum))
+			if ($minimum || $maximum)
 			{
-				$this->report
-				(
-					$attribute, 
-					'length', 
-					[ 
-						'minimum' => $this->minimum, 
-						'maximum' => $this->maximum 
-					]
-				);
+				$message = 'length';
 
+				if ($minimum && $this->hasMessage('length.minimum'))
+				{
+					$message = 'length.minimum';
+				}
+
+				else if ($maximum && $this->hasMessage('length.maximum'))
+				{
+					$message = 'length.maximum';
+				}
+
+				$this->report($attribute, $message, [ 'minimum' => $this->minimum, 'maximum' => $this->maximum ]);
 				return false;
 			}
 		}

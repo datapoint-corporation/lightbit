@@ -161,7 +161,7 @@ class MySqlSqlTable extends Object implements ISqlTable
 	 */
 	public function getColumnsName() : array
 	{
-		return array_keys($this->columns);
+		return array_values($this->columnsCI);
 	}
 
 	/**

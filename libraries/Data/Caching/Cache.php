@@ -87,6 +87,23 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	}
 
 	/**
+	 * Extracts a attribute.
+	 *
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function extract(?string $type, string $property) // : mixed
+	{
+		return __map_extract($this->attributes, $type, $property);
+	}
+
+	/**
 	 * Gets a attribute.
 	 *
 	 * @param string $type

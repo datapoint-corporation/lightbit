@@ -28,7 +28,8 @@
 namespace Lightbit\Security\Cryptography;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
+
+use \Lightbit\Base\IContext;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**

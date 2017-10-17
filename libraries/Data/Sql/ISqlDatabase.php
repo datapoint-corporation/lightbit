@@ -70,6 +70,14 @@ interface ISqlDatabase extends ISqlObject
 	public function getTable(string $table) : ISqlTable;
 
 	/**
+	 * Gets the tables name.
+	 *
+	 * @return array
+	 *	The tables name.
+	 */
+	public function getTablesName() : array;
+
+	/**
 	 * Checks for a table availability.
 	 *
 	 * @return bool

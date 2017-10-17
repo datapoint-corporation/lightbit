@@ -70,7 +70,7 @@ class FullNameRule extends Rule
 
 		$this->transform = true;
 
-		$this->setMessage('format', 'Value of "{attribute-label}" must be your full name.');
+		$this->setMessage('format', 'Value of "{attribute}" must be your full name.');
 
 		if ($configuration)
 		{

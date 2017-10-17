@@ -40,7 +40,7 @@ use \Lightbit\Http\IHttpSession;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class HttpSession extends Component implements IHttpSession, IChannel
+class HttpSession extends Component implements IHttpSession, IChannel
 {
 	/**
 	 * The session name.
@@ -69,9 +69,13 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	/**
 	 * Closes the resource.
 	 */
-	public function close() : void
+	public final function close() : void
 	{
+		$this->onClose();
+
 		session_write_close();
+
+		$this->onAfterClose();
 	}
 
 	/**
@@ -80,9 +84,38 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @param string $property
 	 *	The property.
 	 */
-	public function delete(string $property) : void
+	public final function delete(string $property) : void
 	{
 		unset($_SESSION[$property]);
+	}
+
+	/**
+	 * Extracts a attribute.
+	 *
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function extract(?string $type, string $property) // : mixed
+	{
+		try
+		{
+			return __map_extract($_SESSION, $type, $property);
+		}
+		catch (\Throwable $e)
+		{
+			throw new HttpSessionException
+			(
+				$this,
+				sprintf('Can not extract session attribute: property %s', $property),
+				$e
+			);
+		}
 	}
 
 	/**
@@ -97,7 +130,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return mixed
 	 *	The attribute.
 	 */
-	public function get(?string $type, string $property) // : mixed
+	public final function get(?string $type, string $property) // : mixed
 	{
 		try
 		{
@@ -120,7 +153,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return string
 	 *	The session client identifier.
 	 */
-	public function getClientID() : string
+	public final function getClientID() : string
 	{
 		return session_id();
 	}
@@ -131,7 +164,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return string
 	 *	The name.
 	 */
-	public function getName() : string
+	public final function getName() : string
 	{
 		return $this->name;
 	}
@@ -145,7 +178,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return bool
 	 *	The result.
 	 */
-	public function has(string $property) : bool
+	public final function has(string $property) : bool
 	{
 		return isset($_SESSION[$property]);
 	}
@@ -156,7 +189,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return bool
 	 *	The resource status.
 	 */
-	public function isClosed() : bool
+	public final function isClosed() : bool
 	{
 		return (session_status() !== PHP_SESSION_ACTIVE);
 	}
@@ -170,7 +203,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @param mixed $attribute
 	 *	The attribute.
 	 */
-	public function set(string $property, $attribute) : void
+	public final function set(string $property, $attribute) : void
 	{
 		$_SESSION[$property] = $attribute;
 	}
@@ -181,7 +214,7 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @param string $name
 	 *	The name.
 	 */
-	public function setName(string $name) : void
+	public final function setName(string $name) : void
 	{
 		$this->name = $name;
 	}
@@ -189,12 +222,18 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	/**
 	 * Starts the resource.
 	 */
-	public function start() : void
+	public final function start() : void
 	{
+		$this->onStart();
+
+		session_name($this->name);
+
 		if (!session_start())
 		{
 			throw new HttpSessionException($this, sprintf('Can not start session, unexpected error.'));
 		}
+
+		$this->onAfterStart();
 	}
 	
 	/**
@@ -203,8 +242,52 @@ final class HttpSession extends Component implements IHttpSession, IChannel
 	 * @return array
 	 *	The result.
 	 */
-	public function toArray() : array
+	public final function toArray() : array
 	{
 		return $_SESSION;
+	}
+
+	/**
+	 * On After Close.
+	 *
+	 * This method is called during the start procedure, after the session
+	 * persistent storage is disposed.
+	 */
+	protected function onAfterClose() : void
+	{
+		$this->raise('lightbit.http.session.close.after');
+	}
+
+	/**
+	 * On After Start.
+	 *
+	 * This method is called during the start procedure, after the session
+	 * persistent storage is ready.
+	 */
+	protected function onAfterStart() : void
+	{
+		$this->raise('lightbit.http.session.start.after');
+	}
+
+	/**
+	 * On Close.
+	 *
+	 * This method is called during the start procedure, before the session
+	 * persistent storage is disposed.
+	 */
+	protected function onClose() : void
+	{
+		$this->raise('lightbit.http.session.close');
+	}
+
+	/**
+	 * On Start.
+	 *
+	 * This method is called during the start procedure, before the session
+	 * persistent storage is ready.
+	 */
+	protected function onStart() : void
+	{
+		$this->raise('lightbit.http.session.start');
 	}
 }

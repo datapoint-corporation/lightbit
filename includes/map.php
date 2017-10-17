@@ -69,3 +69,46 @@ function __map_get(?array $map, ?string $type, string $property) // : mixed
 
 	return null;
 }
+
+function __map_extract(?array &$map, ?string $type, string $property) // : mixed
+{
+	if ($map)
+	{
+		if (!isset($map[$property]))
+		{
+			if ($type && $type[0] !== '?')
+			{
+				__throw('Can not get property from map, it is undefined: property %s, expect %s', $property, $type);
+			}
+
+			if (array_key_exists($property, $map))
+			{
+				unset($map[$property]);
+			}
+
+			return null;
+		}
+
+		if ($type && !__type_match($type, $map[$property]))
+		{
+			__throw('Can not get property from map, type mismatch: property %s, expect %s, got %s', $property, $type, __type_of($map[$property]));
+		}
+
+		$result = $map[$property];
+		unset($map[$property]);
+
+		return $result;
+	}
+
+	if ($type && $type[0] !== '?')
+	{
+		__throw('Can not property from map, it is undefined: property %s, expect %s', $property, $type);
+	}
+
+	if (array_key_exists($property, $map))
+	{
+		unset($map[$property]);
+	}
+
+	return null;
+}

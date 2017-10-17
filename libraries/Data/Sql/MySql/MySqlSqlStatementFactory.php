@@ -77,9 +77,11 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 
 			if ($criteria instanceof ISqlSelectCriteria)
 			{
+				$statement .= 'COUNT(';
+
 				if ($criteria->isDistinct())
 				{
-					$statement .= 'COUNT(DISTINCT ';
+					$statement .= 'DISTINCT ';
 				}
 
 				$statement .= $criteria->hasSelect() ?

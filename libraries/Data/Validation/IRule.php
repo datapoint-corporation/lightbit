@@ -96,6 +96,17 @@ interface IRule extends IElement
 	public function hasAttribute(string $attribute) : bool;
 
 	/**
+	 * Checks for a message.
+	 *
+	 * @param string $message
+	 *	The message identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasMessage(string $message) : bool;
+
+	/**
 	 * Checks for an scenario applicability.
 	 *
 	 * @param string $scenario

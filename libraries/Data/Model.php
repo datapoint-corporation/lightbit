@@ -668,7 +668,7 @@ class Model extends Element implements IModel
 
 		$this->onAfterValidate();
 
-		return $result;
+		return ($result && !$this->attributesErrors);
 	}
 
 	/**

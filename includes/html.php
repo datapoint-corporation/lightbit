@@ -27,6 +27,7 @@
 
 use \Lightbit\Base\Object;
 use \Lightbit\Base\ITheme;
+use \Lightbit\Data\IModel;
 
 function __html_attribute(string $property, $attribute) : string
 {
@@ -219,6 +220,64 @@ function __html_end(string $tag) : string
 function __html_encode(string $content) : string
 {
 	return htmlspecialchars($content, (ENT_QUOTES | ENT_HTML5), 'UTF-8');
+}
+
+function __html_form(IModel $model, string $method = 'POST', array $action = null) : string
+{
+	$html = __context()->getHtmlAdapter();
+
+	$result = __html_form_begin([ 'action' => $action, 'method' => $method ]);
+
+	foreach ($model->getSafeAttributesName() as $i => $attribute)
+	{
+		$id = $html->getActiveInputID($model, $attribute);
+		$name = $html->getActiveInputName($model, $attribute);
+
+		$result .= __html_begin('fieldset');
+
+		$result .= __html_element
+		(
+			'label',
+			[ 'for' => $id ],
+			$model->getAttributeLabel($attribute),
+			false
+		);
+
+		$result .= __html_element('br');
+
+		$result .= __html_element
+		(
+			'input',
+			[ 
+				'id' => $id, 
+				'name' => $name, 
+				'type' => 'text', 
+				'value' => $model->getAttribute($attribute),
+				'placeholder' => $model->getAttributePlaceholder($attribute)
+			]
+		);
+
+		$messages = $model->getAttributeErrors($attribute);
+
+		if ($messages)
+		{
+			$result .= __html_begin('ul');
+
+			foreach ($messages as $i => $message)
+			{
+				$result .= __html_element('li', null, $message);
+			}
+
+			$result .= __html_end('ul');
+		}
+
+		$result .= __html_end('fieldset');
+	}
+
+	$result .= __html_element('input', [ 'type' => 'submit', 'value' => 'Submit' ]);
+
+	$result .= __html_form_end();
+	return $result;
 }
 
 function __html_form_begin(array $attributes = null) : string

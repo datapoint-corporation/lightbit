@@ -42,6 +42,13 @@ use \Lightbit\Http\IHttpRequest;
 class HttpRequest extends Component implements IHttpRequest
 {
 	/**
+	 * The url.
+	 *
+	 * @type string
+	 */
+	private $url;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
@@ -188,6 +195,35 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
+	 * Gets the request uri.
+	 *
+	 * @return string
+	 *	The request uri.
+	 */
+	public final function getUri() : string
+	{
+		return $_SERVER['REQUEST_URI'];
+	}
+
+	/**
+	 * Gets the request url.
+	 *
+	 * @return string
+	 *	The request url.
+	 */
+	public final function getUrl() : string
+	{
+		if (!$this->url)
+		{
+			$this->url = ($this->isSecure() ? 'https://' : 'http://')
+				. $this->getHeader('Host') 
+				. $this->getUri();
+		}
+
+		return $this->url;
+	}
+
+	/**
 	 * Checks if an header is defined.
 	 *
 	 * @param string $header
@@ -213,5 +249,16 @@ class HttpRequest extends Component implements IHttpRequest
 	public final function isOfMethod(string $method) : bool
 	{
 		return $_SERVER['REQUEST_METHOD'] === $method;
+	}
+
+	/**
+	 * Checks if the message is secure.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isSecure() : bool
+	{
+		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 	}
 }

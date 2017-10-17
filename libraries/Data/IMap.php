@@ -38,6 +38,20 @@ use \Lightbit\Data\IMap;
 interface IMap extends IMapBase
 {
 	/**
+	 * Extracts a attribute.
+	 *
+	 * @param string $type
+	 *	The property data type (e.g.: '?string').
+	 *
+	 * @param string $property
+	 *	The property.
+	 *
+	 * @return mixed
+	 *	The attribute.
+	 */
+	public function extract(?string $type, string $property); // : mixed
+
+	/**
 	 * Deletes a attribute.
 	 *
 	 * @param string $property

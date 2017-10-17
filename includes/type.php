@@ -39,7 +39,7 @@ function __type_filter(?string $type, $variable) // : mixed
 		{
 			if (!$nullable)
 			{
-				__throw('Can not type filter variable, variable is empty string or null: expecting %s', $type);
+				__throw(sprintf('Can not type filter variable, variable is empty string or null: expecting %s', $type));
 			}
 
 			return null;
@@ -61,19 +61,19 @@ function __type_filter(?string $type, $variable) // : mixed
 
 				if (!isset($variable))
 				{
-					__throw('Can not type filter variable, unsupported string format: expecting %s, got %s', $subject, $candidate);
+					__throw(sprintf('Can not type filter variable, unsupported string format: expecting %s, got %s', $subject, $candidate));
 				}
 
 				if ($subject !== __type_of($variable))
 				{
-					__throw('Can not type filter variable, bad type filter implementation: expecting %s, got %s', $subject, __type_of($variable));
+					__throw(sprintf('Can not type filter variable, bad type filter implementation: expecting %s, got %s', $subject, __type_of($variable)));
 				}
 
 				return $variable;
 			}
 		}
 
-		__throw('Can not type filter variable, unsupported type: expecting %s, got %s', $subject, $candidate);
+		__throw(sprintf('Can not type filter variable, unsupported type: expecting %s, got %s', $subject, $candidate));
 		return;
 	}
 
@@ -97,7 +97,7 @@ function __type_filter_compose($variable) : string
 
 	if (!isset($_LIGHTBIT_TYPE_FILTER[$type]))
 	{
-		__throw('Can not compose variable through filter, not set: type %s', $type);
+		__throw(sprintf('Can not compose variable through filter, not set: type %s', $type));
 	}
 
 	return call_user_func($_LIGHTBIT_TYPE_FILTER[$type][0], $variable);
@@ -109,7 +109,7 @@ function __type_filter_register(string $type, $compose, $parse) : void
 
 	if (isset($_LIGHTBIT_TYPE_FILTER[$type]))
 	{
-		__throw('Can not register type filter, already set: type %s', $type);
+		__throw(sprintf('Can not register type filter, already set: type %s', $type));
 	}
 
 	$_LIGHTBIT_TYPE_FILTER[$type] = [ $compose, $parse ];

@@ -61,7 +61,7 @@ class EmailAddressRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->setMessage('format', 'Value of "{attribute-label}" is not an acceptable email address.');
+		$this->setMessage('format', 'Value of "{attribute}" is not an acceptable email address.');
 		$this->transform = true;
 
 		if ($configuration)

@@ -27,24 +27,23 @@
 
 namespace Lightbit\Data\Validation;
 
-use \Lightbit\Base\Exception;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 
 /**
- * PatternRule.
+ * MatchRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class PatternRule extends Rule
+class MatchRule extends Rule
 {
 	/**
-	 * The pattern.
+	 * The subject.
 	 *
 	 * @type string
 	 */
-	private $pattern;
+	private $subject;
 
 	/**
 	 * Constructor.
@@ -62,9 +61,7 @@ class PatternRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->pattern = '%^.+$%';
-
-		$this->setMessage('format', 'Value of "{attribute}" is not an acceptable password.');		
+		$this->setMessage('incorrect', 'Value of "{attribute}" is incorrect.');		
 
 		if ($configuration)
 		{
@@ -73,14 +70,14 @@ class PatternRule extends Rule
 	}
 
 	/**
-	 * Sets the pattern.
+	 * Sets the subject.
 	 *
-	 * @param string $pattern
-	 *	The pattern.
+	 * @param string $subject
+	 *	The subject.
 	 */
-	public final function setPattern(string $pattern) : void
+	public final function setSubject(string $subject) : void
 	{
-		$this->pattern = $pattern;
+		$this->subject = $subject;
 	}
 
 	/**
@@ -107,19 +104,12 @@ class PatternRule extends Rule
 	 */
 	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		$result = preg_match($this->pattern, $subject);
-
-		if ($result === false)
+		if ($this->subject && ($model->getAttribute($this->subject) === $subject))
 		{
-			throw new Exception(sprintf('Can not match against attribute, invalid pattern: %s', $this->pattern));
+			return true;
 		}
 
-		if ($result === 0)
-		{
-			$this->report($attribute, 'format');
-			return false;
-		}
-
-		return true;
+		$this->report($attribute, 'invalid');
+		return false;
 	}
 }

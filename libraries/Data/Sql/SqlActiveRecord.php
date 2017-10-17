@@ -518,8 +518,9 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 		// Get the table columns and limit the attributes to those matching
 		// existing columns for this active record.
-		$columns = $this->getTable()->getColumns();
-		$attributes = array_intersect_key($this->getAttributesWithUpdate(), $columns);
+		$table = $this->getTable();
+		$columns = $table->getColumns();
+		$attributes = array_intersect_key($this->getAttributesWithUpdate(), array_reverse($columns));
 
 		if ($attributes)
 		{
@@ -530,14 +531,14 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 				$this->getSqlConnection()
 					->getStatementFactory()
-						->update($this->getTableName(), $attributes, $criteria)
+						->update($table->getName(), $attributes, $criteria)
 							->execute();
 			}
 			else
 			{
 				$sql = $this->getSqlConnection();
 				$sql->getStatementFactory()
-					->insert($this->getTableName(), $attributes)
+					->insert($table->getName(), $attributes)
 						->execute();
 
 				$primaryKey = $this->getPrimaryKey();

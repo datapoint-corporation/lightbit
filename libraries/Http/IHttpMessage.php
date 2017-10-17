@@ -77,4 +77,12 @@ interface IHttpMessage extends IComponent
 	 *	The result.
 	 */
 	public function hasHeader(string $header) : bool;
+
+	/**
+	 * Checks if the message is secure.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isSecure() : bool;
 }

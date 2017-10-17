@@ -28,10 +28,11 @@
 namespace Lightbit\Data\Sql;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Base\Context;
-use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\MySql\MySqlSqlDriver;
 use \Lightbit\Exception;
+
+use \Lightbit\Base\IContext;
+use \Lightbit\Data\Sql\ISqlConnection;
 
 /**
  * SqlConnection.
@@ -136,7 +137,7 @@ class SqlConnection extends Component implements ISqlConnection
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
@@ -145,7 +146,7 @@ class SqlConnection extends Component implements ISqlConnection
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public final function __construct(Context $context, string $id, array $configuration = null)
+	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct($context, $id, null);
 

@@ -57,6 +57,22 @@ interface IHttpRequest extends IHttpMessage
 	 *	The request form data.
 	 */
 	public function getData() : array;
+
+	/**
+	 * Gets the request uri.
+	 *
+	 * @return string
+	 *	The request uri.
+	 */
+	public function getUri() : string;
+
+	/**
+	 * Gets the request url.
+	 *
+	 * @return string
+	 *	The request url.
+	 */
+	public function getUrl() : string;
 	
 	/**
 	 * Checks the request method for a match.

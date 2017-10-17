@@ -34,8 +34,10 @@ use \Lightbit\Data\Validation\EnumerationRule;
 use \Lightbit\Data\Validation\FullNameRule;
 use \Lightbit\Data\Validation\IRule;
 use \Lightbit\Data\Validation\LengthRule;
+use \Lightbit\Data\Validation\MatchRule;
 use \Lightbit\Data\Validation\PatternRule;
 use \Lightbit\Data\Validation\SafeRule;
+use \Lightbit\Data\Validation\UniqueRule;
 use \Lightbit\Exception;
 
 /**
@@ -69,8 +71,10 @@ abstract class Rule extends Element implements IRule
 			'enumeration' => EnumerationRule::class,
 			'full-name' => FullNameRule::class,
 			'length' => LengthRule::class,
+			'match' => MatchRule::class,
 			'pattern' => PatternRule::class,
-			'safe' => SafeRule::class
+			'safe' => SafeRule::class,
+			'unique' => UniqueRule::class
 		];
 
 		if (!isset($configuration['@class']))
@@ -148,7 +152,7 @@ abstract class Rule extends Element implements IRule
 	 */
 	public function __construct(IModel $model, string $id, array $configuration = null)
 	{
-		parent::__construct();
+		parent::__construct($model->getContext());
 
 		$this->model = $model;
 		$this->id = $id;
@@ -157,7 +161,7 @@ abstract class Rule extends Element implements IRule
 
 		$this->messages =
 		[
-			'empty' => 'Value of "{attribute-label}" must not be empty.'
+			'empty' => 'Value of "{attribute}" must not be empty.'
 		];
 
 		if ($configuration)
@@ -239,12 +243,26 @@ abstract class Rule extends Element implements IRule
 	}
 
 	/**
+	 * Checks for a message.
+	 *
+	 * @param string $message
+	 *	The message identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasMessage(string $message) : bool
+	{
+		return isset($this->messages[$message]);
+	}
+
+	/**
 	 * Checks for an scenario applicability.
 	 *
 	 * @param string $scenario
 	 *	The scenario.
 	 */
-	public function hasScenario(string $scenario) : bool
+	public final function hasScenario(string $scenario) : bool
 	{
 		if (isset($this->scenarios))
 		{
@@ -295,13 +313,8 @@ abstract class Rule extends Element implements IRule
 			$message = $this->messages[$message];
 		}
 
-		$arguments =
-		[
-			'attribute' => $attribute,
-			'attriibute-label' => $this->model->getAttributeLabel($attribute)
-		]
-
-		+ (array) $arguments;
+		$arguments = [ 'attribute' => $this->model->getAttributeLabel($attribute) ]
+			+ (array) $arguments;
 
 		$this->model->addAttributeError
 		(

@@ -180,11 +180,21 @@ final class Locale extends Object implements ILocale
 	{
 		if ($arguments)
 		{
-			$result = \MessageFormatter::formatMessage($this->id, $message, $arguments);
+			$result = msgfmt_format_message($this->id, $message, $arguments);
 
 			if ($result === false)
 			{
-				throw new Exception(sprintf('Can not format message: locale %s, message %s', $this->id, $message));
+				throw new Exception
+				(
+					sprintf
+					(
+						'Can not format message: locale %s, message %s, error %d, %s', 
+						$this->id,
+						$message,
+						intl_get_error_code(),
+						lcfirst(intl_get_error_message())
+					)
+				);
 			}
 
 			return $result;

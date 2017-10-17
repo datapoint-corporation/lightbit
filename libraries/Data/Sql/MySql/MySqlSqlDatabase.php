@@ -93,8 +93,28 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 
 		foreach ($tables as $i => $table)
 		{
-			$this->tables[$table['TABLE_NAME']] = new MySqlSqlTable($table, $columns, $keys);
+			if (($table['TABLE_SCHEMA'] === $database['SCHEMA_NAME'])
+				&& ($table['TABLE_CATALOG'] === $database['CATALOG_NAME']))
+			{
+				$this->tables[$table['TABLE_NAME']] = new MySqlSqlTable($table, $columns, $keys);
+			}
 		}
+	}
+
+	private function getTablesCI() : array
+	{
+		return $this->tablesCI;
+	}
+
+	/**
+	 * Gets the tables name.
+	 *
+	 * @return array
+	 *	The tables name.
+	 */
+	public function getTablesName() : array
+	{
+		return array_values($this->tablesCI);
 	}
 
 	/**

@@ -134,6 +134,17 @@ class HttpResponse extends Component implements IHttpResponse
 	}
 
 	/**
+	 * Checks if the message is secure.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isSecure() : bool
+	{
+		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+	}
+
+	/**
 	 * Clears the active output buffers, headers and status code.
 	 *
 	 * If content has already been sent and, as such, the response can not

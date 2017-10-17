@@ -62,7 +62,7 @@ class EnumerationRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->setMessage('invalid', 'Value of "{attribute-label}" is not acceptable.');		
+		$this->setMessage('invalid', 'Value of "{attribute}" is not acceptable.');		
 
 		if ($configuration)
 		{

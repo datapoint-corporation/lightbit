@@ -27,25 +27,19 @@
 
 namespace Lightbit\Data\Validation;
 
-use \Lightbit\Base\Exception;
-use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 
+use \Lightbit\Data\IModel;
+use \Lightbit\Data\Sql\ISqlActiveRecord;
+
 /**
- * PatternRule.
+ * UniqueRule.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class PatternRule extends Rule
+class UniqueRule extends Rule
 {
-	/**
-	 * The pattern.
-	 *
-	 * @type string
-	 */
-	private $pattern;
-
 	/**
 	 * Constructor.
 	 *
@@ -62,25 +56,23 @@ class PatternRule extends Rule
 	{
 		parent::__construct($model, $id, null);
 
-		$this->pattern = '%^.+$%';
-
-		$this->setMessage('format', 'Value of "{attribute}" is not an acceptable password.');		
+		if (($model instanceof ISqlActiveRecord))
+		{
+			throw new Exception
+			(
+				sprintf
+				(
+					'Can not use unique rule for non active record: model %s, rule %s',
+					__type_of($model),
+					$id
+				)
+			);
+		}
 
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			__object_apply($this, $configuration);
 		}
-	}
-
-	/**
-	 * Sets the pattern.
-	 *
-	 * @param string $pattern
-	 *	The pattern.
-	 */
-	public final function setPattern(string $pattern) : void
-	{
-		$this->pattern = $pattern;
 	}
 
 	/**
@@ -107,19 +99,15 @@ class PatternRule extends Rule
 	 */
 	protected function validateAttribute(IModel $model, string $attribute, $subject) : bool
 	{
-		$result = preg_match($this->pattern, $subject);
-
-		if ($result === false)
+		if (isset($criteria))
 		{
-			throw new Exception(sprintf('Can not match against attribute, invalid pattern: %s', $this->pattern));
+			$criteria = new SqlSelectCriteria($criteria);
+			$criteria->addComparisons([ $attribute => $subject ]);
 		}
 
-		if ($result === 0)
-		{
-			$this->report($attribute, 'format');
-			return false;
-		}
-
-		return true;
+		return $this->getSqlConnection()
+			->getStatementFactory()
+				->count($model->getTableName(), $criteria)
+					->scalar();
 	}
 }

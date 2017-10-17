@@ -121,7 +121,7 @@ class HttpRouter extends HttpRouterBase
 		}
 		catch (IllegalParameterRouteException $e)
 		{
-			throw new HttpStatusException(400, $e->getMessage(), $e);
+			throw new HttpStatusException(404, $e->getMessage(), $e);
 		}
 		catch (MissingParameterRouteException $e)
 		{
