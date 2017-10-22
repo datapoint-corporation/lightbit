@@ -42,6 +42,13 @@ use \Lightbit\Base\IView;
 class View extends Element implements IView
 {
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+	
+	/**
 	 * The base path.
 	 *
 	 * @type string
@@ -71,12 +78,24 @@ class View extends Element implements IView
 	{
 		parent::__construct($context);
 
+		$this->context = $context;
 		$this->path = $path;
 
 		if ($configuration)
 		{
 			__object_apply($this, $configuration);
 		}
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->context;
 	}
 
 	/**

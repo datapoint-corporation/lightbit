@@ -31,7 +31,7 @@ use \Lightbit\Base\Context;
 use \Lightbit\Base\View;
 USE \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\SlugManager;
-use \Lightbit\Data\Sql\SqlConnection;
+use \Lightbit\Data\Sql\My\MySqlConnection;
 use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Html\HtmlAdapter;
 use \Lightbit\Html\HtmlDocument;
@@ -70,7 +70,7 @@ class Application extends Context implements IApplication
 	 * @param array $configuration
 	 *	The application configuration.
 	 */
-	public function __construct(string $path, array $configuration = null)
+	public final function __construct(string $path, array $configuration = null)
 	{
 		parent::__construct(null, 'application', $path, null);
 
@@ -84,7 +84,7 @@ class Application extends Context implements IApplication
 				'data.cache.memory' => [ '@class' => Cache::class ],
 				'data.cache.network' => [ '@class' => Cache::class ],
 				'data.slug.manager' => [ '@class' => SlugManager::class ],
-				'data.sql.connection' => [ '@class' => SqlConnection::class ],
+				'data.sql.connection' => [ '@class' => MySqlConnection::class ],
 				'globalization.message.source' => [ '@class' => MessageSource::class ],
 				'html.adapter' => [ '@class' => HtmlAdapter::class ],
 				'html.document' => [ '@class' => HtmlDocument::class ],
@@ -100,10 +100,14 @@ class Application extends Context implements IApplication
 
 		$this->setLocale('en-US');
 
+		$this->onConstruct();
+
 		if ($configuration)
 		{
-			__object_apply($this, $configuration);
+			$this->configure($configuration);
 		}
+
+		$this->onAfterConstruct();
 	}
 
 	/**
@@ -278,6 +282,16 @@ class Application extends Context implements IApplication
 		{
 			exit(1);
 		}
+	}
+
+	protected function onAfterConstruct() : void
+	{
+		
+	}
+
+	protected function onConstruct() : void
+	{
+
 	}
 
 	/**

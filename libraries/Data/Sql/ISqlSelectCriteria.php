@@ -32,6 +32,9 @@ use \Lightbit\Data\Sql\ISqlCriteria;
 /**
  * ISqlSelectCriteria.
  *
+ * The select criteria adds the inherits from the standard criteria, but adds
+ * support for sub-selects, grouping, offsets, limits and sorting.
+ *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */

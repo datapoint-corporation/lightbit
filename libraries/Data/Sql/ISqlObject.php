@@ -35,4 +35,11 @@ namespace Lightbit\Data\Sql;
  */
 interface ISqlObject
 {
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public function getName() : string;
 }

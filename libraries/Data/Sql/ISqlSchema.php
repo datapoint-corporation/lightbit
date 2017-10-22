@@ -27,53 +27,48 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlReader;
-use \Lightbit\Data\Sql\SqlStatementException;
-use \Lightbit\Exception;
+use \Lightbit\Data\Sql\ISqlObject;
 
 /**
- * SqlReaderException.
+ * ISqlSchema.
+ *
+ * Usage of this class should not be confused with the definiton of "schema"
+ * from any database management system: this framework assumes one schema
+ * contains many databases, each database contains tables, each table contains
+ * columns and constraints and each column contains attributes.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SqlReaderException extends SqlStatementException
+interface ISqlSchema extends ISqlObject
 {
 	/**
-	 * The sql reader.
+	 * Gets a database schema.
 	 *
-	 * @type ISqlReader
+	 * @param string $database
+	 *	The database name.
+	 *
+	 * @return ISqlDatabase
+	 *	The database schema.
 	 */
-	private $sqlReader;
+	public function getDatabase(string $database) : ISqlDatabase;
 
 	/**
-	 * Constructor.
+	 * Gets all databases schema.
 	 *
-	 * @param ISqlReader $sqlReader
-	 *	The sql reader.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The previous throwable.
+	 * @return array
+	 *	The databases.
 	 */
-	public function __construct(ISqlReader $sqlReader, string $message, \Throwable $previous = null)
-	{
-		parent::__construct($reader->getSqlStatement(), $message, $previous);
-
-		$this->sqlReader = $sqlReader;
-	}
+	public function getDatabases() : array;
 
 	/**
-	 * Gets the sql reader.
+	 * Checks if a database schema is available.
 	 *
-	 * @return ISqlReader
-	 *	The sql reader.
+	 * @param string $database
+	 *	The database name.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public final function getSqlReader() : ISqlReader
-	{
-		return $this->sqlReader;
-	}
+	public function hasDatabase(string $database) : bool;
 }

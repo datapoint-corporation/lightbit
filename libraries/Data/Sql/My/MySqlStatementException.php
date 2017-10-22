@@ -25,33 +25,24 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\ContextException;
-use \Lightbit\Data\Sql\ISqlTransaction;
-use \Lightbit\Data\Sql\SqlConnectionException;
-use \Lightbit\Exception;
+use \Lightbit\Data\Sql\My\MySqlStatement;
+use \Lightbit\Data\Sql\SqlStatementException;
 
 /**
- * SqlTransactionException.
+ * SqlStatementException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SqlTransactionException extends SqlConnectionException
+class MySqlStatementException extends SqlStatementException
 {
-	/**
-	 * The sql transaction.
-	 *
-	 * @type ISqlTransaction
-	 */
-	private $sqlTransaction;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlTransactionException $sqlConnection
-	 *	The sql transaction.
+	 * @param MySqlStatement $sqlStatement
+	 *	The sql statement.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -59,21 +50,8 @@ class SqlTransactionException extends SqlConnectionException
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(ISqlTransaction $sqlTransaction, string $message, \Throwable $previous = null)
+	public function __construct(MySqlStatement $sqlStatement, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($sqlTransaction->getConnection(), $message, $previous);
-
-		$this->sqlTransaction = $sqlTransaction;
-	}
-
-	/**
-	 * Gets the sql transaction.
-	 *
-	 * @return ISqlTransaction
-	 *	The sql transaction.
-	 */
-	public final function getSqlTransaction() : ISqlTransaction
-	{
-		return $this->sqlTransaction;
+		parent::__construct($sqlStatement, $message, $previous);
 	}
 }

@@ -27,11 +27,14 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlStatement;
-
 /**
  * ISqlReader.
+ *
+ * A SQL reader is a basic stream reader that fetches one result at a time and,
+ * as such, should be closed and safely disposed after use. If it's left open,
+ * depending on the underlying database management system, you may not be able
+ * to prepare and/or run the next statement and memory leaks may have a 
+ * negative impact on the application performance.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
@@ -39,10 +42,12 @@ use \Lightbit\Data\Sql\ISqlStatement;
 interface ISqlReader
 {
 	/**
-	 * Fetches the remaining results in the current result set.
+	 * Fetches the remaining results in the current result set and safely
+	 * closes the reader.
 	 *
 	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 *	The numeric fetch flag which, when set, causes all results to be
+	 *	fetched as numeric arrays.
 	 *
 	 * @return array
 	 *	The results.
@@ -50,17 +55,14 @@ interface ISqlReader
 	public function all(bool $numeric = false) : array;
 
 	/**
-	 * Closes the sql reader.
+	 * Safely closes the reader.
+	 *
+	 * After closing, some information will persist regarding the parent
+	 * transaction and any encountered errors. It has a neglible impact on
+	 * memory consumption but, if you want to completely dispose of the reader,
+	 * just unset it (unset($reader)).
 	 */
 	public function close() : void;
-
-	/**
-	 * Continues to the next result set, if available.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function continue() : bool;
 
 	/**
 	 * Gets the sql connection.
@@ -79,39 +81,52 @@ interface ISqlReader
 	public function getSqlStatement() : ISqlStatement;
 
 	/**
-	 * Checks the sql reader status.
+	 * Checks if the reader is closed.
+	 *
+	 * Be aware that once a reader is closed, it can not be reset and ends
+	 * up being useless. Further calls to functions expecting it to be open
+	 * may result in unexpected behaviour.
 	 *
 	 * @return bool
-	 *	The sql reader status.
+	 *	The result.
 	 */
 	public function isClosed() : bool;
 
 	/**
 	 * Fetches the next result in the current result set.
 	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 * Be aware that even if there is no more rows in the current result set,
+	 * in which case null is returned instead, that does not mean the reader
+	 * is, will be or has been closed!
 	 *
 	 * @return array
-	 *	The result.
+	 *	The next result.
 	 */
 	public function next(bool $numeric = false) : ?array;
 
 	/**
-	 * Fetches the next cell in the current result set and returns it, 
-	 * disposing all remaining resulsts by closing.
+	 * Fetches the next result in the current result set, returning the
+	 * first cell after closing the reader.
 	 *
-	 * @return mixed
+	 * Be aware that once a reader is closed, it can not be reset and ends
+	 * up being useless. Further calls to functions expecting it to be open
+	 * may result in unexpected behaviour.
+	 *
+	 * @return string
 	 *	The result.
 	 */
-	public function scalar(); // : mixed
+	public function scalar() : ?string;
 
 	/**
-	 * Fetches the next result in the current result set and returns it, 
-	 * disposing all remaining resulsts by closing.
+	 * Fetches the next result in the current result set and returns it 
+	 * after closing the reader.
 	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 * Be aware that once a reader is closed, it can not be reset and ends
+	 * up being useless. Further calls to functions expecting it to be open
+	 * may result in unexpected behaviour.
+	 *
+	 * In this case, if there are no more rows within the current result set,
+	 * the reader is still implicitly closed.
 	 *
 	 * @return array
 	 *	The result.

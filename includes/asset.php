@@ -184,6 +184,7 @@ function __asset_path_resolve_token(string $context, ?string $extension, string 
 				sprintf
 				(
 					'Can not get asset path from token, bad format: token %s, from %s (:%d)',
+					$token,
 					$backtrace['file'],
 					$backtrace['line']
 				)

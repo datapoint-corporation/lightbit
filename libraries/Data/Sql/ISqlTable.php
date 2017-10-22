@@ -28,7 +28,7 @@
 namespace Lightbit\Data\Sql;
 
 use \Lightbit\Data\Sql\ISqlColumn;
-use \Lightbit\Data\Sql\ISqlObject;
+use \Lightbit\Data\Sql\ISqlDatabase;
 
 /**
  * ISqlTable.
@@ -39,39 +39,10 @@ use \Lightbit\Data\Sql\ISqlObject;
 interface ISqlTable extends ISqlObject
 {
 	/**
-	 * Gets the default character set.
+	 * Gets a column.
 	 *
-	 * @return string
-	 *	The default character set.
-	 */
-	public function getDefaultCharacterSet() : ?string;
-
-	/**
-	 * Gets the default collation.
-	 *
-	 * @return string
-	 *	The default collation.
-	 */
-	public function getDefaultCollation() : ?string;
-
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
-	public function getName() : string;
-
-	/**
-	 * Gets the primary key.
-	 *
-	 * @return array
-	 * 	The primary key.
-	 */
-	public function getPrimaryKey() : ?array;
-
-	/**
-	 * Gets the column.
+	 * @param string $column
+	 *	The column name.
 	 *
 	 * @return ISqlColumn
 	 *	The column.
@@ -79,7 +50,7 @@ interface ISqlTable extends ISqlObject
 	public function getColumn(string $column) : ISqlColumn;
 
 	/**
-	 * Gets the columns.
+	 * Gets all columns.
 	 *
 	 * @return array
 	 *	The columns.
@@ -87,18 +58,48 @@ interface ISqlTable extends ISqlObject
 	public function getColumns() : array;
 
 	/**
-	 * Gets the columns name.
+	 * Gets the database.
 	 *
-	 * @return array
-	 *	The columns name.
+	 * @return ISqlDatabase
+	 *	The database.
 	 */
-	public function getColumnsName() : array;
+	public function getDatabase() : ISqlDatabase;
 
 	/**
-	 * Checks for a column availability.
+	 * Gets the table primary key.
+	 *
+	 * The primary key is represented by a numeric array of column names which,
+	 * if the table has no primary key, is going to be empty.
+	 *
+	 * @return array
+	 *	The table primary key. 
+	 */
+	public function getPrimaryKey() : array;
+
+	/**
+	 * Gets the schema.
+	 *
+	 * @return ISqlSchema
+	 *	The schema.
+	 */
+	public function getSchema() : ISqlSchema;
+
+	/**
+	 * Checks if a column exists.
+	 *
+	 * @param string $column
+	 *	The column name.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
 	public function hasColumn(string $column) : bool;
+
+	/**
+	 * Checks if the primary key exists.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasPrimaryKey() : bool;
 }

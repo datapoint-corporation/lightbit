@@ -70,6 +70,32 @@ function __map_get(?array $map, ?string $type, string $property) // : mixed
 	return null;
 }
 
+function __map_match(?array $map, ?array $subject) : bool
+{
+	if ($map)
+	{
+		if ($subject)
+		{
+			foreach ($subject as $property => $attribute)
+			{
+				if ((isset($map[$property]) || array_key_exists($property, $map))
+					&& ($map[$property] === $attribute))
+				{
+					continue;
+				}
+
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	return !$subject;
+}
+
 function __map_extract(?array &$map, ?string $type, string $property) // : mixed
 {
 	if ($map)

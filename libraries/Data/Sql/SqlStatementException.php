@@ -27,10 +27,9 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\SqlConnectionException;
-use \Lightbit\Exception;
+
+use \Lightbit\Data\Sql\ISqlStatement;
 
 /**
  * SqlStatementException.
@@ -72,7 +71,7 @@ class SqlStatementException extends SqlConnectionException
 	 * @return ISqlStatement
 	 *	The sql statement.
 	 */
-	public final function getSqlStatement() : ISqlStatement
+	public function getSqlStatement() : ISqlStatement
 	{
 		return $this->sqlStatement;
 	}

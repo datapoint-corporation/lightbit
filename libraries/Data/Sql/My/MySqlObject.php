@@ -25,98 +25,46 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data\Sql\My;
 
 use \Lightbit\Base\Object;
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\ISqlTransaction;
+
+use \Lightbit\Data\Sql\ISqlObject;
 
 /**
- * SqlTransaction.
+ * MySqlObject.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class SqlTransaction extends Object implements ISqlTransaction
+class MySqlObject extends Object implements ISqlObject
 {
 	/**
-	 * Performs a commit, closing the transaction.
-	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
-	 */
-	abstract public function commit() : void;
-
-	/**
-	 * Checks if the transaction is closed.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	abstract public function isClosed() : bool;
-
-	/**
-	 * Performs a rollback, closing the transaction.
-	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
-	 */
-	abstract public function rollback() : void;
-
-	/**
-	 * Starts the transaction.
-	 */
-	abstract public function start() : void;
-
-	/**
-	 * The connection.
-	 *
-	 * @type ISqlConnection
-	 */
-	private $connection;
-
-	/**
-	 * The identifier.
+	 * The name.
 	 *
 	 * @type string
 	 */
-	private $id;
+	private $name;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $connection
-	 *	The connection.
+	 * @param string $name
+	 *	The object name.
 	 */
-	public function __construct(ISqlConnection $connection)
+	public function __construct(string $name)
 	{
-		$this->connection = $connection;
+		$this->name = $name;
 	}
 
 	/**
-	 * Gets the identifier.
+	 * Gets the name.
 	 *
 	 * @return string
-	 *	The identifier.
+	 *	The name.
 	 */
-	public function getID() : string
+	public final function getName() : string
 	{
-		if (!$this->id)
-		{
-			$this->id = 'lb' . __lightbit_next_id();
-		}
-
-		return $this->id;
-	}
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection
-	{
-		return $this->connection;
+		return $this->name;
 	}
 }

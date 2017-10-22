@@ -28,6 +28,7 @@
 namespace Lightbit\Data\Sql;
 
 use \Lightbit\Data\Sql\ISqlObject;
+use \Lightbit\Data\Sql\ISqlTable;
 
 /**
  * ISqlColumn.
@@ -38,47 +39,15 @@ use \Lightbit\Data\Sql\ISqlObject;
 interface ISqlColumn extends ISqlObject
 {
 	/**
-	 * Gets the character set.
+	 * Gets the table.
 	 *
-	 * @return string
-	 *	The character set.
+	 * @return ISqlTable
+	 *	The table.
 	 */
-	public function getCharacterSet() : ?string;
+	public function getTable() : ISqlTable;
 
 	/**
-	 * Gets the collation.
-	 *
-	 * @return string
-	 *	The collation.
-	 */
-	public function getCollation() : ?string;
-
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
-	public function getName() : string;
-
-	/**
-	 * Gets the type name.
-	 *
-	 * @return string
-	 *	The type name.
-	 */
-	public function getTypeName() : string;
-
-	/**
-	 * Checks if it is auto incrementable.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isAutoIncrementable() : bool;
-
-	/**
-	 * Checks if it is nullable.
+	 * Checks if the column is nullable.
 	 *
 	 * @return bool
 	 *	The result.

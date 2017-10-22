@@ -40,13 +40,6 @@ use \Lightbit\Data\Sql\ISqlCriteria;
 class SqlCriteria extends Object implements ISqlCriteria
 {
 	/**
-	 * The arguments.
-	 *
-	 * @type array
-	 */
-	private $arguments;
-
-	/**
 	 * The alias.
 	 *
 	 * @type string
@@ -66,6 +59,13 @@ class SqlCriteria extends Object implements ISqlCriteria
 	 * @type string
 	 */
 	private $condition;
+
+	/**
+	 * The parameters.
+	 *
+	 * @type array
+	 */
+	private $parameters;
 
 	/**
 	 * Constructor.
@@ -104,7 +104,8 @@ class SqlCriteria extends Object implements ISqlCriteria
 			{
 				$parameter = ':lb' . __lightbit_next_id();
 				$comparison .= '= ' . $parameter;
-				$this->setArguments([ $parameter => $candidate ]);
+
+				$this->parameters[$parameter] = $candidate;
 			}
 		}
 		else
@@ -143,17 +144,6 @@ class SqlCriteria extends Object implements ISqlCriteria
 	}
 
 	/**
-	 * Gets the arguments.
-	 *
-	 * @return array
-	 *	The arguments.
-	 */
-	public function getArguments() : ?array
-	{
-		return $this->arguments;
-	}
-
-	/**
 	 * Gets the condition.
 	 *
 	 * @return string
@@ -173,6 +163,17 @@ class SqlCriteria extends Object implements ISqlCriteria
 	public function getJoin() : ?string
 	{
 		return $this->join;
+	}
+
+	/**
+	 * Gets the parameters.
+	 *
+	 * @return array
+	 *	The parameters.
+	 */
+	public function getParameters() : ?array
+	{
+		return $this->parameters;
 	}
 
 	/**
@@ -200,17 +201,6 @@ class SqlCriteria extends Object implements ISqlCriteria
 	}
 
 	/**
-	 * Checks the arguments.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasArguments() : bool
-	{
-		return !!$this->arguments;
-	}
-
-	/**
 	 * Checks the condition.
 	 *
 	 * @return bool
@@ -230,6 +220,17 @@ class SqlCriteria extends Object implements ISqlCriteria
 	public function hasJoin() : bool
 	{
 		return !!$this->join;
+	}
+
+	/**
+	 * Checks the parameters.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasParameters() : bool
+	{
+		return !!$this->parameters;
 	}
 
 	/**
@@ -257,21 +258,6 @@ class SqlCriteria extends Object implements ISqlCriteria
 	}
 
 	/**
-	 * Sets the arguments.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @param bool $dispose
-	 *	When set, the existing arguments will be disposed.
-	 */
-	public function setArguments(?array $arguments, bool $dispose = false) : void
-	{
-		$this->arguments = (!$this->arguments || $dispose) ?
-			$arguments : ($arguments + $this->arguments);
-	}
-
-	/**
 	 * Sets the condition.
 	 *
 	 * @param string $condition
@@ -291,6 +277,21 @@ class SqlCriteria extends Object implements ISqlCriteria
 	public function setJoin(?string $join) : void
 	{
 		$this->join = $join;
+	}
+
+	/**
+	 * Sets the parameters.
+	 *
+	 * @param array $parameters
+	 *	The parameters.
+	 *
+	 * @param bool $dispose
+	 *	When set, the existing parameters will be disposed.
+	 */
+	public function setParameters(?array $parameters, bool $dispose = false) : void
+	{
+		$this->parameters = (!$this->parameters || $dispose) ?
+			$parameters : ($parameters + $this->parameters);
 	}
 
 	/**

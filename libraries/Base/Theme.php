@@ -43,6 +43,13 @@ use \Lightbit\Base\IView;
 class Theme extends Element implements ITheme
 {
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -90,6 +97,7 @@ class Theme extends Element implements ITheme
 	{
 		parent::__construct($context);
 
+		$this->context = $context;
 		$this->id = $id;
 		$this->layout = 'main';
 		$this->path = $path;
@@ -98,6 +106,17 @@ class Theme extends Element implements ITheme
 		{
 			__object_apply($this, $configuration);
 		}
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->context;
 	}
 
 	/**

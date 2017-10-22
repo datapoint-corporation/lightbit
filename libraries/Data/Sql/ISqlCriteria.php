@@ -72,14 +72,6 @@ interface ISqlCriteria
 	public function getAlias() : ?string;
 
 	/**
-	 * Gets the arguments.
-	 *
-	 * @return array
-	 *	The arguments.
-	 */
-	public function getArguments() : ?array;
-
-	/**
 	 * Gets the condition.
 	 *
 	 * @return string
@@ -94,6 +86,14 @@ interface ISqlCriteria
 	 *	The join.
 	 */
 	public function getJoin() : ?string;
+
+	/**
+	 * Gets the parameters.
+	 *
+	 * @return array
+	 *	The parameters.
+	 */
+	public function getParameters() : ?array;
 
 	/**
 	 * Gets the condition.
@@ -114,14 +114,6 @@ interface ISqlCriteria
 	public function hasAlias() : bool;
 
 	/**
-	 * Checks the arguments.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasArguments() : bool;
-
-	/**
 	 * Checks the condition.
 	 *
 	 * @return bool
@@ -136,6 +128,14 @@ interface ISqlCriteria
 	 *	The result.
 	 */
 	public function hasJoin() : bool;
+
+	/**
+	 * Checks the parameters.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasParameters() : bool;
 
 	/**
 	 * Checks the condition.
@@ -156,17 +156,6 @@ interface ISqlCriteria
 	public function setAlias(?string $alias) : void;
 
 	/**
-	 * Sets the arguments.
-	 *
-	 * @param array $arguments
-	 *	The arguments.
-	 *
-	 * @param bool $dispose
-	 *	When set, the existing arguments will be disposed.
-	 */
-	public function setArguments(?array $arguments, bool $dispose = false) : void;
-
-	/**
 	 * Sets the condition.
 	 *
 	 * @param string $condition
@@ -181,6 +170,17 @@ interface ISqlCriteria
 	 *	The join.
 	 */
 	public function setJoin(?string $join) : void;
+
+	/**
+	 * Sets the parameters.
+	 *
+	 * @param array $parameters
+	 *	The parameters.
+	 *
+	 * @param bool $dispose
+	 *	When set, the existing parameters will be disposed.
+	 */
+	public function setParameters(?array $parameters, bool $dispose = false) : void;
 
 	/**
 	 * Sets the condition.

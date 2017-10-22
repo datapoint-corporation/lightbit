@@ -25,59 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Data\Sql\ISqlColumn;
-use \Lightbit\Data\Sql\ISqlObject;
-use \Lightbit\Data\Sql\ISqlSchema;
+use \Lightbit\Data\Sql\SqlException;
 
 /**
- * ISqlDatabase.
- *
- * Instances of this class represent an existing database and contain 
- * information all of its objects, including any tables, views, constraints
- * and more.
+ * MySqlException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlDatabase extends ISqlObject
+class MySqlException extends SqlException
 {
 	/**
-	 * Gets the schema.
+	 * Constructor.
 	 *
-	 * @return ISqlSchema
-	 *	The schema.
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function getSchema() : ISqlSchema;
-
-	/**
-	 * Gets a table.
-	 *
-	 * @param string $table
-	 *	The table name.
-	 *
-	 * @return ISqlTable
-	 *	The table.
-	 */
-	public function getTable(string $table) : ISqlTable;
-
-	/**
-	 * Gets all tables.
-	 *
-	 * @return array
-	 *	The tables.
-	 */
-	public function getTables() : array;
-
-	/**
-	 * Checks if a table exists.
-	 *
-	 * @param string $table
-	 *	The table name.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasTable(string $table) : bool;
+	public function __construct(string $message, \Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+	}
 }

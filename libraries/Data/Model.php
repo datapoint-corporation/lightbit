@@ -136,28 +136,6 @@ class Model extends Element implements IModel
 	}
 
 	/**
-	 * Creates the attributes label schema.
-	 *
-	 * @return array
-	 *	The attributes label schema.
-	 */
-	protected function attributesLabel() : array
-	{
-		return [];
-	}
-
-	/**
-	 * Creates the attributes placeholder schema.
-	 *
-	 * @return array
-	 *	The attributes placeholder schema.
-	 */
-	protected function attributesPlaceholder() : array
-	{
-		return [];
-	}
-
-	/**
 	 * Gets an attribute.
 	 *
 	 * @param string $attribute
@@ -257,7 +235,7 @@ class Model extends Element implements IModel
 
 		if (!isset($attributesLabel[$locale]))
 		{
-			$attributesLabel[$locale] = $this->attributesLabel();
+			$attributesLabel[$locale] = $this->labels();
 
 			foreach ($this->getAttributesName() as $i => $attribute)
 			{
@@ -285,7 +263,7 @@ class Model extends Element implements IModel
 
 		if (!isset($attributesPlaceholder[$locale]))
 		{
-			$attributesPlaceholder[$locale] = $this->attributesPlaceholder();
+			$attributesPlaceholder[$locale] = $this->placeholders();
 		}
 
 		return $attributesPlaceholder[$locale];
@@ -537,6 +515,28 @@ class Model extends Element implements IModel
 	public final function isScenario(string ...$scenario) : bool
 	{
 		return in_array($this->scenario, ...$scenario);
+	}
+
+	/**
+	 * Creates the attributes label schema.
+	 *
+	 * @return array
+	 *	The attributes label schema.
+	 */
+	protected function labels() : array
+	{
+		return [];
+	}
+
+	/**
+	 * Creates the attributes placeholder schema.
+	 *
+	 * @return array
+	 *	The attributes placeholder schema.
+	 */
+	protected function placeholders() : array
+	{
+		return [];
 	}
 
 	/**

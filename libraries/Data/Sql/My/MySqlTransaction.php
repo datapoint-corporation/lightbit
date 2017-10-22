@@ -25,59 +25,66 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\MySql;
+namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Data\Sql\SqlTransaction;
-use \Lightbit\Data\Sql\SqlTransactionException;
+use \Lightbit\Base\Object;
+use \Lightbit\Data\Sql\My\MySqlConnection;
+use \Lightbit\Data\Sql\SqlException;
+
+use \Lightbit\Data\Sql\ISqlTransaction;
 
 /**
- * MySqlSqlTransaction.
+ * MySqlTransaction.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlSqlTransaction extends SqlTransaction
+class MySqlTransaction extends Object implements ISqlTransaction
 {
 	/**
-	 * The status.
+	 * The state.
 	 *
 	 * @type bool
 	 */
 	private $closed;
 
 	/**
+	 * The MySQL connection.
+	 *
+	 * @type MySqlConnection;
+	 */
+	private $mySqlConnection;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $connection
-	 *	The connection.
+	 * @param MySqlConnection
+	 *	The MySQL connection.
 	 */
-	public function __construct(ISqlConnection $connection)
+	public function __construct(MySqlConnection $mySqlConnection)
 	{
-		parent::__construct($connection);
-
 		$this->closed = true;
+		$this->mySqlConnection = $mySqlConnection;
+		$this->mySqlConnection->run('START TRANSACTION');
+		$this->closed = false;
 	}
 
 	/**
-	 * Performs a commit, closing the transaction.
+	 * Performs a commit.
 	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
+	 * Be aware once the procedure completes, the transaction is closed and any
+	 * future statements are not part of it and might be impossible to rollback.
 	 */
 	public function commit() : void
 	{
-		if ($this->closed)
-		{
-			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is closed, transaction %s', $this->getID()));
-		}
-
-		$this->getConnection()->run('COMMIT');
-		$this->closed = true;
+		$this->mySqlConnection->run('COMMIT');
 	}
 
 	/**
-	 * Checks if the transaction is closed.
+	 * Checks the transaction state.
+	 *
+	 * Be aware if the transaction is closed, any future statements are not part
+	 * of it and might be impossible to rollback.
 	 *
 	 * @return bool
 	 *	The result.
@@ -88,33 +95,13 @@ class MySqlSqlTransaction extends SqlTransaction
 	}
 
 	/**
-	 * Performs a rollback, closing the transaction.
+	 * Performs a rollback.
 	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
+	 * Be aware once the procedure completes, the transaction is closed and any
+	 * future statements are not part of it and might be impossible to rollback.
 	 */
 	public function rollback() : void
 	{
-		if ($this->closed)
-		{
-			throw new SqlTransactionException($this, sprintf('Can not rollback transaction: transaction is closed, transaction %s', $this->getID()));
-		}
-
-		$this->getConnection()->run('ROLLBACK');
-		$this->closed = true;
-	}
-
-	/**
-	 * Starts the transaction.
-	 */
-	public function start() : void
-	{
-		if (!$this->closed)
-		{
-			throw new SqlTransactionException($this, sprintf('Can not commit transaction: transaction is active, transaction %s', $this->getID()));
-		}
-
-		$this->getConnection()->run('START TRANSACTION');
-		$this->closed = false;
+		$this->mySqlConnection->run('ROLLBACK');
 	}
 }

@@ -27,9 +27,9 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\ContextException;
+use \Lightbit\Data\Sql\SqlException;
+
 use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Exception;
 
 /**
  * SqlConnectionException.
@@ -37,7 +37,7 @@ use \Lightbit\Exception;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SqlConnectionException extends ContextException
+class SqlConnectionException extends SqlException
 {
 	/**
 	 * The sql connection.
@@ -49,8 +49,8 @@ class SqlConnectionException extends ContextException
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $sqlConnection
-	 *	The sql connection.
+	 * @param ISqlConnection $connection
+	 *	The connection.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -60,7 +60,7 @@ class SqlConnectionException extends ContextException
 	 */
 	public function __construct(ISqlConnection $sqlConnection, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($sqlConnection->getContext(), $message, $previous);
+		parent::__construct($message, $previous);
 
 		$this->sqlConnection = $sqlConnection;
 	}
@@ -71,7 +71,7 @@ class SqlConnectionException extends ContextException
 	 * @return ISqlConnection
 	 *	The sql connection.
 	 */
-	public final function getSqlConnection() : ISqlConnection
+	public function getSqlConnection() : ISqlConnection
 	{
 		return $this->sqlConnection;
 	}

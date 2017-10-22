@@ -97,6 +97,13 @@ abstract class Rule extends Element implements IRule
 	private $attributesName;
 
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -152,8 +159,9 @@ abstract class Rule extends Element implements IRule
 	 */
 	public function __construct(IModel $model, string $id, array $configuration = null)
 	{
-		parent::__construct($model->getContext());
+		parent::__construct();
 
+		$this->context = $model->getContext();
 		$this->model = $model;
 		$this->id = $id;
 		$this->required = false;
@@ -207,6 +215,17 @@ abstract class Rule extends Element implements IRule
 		}
 
 		return $this->attributesName;
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->context;
 	}
 
 	/**

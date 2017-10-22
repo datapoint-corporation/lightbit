@@ -29,8 +29,11 @@ namespace Lightbit\Data\Sql;
 
 use \Lightbit\Base\IChannel;
 use \Lightbit\Base\IComponent;
+use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlReader;
+use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Data\Sql\ISqlStatementFactory;
 
 /**
  * ISqlConnection.
@@ -41,33 +44,47 @@ use \Lightbit\Data\Sql\ISqlStatement;
 interface ISqlConnection extends IComponent, IChannel
 {
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * all results.
+	 * Creates, prepares and executes a query statement, pre-fetching
+	 * all results within the first result set.
 	 *
 	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
+	 *	The statement to prepare.
 	 *
-	 * @param array $arguments
-	 *	The statement arguments.
+	 * @param array $parameters
+	 *	The statement parameters.
 	 *
 	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 *	The numeric flag which, when set, causes the results to be fetched
+	 *	as a numeric array.
 	 *
 	 * @return array
 	 *	The results.
 	 */
-	public function all(string $statement, array $arguments = null, bool $numeric = false) : array;
+	public function all(string $statement, array $parameters = null, bool $numeric = false) : array;
+
+	public function close() : void;
 
 	/**
-	 * Gets the last insert row identifier.
+	 * Creates, prepares and executes a statement, returning the number
+	 * of affected rows.
+	 *
+	 * @param string $statement
+	 *	The statement to prepare.
+	 *
+	 * @param array $parameters
+	 *	The statement parameters.
 	 *
 	 * @return int
-	 *	The last insert row identifier.
+	 *	The number of affected rows.
 	 */
-	public function getLastInsertID() : int;
+	public function execute(string $statement, array $parameters = null) : int;
 
 	/**
 	 * Gets the database.
+	 *
+	 * Since this function fetches the schema for the database and all of its
+	 * objects (tables, views, columns, etc.), it can become costly and the
+	 * use of a fast memory cache component is highly recommended.
 	 *
 	 * @return ISqlDatabase
 	 *	The database.
@@ -75,184 +92,125 @@ interface ISqlConnection extends IComponent, IChannel
 	public function getDatabase() : ISqlDatabase;
 
 	/**
-	 * Gets the sql connection driver.
+	 * Gets the schema.
 	 *
-	 * @return ISqlDriver
-	 *	The sql connection driver.
+	 * Since this function fetches the schema for all databases and all of its
+	 * objects (tables, views, columns, etc.), it can become costly and the
+	 * use of a fast memory cache component is highly recommended.
+	 *
+	 * @return ISqlSchema
+	 *	The schema.
 	 */
-	public function getDriver() : ISqlDriver;
+	public function getSchema() : ISqlSchema;
 
 	/**
-	 * Gets the sql statement factory.
+	 * Gets the statement factory.
+	 *
+	 * The statement factory can be used to automatically generate complex
+	 * statements based on a dynamic criteria and/or other values - its most
+	 * common usage is shown throughout the implementation of active records.
 	 *
 	 * @return ISqlStatementFactory
-	 *	The sql statement factory.
+	 *	The statement factory.
 	 */
 	public function getStatementFactory() : ISqlStatementFactory;
 
 	/**
-	 * Gets the user for authentication.
+	 * Prepares and executes a query statement.
+	 *
+	 * Since this function generates a reader, that reader should be manually
+	 * closed and safely disposed before continuing to the next procedure.
+	 *
+	 * If the reader is not closed, depending on the underlying database
+	 * management system, you might be unable to prepare and/or execute
+	 * the next statement and memory leaks may have a negative impact on
+	 * the application performance.
+	 *
+	 * @param string $statement
+	 *	The statement to prepare and execute.
+	 *
+	 * @param array $parameters
+	 *	The statement parameters.
+	 *
+	 * @return ISqlReader
+	 *	The reader.
+	 */
+	public function query(string $statement, array $parameters = null) : ISqlReader;
+
+	/**
+	 * Quotes a statement.
+	 *
+	 * The given statement should have its fields quoted with double quotes and
+	 * this method will make the necessary replacements to ensure the quoting
+	 * sequence matches the one expected by the underlying database management
+	 * system.
+	 *
+	 * An example: $sql->quote('SELECT * FROM "USER"');
+	 *
+	 * @param string $statement
+	 *	The statement to quote.
+	 */
+	public function quote(string $statement) : string;
+
+	/**
+	 * Prepares and executes a query statement, pre-fetching and returning
+	 * the first cell within the first result set.
+	 *
+	 * Since this query generates a reader, know that reader is automatically
+	 * closed and safely disposed before the value is returned for use.
+	 *
+	 * @param string $statement
+	 *	The statement to prepare and execute.
+	 *
+	 * @param array $parameters
+	 *	The statement parameters.
 	 *
 	 * @return string
-	 *	The user for authentication.
-	 */
-	public function getUser() : ?string;
-
-	/**
-	 * Creates, prepares and executes a statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
-	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @return int
-	 *	The number of affected rows.
-	 */
-	public function execute(string $statement, array $arguments = null) : int;
-
-	/**
-	 * Checks for a password for authentication.
-	 *
-	 * @return bool
 	 *	The result.
 	 */
-	public function hasPassword() : bool;
+	public function scalar(string $statement, array $parameters = null) : ?string;
 
 	/**
-	 * Checks for a user for authentication.
+	 * Prepares and executes a query statement, pre-fetching and returning
+	 * the first result within the first result set.
 	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasUser() : bool;
-
-	/**
-	 * Creates, prepares and executes a query statement.
+	 * Since this query generates a reader, know that reader is automatically
+	 * closed and safely disposed before the value is returned for use.
 	 *
 	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
+	 *	The statement to prepare and execute.
 	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @return ISqlStatement
-	 *	The sql statement.
-	 */
-	public function query(string $statement, array $arguments = null) : ISqlReader;
-
-	/**
-	 * Runs a command.
-	 *
-	 * Please beaware that this function does not perform any kind of escape
-	 * procedures on the given command.
-	 *
-	 * For security reasons, you should never use this function with user
-	 * input, even after validation.
-	 *
-	 * @param string $command
-	 *	The command.
-	 *
-	 * @return int
-	 *	The number of affected rows.
-	 */
-	public function run(string $command) : int;
-
-	/**
-	 * Creates, prepares and executes a scalar query statement.
-	 *
-	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
-	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function scalar(string $statement, array $arguments = null); // : mixed
-
-	/**
-	 * Sets the driver configuration.
-	 *
-	 * @param array $driverConfiguration
-	 *	The driver configuration.
-	 *
-	 * @param bool $merge
-	 *	The driver configuration merge flag.
-	 */
-	public function setDriverConfiguration(array $driverConfiguration, bool $merge = true) : void;
-
-	/**
-	 * Sets the dsn connection string.
-	 *
-	 * @param string $dsn
-	 *	The dsn connection string.
-	 */
-	public function setDsn(string $dsn) : void;
-
-	/**
-	 * Sets the password for authentication.
-	 *
-	 * @param string $password
-	 *	The password for authentication.
-	 */
-	public function setPassword(?string $password) : void;
-
-	/**
-	 * Sets the user for authentication.
-	 *
-	 * @param string $user
-	 *	The user for authentication.
-	 */
-	public function setUser(?string $user) : void;
-
-	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * a single result.
-	 *
-	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
-	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @param bool $numeric
-	 *	The fetch as a numeric array flag.
+	 * @param array $parameters
+	 *	The statement parameters.
 	 *
 	 * @return array
 	 *	The result.
 	 */
-	public function single(string $statement, array $arguments = null, bool $numeric = false) : ?array;
+	public function single(string $statement, array $parameters = null, bool $numeric = false) : ?array;
 
 	/**
-	 * Starts a transaction.
-	 *
-	 * @return ISqlTransaction
-	 *	The transaction.
-	 */
-	public function startTransaction() : ISqlTransaction;
-
-	/**
-	 * Creates and prepares a statement.
+	 * Prepares a statement for multiple execution.
 	 *
 	 * @param string $statement
-	 *	The statement to create and prepare, as a string.
+	 *	The statement to prepare and execute.
 	 *
 	 * @return ISqlStatement
-	 *	The sql statement.
+	 *	The statement.
 	 */
 	public function statement(string $statement) : ISqlStatement;
 
 	/**
-	 * Executes a transaction.
+	 * Starts a new transaction.
 	 *
-	 * @param \Closure $closure
-	 *	The transaction closure.
+	 * Once the applicable transact procedures are complete, you must explicitly
+	 * commit (or rollback) the transaction. 
 	 *
-	 * @return mixed
-	 *	The transaction result.
+	 * If the transaction is left open, a rollback is automatically issued
+	 * during on connection close, more often than not, at the end of
+	 * the current request, even if the persistent flag is set.
+	 *
+	 * @return ISqlTransaction
+	 *	The transaction.
 	 */
-	public function transaction(\Closure $closure); // : mixed;
+	public function transaction() : ISqlTransaction;
 }

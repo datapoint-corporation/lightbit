@@ -42,6 +42,23 @@ function __action() : Action
 	return $__LIGHTBIT_ACTION;
 }
 
+function __action_id(bool $global = false) : string
+{
+	global $__LIGHTBIT_ACTION;
+
+	if (!isset($__LIGHTBIT_ACTION))
+	{
+		__throw_illegal_state('Can not get current action, it is not set.');
+	}
+
+	if ($global)
+	{
+		return ($__LIGHTBIT_ACTION)->getGlobalID();
+	}
+
+	return ($__LIGHTBIT_ACTION)->getID();
+}
+
 function __action_context() : Context
 {
 	global $__LIGHTBIT_ACTION;

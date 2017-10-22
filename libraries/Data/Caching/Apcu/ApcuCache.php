@@ -25,20 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Caching;
+namespace Lightbit\Data\Caching\Apcu;
 
-use \Lightbit\Base\Component;
+use \Lightbit\Data\Caching\CacheBase;
 
-use \Lightbit\Base\IContext;
-use \Lightbit\Data\Caching\ICache;
+use \Lightbit\Data\Caching\IMemoryCache;
 
-/**
- * CacheBase.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-abstract class CacheBase extends Component implements ICache
+class ApcuCache extends CacheBase implements IMemoryCache
 {
 	/**
 	 * Deletes a attribute.
@@ -46,7 +39,10 @@ abstract class CacheBase extends Component implements ICache
 	 * @param string $property
 	 *	The property.
 	 */
-	abstract public function delete(string $property) : void;
+	public function delete(string $property) : void
+	{
+		apcu_delete($property);
+	}
 
 	/**
 	 * Extracts a attribute.
@@ -60,7 +56,18 @@ abstract class CacheBase extends Component implements ICache
 	 * @return mixed
 	 *	The attribute.
 	 */
-	abstract public function extract(?string $type, string $property); // : mixed
+	public function extract(?string $type, string $property) // : mixed
+	{
+		if (apcu_exists($property))
+		{
+			$result = __type_filter($type, apcu_fetch($property));
+			apcu_delete($property);
+
+			return $result;
+		}
+
+		return __type_filter($type, null);
+	}
 
 	/**
 	 * Gets a attribute.
@@ -74,7 +81,15 @@ abstract class CacheBase extends Component implements ICache
 	 * @return mixed
 	 *	The attribute.
 	 */
-	abstract public function get(?string $type, string $property); // : mixed
+	public function get(?string $type, string $property)
+	{
+		if (apcu_exists($property))
+		{
+			return __type_filter($type, apcu_fetch($property));
+		}
+
+		return __type_filter($type, null);
+	}
 
 	/**
 	 * Checks if a attribute is set.
@@ -85,7 +100,10 @@ abstract class CacheBase extends Component implements ICache
 	 * @return bool
 	 *	The result.
 	 */
-	abstract public function has(string $property) : bool;
+	public function has(string $property) : bool
+	{
+		return apcu_exists($property);
+	}
 
 	/**
 	 * Sets a attribute.
@@ -96,22 +114,8 @@ abstract class CacheBase extends Component implements ICache
 	 * @param mixed $attribute
 	 *	The attribute.
 	 */
-	abstract public function set(string $property, $attribute) : void;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public function set(string $property, $attribute) : void
 	{
-		parent::__construct($context, $id, $configuration);
+		apcu_store($property, $attribute);
 	}
 }

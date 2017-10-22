@@ -25,41 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\MySql;
+namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
+use \Lightbit\Data\Sql\My\MySqlColumn;
+use \Lightbit\Data\Sql\My\MySqlObject;
+
 use \Lightbit\Data\Sql\ISqlDatabase;
+use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlTable;
-use \Lightbit\Exception;
 
 /**
- * MySqlSqlDatabase.
+ * MySqlDatabase.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class MySqlSqlDatabase extends Object implements ISqlDatabase
+class MySqlDatabase extends MySqlObject implements ISqlDatabase
 {
 	/**
-	 * The default character set.
+	 * The schema.
 	 *
-	 * @type string
+	 * @type ISqlSchema
 	 */
-	private $defaultCharacterSet;
-
-	/**
-	 * The default collation.
-	 *
-	 * @type string
-	 */
-	private $defaultCollation;
-
-	/**
-	 * The name.
-	 *
-	 * @type string
-	 */
-	private $name;
+	private $schema;
 
 	/**
 	 * The tables.
@@ -71,87 +59,57 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 	/**
 	 * Constructor.
 	 *
-	 * @param array $database
-	 *	The database schema.
+	 * @param MySqlSchema $schema
+	 *	The schema.
 	 *
-	 * @param array $tables
-	 *	The tables schema.
+	 * @param array $schemata
+	 *	The database schemata.
 	 *
 	 * @param array $columns
-	 *	The columns schema.
+	 *	The columns schemata.
 	 *
-	 * @param array $keys
-	 *	The keys usage schema.
+	 * @param array $constraints
+	 *	The constraints schemata.
 	 */
-	public function __construct(array $database, array $tables, array $columns, array $keys)
+	public function __construct(MySqlSchema $schema, array $schemata, array $tables, array $columns, array $constraints)
 	{
-		$this->defaultCharacterSet = $database['DEFAULT_CHARACTER_SET_NAME'];
-		$this->defaultCollation = $database['DEFAULT_COLLATION_NAME'];
-		$this->name = $database['SCHEMA_NAME'];
+		parent::__construct($schemata['SCHEMA_NAME']);
 
+		$this->schema = $schema;
 		$this->tables = [];
+
+		$scope = 
+		[
+			'TABLE_CATALOG' => 'def', 
+			'TABLE_SCHEMA' => $schemata['SCHEMA_NAME']
+		];
 
 		foreach ($tables as $i => $table)
 		{
-			if (($table['TABLE_SCHEMA'] === $database['SCHEMA_NAME'])
-				&& ($table['TABLE_CATALOG'] === $database['CATALOG_NAME']))
+			if (__map_match($table, $scope))
 			{
-				$this->tables[$table['TABLE_NAME']] = new MySqlSqlTable($table, $columns, $keys);
+				$instance = new MySqlTable($this, $table, $columns, $constraints);
+				$this->tables[$instance->getName()] = $instance;
 			}
 		}
 	}
 
-	private function getTablesCI() : array
-	{
-		return $this->tablesCI;
-	}
-
 	/**
-	 * Gets the tables name.
+	 * Gets the schema.
 	 *
-	 * @return array
-	 *	The tables name.
+	 * @return ISqlSchema
+	 *	The schema.
 	 */
-	public function getTablesName() : array
+	public function getSchema() : ISqlSchema
 	{
-		return array_values($this->tablesCI);
+		return $this->schema;
 	}
 
 	/**
-	 * Gets the default character set.
+	 * Gets a table.
 	 *
-	 * @return string
-	 *	The default character set.
-	 */
-	public function getDefaultCharacterSet() : ?string
-	{
-		return $this->defaultCharacterSet;
-	}
-
-	/**
-	 * Gets the default collation.
-	 *
-	 * @return string
-	 *	The default collation.
-	 */
-	public function getDefaultCollation() : ?string
-	{
-		return $this->defaultCollation;
-	}
-
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
-	public function getName() : string
-	{
-		return $this->name;
-	}
-
-	/**
-	 * Gets the table.
+	 * @param string $table
+	 *	The table name.
 	 *
 	 * @return ISqlTable
 	 *	The table.
@@ -160,20 +118,43 @@ final class MySqlSqlDatabase extends Object implements ISqlDatabase
 	{
 		if (!isset($this->tables[$table]))
 		{
-			throw new Exception(sprintf('Database table not found: database %s, table %s', $this->name, $table));
+			throw new MySqlException
+			(
+				sprintf
+				(
+					'Can not get table from database, not set: table %s, database %s, schema %s',
+					$table,
+					$this->getName(),
+					$this->schema->getName()
+				)
+			);
 		}
 
 		return $this->tables[$table];
 	}
 
 	/**
-	 * Checks for a table availability.
+	 * Gets all tables.
+	 *
+	 * @return array
+	 *	The tables.
+	 */
+	public function getTables() : array
+	{
+		return $this->tables;
+	}
+
+	/**
+	 * Checks if a table exists.
+	 *
+	 * @param string $table
+	 *	The table name.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
 	public function hasTable(string $table) : bool
 	{
-		return isset($this->tables[$table]);
+		return (isset($this->tables[$table]));
 	}
 }

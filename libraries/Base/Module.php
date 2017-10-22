@@ -59,7 +59,7 @@ abstract class Module extends Context implements IModule
 	 * @param array $configuration
 	 *	The module configuration.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null)
+	public final function __construct(IContext $context, string $id, string $path, array $configuration = null)
 	{
 		parent::__construct($context, $id, $path);
 
@@ -72,10 +72,14 @@ abstract class Module extends Context implements IModule
 			]
 		);
 
+		$this->onConstruct();
+
 		if ($configuration)
 		{
 			$this->configure($configuration);
 		}
+
+		$this->onAfterConstruct();
 	}
 
 	/**
@@ -87,5 +91,15 @@ abstract class Module extends Context implements IModule
 	public final function getApplication() : IApplication
 	{
 		return __application();
+	}
+
+	protected function onAfterConstruct() : void
+	{
+		
+	}
+
+	protected function onConstruct() : void
+	{
+
 	}
 }

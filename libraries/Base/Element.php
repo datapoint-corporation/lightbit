@@ -64,21 +64,13 @@ use \Lightbit\Security\Cryptography\IPasswordDigest;
 abstract class Element extends Object implements IElement
 {
 	/**
-	 * The context.
-	 *
-	 * @type IContext;
-	 */
-	private $context;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
 	 *	The element context.
 	 */
-	protected function __construct(IContext $context = null)
+	protected function __construct()
 	{
-		$this->context = ($context ?? __context());
 	}
 
 	/**
@@ -111,7 +103,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getCache() : ICache
 	{
-		return $this->context->getCache();
+		return $this->getContext()->getCache();
 	}
 
 	/**
@@ -125,7 +117,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public final function getComponent(string $id) : IComponent
 	{
-		return $this->context->getComponent($id);
+		return $this->getContext()->getComponent($id);
 	}
 
 	/**
@@ -134,9 +126,9 @@ abstract class Element extends Object implements IElement
 	 * @return IContext
 	 *	The context.
 	 */
-	public final function getContext() : IContext
+	public function getContext() : IContext
 	{
-		return $this->context;
+		return __context();
 	}
 
 	/**
@@ -147,7 +139,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getEnvironment() : IEnvironment
 	{
-		return $this->context->getEnvironment();
+		return $this->getContext()->getEnvironment();
 	}
 
 	/**
@@ -158,7 +150,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getFileCache() : IFileCache
 	{
-		return $this->context->getFileCache();
+		return $this->getContext()->getFileCache();
 	}
 
 	/**
@@ -169,7 +161,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHtmlAdapter() : IHtmlAdapter
 	{
-		return $this->context->getHtmlAdapter();
+		return $this->getContext()->getHtmlAdapter();
 	}
 
 	/**
@@ -180,7 +172,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHtmlDocument() : IHtmlDocument
 	{
-		return $this->context->getHtmlDocument();
+		return $this->getContext()->getHtmlDocument();
 	}
 
 	/**
@@ -191,7 +183,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpAssetManager() : IHttpAssetManager
 	{
-		return $this->context->getHttpAssetManager();
+		return $this->getContext()->getHttpAssetManager();
 	}
 
 	/**
@@ -202,7 +194,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpQueryString() : IHttpQueryString
 	{
-		return $this->context->getHttpQueryString();
+		return $this->getContext()->getHttpQueryString();
 	}
 
 	/**
@@ -213,7 +205,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpRequest() : IHttpRequest
 	{
-		return $this->context->getHttpRequest();
+		return $this->getContext()->getHttpRequest();
 	}
 
 	/**
@@ -224,7 +216,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpResponse() : IHttpResponse
 	{
-		return $this->context->getHttpResponse();
+		return $this->getContext()->getHttpResponse();
 	}
 
 	/**
@@ -235,7 +227,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpRouter() : IHttpRouter
 	{
-		return $this->context->getHttpRouter();
+		return $this->getContext()->getHttpRouter();
 	}
 
 	/**
@@ -246,7 +238,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpSession() : IHttpSession
 	{
-		return $this->context->getHttpSession();
+		return $this->getContext()->getHttpSession();
 	}
 
 	/**
@@ -257,7 +249,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getLocale() : ILocale
 	{
-		return $this->context->getLocale();
+		return $this->getContext()->getLocale();
 	}
 
 	/**
@@ -268,7 +260,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getMemoryCache() : IMemoryCache
 	{
-		return $this->context->getMemoryCache();
+		return $this->getContext()->getMemoryCache();
 	}
 
 	/**
@@ -279,7 +271,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getMessageSource() : IMessageSource
 	{
-		return $this->context->getMessageSource();
+		return $this->getContext()->getMessageSource();
 	}
 
 	/**
@@ -290,7 +282,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getNetworkCache() : INetworkCache
 	{
-		return $this->context->getNetworkCache();
+		return $this->getContext()->getNetworkCache();
 	}
 
 	/**
@@ -301,7 +293,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getPasswordDigest() : IPasswordDigest
 	{
-		return $this->context->getPasswordDigest();
+		return $this->getContext()->getPasswordDigest();
 	}
 
 	/**
@@ -312,7 +304,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getSlugManager() : ISlugManager
 	{
-		return $this->context->getSlugManager();
+		return $this->getContext()->getSlugManager();
 	}
 
 	/**
@@ -323,7 +315,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getSqlConnection() : ISqlConnection
 	{
-		return $this->context->getSqlConnection();
+		return $this->getContext()->getSqlConnection();
 	}
 
 	/**
@@ -334,21 +326,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getTheme() : ?ITheme
 	{
-		return $this->context->getTheme();
-	}
-
-	/**
-	 * Executes a transaction.
-	 *
-	 * @param \Closure $closure
-	 *	The transaction closure.
-	 *
-	 * @return mixed
-	 *	The transaction result.
-	 */
-	public function transaction(\Closure $closure) // : mixed;
-	{
-		return $this->getSqlConnection()->transaction($closure);
+		return $this->getContext()->getTheme();
 	}
 
 	/**

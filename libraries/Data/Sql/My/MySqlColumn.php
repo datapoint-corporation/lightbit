@@ -25,136 +25,87 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\MySql;
+namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
+use \Lightbit\Data\Sql\My\MySqlObject;
+
 use \Lightbit\Data\Sql\ISqlColumn;
+use \Lightbit\Data\Sql\ISqlTable;
 
 /**
- * ISqlColumn.
+ * MySqlColumn.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlSqlColumn extends Object implements ISqlColumn
+class MySqlColumn extends MySqlObject implements ISqlColumn
 {
 	/**
-	 * The auto incrementable flag.
-	 *
-	 * @type bool
-	 */
-	private $autoIncrementable;
-
-	/**
-	 * The character set.
-	 *
-	 * @type array
-	 */
-	private $characterSet;
-
-	/**
-	 * The collation.
-	 *
-	 * @type string
-	 */
-	private $collation;
-
-	/**
-	 * The name.
-	 *
-	 * @type string
-	 */
-	private $name;
-
-	/**
-	 * The nullable.
+	 * The nullable flag.
 	 *
 	 * @type bool
 	 */
 	private $nullable;
 
 	/**
-	 * The type name.
+	 * The table.
+	 *
+	 * @type ISqlTable
+	 */
+	private $table;
+
+	/**
+	 * The column type.
 	 *
 	 * @type string
 	 */
-	private $typeName;
+	private $type;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array $column
-	 *	The column schema.
+	 * @param MySqlTable $table
+	 *	The table.
+	 *
+	 * @param array $schemata
+	 *	The column schemata.
+	 *
+	 * @param array $constraints
+	 *	The constraints schemata.
 	 */
-	public function __construct(array $column)
+	public function __construct(MySqlTable $table, array $schemata, array $constraints)
 	{
-		$extras = explode(',', $column['EXTRA']);
+		parent::__construct($schemata['COLUMN_NAME']);
 
-		$this->autoIncrementable = in_array('auto_increment', $extras);
-		$this->characterSet = $column['CHARACTER_SET_NAME'];
-		$this->collation = $column['COLLATION_NAME'];
-		$this->name = $column['COLUMN_NAME'];
-		$this->nullable = $column['IS_NULLABLE'] === 'YES';
-		$this->typeName = $column['DATA_TYPE'];
+		$this->table = $table;
+		$this->nullable = ($schemata['IS_NULLABLE'] === 'YES');
+		$this->type = $schemata['DATA_TYPE'];
 	}
 
 	/**
-	 * Gets the character set.
+	 * Gets the table.
+	 *
+	 * @return ISqlTable
+	 *	The table.
+	 */
+	public function getTable() : ISqlTable
+	{
+		return $this->table;
+	}
+
+	/**
+	 * Gets the type.
 	 *
 	 * @return string
-	 *	The character set.
+	 *	The type.
 	 */
-	public function getCharacterSet() : ?string
+	public function getType() : string
 	{
-		return $this->characterSet;
+		return $this->type;
 	}
 
 	/**
-	 * Gets the collation.
-	 *
-	 * @return string
-	 *	The collation.
-	 */
-	public function getCollation() : ?string
-	{
-		return $this->collation;
-	}
-
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
-	public function getName() : string
-	{
-		return $this->name;
-	}
-
-	/**
-	 * Gets the type name.
-	 *
-	 * @return string
-	 *	The type name.
-	 */
-	public function getTypeName() : string
-	{
-		return $this->typeName;
-	}
-
-	/**
-	 * Checks if it is auto incrementable.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isAutoIncrementable() : bool
-	{
-		return $this->autoIncrementable;
-	}
-
-	/**
-	 * Checks if is nullable.
+	 * Checks if the column is nullable.
 	 *
 	 * @return bool
 	 *	The result.

@@ -35,6 +35,11 @@ use \Lightbit\Data\Sql\ISqlStatement;
 /**
  * ISqlStatementFactory.
  *
+ * A statement factory is, more often than not, used by the abstract active
+ * record implementation in order to quickly and reliably generate the delete,
+ * insert, select and update statements necessary to make the applicable
+ * changes to the database records.
+ *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
@@ -44,7 +49,7 @@ interface ISqlStatementFactory
 	 * Creates a count statement.
 	 *
 	 * @param string $table
-	 *	The table names.
+	 *	The table name.
 	 *
 	 * @param ISqlCriteria $criteria
 	 *	The select criteria.
@@ -72,7 +77,7 @@ interface ISqlStatementFactory
 	 * Creates an insert statement.
 	 *
 	 * @param string $table
-	 *	The table names.
+	 *	The table name.
 	 *
 	 * @param array $values
 	 *	The values, indexed by field name.
@@ -86,7 +91,7 @@ interface ISqlStatementFactory
 	 * Creates a select statement.
 	 *
 	 * @param string $table
-	 *	The table names.
+	 *	The table name.
 	 *
 	 * @param ISqlCriteria $criteria
 	 *	The select criteria.
@@ -100,7 +105,7 @@ interface ISqlStatementFactory
 	 * Creates an update statement.
 	 *
 	 * @param string $table
-	 *	The table names.
+	 *	The table name.
 	 *
 	 * @param array $values
 	 *	The values, indexed by field name.

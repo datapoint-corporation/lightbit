@@ -50,6 +50,17 @@ function __lightbit_autoload(string $__CLASS__) : void
 
 function __lightbit_error_handler(int $code, string $message, string $file, int $line) : bool
 {
+	switch ($code)
+	{
+		case E_DEPRECATED:
+		case E_NOTICE:
+		case E_WARNING:
+		case E_USER_DEPRECATED:
+		case E_USER_NOTICE:
+		case E_USER_WARNING:
+			return false;
+	}
+
 	$category = 'UNKNOWN ERROR';
 
 	switch ($code)

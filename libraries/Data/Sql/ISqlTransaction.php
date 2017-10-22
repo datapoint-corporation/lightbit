@@ -27,8 +27,6 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlConnection;
-
 /**
  * ISqlTransaction.
  *
@@ -38,31 +36,18 @@ use \Lightbit\Data\Sql\ISqlConnection;
 interface ISqlTransaction
 {
 	/**
-	 * Gets the identifier.
+	 * Performs a commit.
 	 *
-	 * @return string
-	 *	The identifier.
-	 */
-	public function getID() : string;
-
-	/**
-	 * Gets the connection.
-	 *
-	 * @return ISqlConnection
-	 *	The connection.
-	 */
-	public function getConnection() : ISqlConnection;
-
-	/**
-	 * Performs a commit, closing the transaction.
-	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
+	 * Be aware once the procedure completes, the transaction is closed and any
+	 * future statements are not part of it and might be impossible to rollback.
 	 */
 	public function commit() : void;
 
 	/**
-	 * Checks if the transaction is closed.
+	 * Checks the transaction state.
+	 *
+	 * Be aware if the transaction is closed, any future statements are not part
+	 * of it and might be impossible to rollback.
 	 *
 	 * @return bool
 	 *	The result.
@@ -70,15 +55,10 @@ interface ISqlTransaction
 	public function isClosed() : bool;
 
 	/**
-	 * Performs a rollback, closing the transaction.
+	 * Performs a rollback.
 	 *
-	 * Once a transaction is closed, it can not be modified: any future commit
-	 * and rollback procedures will result in an exception being thrown.
+	 * Be aware once the procedure completes, the transaction is closed and any
+	 * future statements are not part of it and might be impossible to rollback.
 	 */
 	public function rollback() : void;
-
-	/**
-	 * Starts the transaction.
-	 */
-	public function start() : void;
 }

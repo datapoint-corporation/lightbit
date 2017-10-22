@@ -115,7 +115,7 @@ abstract class SqlStatementFactory extends Object implements ISqlStatementFactor
 	 * @param array $configuration
 	 *	The sql driver configuration.
 	 */
-	public function __construct(ISqlConnection $sqlConnection, array $configuration = null)
+	protected function __construct(ISqlConnection $sqlConnection, array $configuration = null)
 	{
 		$this->sqlConnection = $sqlConnection;
 
@@ -168,7 +168,7 @@ abstract class SqlStatementFactory extends Object implements ISqlStatementFactor
 
 		if ($arguments)
 		{
-			$result->setArguments($arguments);
+			$result->setAll($arguments);
 		}
 
 		return $result;

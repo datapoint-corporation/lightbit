@@ -48,6 +48,13 @@ use \Lightbit\Data\IModel;
 abstract class Controller extends Element implements IController
 {
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
 	 * The global identifier.
 	 *
 	 * @type string
@@ -89,8 +96,9 @@ abstract class Controller extends Element implements IController
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context);
+		parent::__construct();
 
+		$this->context = $context;
 		$this->id = $id;
 		$this->views = [];
 
@@ -98,6 +106,17 @@ abstract class Controller extends Element implements IController
 		{
 			__object_apply($this, $configuration);
 		}
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->context;
 	}
 
 	/**
@@ -515,6 +534,41 @@ abstract class Controller extends Element implements IController
 		if ($theme = $this->getTheme())
 		{
 			$theme->setLayout($layout);
+		}
+	}
+
+	/**
+	 * Creates and starts a new sql transaction to execute the procedure(s)
+	 * implemented by the given closure.
+	 *
+	 * If the closure throws an uncaught exception, the transaction will
+	 * automatically rollback before that exception is re-thrown.
+	 *
+	 * @param \Closure $closure
+	 *	The transaction closure.
+	 *
+	 * @return mixed
+	 *	The closure result.
+	 */
+	public function transaction(\Closure $closure) // : mixed;
+	{
+		$sql = $this->getSqlConnection();
+		$transaction = $sql->transaction();
+
+		try
+		{
+			$result = $closure($sql);
+			$transaction->commit();
+			return $result;
+		}
+		catch (\Throwable $e)
+		{
+			if (!$transaction->isClosed())
+			{
+				$transaction->rollback();
+			}
+
+			throw $e;
 		}
 	}
 

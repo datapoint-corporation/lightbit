@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\MySql;
+namespace Lightbit\Data\Sql\My;
 
 use \Lightbit\Base\Object;
 use \Lightbit\Data\IExpression;
@@ -36,25 +36,25 @@ use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\SqlStatementFactory;
 
 /**
- * SqlStatementFactory.
+ * MySqlStatementFactory.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlSqlStatementFactory extends SqlStatementFactory
+class MySqlStatementFactory extends SqlStatementFactory
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param ISqlConnection $sqlConnection
+	 * @param MySqlConnection $mySqlConnection
 	 *	The sql driver connection.
 	 *
 	 * @param array $configuration
 	 *	The sql driver configuration.
 	 */
-	public function __construct(ISqlConnection $sqlConnection, array $configuration = null)
+	public function __construct(MySqlConnection $mySqlConnection, array $configuration = null)
 	{
-		parent::__construct($sqlConnection, $configuration);
+		parent::__construct($mySqlConnection, $configuration);
 	}
 
 	/**
@@ -136,7 +136,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				}
 			}
 
-			return $this->statement($statement, $criteria->getArguments());
+			return $this->statement($statement, $criteria->getParameters());
 		}
 
 		return $this->statement('SELECT COUNT(\'1\') FROM ' . $this->quote($table));
@@ -187,7 +187,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= ' WHERE ' . $criteria->getCondition();
 			}
 
-			return $this->statement($statement, $criteria->getArguments());
+			return $this->statement($statement, $criteria->getParameters());
 		}
 
 		return $this->statement('DELETE FROM ' . $this->quote($table));
@@ -311,7 +311,7 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				}
 			}
 
-			return $this->statement($statement, $criteria->getArguments());
+			return $this->statement($statement, $criteria->getParameters());
 		}
 
 		return $this->statement('SELECT * FROM ' . $this->quote($table));
@@ -390,9 +390,9 @@ class MySqlSqlStatementFactory extends SqlStatementFactory
 				$statement .= ' WHERE ' . $criteria->getCondition();
 			}
 
-			if ($criteria->hasArguments())
+			if ($criteria->hasParameters())
 			{
-				$parameters += $criteria->getArguments();
+				$parameters += $criteria->getParameters();
 			}
 
 			return $this->statement($statement, $parameters);

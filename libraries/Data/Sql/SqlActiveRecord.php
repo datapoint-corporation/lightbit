@@ -35,7 +35,14 @@ use \Lightbit\Data\Sql\SqlCriteria;
 use \Lightbit\Data\Sql\SqlModel;
 
 /**
- * SqlActiveRecord.
+ * ISqlActiveRecord.
+ *
+ * It's an active record, directly attached to a table in the database, which
+ * columns should be declared as non-static public properties of each class 
+ * that implements it.
+ *
+ * The database records are deleted, inserted, selected and updated through
+ * the statement factory provided by a sql connection component..
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
@@ -370,7 +377,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	{
 		if (!isset(self::$schema[static::class]['table-name']))
 		{
-			self::$schema[static::class]['table-name'] = $this->tableName();
+			self::$schema[static::class]['table-name'] = $this->table();
 		}
 
 		return self::$schema[static::class]['table-name'];
@@ -619,7 +626,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * @return string
 	 *	The active record table name.
 	 */
-	protected function tableName() : string
+	protected function table() : string
 	{
 		$className = static::class;
 

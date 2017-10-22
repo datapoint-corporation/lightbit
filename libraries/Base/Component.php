@@ -41,6 +41,13 @@ use \Lightbit\Base\IContext;
 abstract class Component extends Element implements IComponent
 {
 	/**
+	 * The context.
+	 *
+	 * @type IContext
+	 */
+	private $context;
+
+	/**
 	 * The identifier.
 	 *
 	 * @type string
@@ -61,14 +68,26 @@ abstract class Component extends Element implements IComponent
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct($context);
+		parent::__construct();
 
+		$this->context = $context;
 		$this->id = $id;
 
 		if ($configuration)
 		{
 			__object_apply($this, $configuration);
 		}
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext
+	{
+		return $this->context;
 	}
 	
 	/**
