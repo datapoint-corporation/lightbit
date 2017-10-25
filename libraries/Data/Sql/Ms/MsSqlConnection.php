@@ -25,10 +25,11 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Data\Sql\My\MySqlSchema;
+use \Lightbit\Data\Sql\Ms\MsSqlStatement;
+use \Lightbit\Data\Sql\Ms\MsSqlTransaction;
 
 use \Lightbit\Base\IContext;
 use \Lightbit\Data\Sql\ISqlConnection;
@@ -40,61 +41,52 @@ use \Lightbit\Data\Sql\ISqlStatementFactory;
 use \Lightbit\Data\Sql\ISqlTransaction;
 
 /**
- * MySqlConnection.
+ * ISqlConnection.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlConnection extends Component implements ISqlConnection
+class MsSqlConnection extends Component implements ISqlConnection
 {
+	private const BASE_OPTION_SET = 
+	[
+		'ApplicationIntent' => 'ReadWrite',
+		'CharacterSet' => 'UTF-8',
+		'ConnectionPooling' => true,
+		'UID' => '',
+		'PWD' => ''
+	];
+
 	/**
-	 * The charset.
+	 * The character set.
 	 *
 	 * @type string
 	 */
 	private $charset;
 
 	/**
-	 * The database.
+	 * The database name.
 	 *
 	 * @type string
 	 */
 	private $database;
 
 	/**
-	 * The host.
+	 * The instance.
 	 *
 	 * @type string
 	 */
-	private $host;
+	private $instance;
 
 	/**
-	 * The mysqli resource.
+	 * The options.
 	 *
-	 * @type mysqli
+	 * @type array
+	 * @see http://msdn.microsoft.com/en-us/library/ff628167.aspx
 	 */
-	private $mysqli;
+	private $options;
 
-	/**
-	 * The password.
-	 *
-	 * @type string
-	 */
 	private $password;
-
-	/**
-	 * The persistent connection flag.
-	 *
-	 * @type bool
-	 */
-	private $persistent;
-
-	/**
-	 * The port.
-	 *
-	 * @type int
-	 */
-	private $port;
 
 	/**
 	 * The schema.
@@ -104,17 +96,14 @@ class MySqlConnection extends Component implements ISqlConnection
 	private $schema;
 
 	/**
-	 * The statement factory.
+	 * The sqlsrv resource.
 	 *
-	 * @type ISqlStatementFactory
+	 * @type resource
 	 */
+	private $sqlsrv;
+
 	private $statementFactory;
 
-	/**
-	 * The user.
-	 *
-	 * @type string
-	 */
 	private $user;
 
 	/**
@@ -133,10 +122,13 @@ class MySqlConnection extends Component implements ISqlConnection
 	{
 		parent::__construct($context, $id);
 
-		$this->database = 'lightbit';
-		$this->host = '127.0.0.1';
-		$this->persistent = false;
-		$this->port = 3306;
+		$this->charset = 'UTF-8';
+		$this->database = 'Lightbit';
+		$this->instance = '127.0.0.1';
+		$this->user = 'Lightbit';
+
+		$this->options = [];
+		$this->statementFactory = new MsSqlStatementFactory($this);
 
 		if ($configuration)
 		{
@@ -175,22 +167,7 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function close() : void
 	{
-		if (!mysqli_close($this->mysqli))
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				sprintf
-				(
-					'%s (%d)',
-					mysqli_error($this->mysqli),
-					mysqli_errno($this->mysqli)
-				)
-			);
-		}
-
-		$this->mysqli = null;
-		$this->schema = null;
+		throw new \Lightbit\Exception(sprintf('Class %s method %s is not implemented.', static::class, __FUNCTION__));
 	}
 
 	/**
@@ -211,16 +188,6 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->execute($parameters);
 	}
 
-	public function getCharset() : ?string
-	{
-		if ($this->mysqli)
-		{
-			return mysqli_get_charset($this->mysqli)->name;
-		}
-
-		return $this->charset;
-	}
-
 	/**
 	 * Gets the database.
 	 *
@@ -236,19 +203,25 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->getSchema()->getDatabase($this->database);
 	}
 
-	public function getHost() : string
+	/**
+	 * Gets the current exception stack.
+	 *
+	 * @return MsSqlException
+	 *	The first exception.
+	 */
+	public function getExceptionStack() : ?MsSqlException
 	{
-		return $this->host;
-	}
+		$throwable = null;
 
-	public function getMysqli() : \mysqli
-	{
-		return $this->mysqli;
-	}
+		if ($errors = sqlsrv_errors())
+		{
+			foreach (array_reverse($errors) as $i => $schemata)
+			{
+				$throwable = new MsSqlException(sprintf('SQLSTATE %s: %s (%s)', $schemata['SQLSTATE'], $schemata['message'], $schemata['code']), $throwable);
+			}
+		}
 
-	public function getPort() : int
-	{
-		return $this->port;
+		return $throwable;
 	}
 
 	/**
@@ -266,40 +239,40 @@ class MySqlConnection extends Component implements ISqlConnection
 		if (!$this->schema)
 		{
 			$memory = $this->getMemoryCache();
-			$mkey = '__lightbit.data.sql.connection://my/'
+			$mkey = '__lightbit.data.sql.connection://ms/'
 				. $this->user
 				. '@'
-				. $this->host
-				. ':'
-				. $this->port
+				. strtr($this->instance, '\\', ':')
 				. '/'
 				. $this->database;
 
-			if (! ($this->schema = $memory->get('?' . MySqlSchema::class, $mkey)))
+			if (! ($this->schema = $memory->get('?' . MsSqlSchema::class, $mkey)))
 			{
+				// Get the current schema name.
+				$schema = $this->scalar('SELECT SCHEMA_NAME()');
+
 				$memory->set
 				(
 					$mkey,
-					$this->schema = new MySqlSchema
+					$this->schema = new MsSqlSchema
 					(
-						'def',
+						$schema,
 
 						// Databases
 						$this->all
 						(
 							'SELECT 
-								S.CATALOG_NAME SCHEMA_NAME,
-								S.SCHEMA_NAME DATABASE_NAME,
+								S.SCHEMA_NAME SCHEMA_NAME,
+								S.CATALOG_NAME DATABASE_NAME,
 								S.DEFAULT_CHARACTER_SET_NAME DATABASE_DEFAULT_CHARACTER_SET_NAME
 							FROM INFORMATION_SCHEMA.SCHEMATA S
 							WHERE S.CATALOG_NAME = :CatalogName 
 								AND S.SCHEMA_NAME = :SchemaName
 							ORDER BY
-								S.CATALOG_NAME ASC,
-							    S.SCHEMA_NAME ASC',
+								S.CATALOG_NAME ASC',
 							[ 
-								':CatalogName' => 'def',
-								':SchemaName' => $this->database
+								':CatalogName' => $this->database, 
+								':SchemaName' => $schema
 							]
 						),
 
@@ -307,8 +280,8 @@ class MySqlConnection extends Component implements ISqlConnection
 						$this->all
 						(
 							'SELECT
-								T.TABLE_CATALOG SCHEMA_NAME,
-								T.TABLE_SCHEMA DATABASE_NAME,
+								T.TABLE_SCHEMA SCHEMA_NAME,
+								T.TABLE_CATALOG DATABASE_NAME,
 								T.TABLE_NAME TABLE_NAME
 							FROM INFORMATION_SCHEMA.TABLES T
 							WHERE T.TABLE_CATALOG = :CatalogName
@@ -319,8 +292,8 @@ class MySqlConnection extends Component implements ISqlConnection
 								T.TABLE_SCHEMA ASC,
 								T.TABLE_NAME ASC',
 							[ 
-								':CatalogName' => 'def',
-								':SchemaName' => $this->database,
+								':CatalogName' => $this->database, 
+								':SchemaName' => $schema,
 								':TableType' => 'BASE TABLE'
 							]
 						),
@@ -329,17 +302,23 @@ class MySqlConnection extends Component implements ISqlConnection
 						$this->all
 						(
 							'SELECT
-								C.TABLE_CATALOG SCHEMA_NAME,
-								C.TABLE_SCHEMA DATABASE_NAME,
+								C.TABLE_SCHEMA SCHEMA_NAME,
+								C.TABLE_CATALOG DATABASE_NAME,
 								C.TABLE_NAME TABLE_NAME,
 								C.COLUMN_NAME COLUMN_NAME,
 								C.DATA_TYPE DATA_TYPE,
 								C.IS_NULLABLE IS_NULLABLE,
 								(
-									CASE 
-										WHEN C.EXTRA LIKE \'%auto_increment%\'
-										THEN \'YES\'
-										ELSE \'NO\'
+									CASE WHEN
+									(
+										SELECT CA.is_identity 
+										FROM sys.columns CA
+										WHERE CA.object_id = object_id(T.TABLE_NAME, \'U\')
+											AND CA.name = C.TABLE_NAME
+									) 
+									IS NULL 
+										THEN \'NO\'
+										ELSE \'YES\'
 									END
 								) IS_SEQUENTIAL
 							FROM INFORMATION_SCHEMA.TABLES T
@@ -355,8 +334,8 @@ class MySqlConnection extends Component implements ISqlConnection
 								C.TABLE_NAME ASC,
 								C.COLUMN_NAME ASC',
 							[ 
-								':CatalogName' => 'def',
-								':SchemaName' => $this->database,
+								':CatalogName' => $this->database, 
+								':SchemaName' => $schema,
 								':TableType' => 'BASE TABLE'
 							]
 						),
@@ -373,12 +352,13 @@ class MySqlConnection extends Component implements ISqlConnection
 								TC.CONSTRAINT_TYPE CONSTRAINT_TYPE
 							FROM INFORMATION_SCHEMA.TABLES T
 							INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-								ON TC.TABLE_SCHEMA = T.TABLE_SCHEMA
+								ON TC.TABLE_CATALOG = T.TABLE_CATALOG
+									AND TC.TABLE_SCHEMA = T.TABLE_SCHEMA
 									AND TC.TABLE_NAME = T.TABLE_NAME
 									AND TC.CONSTRAINT_CATALOG = T.TABLE_CATALOG
 									AND TC.CONSTRAINT_SCHEMA = T.TABLE_SCHEMA
 							INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU
-								ON KCU.TABLE_CATALOG = T.TABLE_CATALOG
+								ON KCU.TABLE_CATALOG = TC.TABLE_CATALOG
 									AND KCU.TABLE_SCHEMA = TC.TABLE_SCHEMA
 									AND KCU.CONSTRAINT_CATALOG = TC.CONSTRAINT_CATALOG
 									AND KCU.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA
@@ -392,8 +372,8 @@ class MySqlConnection extends Component implements ISqlConnection
 								T.TABLE_NAME ASC,
 								KCU.COLUMN_NAME ASC',
 							[ 
-								':CatalogName' => 'def',
-								':SchemaName' => $this->database,
+								':CatalogName' => $this->database, 
+								':SchemaName' => $schema,
 								':TableType' => 'BASE TABLE'
 							]
 						)
@@ -417,30 +397,18 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function getStatementFactory() : ISqlStatementFactory
 	{
-		return $this->statementFactory ?? 
-		(
-			$this->statementFactory = new MySqlStatementFactory($this)
-		);
+		return $this->statementFactory;
 	}
 
-	public function getUser() : ?string
-	{
-		return $this->user;
-	}
-
-	public function hasPassword() : bool
-	{
-		return isset($this->password);
-	}
-
+	/**
+	 * Checks the connection state.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
 	public function isClosed() : bool
 	{
-		return !$this->mysqli;
-	}
-
-	public function isPersistent() : bool
-	{
-		return $this->persistent;
+		return !$this->sqlsrv;
 	}
 
 	/**
@@ -465,7 +433,7 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function query(string $statement, array $parameters = null) : ISqlReader
 	{
-		return $this->statement($parameters)->query();
+		return $this->statement($statement)->query($parameters);
 	}
 
 	/**
@@ -481,9 +449,9 @@ class MySqlConnection extends Component implements ISqlConnection
 	 * @param string $statement
 	 *	The statement to quote.
 	 */
-	public function quote(string $quote) : string
+	public function quote(string $statement) : string
 	{
-		return strtr($quote, '"', '`');
+		return preg_replace('/"([^"]+)"/', '[$1]', $statement);
 	}
 
 	/**
@@ -502,184 +470,14 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function run(string $command) : int
 	{
-		$result = mysqli_query($this->mysqli, $command);
-
-		if ($result)
+		if ($stmt = sqlsrv_query($this->sqlsrv, $command))
 		{
-			mysqli_result_free($result);
+			$result = ((($result = sqlsrv_rows_affected($stmt)) === false || $result < 0) ? 0 : $result);
+			sqlsrv_free_stmt($stmt);
+			return $result;
 		}
 
-		return mysqli_num_rows($this->mysqli);
-	}
-
-	public function setCharset(?string $charset) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				sprintf
-				(
-					'Can not set connection charset, unknown: charset %s', 
-					$this->charset
-				)
-			);
-		}
-
-		$this->charset = $charset;
-	}
-
-	public function setDatabase(string $database) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				sprintf('Can not change active connection default database: database %s', $database)
-			);
-		}
-
-		$this->database = $database;
-	}
-
-	public function setHost(string $host) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				sprintf('Can not change active connection host: host %s', $host)
-			);
-		}
-
-		$this->host = $host;
-	}
-
-	public function setPassword(?string $password) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				'Can not change active connection password'
-			);
-		}
-
-		$this->password = $password;
-	}
-
-	public function setPersistent(bool $persistent) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				'Can not change active connection persistence'
-			);
-		}
-
-		$this->persistent = $persistent;
-	}
-
-	public function setPort(int $port) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				'Can not change active connection port'
-			);
-		}
-
-		$this->port = $port;
-	}
-
-	public function setUser(?string $user) : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				'Can not change active connection persistence'
-			);
-		}
-
-		$this->user = $user;
-	}
-
-	public function start() : void
-	{
-		if ($this->mysqli)
-		{
-			throw new MySqlConnectionException
-			(
-				$this,
-				'Can not start active connection'
-			);
-		}
-
-		try
-		{
-			if (!($this->mysqli = mysqli_init()))
-			{
-				throw new MySqlConnectionException
-				(
-					$this,
-					sprintf
-					(
-						'%s (%d)', 
-						mysqli_init_error(),
-						mysqli_init_errno()
-					)
-				);
-			}
-
-			if (!@mysqli_real_connect($this->mysqli, ($this->persistent ? 'p:' : '') . $this->host, 
-				$this->user, $this->password, $this->database, $this->port))
-			{
-				throw new MySqlConnectionException
-				(
-					$this,
-					sprintf
-					(
-						'%s (%d)', 
-						mysqli_connect_error(),
-						mysqli_connect_errno()
-					)
-				);
-			}
-
-			if ($this->charset && !mysqli_set_charset($this->mysqli, $this->charset))
-			{
-				throw new MySqlConnectionException
-				(
-					$this,
-					sprintf
-					(
-						'Can not set connection charset, unknown: charset %s', 
-						$this->charset
-					)
-				);
-			}
-		}
-		catch (\Throwable $e)
-		{
-			if ($this->mysqli && !$this->persistent)
-			{
-				mysqli_close($this->mysqli);
-			}
-
-			$this->mysqli = null;
-			
-			throw new MySqlConnectionException($this, 'Can not start connection', $e);
-		}
+		throw $this->getExceptionStack();
 	}
 
 	/**
@@ -703,6 +501,127 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->scalar($parameters);
 	}
 
+	public function setCharset(string $charset) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection character set, it is active: instance %s', 
+					$this->instance
+				)
+			);
+		}
+
+		$this->charset = $charset;
+	}
+
+	public function setDatabase(string $database) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection database, it is active: instance %s', 
+					$this->instance
+				)
+			);
+		}
+
+		$this->database = $database;
+	}
+
+	/**
+	 * Sets the instance.
+	 *
+	 * @param string $instance
+	 *	The instance.
+	 */
+	public function setInstance(string $instance) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection instance, it is active: instance %s', 
+					$instance
+				)
+			);
+		}
+
+		$this->instance = $instance;
+	}
+
+	/**
+	 * Sets the options.
+	 *
+	 * @see http://msdn.microsoft.com/en-us/library/ff628167.aspx
+	 * @param array $options
+	 *	The options.
+	 */
+	public function setOptions(array $options) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection instance, it is active: instance %s', 
+					$instance
+				)
+			);
+		}
+
+		$this->options = $options;
+	}
+
+	public function setPassword(?string $password) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection user password, it is active: instance %s', 
+					$this->instance
+				)
+			);
+		}
+
+		$this->password = $password;
+	}
+
+	public function setUser(?string $user) : void
+	{
+		if ($this->sqlsrv)
+		{
+			throw new MsSqlConnectionException
+			(
+				$this,
+				sprintf
+				(
+					'Can not set connection user, it is active: instance %s', 
+					$this->instance
+				)
+			);
+		}
+
+		$this->user = $user;
+	}
+
 	/**
 	 * Prepares and executes a query statement, pre-fetching and returning
 	 * the first result within the first result set.
@@ -724,6 +643,56 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->single($parameters, $numeric);
 	}
 
+	public function getSqlsrv() // : resource
+	{
+		return $this->sqlsrv;
+	}
+
+	/**
+	 * Starts the connection.
+	 */
+	public function start() : void
+	{
+		try
+		{
+			$options = $this->options;
+			$options['Database'] = $this->database;
+
+			if ($this->charset)
+			{
+				$options['CharacterSet'] = $this->charset;
+			}
+			
+			if ($this->user)
+			{
+				$options['UID'] = $this->user;
+			}
+
+			if ($this->password)
+			{
+				$options['PWD'] = $this->password;
+			}
+
+			$options += self::BASE_OPTION_SET;
+
+			if (! ($this->sqlsrv = sqlsrv_connect($this->instance, $options)))
+			{
+				throw $this->getExceptionStack();
+			}
+		}
+		catch (\Throwable $e)
+		{
+			if (isset($this->sqlsrv))
+			{
+				sqlsrv_close($this->sqlsrv);
+			}
+
+			$this->sqlsrv = null;
+
+			throw new MsSqlConnectionException($this, $e->getMessage(), $e);
+		}
+	}
+
 	/**
 	 * Prepares a statement for multiple execution.
 	 *
@@ -735,21 +704,7 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function statement(string $statement) : ISqlStatement
 	{
-		$position = -1;
-		$parameters = [];
-
-		if (preg_match_all('/@\\w[\\w0-9]+/', $statement, $matches, PREG_OFFSET_CAPTURE))
-		{
-			if ($matches)
-			{
-				foreach ($matches[0] as $i => $match)
-				{
-					$parameters[$match[0]][] = ++$position;
-				}
-			}
-		}
-
-		return new MySqlStatement($this, $statement);
+		return new MsSqlStatement($this, $statement);
 	}
 
 	/**
@@ -767,6 +722,6 @@ class MySqlConnection extends Component implements ISqlConnection
 	 */
 	public function transaction() : ISqlTransaction
 	{
-		return new MySqlTransaction($this);
+		return new MsSqlTransaction($this);
 	}
 }

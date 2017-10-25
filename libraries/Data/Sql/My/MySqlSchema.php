@@ -51,6 +51,9 @@ class MySqlSchema extends MySqlObject implements ISqlSchema
 	/**
 	 * Constructor.
 	 *
+	 * @param string $schema
+	 *	The schema name.
+	 *
 	 * @param string $databases
 	 *	The databases schemata.
 	 *
@@ -63,17 +66,20 @@ class MySqlSchema extends MySqlObject implements ISqlSchema
 	 * @param array $constraints
 	 *	The constraints schemata.
 	 */
-	public function __construct(array $databases, array $tables, array $columns, array $constraints)
+	public function __construct(string $schema, array $databases, array $tables, array $columns, array $constraints)
 	{
-		parent::__construct('def');
+		parent::__construct($schema);
 
 		$this->databases = [];
 
-		foreach ($databases as $i => $schemata)
+		$scope = [];
+		$scope['SCHEMA_NAME'] = $schema;
+
+		foreach ($databases as $i => $database)
 		{
-			if (__map_match($schemata, [ 'CATALOG_NAME' => 'def' ]))
+			if (__map_match($scope, $database))
 			{
-				$instance = new MySqlDatabase($this, $schemata, $tables, $columns, $constraints);
+				$instance = new MySqlDatabase($this, $database, $tables, $columns, $constraints);
 				$this->databases[$instance->getName()] = $instance;
 			}
 		}

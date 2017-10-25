@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Base\Object;
 
@@ -34,24 +34,30 @@ use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
 
 /**
- * MySqlReader.
+ * ISqlReader.
+ *
+ * A SQL reader is a basic stream reader that fetches one result at a time and,
+ * as such, should be closed and safely disposed after use. If it's left open,
+ * depending on the underlying database management system, you may not be able
+ * to prepare and/or run the next statement and memory leaks may have a 
+ * negative impact on the application performance.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlReader extends Object implements ISqlReader
+class MsSqlReader extends Object implements ISqlReader
 {
 	/**
-	 * The closed state.
+	 * The state.
 	 *
 	 * @type bool
 	 */
 	private $closed;
 
 	/**
-	 * The fields schemata.
+	 * The fields.
 	 *
-	 * @type array
+	 * @type int
 	 */
 	private $fields;
 
@@ -63,92 +69,64 @@ class MySqlReader extends Object implements ISqlReader
 	private $fieldsCount;
 
 	/**
-	 * The row.
+	 * The sql connection.
 	 *
-	 * @type array
+	 * @type ISqlConnection
 	 */
-	private $row;
-
-	/**
-	 * The result meta data.
-	 *
-	 * @type mysqli_result
-	 */
-	private $meta;
+	private $msSqlConnection;
 
 	/**
 	 * The sql statement.
 	 *
 	 * @type ISqlStatement
 	 */
-	private $mySqlStatement;
+	private $msSqlStatement;
 
 	/**
-	 * The sql statement handle.
+	 * The connection internal handle.
 	 *
-	 * @type mysqli_stmt
+	 * @type resource
 	 */
-	private $mysqliStatement;
+	private $sqlsrv;
+
+	/**
+	 * The statement internal handle.
+	 *
+	 * @type resource
+	 */
+	private $stmt;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlStatement $mySqlStatement
-	 *	The statement to read from.
+	 * @param MsSqlStatement $msSqlStatement
+	 *	The statement.
 	 */
-	public function __construct(MySqlStatement $mySqlStatement)
+	public function __construct(MsSqlStatement $msSqlStatement)
 	{
 		$this->closed = true;
-		$this->mySqlStatement = $mySqlStatement;
 
-		$this->mysqliStatement = $mySqlStatement->getMysqliStatement();
+		$this->sqlsrv = $msSqlStatement->getSqlsrv();
+		$this->stmt = $msSqlStatement->getStmt();
 
-		if (! ($this->meta = mysqli_stmt_result_metadata($this->mysqliStatement)))
+		$this->msSqlConnection = $msSqlStatement->getSqlConnection();
+		$this->msSqlStatement = $msSqlStatement;
+
+		if (! ($this->fields = sqlsrv_field_metadata($this->stmt)))
 		{
-			throw new MySqlStatementException
+			throw new MsSqlStatementException
 			(
-				$this->mySqlStatement,
+				$this->msSqlStatement,
 				sprintf
 				(
-					'Can not get result set meta data from statement: statement %s',
-					$this->mySqlStatement->toString()
-				)
-			);
-		}
-
-		if (! ($this->fields = mysqli_fetch_fields($this->meta)))
-		{
-			throw new MySqlStatementException
-			(
-				$this->mySqlStatement,
-				sprintf
-				(
-					'Can not get result set fields meta data from statement: statement %s',
-					$this->mySqlStatement->toString()
-				)
+					'Can not read through statement result sets, not available: statement %s', 
+					$this->msSqlStatement->toString()
+				),
+				$this->msSqlStatement->getSqlConnection()->getExceptionStack()
 			);
 		}
 
 		$this->fieldsCount = count($this->fields);
-
-		// We are going to use a little memory hack here to get the statement
-		// to bind to a numeric array matching the existing fields.
-		$t = array_pad([], $this->fieldsCount, null);
-
-		if (!mysqli_stmt_bind_result($this->mysqliStatement, ...$t))
-		{
-			throw new MySqlStatementException
-			(
-				$this->mySqlStatement,
-				sprintf
-				(
-					'Can not bind result set to memory: statement %s',
-					$this->mySqlStatement->toString()
-				)
-			);
-		}
-
-		$this->row = & $t;
 		$this->closed = false;
 	}
 
@@ -172,8 +150,6 @@ class MySqlReader extends Object implements ISqlReader
 			$result[] = $row;
 		}
 
-		$this->close();
-
 		return $result;
 	}
 
@@ -187,22 +163,13 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function close() : void
 	{
-		if ($result = mysqli_stmt_result_metadata($this->mysqliStatement))
+		if (!sqlsrv_cancel($this->stmt))
 		{
-			mysqli_stmt_free_result($this->mysqliStatement);
-		}
-
-		if (!mysqli_stmt_close($this->mysqliStatement))
-		{
-			throw new MySqlStatementException
+			throw new MsSqlStatementException
 			(
-				$this,
-				sprintf
-				(
-					'%s %d', 
-					mysqli_stmt_error($this->mysqliStatement),
-					mysqli_stmt_errno($this->mysqliStatement)
-				)
+				$this->msSqlStatement,
+				sprintf('Can not close statement reader, unknown error: statement %s', $this->msSqlStatement->toString()),
+				$this->msSqlConnection->getExceptionStack()
 			);
 		}
 
@@ -217,7 +184,7 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function getSqlConnection() : ISqlConnection
 	{
-		return $this->mySqlStatement->getSqlConnection();
+		return $this->msSqlConnection;
 	}
 
 	/**
@@ -228,7 +195,7 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function getSqlStatement() : ISqlStatement
 	{
-		return $this->mySqlStatement;
+		return $this->msSqlStatement;
 	}
 
 	/**
@@ -243,7 +210,7 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function isClosed() : bool
 	{
-		return !mysqli_stmt_result_metadata($this->mysqliStatement);
+		return $this->closed;
 	}
 
 	/**
@@ -258,39 +225,55 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function next(bool $numeric = false) : ?array
 	{
-		if (mysqli_stmt_fetch($this->mysqliStatement))
+		if ($this->closed)
 		{
-			$result = [];
+			throw new MsSqlStatementException
+			(
+				$this->msSqlStatement,
+				sprintf
+				(
+					'Can not read next result in result set, reader is closed: statement %s',
+					$this->msSqlStatement->toString()
+				)
+			);
+		}
 
-			if ($numeric)
+		$result = sqlsrv_fetch_array
+		(
+			$this->stmt, 
+			($numeric ? SQLSRV_FETCH_NUMERIC : SQLSRV_FETCH_ASSOC)
+		);
+
+		if ($result)
+		{
+			foreach ($result as $i => $value)
 			{
-				for ($i = 0; $i < $this->fieldsCount; ++$i)
-				{
-					$result[$i] =
-					(
-						isset($this->row[$i]) 
-						? __type_to_string($this->row[$i]) 
-						: null
-					);
-				}
-			}
-			else
-			{
-				for ($i = 0; $i < $this->fieldsCount; ++$i)
-				{
-					$result[($this->fields[$i])->name] = 
-					(
-						isset($this->row[$i]) 
-						? __type_to_string($this->row[$i]) 
-						: null
-					);
-				}
+				$result[$i] = 
+				(
+					isset($value) 
+					? __type_to_string($value) 
+					: null
+				);
 			}
 
 			return $result;
 		}
 
-		return null;		
+		if ($result === false)
+		{
+			throw new MsSqlStatementException
+			(
+				$this->msSqlStatement,
+				sprintf
+				(
+					'Can not read next result in result set, unexpected error: statement %s',
+					$this->msSqlStatement->toString()
+				),
+				$this->msSqlConnection->getExceptionStack()
+			);
+		}
+
+		return null;
 	}
 
 	/**
@@ -306,15 +289,12 @@ class MySqlReader extends Object implements ISqlReader
 	 */
 	public function scalar() : ?string
 	{
-		$result = $this->next(true);
+		$row = $this->next(true);
+		$result = ($row ? $row[0] : null);
+
 		$this->close();
 
-		if ($result)
-		{
-			return $result[0];
-		}
-
-		return null;
+		return $result;
 	}
 
 	/**
@@ -335,7 +315,7 @@ class MySqlReader extends Object implements ISqlReader
 	{
 		$result = $this->next($numeric);
 		$this->close();
-
+		
 		return $result;
 	}
 }

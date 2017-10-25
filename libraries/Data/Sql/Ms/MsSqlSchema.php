@@ -25,45 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Data\Sql\My\MySqlColumn;
-use \Lightbit\Data\Sql\My\MySqlObject;
+use \Lightbit\Data\Sql\Ms\MsSqlDatabase;
+use \Lightbit\Data\Sql\Ms\MsSqlObject;
 
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
-use \Lightbit\Data\Sql\ISqlTable;
 
 /**
- * MySqlDatabase.
+ * MsSqlSchema.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlDatabase extends MySqlObject implements ISqlDatabase
+class MsSqlSchema extends MsSqlObject implements ISqlSchema
 {
 	/**
-	 * The schema.
-	 *
-	 * @type ISqlSchema
-	 */
-	private $schema;
-
-	/**
-	 * The tables.
+	 * The databases.
 	 *
 	 * @type array
 	 */
-	private $tables;
+	private $databases;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlSchema $schema
-	 *	The schema.
+	 * @param string $schema
+	 *	The schema name.
 	 *
-	 * @param array $schemata
-	 *	The database schemata.
+	 * @param string $databases
+	 *	The databases schemata.
+	 *
+	 * @param array $tables
+	 *	The tables schemata.
 	 *
 	 * @param array $columns
 	 *	The columns schemata.
@@ -71,88 +66,74 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 	 * @param array $constraints
 	 *	The constraints schemata.
 	 */
-	public function __construct(MySqlSchema $schema, array $schemata, array $tables, array $columns, array $constraints)
+	public function __construct(string $schema, array $databases, array $tables, array $columns, array $constraints)
 	{
-		parent::__construct($schemata['DATABASE_NAME']);
+		parent::__construct($schema);
 
-		$this->schema = $schema;
-		$this->tables = [];
+		$this->databases = [];
 
 		$scope = [];
-		$scope['SCHEMA_NAME'] = $schemata['SCHEMA_NAME'];
-		$scope['DATABASE_NAME'] = $schemata['DATABASE_NAME'];
+		$scope['SCHEMA_NAME'] = $schema;
 
-		foreach ($tables as $i => $table)
+		foreach ($databases as $i => $database)
 		{
-			if (__map_match($scope, $table))
+			if (__map_match($scope, $database))
 			{
-				$instance = new MySqlTable($this, $table, $columns, $constraints);
-				$this->tables[$instance->getName()] = $instance;
+				$instance = new MsSqlDatabase($this, $database, $tables, $columns, $constraints);
+				$this->databases[$instance->getName()] = $instance;
 			}
 		}
 	}
 
 	/**
-	 * Gets the schema.
+	 * Gets a database schema.
 	 *
-	 * @return ISqlSchema
-	 *	The schema.
+	 * @param string $database
+	 *	The database name.
+	 *
+	 * @return ISqlDatabase
+	 *	The database schema.
 	 */
-	public function getSchema() : ISqlSchema
+	public function getDatabase(string $database) : ISqlDatabase
 	{
-		return $this->schema;
-	}
-
-	/**
-	 * Gets a table.
-	 *
-	 * @param string $table
-	 *	The table name.
-	 *
-	 * @return ISqlTable
-	 *	The table.
-	 */
-	public function getTable(string $table) : ISqlTable
-	{
-		if (!isset($this->tables[$table]))
+		if (!isset($this->databases[$database]))
 		{
-			throw new MySqlException
+			throw new MsSqlException
 			(
 				sprintf
 				(
-					'Can not get table from database, not set: table %s, database %s, schema %s',
-					$table,
-					$this->getName(),
-					$this->schema->getName()
+					'Can not get database from schema, not set: database %s, schema %s',
+					$database,
+					$this->getName()
 				)
 			);
 		}
 
-		return $this->tables[$table];
+		return $this->databases[$database];
 	}
 
 	/**
-	 * Gets all tables.
+	 * Gets all databases schema.
 	 *
 	 * @return array
-	 *	The tables.
+	 *	The databases.
 	 */
-	public function getTables() : array
+	public function getDatabases() : array
 	{
-		return $this->tables;
+		return $this->databases;
 	}
 
 	/**
-	 * Checks if a table exists.
+	 * Checks if a database schema is available.
 	 *
-	 * @param string $table
-	 *	The table name.
+	 * @param string $database
+	 *	The database name.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function hasTable(string $table) : bool
+	public function hasDatabase(string $database) : bool
 	{
-		return (isset($this->tables[$table]));
+		return (isset($this->databases[$database]));
 	}
 }

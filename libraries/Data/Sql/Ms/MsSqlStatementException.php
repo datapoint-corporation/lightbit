@@ -25,40 +25,33 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql;
+namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Data\Sql\ISqlObject;
-use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Sql\Ms\MsSqlStatement;
+use \Lightbit\Data\Sql\SqlStatementException;
 
 /**
- * ISqlColumn.
+ * SqlStatementException.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlColumn extends ISqlObject
+class MsSqlStatementException extends SqlStatementException
 {
 	/**
-	 * Gets the table.
+	 * Constructor.
 	 *
-	 * @return ISqlTable
-	 *	The table.
-	 */
-	public function getTable() : ISqlTable;
-
-	/**
-	 * Checks if the column is nullable.
+	 * @param MsSqlStatement $sqlStatement
+	 *	The sql statement.
 	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isNullable() : bool;
-
-	/**
-	 * Checks if the column is sequential.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @return bool
-	 *	The result.
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function isSequential() : bool;
+	public function __construct(MsSqlStatement $sqlStatement, string $message, \Throwable $previous = null)
+	{
+		parent::__construct($sqlStatement, $message, $previous);
+	}
 }

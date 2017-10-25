@@ -25,22 +25,22 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Data\Sql\My\MySqlColumn;
-use \Lightbit\Data\Sql\My\MySqlObject;
+use \Lightbit\Data\Sql\Ms\MsSqlColumn;
+use \Lightbit\Data\Sql\Ms\MsSqlObject;
 
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlTable;
 
 /**
- * MySqlDatabase.
+ * MsSqlDatabase.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlDatabase extends MySqlObject implements ISqlDatabase
+class MsSqlDatabase extends MsSqlObject implements ISqlDatabase
 {
 	/**
 	 * The schema.
@@ -59,7 +59,7 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlSchema $schema
+	 * @param MsSqlSchema $schema
 	 *	The schema.
 	 *
 	 * @param array $schemata
@@ -71,7 +71,7 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 	 * @param array $constraints
 	 *	The constraints schemata.
 	 */
-	public function __construct(MySqlSchema $schema, array $schemata, array $tables, array $columns, array $constraints)
+	public function __construct(MsSqlSchema $schema, array $schemata, array $tables, array $columns, array $constraints)
 	{
 		parent::__construct($schemata['DATABASE_NAME']);
 
@@ -86,7 +86,7 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 		{
 			if (__map_match($scope, $table))
 			{
-				$instance = new MySqlTable($this, $table, $columns, $constraints);
+				$instance = new MsSqlTable($this, $table, $columns, $constraints);
 				$this->tables[$instance->getName()] = $instance;
 			}
 		}
@@ -116,7 +116,7 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 	{
 		if (!isset($this->tables[$table]))
 		{
-			throw new MySqlException
+			throw new MsSqlException
 			(
 				sprintf
 				(

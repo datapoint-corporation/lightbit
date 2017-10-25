@@ -550,7 +550,7 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 				$primaryKey = $this->getPrimaryKey();
 
-				if (!isset($primaryKey[1]) && ($columns[$primaryKey[0]])->isAutoIncrementable())
+				if (!isset($primaryKey[1]) && ($columns[$primaryKey[0]])->isSequential())
 				{
 					$this->setAttribute($primaryKey[0], $sql->getLastInsertID());
 				}

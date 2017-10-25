@@ -25,20 +25,20 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Data\Sql\My\MySqlObject;
+use \Lightbit\Data\Sql\Ms\MsSqlObject;
 
 use \Lightbit\Data\Sql\ISqlColumn;
 use \Lightbit\Data\Sql\ISqlTable;
 
 /**
- * MySqlColumn.
+ * MsSqlColumn.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlColumn extends MySqlObject implements ISqlColumn
+class MsSqlColumn extends MsSqlObject implements ISqlColumn
 {
 	/**
 	 * The nullable flag.
@@ -71,7 +71,7 @@ class MySqlColumn extends MySqlObject implements ISqlColumn
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlTable $table
+	 * @param MsSqlTable $table
 	 *	The table.
 	 *
 	 * @param array $schemata
@@ -80,7 +80,7 @@ class MySqlColumn extends MySqlObject implements ISqlColumn
 	 * @param array $constraints
 	 *	The constraints schemata.
 	 */
-	public function __construct(MySqlTable $table, array $schemata, array $constraints)
+	public function __construct(MsSqlTable $table, array $schemata, array $constraints)
 	{
 		parent::__construct($schemata['COLUMN_NAME']);
 

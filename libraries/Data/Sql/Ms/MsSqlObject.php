@@ -25,112 +25,46 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Data\Sql\My\MySqlObject;
+use \Lightbit\Base\Object;
 
-use \Lightbit\Data\Sql\ISqlColumn;
-use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Sql\ISqlObject;
 
 /**
- * MySqlColumn.
+ * MsSqlObject.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlColumn extends MySqlObject implements ISqlColumn
+class MsSqlObject extends Object implements ISqlObject
 {
 	/**
-	 * The nullable flag.
-	 *
-	 * @type bool
-	 */
-	private $nullable;
-
-	/**
-	 * The sequential flag.
-	 *
-	 * @type bool
-	 */
-	private $sequential;
-
-	/**
-	 * The table.
-	 *
-	 * @type ISqlTable
-	 */
-	private $table;
-
-	/**
-	 * The column type.
+	 * The name.
 	 *
 	 * @type string
 	 */
-	private $type;
+	private $name;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlTable $table
-	 *	The table.
-	 *
-	 * @param array $schemata
-	 *	The column schemata.
-	 *
-	 * @param array $constraints
-	 *	The constraints schemata.
+	 * @param string $name
+	 *	The object name.
 	 */
-	public function __construct(MySqlTable $table, array $schemata, array $constraints)
+	public function __construct(string $name)
 	{
-		parent::__construct($schemata['COLUMN_NAME']);
-
-		$this->table = $table;
-		$this->nullable = ($schemata['IS_NULLABLE'] === 'YES');
-		$this->type = $schemata['DATA_TYPE'];
-		$this->sequential = ($schemata['IS_SEQUENTIAL'] === 'YES');
+		$this->name = $name;
 	}
 
 	/**
-	 * Gets the table.
-	 *
-	 * @return ISqlTable
-	 *	The table.
-	 */
-	public function getTable() : ISqlTable
-	{
-		return $this->table;
-	}
-
-	/**
-	 * Gets the type.
+	 * Gets the name.
 	 *
 	 * @return string
-	 *	The type.
+	 *	The name.
 	 */
-	public function getType() : string
+	public final function getName() : string
 	{
-		return $this->type;
-	}
-
-	/**
-	 * Checks if the column is nullable.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isNullable() : bool
-	{
-		return $this->nullable;
-	}
-
-	/**
-	 * Checks if the column is sequential.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isSequential() : bool
-	{
-		return $this->sequential;
+		return $this->name;
 	}
 }

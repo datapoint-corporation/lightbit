@@ -34,6 +34,7 @@ use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\ISqlStatementFactory;
+use \Lightbit\Data\Sql\ISqlTransaction;
 
 /**
  * ISqlConnection.
@@ -62,6 +63,13 @@ interface ISqlConnection extends IComponent, IChannel
 	 */
 	public function all(string $statement, array $parameters = null, bool $numeric = false) : array;
 
+	/**
+	 * Closes the connection.
+	 *
+	 * If a connection is persistent, this method will be limited to the
+	 * relevant clean up procedures but the connection itself may stay
+	 * open and ready to use in the future.
+	 */
 	public function close() : void;
 
 	/**
@@ -116,6 +124,14 @@ interface ISqlConnection extends IComponent, IChannel
 	public function getStatementFactory() : ISqlStatementFactory;
 
 	/**
+	 * Checks the connection state.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isClosed() : bool;
+
+	/**
 	 * Prepares and executes a query statement.
 	 *
 	 * Since this function generates a reader, that reader should be manually
@@ -153,6 +169,22 @@ interface ISqlConnection extends IComponent, IChannel
 	public function quote(string $statement) : string;
 
 	/**
+	 * Executes a command.
+	 *
+	 * The integer returned by this command can have different meanings 
+	 * depending on the underlying database management system and the command
+	 * in execution but, more often than not, is related to the number
+	 * of affected rows.
+	 *
+	 * @param string $command
+	 *	The command to execute.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public function run(string $command) : int;
+
+	/**
 	 * Prepares and executes a query statement, pre-fetching and returning
 	 * the first cell within the first result set.
 	 *
@@ -187,6 +219,11 @@ interface ISqlConnection extends IComponent, IChannel
 	 *	The result.
 	 */
 	public function single(string $statement, array $parameters = null, bool $numeric = false) : ?array;
+
+	/**
+	 * Starts the connection.
+	 */
+	public function start() : void;
 
 	/**
 	 * Prepares a statement for multiple execution.

@@ -70,7 +70,7 @@ function __map_get(?array $map, ?string $type, string $property) // : mixed
 	return null;
 }
 
-function __map_match(?array $map, ?array $subject) : bool
+function __map_match(?array $subject, ?array $map) : bool
 {
 	if ($map)
 	{

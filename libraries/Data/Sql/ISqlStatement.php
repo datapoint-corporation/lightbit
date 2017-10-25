@@ -27,8 +27,8 @@
 
 namespace Lightbit\Data\Sql;
 
+use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
-use \Lightbit\Data\Sql\ISqlStatement;
 
 /**
  * ISqlStatement.

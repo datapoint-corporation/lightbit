@@ -25,21 +25,21 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Sql\My;
+namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Base\Object;
-use \Lightbit\Data\Sql\My\MySqlConnection;
-use \Lightbit\Data\Sql\My\MySqlConnectionException;
+use \Lightbit\Data\Sql\Ms\MsSqlConnection;
+use \Lightbit\Data\Sql\Ms\MsSqlConnectionException;
 
 use \Lightbit\Data\Sql\ISqlTransaction;
 
 /**
- * MySqlTransaction.
+ * MsSqlTransaction.
  *
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlTransaction extends Object implements ISqlTransaction
+class MsSqlTransaction extends Object implements ISqlTransaction
 {
 	/**
 	 * The state.
@@ -49,43 +49,39 @@ class MySqlTransaction extends Object implements ISqlTransaction
 	private $closed;
 
 	/**
-	 * The MySQL connection.
+	 * The sql connection.
 	 *
-	 * @type MySqlConnection;
+	 * @type MsSqlConnection;
 	 */
-	private $mySqlConnection;
+	private $msSqlConnection;
 
 	/**
-	 * The mysqli connection handle.
+	 * The sql connection handle.
 	 *
-	 * @type mysqli
+	 * @type resource
 	 */
-	private $mysqli;
+	private $sqlsrv;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param MySqlConnection
-	 *	The MySQL connection.
+	 * @param MsSqlConnection $msSqlConnection
+	 *	The sql connection.
 	 */
-	public function __construct(MySqlConnection $mySqlConnection)
+	public function __construct(MsSqlConnection $msSqlConnection)
 	{
 		$this->closed = true;
-		$this->mySqlConnection = $mySqlConnection;
+		$this->msSqlConnection = $msSqlConnection;
 
-		$this->mysqli = $mySqlConnection->getMysqli();
+		$this->sqlsrv = $msSqlConnection->getSqlsrv();
 		
-		if (!mysqli_begin_transaction($this->mysqli))
+		if (!sqlsrv_begin_transaction($this->mysqli))
 		{
-			throw new MySqlConnectionException
+			throw new MsSqlConnectionException
 			(
-				$this->mySqlConnection,
-				sprintf
-				(
-					'%s (%d)', 
-					mysqli_error(),
-					mysqli_errno()
-				)
+				$this->msSqlConnection,
+				'Can not start transaction',
+				$this->msSqlConnection->getExceptionStack()
 			);
 		}
 
@@ -100,17 +96,13 @@ class MySqlTransaction extends Object implements ISqlTransaction
 	 */
 	public function commit() : void
 	{
-		if (!mysqli_commit($this->mysqli))
+		if (!sqlsrv_commit($this->mysqli))
 		{
-			throw new MySqlConnectionException
+			throw new MsSqlConnectionException
 			(
-				$this->mySqlConnection,
-				sprintf
-				(
-					'%s (%d)', 
-					mysqli_error(),
-					mysqli_errno()
-				)
+				$this->msSqlConnection,
+				'Can not commit transaction',
+				$this->msSqlConnection->getExceptionStack()
 			);
 		}
 
@@ -139,17 +131,13 @@ class MySqlTransaction extends Object implements ISqlTransaction
 	 */
 	public function rollback() : void
 	{
-		if (!mysqli_rollback($this->rollback))
+		if (!sqlsrv_rollback($this->rollback))
 		{
-			throw new MySqlConnectionException
+			throw new MsSqlConnectionException
 			(
-				$this->mySqlConnection,
-				sprintf
-				(
-					'%s (%d)', 
-					mysqli_error(),
-					mysqli_errno()
-				)
+				$this->msSqlConnection,
+				'Can not rollback transaction',
+				$this->msSqlConnection->getExceptionStack()
 			);
 		}
 
