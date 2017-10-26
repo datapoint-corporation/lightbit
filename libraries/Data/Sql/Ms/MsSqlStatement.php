@@ -285,6 +285,12 @@ class MsSqlStatement extends Object implements ISqlStatement
 		return new MsSqlReader($this);
 	}
 
+	/**
+	 * Runs the statement.
+	 *
+	 * @param array $parameters
+	 *	The statement parameters.
+	 */
 	private function run(array $parameters = null) : void
 	{
 		if ($parameters)

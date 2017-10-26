@@ -48,6 +48,11 @@ use \Lightbit\Data\Sql\ISqlTransaction;
  */
 class MsSqlConnection extends Component implements ISqlConnection
 {
+	/**
+	 * The base option set.
+	 *
+	 * @type array
+	 */
 	private const BASE_OPTION_SET = 
 	[
 		'ApplicationIntent' => 'ReadWrite',
@@ -86,6 +91,11 @@ class MsSqlConnection extends Component implements ISqlConnection
 	 */
 	private $options;
 
+	/**
+	 * The password.
+	 *
+	 * @type string
+	 */
 	private $password;
 
 	/**
@@ -102,8 +112,18 @@ class MsSqlConnection extends Component implements ISqlConnection
 	 */
 	private $sqlsrv;
 
+	/**
+	 * The statement factory.
+	 *
+	 * @type ISqlStatementFactory
+	 */
 	private $statementFactory;
 
+	/**
+	 * The user.
+	 *
+	 * @type string
+	 */
 	private $user;
 
 	/**
@@ -501,6 +521,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->scalar($parameters);
 	}
 
+	/**
+	 * Sets the character set.
+	 *
+	 * @param string $charset
+	 *	The character set name.
+	 */
 	public function setCharset(string $charset) : void
 	{
 		if ($this->sqlsrv)
@@ -519,6 +545,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 		$this->charset = $charset;
 	}
 
+	/**
+	 * Sets the database.
+	 *
+	 * @param string $database
+	 *	The database name.
+	 */
 	public function setDatabase(string $database) : void
 	{
 		if ($this->sqlsrv)
@@ -586,6 +618,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 		$this->options = $options;
 	}
 
+	/**
+	 * Sets the password.
+	 *
+	 * @param string $password
+	 *	The password.
+	 */
 	public function setPassword(?string $password) : void
 	{
 		if ($this->sqlsrv)
@@ -604,6 +642,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 		$this->password = $password;
 	}
 
+	/**
+	 * Sets the user.
+	 *
+	 * @param string $user
+	 *	The user.
+	 */
 	public function setUser(?string $user) : void
 	{
 		if ($this->sqlsrv)
@@ -643,6 +687,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->single($parameters, $numeric);
 	}
 
+	/**
+	 * Gets the internal connection handle.
+	 *
+	 * @return resource
+	 *	The internal connection handle.
+	 */
 	public function getSqlsrv() // : resource
 	{
 		return $this->sqlsrv;
