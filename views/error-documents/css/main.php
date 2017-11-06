@@ -25,39 +25,68 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$counter = 0;
-
-$title = $status . ' ' . __http_status_message($status);
-
-$document = $this->getHtmlDocument();
-$document->setTitle($title);
-$document->addInlineStyle('lightbit://views/error-documents/css/main');
-
 ?>
 
-<!DOCTYPE html />
+body
+{
+	color: #171717;
+	font-family: sans-serif;
+	font-size: 14px;
+	padding: 1em;
+}
 
-<html lang="en">
-	<head><?= $document->inflate('head') ?></head>
-	<body>
-		<?= __html_element('h1', null, $title) ?>
-		<?php if (__debug()) : ?>
-		<hr />
-		<?php while ($throwable) : ++$counter; ?>
-		<h2><?= __html_encode($throwable->getMessage()) ?></h2>
-		<p class="monospace"><?= __html_encode(__type_of($throwable)) ?></p>
-		<?= __html_element
-		(
-			'pre',
-			null,
-			(
-				__html_element('strong', null, $throwable->getFile() . ' :' . $throwable->getLine()) .
-				PHP_EOL . 
-				$throwable->getTraceAsString()
-			),
-			false
-		) ?>
-		<?php $throwable = $throwable->getPrevious(); endwhile; ?>
-		<?php endif; ?>
-	</body>
-</html>
+h1
+{
+	font-size: 2.5em;
+	line-height: 1.5em;
+	margin: 1em 0 1rem 0;
+}
+
+p
+{
+	line-height: 1.5em;
+	margin: 1em 0;
+}
+
+<?php if (__debug()) : ?>
+p.monospace
+{
+	font-family: monospace;
+}
+
+hr
+{
+	border: none;
+	border-top: 1px dashed #171717;
+	display: block;
+	margin: 2em 0 2em 0;
+	overflow: visible;
+}
+
+hr::after
+{
+	content: "EXCEPTION STACK TRACE";
+	display: block;
+	line-height: 1em;
+	color: #171717;
+	font-family: monospace;
+	font-size: .85em;
+	margin: .5em 0 0 0;
+}
+
+h2
+{
+	font-size: 1.5em;
+	margin: 1em 0 1rem 0;
+}
+
+pre
+{
+	border-left: 2px solid #171717;
+	box-sizing: border-box;
+	font-family: monospace;
+	line-height: 1.5em;
+	margin: 1em 0 2em 0;
+	padding: 0 0 0 1rem;
+}
+<?php endif; ?>
