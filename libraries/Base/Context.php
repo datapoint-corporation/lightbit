@@ -828,7 +828,81 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
-	 * Gets the views base paths.
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public final function getView(string $view) : IView
+	{
+		// If a theme is defined for this context and the view is available
+		// through it, we must return it instead.
+		if ($theme = $this->getTheme())
+		{
+			// Calculate the view prefix relative to the theme target context,
+			// to supported hierarchy based views. 
+			$current = $this;
+			$prefix = '';
+			$target = $theme->getContext();
+
+			while ($current !== $target)
+			{
+				$prefix .= $current->getID() . '/';
+				
+				if (! ($current = $current->getContext()))
+				{
+					throw new ContextException
+					(
+						$this,
+						sprintf
+						(
+							'Can not find target context for theme view: view %s, source %s, target %s, theme %s',
+							$view,
+							$this->getGlobalID(),
+							$target->getGlobalID(),
+							$theme->getID()
+						)
+					);
+				}
+			}
+
+			// The theme may not have the intended view and, in that case,
+			// we must revert to the base logic.
+			$asset = $prefix . $view;
+
+			if ($theme->hasView($asset))
+			{
+				return $theme->getView($asset);
+			}			
+		}
+
+		// The basic logic looks for the view within the views base path
+		// and if it does not exist, an exception is thrown.
+		$path = __asset_path_resolve($this->getViewsBasePath(), 'php', $view);
+
+		if (!is_file($path))
+		{
+			throw new ContextViewNotFoundException
+			(
+				$this, 
+				sprintf
+				(
+					'Context view not found: view %s, path %s, context %s',
+					$view,
+					$path,
+					$this->getGlobalID()
+				)
+			);
+		}
+
+		return new View($this, $path);
+	}
+
+	/**
+	 * Gets the views base path.
 	 *
 	 * @return string
 	 *	The views base path.
@@ -837,7 +911,7 @@ abstract class Context extends Object implements IContext
 	{
 		if (!$this->viewsBasePath)
 		{
-			$this->viewsBasePath = $this->path . DIRECTORY_SEPARATOR . 'views';
+			$this->viewsBasePath = ($this->path . DIRECTORY_SEPARATOR . 'views');
 		}
 
 		return $this->viewsBasePath;
@@ -890,6 +964,53 @@ abstract class Context extends Object implements IContext
 	public final function hasModule(string $id) : string
 	{
 		return isset($this->modules[$id]);
+	}
+
+	/**
+	 * Checks if a view exists.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasView(string $view) : bool
+	{
+		if ($theme = $this->getTheme())
+		{
+			$current = $this;
+			$prefix = '';
+			$target = $theme->getContext();
+
+			while ($current !== $target)
+			{
+				$prefix .= $current->getID() . '/';
+				
+				if (! ($current = $current->getContext()))
+				{
+					throw new ContextException
+					(
+						$this,
+						sprintf
+						(
+							'Can not find target context for theme view: view %s, source %s, target %s, theme %s',
+							$view,
+							$this->getGlobalID(),
+							$target->getGlobalID(),
+							$theme->getID()
+						)
+					);
+				}
+			}
+
+			if ($theme->hasView($prefix . $view))
+			{
+				return true;
+			}
+		}
+
+		return is_file(__asset_path_resolve($this->getViewsBasePath(), 'php', $view));
 	}
 
 	/**

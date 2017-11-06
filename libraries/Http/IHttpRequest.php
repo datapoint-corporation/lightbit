@@ -51,6 +51,14 @@ interface IHttpRequest extends IHttpMessage
 	public function export(IModel $model) : bool;
 
 	/**
+	 * Gets the client address.
+	 *
+	 * @return string
+	 *	The client address.
+	 */
+	public function getClientAddress() : string;
+
+	/**
 	 * Gets the request form data.
 	 *
 	 * @return array

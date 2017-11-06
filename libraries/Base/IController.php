@@ -89,6 +89,17 @@ interface IController extends IElement
 	public function getID() : string;
 
 	/**
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public function getView(string $view) : IView;
+
+	/**
 	 * Resolves to an action.
 	 *
 	 * @param string $id
@@ -108,8 +119,8 @@ interface IController extends IElement
 	 * @param IAction $action
 	 *	The action.
 	 *
-	 * @return mixed
+	 * @return int
 	 *	The result.
 	 */
-	public function run(IAction $action); // : mixed
+	public function run(IAction $action) : int;
 }

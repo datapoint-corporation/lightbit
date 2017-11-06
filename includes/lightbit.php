@@ -125,21 +125,19 @@ function __lightbit_exception_handler(Throwable $e) : bool
 	if ($application = __application_get())
 	{
 		$application->throwable($e);
-		__exit(1);
 	}
-
-	else if (__environment_is_cli())
-	{
-		do
-		{
-			echo sprintf('%s: %s at %s, line %d', __type_of($e), $e->getMessage(), $e->getFile(), $e->getLine()), PHP_EOL;
-			echo $e->getTraceAsString(), PHP_EOL;
-			echo PHP_EOL;
-		}
-		while ($e = $e->getPrevious());
-	}
-
 	else
+	{
+		__lightbit_throwable($e);
+	}
+
+	__exit(1);
+	return true;
+}
+
+function __lightbit_throwable(Throwable $e) : void
+{
+	if (__environment_is_web())
 	{
 		echo __html_element('h1', null, __type_of($e)), PHP_EOL;
 		echo __html_element('p', null, $e->getMessage()), PHP_EOL;
@@ -154,8 +152,16 @@ function __lightbit_exception_handler(Throwable $e) : bool
 		while ($e = $e->getPrevious());
 	}
 
-	__exit(1);
-	return true;
+	else
+	{
+		do
+		{
+			echo sprintf('%s: %s at %s, line %d', __type_of($e), $e->getMessage(), $e->getFile(), $e->getLine()), PHP_EOL;
+			echo $e->getTraceAsString(), PHP_EOL;
+			echo PHP_EOL;
+		}
+		while ($e = $e->getPrevious());
+	}
 }
 
 function __lightbit_next_id() : int

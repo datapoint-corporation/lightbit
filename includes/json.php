@@ -25,60 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __environment_type() : string
+function __json_encode(array $content, bool $object = false) : string
 {
-	static $result;
+	global $__LIGHTBIT_DEBUG;
 
-	if (!isset($result))
+	$options = JSON_UNESCAPED_UNICODE;
+
+	if ($object)
 	{
-		$result = ((php_sapi_name() === 'cli') ? 'cli' : 'web');
-	} 
+		$options = $options | JSON_FORCE_OBJECT;
+	}
 
-	return $result;
-}
-
-function __environment_is_cli() : bool
-{
-	static $result;
-
-	if (!isset($result))
+	if ($__LIGHTBIT_DEBUG)
 	{
-		$result = (__environment_type() === 'cli');
+		$options = $options | JSON_PRETTY_PRINT;
+	}
+
+	$result = json_encode($content, $options, 512);
+
+	if ($result === false)
+	{
+		__throw(sprintf('Can not encode json content: %s', lcfirst(json_last_error_msg())));
 	}
 
 	return $result;
 }
 
-function __environment_is_linux() : bool
+function __json_decode(string $content) : array
 {
-	static $linux;
+	$result = json_decode($content, true, 512, JSON_UNESCAPED_UNICODE);
 
-	if (!isset($linux))
+	if (!isset($result) && json_last_error() !== JSON_ERROR_NONE)
 	{
-		$linux = (strtoupper(PHP_OS) === 'linux');
-	}
-}
-
-function __environment_is_web() : bool
-{
-	static $result;
-
-	if (!isset($result))
-	{
-		$result = (__environment_type() === 'web');
+		__throw(sprintf('Can not encode json content: %s', lcfirst(json_last_error_msg())));	
 	}
 
 	return $result;
-}
-
-function __environment_is_windows() : bool
-{
-	static $windows;
-
-	if (!isset($windows))
-	{
-		$windows = (strpos(strtoupper(PHP_OS), 'WIN') === 0);
-	}
-
-	return $windows;
 }

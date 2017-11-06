@@ -145,7 +145,18 @@ interface IContext extends IBase
 	public function getPrefix() : string;
 
 	/**
-	 * Gets the views base paths.
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public function getView(string $view) : IView;
+
+	/**
+	 * Gets the views base path.
 	 *
 	 * @return string
 	 *	The views base path.
@@ -184,6 +195,17 @@ interface IContext extends IBase
 	 *	The result.
 	 */
 	public function hasModule(string $id) : string;
+
+	/**
+	 * Checks if a view exists.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasView(string $view) : bool;
 
 	/**
 	 * Resolves a route.

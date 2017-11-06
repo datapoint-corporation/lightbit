@@ -122,30 +122,6 @@ class Application extends Context implements IApplication
 	}
 
 	/**
-	 * Gets the http error document path.
-	 *
-	 * @param int $httpStatusCode
-	 *	The http status code.
-	 *
-	 * @return string
-	 *	The http error document path.
-	 */
-	public final function getHttpErrorDocumentPath(int $httpStatusCode) : string
-	{
-		if (!isset($this->httpErrorDocuments[$httpStatusCode]))
-		{
-			$httpStatusCode = 0;
-		}
-
-		return __asset_path_resolve_array
-		(
-			array_merge([ $this->getViewsBasePath(), LIGHTBIT_PATH . '/views/http' ]),
-			'php',
-			$this->httpErrorDocuments[$httpStatusCode]
-		);
-	}
-
-	/**
 	 * Checks the debug flag.
 	 *
 	 * @return bool
@@ -164,27 +140,38 @@ class Application extends Context implements IApplication
 	 */
 	public function run() : int
 	{
-		$result;
-
-		try
+		switch (__environment_type())
 		{
-			if (__environment_is_cli())
-			{
-				$result = $this->resolve($this->getDefaultRoute())->run();
-			}
-			else
-			{
-				$result = $this->getHttpRouter()->resolve()->run();
-			}
+			case 'web':
+				return $this->runAsWeb();
 
-			return (is_int($result) ? $result : 0);
-		}
-		catch (\Throwable $e)
-		{
-			$this->throwable($e);
+			case 'cli':
+				return $this->runAsCli();
 		}
 
 		return 1;
+	}
+
+	private function runAsCli() : int
+	{
+		return $this->resolve($this->getDefaultRoute())->run();
+	}
+
+	private function runAsWeb() : int
+	{
+		try
+		{
+			return $this->getHttpRouter()->resolve()->run();
+		}
+		catch (\Throwable $e)
+		{
+			if (! ($e instanceof HttpStatusException))
+			{
+				throw new HttpStatusException(500, __http_status_message(500), $e);
+			}
+
+			throw $e;
+		}
 	}
 
 	/**
@@ -248,50 +235,73 @@ class Application extends Context implements IApplication
 	 */
 	public final function throwable(\Throwable $throwable) : void
 	{
-
-		if (__environment_is_cli())
+		if (__environment_is_web())
 		{
-			// For Command Line Interfaces (CLI), output formatting is not supported
-			// and the stack trace is simply dumped to the screen.
-			do
+			// Calculate the appropriate http status code to be defined
+			// in this response.
+			$status = ($throwable instanceof HttpStatusException)
+				? $throwable->getStatusCode()
+				: 500;
+
+			// Reset the current document and response, defining it with
+			// the appropriate status code.
+			$document = $this->getHtmlDocument();
+			$document->reset();
+
+			$response = $this->getHttpResponse();
+			$response->reset();
+			$response->setStatusCode($status);
+
+			// Resolve to the view containing the applicable error documents,
+			// with a default (catch-all) identifier.
+			foreach ( [ $status, 'default' ] as $i => $suffix)
 			{
-				echo get_class($throwable), ': ', $throwable->getMessage(), PHP_EOL;
-				echo $throwable->getTraceAsString(), PHP_EOL;
-				echo PHP_EOL;
+				$view = 'error-documents/' . $suffix;
 
-				$throwable = $throwable->getPrevious();
+				if ($this->hasView($view))
+				{
+					$this->getView($view)->run([ 'status' => $status, 'throwable' => $throwable ]);
+					return;
+				}
 			}
-			while ($throwable);
-		}
-		else
-		{
-			// For HTTP environments, the applicable error response needs to be
-			// generated according to the status code.
-			$this->onHttpErrorResponse
-			(
-				(($throwable instanceof HttpStatusException) ? $throwable->getStatusCode() : 500),
-				$throwable
-			);
+
+			// If no views were found, we'll have to fallback to the one
+			// bundled with the framework.
+			foreach ( [ $status, 'default' ] as $i => $suffix)
+			{
+				$view = 'lightbit://views/error-documents/' . $suffix;
+
+				if ($this->hasView($view))
+				{
+					$this->getView($view)->run([ 'status' => $status, 'throwable' => $throwable ]);
+					return;
+				}
+			}
 		}
 
-		try
-		{
-			$this->terminate(1);
-		}
-		catch (\Throwable $e)
-		{
-			exit(1);
-		}
+		__lightbit_throwable($throwable);		
 	}
 
+	/**
+	 * On After Construct.
+	 *
+	 * This method is invoked during the application construction procedure,
+	 * after the dynamic configuration is applied.
+	 */
 	protected function onAfterConstruct() : void
 	{
-		
+		$this->raise('lightbit.base.application.construct.after', $this);
 	}
 
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the application construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
 	protected function onConstruct() : void
 	{
-
+		$this->raise('lightbit.base.application.construct', $this);
 	}
 
 	/**

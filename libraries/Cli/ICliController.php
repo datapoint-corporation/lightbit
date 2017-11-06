@@ -25,60 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __environment_type() : string
+namespace \Lightbit\Cli;
+
+use \Lightbit\Base\IController;
+
+/**
+ * ICliController.
+ *
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @since 1.0.0
+ */
+interface ICliController extends IController
 {
-	static $result;
-
-	if (!isset($result))
-	{
-		$result = ((php_sapi_name() === 'cli') ? 'cli' : 'web');
-	} 
-
-	return $result;
-}
-
-function __environment_is_cli() : bool
-{
-	static $result;
-
-	if (!isset($result))
-	{
-		$result = (__environment_type() === 'cli');
-	}
-
-	return $result;
-}
-
-function __environment_is_linux() : bool
-{
-	static $linux;
-
-	if (!isset($linux))
-	{
-		$linux = (strtoupper(PHP_OS) === 'linux');
-	}
-}
-
-function __environment_is_web() : bool
-{
-	static $result;
-
-	if (!isset($result))
-	{
-		$result = (__environment_type() === 'web');
-	}
-
-	return $result;
-}
-
-function __environment_is_windows() : bool
-{
-	static $windows;
-
-	if (!isset($windows))
-	{
-		$windows = (strpos(strtoupper(PHP_OS), 'WIN') === 0);
-	}
-
-	return $windows;
+	
 }

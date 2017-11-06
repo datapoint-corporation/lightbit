@@ -48,6 +48,13 @@ class PasswordDigest extends Component implements IPasswordDigest
 	private $cost;
 
 	/**
+	 * The salt.
+	 *
+	 * @type string
+	 */
+	private $salt;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
@@ -64,6 +71,7 @@ class PasswordDigest extends Component implements IPasswordDigest
 		parent::__construct($context, $id);
 
 		$this->cost = 7;
+		$this->salt = '';
 
 		if ($configuration)
 		{
@@ -85,7 +93,7 @@ class PasswordDigest extends Component implements IPasswordDigest
 	 */
 	public function compare(string $password, string $digest) : bool
 	{
-		return password_verify($password, $digest);
+		return password_verify(($this->salt . $password), $digest);
 	}
 
 	/**
@@ -99,7 +107,7 @@ class PasswordDigest extends Component implements IPasswordDigest
 	 */
 	public function digest(string $password) : string
 	{
-		return password_hash($password, PASSWORD_BCRYPT, [ 'cost' => $this->cost ]);
+		return password_hash(($this->salt . $password), PASSWORD_BCRYPT, [ 'cost' => $this->cost ]);
 	}
 
 	/**
@@ -111,6 +119,17 @@ class PasswordDigest extends Component implements IPasswordDigest
 	public final function getCost() : int
 	{
 		return $this->cost;
+	}
+
+	/**
+	 * Gets the salt.
+	 *
+	 * @return string
+	 *	The salt.
+	 */
+	public final function getSalt() : string
+	{
+		return $this->salt;
 	}
 
 	/**
@@ -135,6 +154,17 @@ class PasswordDigest extends Component implements IPasswordDigest
 		{
 			$this->cost = $cost;
 		}
+	}
+
+	/**
+	 * Sets the salt.
+	 *
+	 * @param string $salt
+	 *	The salt.
+	 */
+	public final function setSalt(string $salt) : void
+	{
+		$this->salt = $salt;
 	}
 
 	/**

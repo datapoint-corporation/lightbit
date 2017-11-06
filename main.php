@@ -58,7 +58,7 @@ const LIGHTBIT_VERSION = '1.0.0';
  *
  * @type int
  */
-const LIGHTBIT_VERSION_BUILD = 201709240118;
+const LIGHTBIT_VERSION_BUILD = '201709240118';
 
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
@@ -78,6 +78,7 @@ require __DIR__ . '/includes/html.php';
 require __DIR__ . '/includes/http.php';
 require __DIR__ . '/includes/import.php';
 require __DIR__ . '/includes/include.php';
+require __DIR__ . '/includes/json.php';
 require __DIR__ . '/includes/map.php';
 require __DIR__ . '/includes/math.php';
 require __DIR__ . '/includes/namespace.php';

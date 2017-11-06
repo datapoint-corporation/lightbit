@@ -93,6 +93,14 @@ interface IView extends IElement
 	public function import(&$variable, \Closure $closure = null) : void;
 
 	/**
+	 * Checks if the view is available.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isAvailable() : bool;
+
+	/**
 	 * Renders a view.
 	 *
 	 * @param string $view

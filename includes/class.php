@@ -25,8 +25,6 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\ClassNotFoundException;
-
 $__LIGHTBIT_CLASS = [];
 
 function __class_exists(string $class) : bool
@@ -34,9 +32,9 @@ function __class_exists(string $class) : bool
 	return is_file(__class_path_resolve($class));
 }
 
-function __class_is_a(string $subject, string $candidate) : string
+function __class_is_a(string $subject, string $candidate) : bool
 {
-	return ($subject === $candidate || is_subclass_of($candidate, $subject));
+	return ($subject === $candidate || is_subclass_of($candidate, $subject, true));
 }
 
 function __class_namespace(string $class) : string

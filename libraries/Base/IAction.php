@@ -125,8 +125,8 @@ interface IAction
 	/**
 	 * Runs the action.
 	 *
-	 * @return mixed
+	 * @return int
 	 *	The result.
 	 */
-	public function run();
+	public function run() : int;
 }

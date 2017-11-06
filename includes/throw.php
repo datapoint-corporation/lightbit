@@ -56,6 +56,21 @@ function __throw_file_not_found(string $path, string $message, Throwable $previo
 	throw new Exception($message, 0, $previous);
 }
 
+function __throw_http_status(int $status, string $message = null, Throwable $previous = null) : void
+{
+	if (!$message)
+	{
+		$message = __http_status_message($status);
+	}
+
+	if (class_exists(Lightbit\Http\HttpStatusException::class))
+	{
+		throw new Lightbit\Http\HttpStatusException($status, $message, $previous);
+	}
+
+	throw new Exception(('HTTP ' . $status . ' ' . $message), 0, $previous);
+}
+
 function __throw_illegal_state(string $message, Throwable $previous = null) : void
 {
 	if (class_exists(Lightbit\IllegalStateException::class))

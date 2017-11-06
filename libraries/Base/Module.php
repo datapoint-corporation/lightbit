@@ -67,8 +67,7 @@ abstract class Module extends Context implements IModule
 		(
 			[
 				'data.slug.manager' => [ '@class' => SlugManager::class ],
-				'globalization.message.source' => [ '@class' => MessageSource::class ],
-				'security.cryptography.password.digest' => [ '@class' => PasswordDigest::class ]
+				'globalization.message.source' => [ '@class' => MessageSource::class ]
 			]
 		);
 
@@ -93,13 +92,25 @@ abstract class Module extends Context implements IModule
 		return __application();
 	}
 
+	/**
+	 * On After Construct.
+	 *
+	 * This method is invoked during the module construction procedure,
+	 * after the dynamic configuration is applied.
+	 */
 	protected function onAfterConstruct() : void
 	{
-		
+		$this->raise('lightbit.base.module.construct.after', $this);
 	}
 
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the module construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
 	protected function onConstruct() : void
 	{
-
+		$this->raise('lightbit.base.module.construct', $this);
 	}
 }

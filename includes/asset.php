@@ -71,6 +71,11 @@ function __asset_prefix_register(string $id, string $path) : void
 	$__LIGHTBIT_ASSET_PREFIX[$id] = __path_resolve($path);
 }
 
+function __asset_has_prefix(string $asset) : bool
+{
+	return (strpos($asset, '://') !== false);
+}
+
 function __asset_path_resolve(?string $context, ?string $extension, string $asset) : string
 {
 	global $__LIGHTBIT_ASSET;
@@ -161,6 +166,27 @@ function __asset_path_resolve_array(array $context, ?string $extension, string $
 		}
 
 		$__LIGHTBIT_ASSET[$guid] = $path;
+	}
+
+	return $__LIGHTBIT_ASSET[$guid];
+}
+
+function __asset_path_resolve_relative(string $context, ?string $extension, string $token) : string
+{
+	global $__LIGHTBIT_ASSET;
+
+	$guid = __asset_guid($context, $extension, $asset);
+
+	if (!isset($__LIGHTBIT_ASSET[$guid]))
+	{
+		$path = $context . DIRECTORY_SEPARATOR . $asset;
+
+		if ($extension)
+		{
+			$path .= '.' . $extension;
+		}
+
+		$__LIGHTBIT_ASSET[$guid] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 	}
 
 	return $__LIGHTBIT_ASSET[$guid];

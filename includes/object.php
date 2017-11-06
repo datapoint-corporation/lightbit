@@ -100,7 +100,7 @@ function __object_construct_a(string $base, string $class, ...$arguments) : Obje
 {
 	if (!__class_is_a($base, $class))
 	{
-		__throw('Can not object from incorrect class: class %s, must be subclass of %s', $class, $base);
+		__throw(sprintf('Can not object from incorrect class: class %s, must be subclass of %s', $class, $base));
 	}
 
 	return new $class(...$arguments);
@@ -128,7 +128,7 @@ function __object_create(array $attributes) : Object
 			continue;
 		}
 
-		__throw('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject);
+		__throw(sprintf('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject));
 	}
 
 	return new $subject(...$arguments);
@@ -163,7 +163,7 @@ function __object_create_ex(?string $default, ?array $names, array $attributes) 
 			continue;
 		}
 
-		__throw('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject);
+		__throw(sprintf('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject));
 	}
 
 	return new $subject(...$arguments);
@@ -175,7 +175,7 @@ function __object_create_a(string $class, array $attributes) : Object
 
 	if (!__class_is_a($class, $subject))
 	{
-		__throw('Can not object from incorrect class: class %s, must be subclass of %s', $subject, $class);
+		__throw('Can not create object from incorrect class: class %s, must be subclass of %s', $subject, $class);
 	}
 
 	$arguments = [];
@@ -196,7 +196,7 @@ function __object_create_a(string $class, array $attributes) : Object
 			continue;
 		}
 
-		__throw('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject);
+		__throw(sprintf('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject));
 	}
 
 	return new $subject(...$arguments);
@@ -236,7 +236,7 @@ function __object_create_a_ex(string $class, ?string $default, ?array $names, ar
 			continue;
 		}
 
-		__throw('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject);
+		__throw(sprintf('Can not create object, missing constructor attribute: attribute %s, class %s', $attribute, $subject));
 	}
 
 	return new $subject(...$arguments);

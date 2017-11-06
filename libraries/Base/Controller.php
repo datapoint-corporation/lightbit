@@ -94,7 +94,7 @@ abstract class Controller extends Element implements IController
 	 * @param array $configuration
 	 *	The configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct();
 
@@ -102,10 +102,14 @@ abstract class Controller extends Element implements IController
 		$this->id = $id;
 		$this->views = [];
 
+		$this->onConstruct();
+
 		if ($configuration)
 		{
 			__object_apply($this, $configuration);
 		}
+
+		$this->onAfterConstruct();
 	}
 
 	/**
@@ -229,7 +233,7 @@ abstract class Controller extends Element implements IController
 		if (!$this->globalID)
 		{
 			$this->globalID = '';
-			$context = $this->getContext();
+			$context = $this->context;
 
 			while ($parent = $context->getContext())
 			{
@@ -262,7 +266,7 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function getTheme() : ?ITheme
 	{
-		return $this->getContext()->getTheme();
+		return $this->context->getTheme();
 	}
 
 	/**
@@ -276,47 +280,21 @@ abstract class Controller extends Element implements IController
 	 */
 	public final function getView(string $view) : IView
 	{
-		if (!isset($this->views[$view]))
-		{
-			$this->views[$view] = new View
-			(
-				$this->getContext(),
-				__asset_path_resolve_array
-				(
-					$this->getViewsBasePaths(),
-					'php',
-					$view
-				)
-			);
-		}
-		
-		return $this->views[$view];
+		return $this->context->getView($this->id . '/' . $view);
 	}
 
 	/**
-	 * Gets the views base paths.
+	 * Checks if a view exists.
 	 *
-	 * @return array
-	 *	The views base paths.
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public final function getViewsBasePaths() : array
+	public final function hasView(string $view) : bool
 	{
-		if (!$this->viewsBasePaths)
-		{
-			$this->viewsBasePaths = [];
-
-			$context = $this->getContext();
-			$suffix = DIRECTORY_SEPARATOR . strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
-
-			if ($theme = $context->getTheme())
-			{
-				$this->viewsBasePaths[] = $theme->getViewsBasePath() . $suffix;
-			}
-
-			$this->viewsBasePaths[] = $this->getContext()->getViewsBasePath() . $suffix;
-		}
-
-		return $this->viewsBasePaths;
+		return $this->context->hasView($this->id . '/' . $view);
 	}
 
 	/**
@@ -388,14 +366,14 @@ abstract class Controller extends Element implements IController
 		{
 			throw new MethodNotFoundRouteException
 			(
-				$this->getContext(),
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
 					'Can not resolve to action, method is undefined: action %s, at controller %s, at context %s',
 					$id,
 					$this->id,
-					$this->getContext()->getGlobalID()
+					$this->context->getGlobalID()
 				)
 			);
 		}
@@ -404,14 +382,14 @@ abstract class Controller extends Element implements IController
 		{
 			throw new MethodNotFoundRouteException
 			(
-				$this->getContext(),
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				sprintf
 				(
 					'Can not resolve to action, method signature mismatch: action %s, at controller %s, at context %s',
 					$id,
 					$this->id,
-					$this->getContext()->getGlobalID()
+					$this->context->getGlobalID()
 				)
 			);
 		}
@@ -437,7 +415,7 @@ abstract class Controller extends Element implements IController
 				{
 					throw new IllegalParameterRouteException
 					(
-						$this->getContext(),
+						$this->context,
 						($route = ([ $this->id . '/' . $id ] + $parameters)),
 						$parameterName,
 						sprintf
@@ -446,7 +424,7 @@ abstract class Controller extends Element implements IController
 							$parameterName,
 							$id,
 							$this->id,
-							$this->getContext()->getPrefix()
+							$this->context->getPrefix()
 						),
 						$e
 					);
@@ -467,7 +445,7 @@ abstract class Controller extends Element implements IController
 
 			throw new MissingParameterRouteException
 			(
-				$this->getContext(),
+				$this->context,
 				($route = ([ $this->id . '/' . $id ] + $parameters)),
 				$parameterName,
 				sprintf
@@ -476,7 +454,7 @@ abstract class Controller extends Element implements IController
 					$parameterName,
 					$id,
 					$this->id,
-					$this->getContext()->getPrefix()
+					$this->context->getPrefix()
 				)
 			);
 		}
@@ -490,17 +468,14 @@ abstract class Controller extends Element implements IController
 	 * @param IAction $action
 	 *	The action.
 	 *
-	 * @return mixed
+	 * @return int
 	 *	The result.
 	 */
-	public final function run(IAction $action) // : mixed
+	public final function run(IAction $action) : int
 	{
-		global $_LIGHTBIT_ACTION;
-		global $_LIGHTBIT_CONTEXT;
-
 		// Save the previous action and context.
 		$pAction = __action_replace($action);
-		$pContext = __context_replace($this->getContext());
+		$pContext = __context_replace($this->context);
 
 		// Run
 		$this->onRun();
@@ -520,7 +495,7 @@ abstract class Controller extends Element implements IController
 		__action_set($pAction);
 		__context_set($pContext);
 
-		return $result;
+		return (is_int($result) ? $result : 0);
 	}
 
 	/**
@@ -573,6 +548,19 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On After Construct.
+	 *
+	 * This method is invoked during the application construction procedure,
+	 * after the dynamic configuration is applied.
+	 */
+	protected function onAfterConstruct() : void
+	{
+		$this->raise('lightbit.base.controller.construct.after', $this);
+	}
+
+	/**
+	 * On After Display.
+	 *
 	 * Called during the controller display procedure, after the view is
 	 * resolved, constructed and executed.
 	 */
@@ -582,6 +570,8 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On After Render.
+	 *
 	 * Called during the controller render procedure, after the view is
 	 * resolved, constructed and executed.
 	 */
@@ -591,6 +581,8 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On After Run.
+	 *
 	 * Called during the controller run procedure, after the applicable
 	 * action method is invoked.
 	 */
@@ -600,6 +592,19 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the application construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		$this->raise('lightbit.base.controller.construct', $this);
+	}
+
+	/**
+	 * On Display.
+	 *
 	 * Called during the controller display procedure, before the view is
 	 * resolved, constructed and executed.
 	 */
@@ -609,6 +614,8 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On Render.
+	 *
 	 * Called during the controller render procedure, before the view is
 	 * resolved, constructed and executed.
 	 */
@@ -618,6 +625,8 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * On Run.
+	 *
 	 * Called during the controller run procedure, before the applicable
 	 * action method is invoked.
 	 */

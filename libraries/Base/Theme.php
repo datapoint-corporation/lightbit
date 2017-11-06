@@ -189,6 +189,38 @@ class Theme extends Element implements ITheme
 	}
 
 	/**
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public final function getView(string $view) : IView
+	{
+		$path = __asset_path_resolve($this->getViewsBasePath(), 'php', $view);
+
+		if (!is_file($path))
+		{
+			throw new ContextViewNotFoundException
+			(
+				$this->context, 
+				sprintf
+				(
+					'Context theme view not found: view %s, path %s, context %s, theme %s',
+					$view,
+					$path,
+					$this->context->getGlobalID(),
+					$this->id
+				)
+			);
+		}
+
+		return new View($this->context, $path);
+	}
+
+	/**
 	 * Gets the views base path.
 	 *
 	 * @return string
@@ -216,6 +248,20 @@ class Theme extends Element implements ITheme
 	public final function hasLayout(string $layout) : bool
 	{
 		return is_file(__asset_path_resolve($this->path, 'php', $layout));
+	}
+
+	/**
+	 * Checks if a view exists.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function hasView(string $view) : bool
+	{
+		return is_file(__asset_path_resolve($this->getViewsBasePath(), 'php', $view));
 	}
 
 	/**

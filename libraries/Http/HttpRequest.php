@@ -94,6 +94,17 @@ class HttpRequest extends Component implements IHttpRequest
 	}
 
 	/**
+	 * Gets the client address.
+	 *
+	 * @return string
+	 *	The client address.
+	 */
+	public final function getClientAddress() : string
+	{
+		return $_SERVER['REMOTE_ADDR'];
+	}
+
+	/**
 	 * Gets the request form data.
 	 *
 	 * @return array
@@ -192,6 +203,17 @@ class HttpRequest extends Component implements IHttpRequest
 		}
 
 		return [];
+	}
+
+	/**
+	 * Gets the request method.
+	 *
+	 * @return string
+	 *	The request method.
+	 */
+	public final function getMethod() : string
+	{
+		return $_SERVER['REQUEST_METHOD'];
 	}
 
 	/**

@@ -160,6 +160,17 @@ class View extends Element implements IView
 	}
 
 	/**
+	 * Checks if the view is available.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isAvailable() : bool
+	{
+		return is_file($this->path);
+	}
+
+	/**
 	 * Renders a view.
 	 *
 	 * @param string $view
@@ -204,20 +215,19 @@ class View extends Element implements IView
 
 			if (!ob_start())
 			{
-				throw new Exception('Can not render view, unknown error during output buffer startup: unknown error');
+				throw new Exception('Can not run view, output buffer start failure');
 			}
 		}
 
 		if (!is_file($this->path))
 		{
-			throw new FileNotFoundException($this->path, sprintf('Can not render view, file not found: file path %s', $this->path));
+			throw new FileNotFoundException($this->path, sprintf('Can not run view, file not found: file %s', $this->path));
 		}
-
 
 		// During the view script inclusion, the context is meant to be the
 		// one the view was originally created with.
-		$context = __context_replace($this->getContext());
-		__include_file_as($this, $this->path, $parameters);
+		$context = __context_replace($this->context);
+		__include_file_as_ex($this, $this->path, $parameters);
 		__context_set($context);
 
 		if ($capture)

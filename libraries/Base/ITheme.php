@@ -90,6 +90,28 @@ interface ITheme extends IElement
 	public function getViewsBasePath() : string;
 
 	/**
+	 * Gets a view.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public function getView(string $view) : IView;
+
+	/**
+	 * Checks if a view exists.
+	 *
+	 * @param string $view
+	 *	The view identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasView(string $view) : bool;
+
+	/**
 	 * Sets the layout.
 	 *
 	 * @param string $layout
