@@ -211,6 +211,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->statement($statement)->execute($parameters);
 	}
 
+	/**
+	 * Gets the character set.
+	 *
+	 * @return string
+	 *	The character set.
+	 */
 	public function getCharset() : ?string
 	{
 		if ($this->mysqli)
@@ -236,16 +242,34 @@ class MySqlConnection extends Component implements ISqlConnection
 		return $this->getSchema()->getDatabase($this->database);
 	}
 
+	/**
+	 * Gets the host.
+	 *
+	 * @return string
+	 *	The host.
+	 */
 	public function getHost() : string
 	{
 		return $this->host;
 	}
 
+	/**
+	 * Gets the internal connection handler.
+	 *
+	 * @return mysqli
+	 *	The internal connection handler.
+	 */
 	public function getMysqli() : \mysqli
 	{
 		return $this->mysqli;
 	}
 
+	/**
+	 * Gets the port.
+	 *
+	 * @return int
+	 *	The port.
+	 */
 	public function getPort() : int
 	{
 		return $this->port;
@@ -292,8 +316,8 @@ class MySqlConnection extends Component implements ISqlConnection
 								S.SCHEMA_NAME DATABASE_NAME,
 								S.DEFAULT_CHARACTER_SET_NAME DATABASE_DEFAULT_CHARACTER_SET_NAME
 							FROM INFORMATION_SCHEMA.SCHEMATA S
-							WHERE S.CATALOG_NAME = :CatalogName 
-								AND S.SCHEMA_NAME = :SchemaName
+							WHERE CONCAT(S.CATALOG_NAME) = :CatalogName 
+								AND CONCAT(S.SCHEMA_NAME) = :SchemaName
 							ORDER BY
 								S.CATALOG_NAME ASC,
 							    S.SCHEMA_NAME ASC',
@@ -311,9 +335,9 @@ class MySqlConnection extends Component implements ISqlConnection
 								T.TABLE_SCHEMA DATABASE_NAME,
 								T.TABLE_NAME TABLE_NAME
 							FROM INFORMATION_SCHEMA.TABLES T
-							WHERE T.TABLE_CATALOG = :CatalogName
-								AND T.TABLE_SCHEMA = :SchemaName
-								AND T.TABLE_TYPE = :TableType
+							WHERE CONCAT(T.TABLE_CATALOG) = :CatalogName
+								AND CONCAT(T.TABLE_SCHEMA) = :SchemaName
+								AND CONCAT(T.TABLE_TYPE) = :TableType
 							ORDER BY
 								T.TABLE_CATALOG ASC,
 								T.TABLE_SCHEMA ASC,
@@ -347,9 +371,9 @@ class MySqlConnection extends Component implements ISqlConnection
 								ON C.TABLE_CATALOG = T.TABLE_CATALOG
 									AND C.TABLE_SCHEMA = T.TABLE_SCHEMA
 									AND C.TABLE_NAME = T.TABLE_NAME
-							WHERE T.TABLE_CATALOG = :CatalogName
-								AND T.TABLE_SCHEMA = :SchemaName
-								AND T.TABLE_TYPE = :TableType
+							WHERE CONCAT(T.TABLE_CATALOG) = :CatalogName
+								AND CONCAT(T.TABLE_SCHEMA) = :SchemaName
+								AND CONCAT(T.TABLE_TYPE) = :TableType
 							ORDER BY C.TABLE_SCHEMA ASC,
 								C.TABLE_CATALOG ASC,
 								C.TABLE_NAME ASC,
@@ -384,9 +408,9 @@ class MySqlConnection extends Component implements ISqlConnection
 									AND KCU.CONSTRAINT_SCHEMA = TC.CONSTRAINT_SCHEMA
 									AND KCU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME
 									AND KCU.TABLE_NAME = TC.TABLE_NAME
-							WHERE T.TABLE_CATALOG = :CatalogName
-								AND T.TABLE_SCHEMA = :SchemaName
-								AND T.TABLE_TYPE = :TableType
+							WHERE CONCAT(T.TABLE_CATALOG) = :CatalogName
+								AND CONCAT(T.TABLE_SCHEMA) = :SchemaName
+								AND CONCAT(T.TABLE_TYPE) = :TableType
 							ORDER BY T.TABLE_SCHEMA ASC,
 								T.TABLE_CATALOG ASC,
 								T.TABLE_NAME ASC,
@@ -423,21 +447,45 @@ class MySqlConnection extends Component implements ISqlConnection
 		);
 	}
 
+	/**
+	 * Gets the user.
+	 *
+	 * @return string
+	 *	The user.
+	 */
 	public function getUser() : ?string
 	{
 		return $this->user;
 	}
 
+	/**
+	 * Checks for a password.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
 	public function hasPassword() : bool
 	{
 		return isset($this->password);
 	}
 
+	/**
+	 * Checks the connection state.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
 	public function isClosed() : bool
 	{
 		return !$this->mysqli;
 	}
 
+	/**
+	 * Checks the persistance.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
 	public function isPersistent() : bool
 	{
 		return $this->persistent;
@@ -512,6 +560,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		return mysqli_num_rows($this->mysqli);
 	}
 
+	/**
+	 * Sets the character set.
+	 *
+	 * @param string $charset
+	 *	The character set.
+	 */
 	public function setCharset(?string $charset) : void
 	{
 		if ($this->mysqli)
@@ -530,6 +584,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->charset = $charset;
 	}
 
+	/**
+	 * Sets the database.
+	 *
+	 * @return string
+	 *	The database.
+	 */
 	public function setDatabase(string $database) : void
 	{
 		if ($this->mysqli)
@@ -544,6 +604,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->database = $database;
 	}
 
+	/**
+	 * Sets the host.
+	 *
+	 * @param string $host
+	 *	The host.
+	 */
 	public function setHost(string $host) : void
 	{
 		if ($this->mysqli)
@@ -558,6 +624,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->host = $host;
 	}
 
+	/**
+	 * Sets the password.
+	 *
+	 * @param string $password
+	 *	The password.
+	 */
 	public function setPassword(?string $password) : void
 	{
 		if ($this->mysqli)
@@ -572,6 +644,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->password = $password;
 	}
 
+	/**
+	 * Sets the persistence.
+	 *
+	 * @param bool $persistent
+	 *	The persistence.
+	 */
 	public function setPersistent(bool $persistent) : void
 	{
 		if ($this->mysqli)
@@ -586,6 +664,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->persistent = $persistent;
 	}
 
+	/**
+	 * Sets the port.
+	 *
+	 * @param int $port
+	 *	The port.
+	 */
 	public function setPort(int $port) : void
 	{
 		if ($this->mysqli)
@@ -600,6 +684,12 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->port = $port;
 	}
 
+	/**
+	 * Sets the user.
+	 *
+	 * @param string $user
+	 *	The user.
+	 */
 	public function setUser(?string $user) : void
 	{
 		if ($this->mysqli)
@@ -614,6 +704,9 @@ class MySqlConnection extends Component implements ISqlConnection
 		$this->user = $user;
 	}
 
+	/**
+	 * Starts the connection.
+	 */
 	public function start() : void
 	{
 		if ($this->mysqli)
