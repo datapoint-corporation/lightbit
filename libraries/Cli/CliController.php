@@ -48,8 +48,26 @@ abstract class CliController extends Controller implements ICliController
 	 * action method is invoked.
 	 */
 	protected function onRun() : void
-	{		
-		
+	{
+		if (!__environment_is_cli())
+		{
+			$throwable = new IllegalStateException
+			(
+				sprintf
+				(
+					'Can not run controller action, illegal environment: environment %s, expecting %s',
+					__environment_type(),
+					'CLI'
+				)
+			);
+
+			if (__environment_is_web())
+			{
+				throw new HttpStatusException(404, 'Document Not Found', $throwable);
+			}
+
+			throw $throwable;
+		}
 
 		parent::onRun();
 	}

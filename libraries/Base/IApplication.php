@@ -74,8 +74,8 @@ interface IApplication extends IContext
 	public function terminate(int $status = 0) : void;
 
 	/**
-	 * Safely terminates the script execution after disposing of all
-	 * application elements when an uncaught throwable object is found.
+	 * Generates the proper response to a throwable caught by the global
+	 * exception handler after application registration.
 	 *
 	 * @param Throwable $throwable
 	 *	The throwable object.

@@ -328,32 +328,4 @@ abstract class Element extends Object implements IElement
 	{
 		return $this->getContext()->getTheme();
 	}
-
-	/**
-	 * Calls a method.
-	 *
-	 * @param string $method
-	 *	The method name.
-	 *
-	 * @param array $arguments
-	 *	The method arguments.
-	 *
-	 * @return mixed
-	 *	The method result.
-	 */
-	public function __call(string $method, array $arguments) // : mixed
-	{
-		$context = $this->getContext();
-
-		do
-		{
-			if (method_exists($context, $method))
-			{
-				return $context->{$method}(...$arguments);
-			}
-		}
-		while ($context = $context->getContext());
-
-		return parent::__call($method, $arguments);
-	}
 }

@@ -287,30 +287,6 @@ final class Action extends Object implements IAction
 	 */
 	public function run() : int
 	{
-		if (($this->controller instanceof ICliController) && __environment_is_web())
-		{
-			throw new HttpStatusException
-			(
-				404,
-				sprintf
-				(
-					'Document Not Found',
-					__environment_type(),
-					$this->controller->getGlobalID()
-				),
-				
-				new IllegalStateException
-				(
-					sprintf
-					(
-						'Controller action can not run, environment type mismatch: environment %s, expecting cli, controller %s',
-						__environment_type(),
-						$this->controller->getGlobalID()
-					)
-				)
-			);
-		}
-
 		return $this->controller->run($this);
 	}
 }

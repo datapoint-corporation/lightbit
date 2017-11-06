@@ -255,16 +255,30 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
-	 * Disposes the context.
+	 * Safely disposes all sub-modules, followed by any active components,
+	 * in reverse order as they were first loaded in order to avoid breaking
+	 * any dependencies in between them.
 	 */
 	public function dispose() : void
 	{
+		$this->onDispose();
+
 		foreach (array_reverse($this->modules) as $id => $module)
 		{
 			$module->dispose();
 		}
 
-		$this->modules = [];
+		foreach (array_reverse($this->components) as $id => $component)
+		{
+			if (($component instanceof IChannel) && !$component->isClosed())
+			{
+				$component->close();
+			}
+		}
+
+		$this->components = [];
+
+		$this->onAfterDispose();
 	}
 
 	/**
@@ -1220,5 +1234,27 @@ abstract class Context extends Object implements IContext
 		{
 			$this->theme = null;
 		}
+	}
+
+	/**
+	 * On After Dispose.
+	 *
+	 * This method is invoked during the context dispose procedure, after
+	 * the currently active components and sub-modules are disposed.
+	 */
+	protected function onAfterDispose() : void
+	{
+		$this->raise('lightbit.base.context.dispose.after', $this);
+	}
+
+	/**
+	 * On Dispose.
+	 *
+	 * This method is invoked during the context dispose procedure, before
+	 * the currently active components and sub-modules are disposed.
+	 */
+	protected function onDispose() : void
+	{
+		$this->raise('lightbit.base.context.dispose', $this);
 	}
 }

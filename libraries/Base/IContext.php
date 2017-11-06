@@ -43,7 +43,9 @@ use \Lightbit\Globalization\ILocale;
 interface IContext extends IBase
 {
 	/**
-	 * Disposes the context.
+	 * Safely disposes all sub-modules, followed by any active components,
+	 * in reverse order as they were first loaded in order to avoid breaking
+	 * any dependencies in between them.
 	 */
 	public function dispose() : void;
 

@@ -114,6 +114,21 @@ interface IController extends IElement
 	public function resolve(string $id, array $parameters) : IAction;
 
 	/**
+	 * Generates the proper response to a throwable caught by the global
+	 * exception handler during an action implemented by this controller.
+	 *
+	 * If the controller can not generate the proper response, false should
+	 * be returned in order to delegate control to the application.
+	 *
+	 * @param Throwable $throwable
+	 *	The throwable object.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function throwable(\Throwable $throwable) : bool;
+
+	/**
 	 * Runs an action.
 	 *
 	 * @param IAction $action

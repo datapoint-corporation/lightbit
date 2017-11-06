@@ -50,17 +50,6 @@ function __lightbit_autoload(string $__CLASS__) : void
 
 function __lightbit_error_handler(int $code, string $message, string $file, int $line) : bool
 {
-	switch ($code)
-	{
-		case E_DEPRECATED:
-		case E_NOTICE:
-		case E_WARNING:
-		case E_USER_DEPRECATED:
-		case E_USER_NOTICE:
-		case E_USER_WARNING:
-			return false;
-	}
-
 	$category = 'UNKNOWN ERROR';
 
 	switch ($code)
@@ -106,17 +95,7 @@ function __lightbit_error_handler(int $code, string $message, string $file, int 
 			break;
 	}
 
-	if (__environment_is_cli())
-	{
-		echo sprintf('%s: %s at %s, line %d', $category, $message, $file, $line), PHP_EOL;
-	}
-	else
-	{
-		echo __html_element('h1', null, $category), PHP_EOL;
-		echo __html_element('p', null, sprintf('%s at %s, line %d', $message, $file, $line)), PHP_EOL;
-	}
-
-	__exit(1);
+	__throw(sprintf('%s: %s at %s :%d', $category, $message, $file, $line));
 	return true;
 }
 
