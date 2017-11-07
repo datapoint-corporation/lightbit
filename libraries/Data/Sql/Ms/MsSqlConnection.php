@@ -707,6 +707,7 @@ class MsSqlConnection extends Component implements ISqlConnection
 		{
 			$options = $this->options;
 			$options['Database'] = $this->database;
+			$options['ReturnDatesAsStrings'] = true;
 
 			if ($this->charset)
 			{
@@ -732,7 +733,7 @@ class MsSqlConnection extends Component implements ISqlConnection
 		}
 		catch (\Throwable $e)
 		{
-			if (isset($this->sqlsrv))
+			if ($this->sqlsrv)
 			{
 				sqlsrv_close($this->sqlsrv);
 			}
