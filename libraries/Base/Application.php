@@ -30,7 +30,6 @@ namespace Lightbit\Base;
 use \Lightbit\Base\Context;
 use \Lightbit\Base\View;
 USE \Lightbit\Data\Caching\Cache;
-use \Lightbit\Data\SlugManager;
 use \Lightbit\Data\Sql\My\MySqlConnection;
 use \Lightbit\Globalization\MessageSource;
 use \Lightbit\Html\HtmlAdapter;
@@ -74,7 +73,6 @@ class Application extends Context implements IApplication
 				'data.cache.file' => [ '@class' => Cache::class ],
 				'data.cache.memory' => [ '@class' => Cache::class ],
 				'data.cache.network' => [ '@class' => Cache::class ],
-				'data.slug.manager' => [ '@class' => SlugManager::class ],
 				'data.sql.connection' => [ '@class' => MySqlConnection::class ],
 				'globalization.message.source' => [ '@class' => MessageSource::class ],
 				'html.adapter' => [ '@class' => HtmlAdapter::class ],

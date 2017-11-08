@@ -118,33 +118,6 @@ class MySqlConnection extends Component implements ISqlConnection
 	private $user;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id);
-
-		$this->database = 'lightbit';
-		$this->host = '127.0.0.1';
-		$this->persistent = false;
-		$this->port = 3306;
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Creates, prepares and executes a query statement, pre-fetching
 	 * all results within the first result set.
 	 *
@@ -861,5 +834,19 @@ class MySqlConnection extends Component implements ISqlConnection
 	public function transaction() : ISqlTransaction
 	{
 		return new MySqlTransaction($this);
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		$this->database = 'lightbit';
+		$this->host = '127.0.0.1';
+		$this->persistent = false;
+		$this->port = 3306;
 	}
 }

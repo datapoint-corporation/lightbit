@@ -100,30 +100,6 @@ class HtmlDocument extends Component implements IHtmlDocument
 	private $title;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, null);
-
-		$this->reset();
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Sets an additional breadcrumb.
 	 *
 	 * @param IHtmlBreadcrumb $title
@@ -469,5 +445,18 @@ class HtmlDocument extends Component implements IHtmlDocument
 	public function setTitle(?string $title) : void
 	{
 		$this->title = $title;
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		parent::onConstruct();
+		
+		$this->reset();
 	}
 }

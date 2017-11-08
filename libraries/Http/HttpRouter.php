@@ -53,33 +53,6 @@ class HttpRouter extends HttpRouterBase
 	private $scriptName;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id);
-
-		if (isset($_SERVER['SCRIPT_NAME']))
-		{
-			$this->scriptName = basename($_SERVER['SCRIPT_NAME']);
-		}
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Gets the script name.
 	 *
 	 * @return string
@@ -169,5 +142,21 @@ class HttpRouter extends HttpRouterBase
 		}
 
 		return $result;
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		parent::onConstruct();
+
+		if (isset($_SERVER['SCRIPT_NAME']))
+		{
+			$this->scriptName = basename($_SERVER['SCRIPT_NAME']);
+		}
 	}
 }

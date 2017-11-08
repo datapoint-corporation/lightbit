@@ -41,7 +41,6 @@ use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
-use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
@@ -294,17 +293,6 @@ abstract class Element extends Object implements IElement
 	public function getPasswordDigest() : IPasswordDigest
 	{
 		return $this->getContext()->getPasswordDigest();
-	}
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public function getSlugManager() : ISlugManager
-	{
-		return $this->getContext()->getSlugManager();
 	}
 
 	/**

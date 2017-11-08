@@ -45,7 +45,6 @@ use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IEnvironment;
 use \Lightbit\Base\IModule;
-use \Lightbit\Data\ISlugManager;
 use \Lightbit\Base\ITheme;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Globalization\ILocale;
@@ -774,17 +773,6 @@ abstract class Context extends Object implements IContext
 		}
 
 		return $this->prefix;
-	}
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public function getSlugManager() : ISlugManager
-	{
-		return $this->getComponent('data.slug.manager');
 	}
 
 	/**

@@ -40,23 +40,6 @@ use \Lightbit\Base\IEnvironment;
 class Environment extends Component implements IEnvironment
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
 	 * Gets the script base path.
 	 *
 	 * @return string

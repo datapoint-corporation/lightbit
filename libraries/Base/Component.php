@@ -66,17 +66,21 @@ abstract class Component extends Element implements IComponent
 	 * @param array $configuration
 	 *	The component configuration.
 	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
+	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct();
 
 		$this->context = $context;
 		$this->id = $id;
 
+		$this->onConstruct();
+
 		if ($configuration)
 		{
 			__object_apply($this, $configuration);
 		}
+
+		$this->onAfterConstruct();
 	}
 
 	/**
@@ -99,5 +103,27 @@ abstract class Component extends Element implements IComponent
 	public final function getID() : string
 	{
 		return $this->id;
+	}
+
+	/**
+	 * On After Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * after the dynamic configuration is applied.
+	 */
+	protected function onAfterConstruct() : void
+	{
+		$this->raise('lightbit.base.component.construct.after', $this);
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		$this->raise('lightbit.base.component.construct', $this);
 	}
 }

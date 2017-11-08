@@ -40,23 +40,6 @@ use \Lightbit\Http\IHttpResponse;
 class HttpResponse extends Component implements IHttpResponse
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
 	 * Gets the headers collection.
 	 *
 	 * @return array

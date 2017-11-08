@@ -34,7 +34,6 @@ use \Lightbit\Data\Caching\ICache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
-use \Lightbit\Data\ISlugManager;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Globalization\ILocale;
 use \Lightbit\Globalization\IMessageSource;
@@ -185,14 +184,6 @@ interface IBase
 	 *	The network cache.
 	 */
 	public function getNetworkCache() : INetworkCache;
-
-	/**
-	 * Gets the slug manager.
-	 *
-	 * @return ISlugManager
-	 *	The slug manager.
-	 */
-	public function getSlugManager() : ISlugManager;
 
 	/**
 	 * Gets the sql connection.

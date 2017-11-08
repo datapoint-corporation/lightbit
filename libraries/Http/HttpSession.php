@@ -50,23 +50,6 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	private $name = '__lb';
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
 	 * Closes the resource.
 	 */
 	public final function close() : void

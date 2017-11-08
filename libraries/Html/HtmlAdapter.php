@@ -42,23 +42,6 @@ use \Lightbit\Html\IHtmlAdapter;
 class HtmlAdapter extends Component implements IHtmlAdapter
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
 	 * Creates an active input name.
 	 *
 	 * @param IModel $model

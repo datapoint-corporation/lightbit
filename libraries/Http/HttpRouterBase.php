@@ -72,23 +72,6 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 	private $baseUrl;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id, $configuration);
-	}
-
-	/**
 	 * Gets the address.
 	 *
 	 * @return string

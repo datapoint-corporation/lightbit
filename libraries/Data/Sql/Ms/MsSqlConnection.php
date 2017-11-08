@@ -127,36 +127,6 @@ class MsSqlConnection extends Component implements ISqlConnection
 	private $user;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id);
-
-		$this->charset = 'UTF-8';
-		$this->database = 'Lightbit';
-		$this->instance = '127.0.0.1';
-		$this->user = 'Lightbit';
-
-		$this->options = [];
-		$this->statementFactory = new MsSqlStatementFactory($this);
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Creates, prepares and executes a query statement, pre-fetching
 	 * all results within the first result set.
 	 *
@@ -774,5 +744,24 @@ class MsSqlConnection extends Component implements ISqlConnection
 	public function transaction() : ISqlTransaction
 	{
 		return new MsSqlTransaction($this);
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		parent::onConstruct();
+
+		$this->charset = 'UTF-8';
+		$this->database = 'Lightbit';
+		$this->instance = '127.0.0.1';
+		$this->user = 'Lightbit';
+
+		$this->options = [];
+		$this->statementFactory = new MsSqlStatementFactory($this);
 	}
 }

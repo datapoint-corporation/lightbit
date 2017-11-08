@@ -77,31 +77,6 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	private $refresh;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id);
-
-		$this->publishDirectory = 'public://assets';
-		$this->refresh = __debug();
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Copies a directory recursively.
 	 *
 	 * @param string $asset
@@ -426,5 +401,19 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	public final function setRefresh(bool $refresh) : void
 	{
 		$this->refresh = $refresh;
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		parent::onConstruct();
+
+		$this->publishDirectory = 'public://assets';
+		$this->refresh = __debug();
 	}
 }
