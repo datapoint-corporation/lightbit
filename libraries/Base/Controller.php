@@ -32,6 +32,7 @@ use \Lightbit\Base\Element;
 use \Lightbit\Base\IllegalParameterRouteException;
 use \Lightbit\Base\MethodNotFoundRouteException;
 use \Lightbit\Base\MissingParameterRouteException;
+use \Lightbit\Http\HttpStatusException;
 
 use \Lightbit\Base\IAction;
 use \Lightbit\Base\IContext;
@@ -309,9 +310,10 @@ abstract class Controller extends Element implements IController
 	public final function redirect(array $route, int $statusCode = 303) : void
 	{
 		$response = $this->getHttpResponse();
+		$response->reset();
 		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
 		$response->setStatusCode($statusCode);
-		__exit();
+		__exit(0);
 	}
 
 	/**
@@ -488,6 +490,40 @@ abstract class Controller extends Element implements IController
 			$controller->getActionMethodName($action->getName()),
 			array_values($action->getParameters())
 		);
+
+		if (is_int($result))
+		{
+			// If the result is an integer matching the range of an http status
+			// code, handle it as such.
+			if ($result > 99 && $result < 600)
+			{
+				// If it's an error, we'll simply throw a http status exception
+				// and delegate the behaviour to the parent context.
+				if ($result > 299)
+				{
+					throw new HttpStatusException($result, __http_status_message($result));
+				}
+
+				// If not, simply change the status code.
+				$this->getHttpResponse()->setStatusCode($result);
+			}
+		}
+
+		else if (is_array($result))
+		{
+			// If the result is an array, we'll generate a json response with
+			// the contents of it encoded as json.
+			$status = (__map_extract($result, '?int', '@status') ?? 200);
+			$content = __json_encode($result);
+
+			$response = $this->getHttpResponse();
+			$response->reset();
+			$response->setStatusCode($status);
+			$response->setHeader('Content-Type', 'application/json; charset=utf-8');
+			$response->setHeader('Content-Length', strlen($content));
+
+			echo $content;
+		}
 
 		$this->onAfterRun();
 
