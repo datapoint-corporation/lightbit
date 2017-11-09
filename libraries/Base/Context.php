@@ -70,105 +70,105 @@ abstract class Context extends Object implements IContext
 	/**
 	 * The components.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $components;
 
 	/**
 	 * The components configuration.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $componentsConfiguration;
 
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * The controllers.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $controllers;
 
 	/**
 	 * The event listeners.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $eventListeners;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The context locale.
 	 *
-	 * @type Locale
+	 * @var Locale
 	 */
 	private $locale;
 
 	/**
 	 * The modules.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $modules;
 
 	/**
 	 * The modules base path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $modulesBasePath;
 
 	/**
 	 * The modules configuration.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $modulesConfiguration;
 
 	/**
 	 * The path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $path;
 
 	/**
 	 * The context prefix.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $prefix;
 
 	/**
 	 * The theme.
 	 *
-	 * @type ITheme
+	 * @var ITheme
 	 */
 	private $theme;
 
 	/**
 	 * The themes base path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $themesBasePath;
 
 	/**
 	 * The views base path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $viewsBasePath;
 

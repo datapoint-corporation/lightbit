@@ -45,7 +45,7 @@ class HttpSession extends Component implements IHttpSession, IChannel
 	/**
 	 * The session name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $name = '__lb';
 

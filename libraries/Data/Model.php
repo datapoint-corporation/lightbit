@@ -57,21 +57,21 @@ class Model extends Element implements IModel
 	/**
 	 * The attributes.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $attributes;
 
 	/**
 	 * The attributes errors.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $attributesErrors;
 
 	/**
 	 * The scenario.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $scenario;
 

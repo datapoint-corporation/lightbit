@@ -51,21 +51,21 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	/**
 	 * The schema.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private static $schema = [];
 
 	/**
 	 * The attributes.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $attributes;
 
 	/**
 	 * The identity.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $id;
 

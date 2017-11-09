@@ -49,70 +49,70 @@ class MySqlConnection extends Component implements ISqlConnection
 	/**
 	 * The charset.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $charset;
 
 	/**
 	 * The database.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $database;
 
 	/**
 	 * The host.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $host;
 
 	/**
 	 * The mysqli resource.
 	 *
-	 * @type mysqli
+	 * @var mysqli
 	 */
 	private $mysqli;
 
 	/**
 	 * The password.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $password;
 
 	/**
 	 * The persistent connection flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $persistent;
 
 	/**
 	 * The port.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $port;
 
 	/**
 	 * The schema.
 	 *
-	 * @type ISqlSchema
+	 * @var ISqlSchema
 	 */
 	private $schema;
 
 	/**
 	 * The statement factory.
 	 *
-	 * @type ISqlStatementFactory
+	 * @var ISqlStatementFactory
 	 */
 	private $statementFactory;
 
 	/**
 	 * The user.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $user;
 

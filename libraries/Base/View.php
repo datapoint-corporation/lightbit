@@ -44,21 +44,21 @@ class View extends Element implements IView
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 	
 	/**
 	 * The base path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $basePath;
 
 	/**
 	 * The path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $path;
 

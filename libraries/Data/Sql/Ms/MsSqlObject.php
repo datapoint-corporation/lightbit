@@ -42,7 +42,7 @@ class MsSqlObject extends Object implements ISqlObject
 	/**
 	 * The name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $name;
 

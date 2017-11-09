@@ -44,7 +44,7 @@ class MySqlSchema extends MySqlObject implements ISqlSchema
 	/**
 	 * The databases.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $databases;
 

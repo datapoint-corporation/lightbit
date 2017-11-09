@@ -42,7 +42,7 @@ class ContextException extends Exception
 	/**
 	 * The context.
 	 *
-	 * @type Context
+	 * @var Context
 	 */
 	private $context;
 

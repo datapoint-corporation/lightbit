@@ -44,7 +44,7 @@ class HttpRequest extends Component implements IHttpRequest
 	/**
 	 * The url.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $url;
 

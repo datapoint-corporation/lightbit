@@ -28,35 +28,35 @@
 /**
  * The Lightbit main script execution micro timestamp.
  *
- * @type float
+ * @var float
  */
 define('LIGHTBIT', microtime(true));
 
 /**
  * The lightbit install path.
  *
- * @type string
+ * @var string
  */
 const LIGHTBIT_PATH = __DIR__;
 
 /**
  * The lightbit decimal precision.
  *
- * @type int
+ * @var int
  */
 const LIGHTBIT_DECIMAL_PRECISION = 6;
 
 /**
  * The lightbit version.
  *
- * @type string
+ * @var string
  */
 const LIGHTBIT_VERSION = '1.0.0';
 
 /**
  * The lightbit version build number.
  *
- * @type int
+ * @var int
  */
 const LIGHTBIT_VERSION_BUILD = '201709240118';
 

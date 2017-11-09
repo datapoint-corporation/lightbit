@@ -42,7 +42,7 @@ class ControllerNotFoundException extends ContextException
 	/**
 	 * The controller identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $controllerID;
 

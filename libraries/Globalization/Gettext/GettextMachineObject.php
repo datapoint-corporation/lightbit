@@ -40,42 +40,42 @@ final class GettextMachineObject extends Object
 	/**
 	 * The endian.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $endian;
 
 	/**
 	 * The length.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $length;
 
 	/**
 	 * The major version number.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $major;
 
 	/**
 	 * The messages.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $messages;
 
 	/**
 	 * The path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $path;
 
 	/**
 	 * The revision number.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $revision;
 

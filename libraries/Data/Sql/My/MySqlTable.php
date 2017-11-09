@@ -46,21 +46,21 @@ class MySqlTable extends MySqlObject implements ISqlTable
 	/**
 	 * The columns.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $columns;
 
 	/**
 	 * The database.
 	 *
-	 * @type ISqlDatabase
+	 * @var ISqlDatabase
 	 */
 	private $database;
 
 	/**
 	 * The primary key.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $primaryKey;
 

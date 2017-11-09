@@ -45,42 +45,42 @@ class Theme extends Element implements ITheme
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The layout.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $layout;
 
 	/**
 	 * The layout view.
 	 *
-	 * @type IView
+	 * @var IView
 	 */
 	private $layoutView;
 
 	/**
 	 * The path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $path;
 
 	/**
 	 * This views base path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $viewsBasePath;
 

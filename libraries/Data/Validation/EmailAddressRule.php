@@ -41,7 +41,7 @@ class EmailAddressRule extends Rule
 	/**
 	 * The transform flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $transform;
 

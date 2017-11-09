@@ -41,14 +41,14 @@ class FullNameRule extends Rule
 	/**
 	 * The names.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $names;
 
 	/**
 	 * The transform flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $transform;
 

@@ -45,7 +45,7 @@ class ParameterRouteException extends RouteException
 	/**
 	 * The parameter name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $parameterName;
 

@@ -43,28 +43,28 @@ class MsSqlColumn extends MsSqlObject implements ISqlColumn
 	/**
 	 * The nullable flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $nullable;
 
 	/**
 	 * The sequential flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $sequential;
 
 	/**
 	 * The table.
 	 *
-	 * @type ISqlTable
+	 * @var ISqlTable
 	 */
 	private $table;
 
 	/**
 	 * The column type.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $type;
 

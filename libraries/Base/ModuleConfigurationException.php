@@ -42,7 +42,7 @@ class ModuleConfigurationException extends ContextException
 	/**
 	 * The module identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $moduleID;
 

@@ -45,49 +45,49 @@ final class Action extends Object implements IAction
 	/**
 	 * The arguments.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $arguments;
 
 	/**
 	 * The context.
 	 *
-	 * @type Context
+	 * @var Context
 	 */
 	private $context;
 
 	/**
 	 * The controller.
 	 *
-	 * @type IController
+	 * @var IController
 	 */
 	private $controller;
 
 	/**
 	 * The global identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $globalID;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $name;
 
 	/**
 	 * The parameters.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $parameters;
 

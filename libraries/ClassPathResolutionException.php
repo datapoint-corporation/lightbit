@@ -43,7 +43,7 @@ class ClassPathResolutionException extends Exception
 	/**
 	 * The class name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $className;
 

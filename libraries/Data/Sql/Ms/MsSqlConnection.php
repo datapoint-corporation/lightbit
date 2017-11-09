@@ -50,7 +50,7 @@ class MsSqlConnection extends Component implements ISqlConnection
 	/**
 	 * The base option set.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private const BASE_OPTION_SET = 
 	[
@@ -64,28 +64,28 @@ class MsSqlConnection extends Component implements ISqlConnection
 	/**
 	 * The character set.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $charset;
 
 	/**
 	 * The database name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $database;
 
 	/**
 	 * The instance.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $instance;
 
 	/**
 	 * The options.
 	 *
-	 * @type array
+	 * @var array
 	 * @see http://msdn.microsoft.com/en-us/library/ff628167.aspx
 	 */
 	private $options;
@@ -93,35 +93,35 @@ class MsSqlConnection extends Component implements ISqlConnection
 	/**
 	 * The password.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $password;
 
 	/**
 	 * The schema.
 	 *
-	 * @type ISqlSchema
+	 * @var ISqlSchema
 	 */
 	private $schema;
 
 	/**
 	 * The sqlsrv resource.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $sqlsrv;
 
 	/**
 	 * The statement factory.
 	 *
-	 * @type ISqlStatementFactory
+	 * @var ISqlStatementFactory
 	 */
 	private $statementFactory;
 
 	/**
 	 * The user.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $user;
 

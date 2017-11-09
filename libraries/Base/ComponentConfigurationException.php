@@ -42,7 +42,7 @@ class ComponentConfigurationException extends ContextException
 	/**
 	 * The component identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $componentID;
 

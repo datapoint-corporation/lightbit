@@ -41,7 +41,7 @@ abstract class HtmlWidget extends Widget implements IHtmlWidget
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 

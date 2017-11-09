@@ -102,7 +102,7 @@ abstract class SqlStatementFactory extends Object implements ISqlStatementFactor
 	/**
 	 * The sql connection.
 	 *
-	 * @type ISqlConnection
+	 * @var ISqlConnection
 	 */
 	private $sqlConnection;
 

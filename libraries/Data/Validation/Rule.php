@@ -94,56 +94,56 @@ abstract class Rule extends Element implements IRule
 	/**
 	 * The attributes name.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $attributesName;
 
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The messages.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $messages;
 
 	/**
 	 * The model.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $model;
 
 	/**
 	 * The required flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $required;
 
 	/**
 	 * The safe flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $safe;
 
 	/**
 	 * The scenarios.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $scenarios;
 

@@ -41,7 +41,7 @@ class MatchRule extends Rule
 	/**
 	 * The subject.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $subject;
 

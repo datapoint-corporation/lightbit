@@ -47,7 +47,7 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	/**
 	 * The attributes.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $attributes;
 

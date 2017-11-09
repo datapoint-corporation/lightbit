@@ -43,7 +43,7 @@ class NamespacePathResolutionException extends Exception
 	/**
 	 * The namespace name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $namespaceName;
 

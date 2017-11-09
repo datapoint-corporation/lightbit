@@ -67,7 +67,7 @@ abstract class HttpRouterBase extends Component implements IHttpRouter
 	/**
 	 * The base url.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $baseUrl;
 

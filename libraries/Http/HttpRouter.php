@@ -48,7 +48,7 @@ class HttpRouter extends HttpRouterBase
 	/**
 	 * The script name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $scriptName;
 

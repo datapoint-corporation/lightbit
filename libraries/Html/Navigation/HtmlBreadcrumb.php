@@ -46,14 +46,14 @@ class HtmlBreadcrumb extends Object implements IHtmlBreadcrumb
 	/**
 	 * The route.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $route;
 
 	/**
 	 * The title.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $title;
 

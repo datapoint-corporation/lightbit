@@ -44,21 +44,21 @@ class MySqlTransaction extends Object implements ISqlTransaction
 	/**
 	 * The state.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $closed;
 
 	/**
 	 * The MySQL connection.
 	 *
-	 * @type MySqlConnection;
+	 * @var MySqlConnection;
 	 */
 	private $mySqlConnection;
 
 	/**
 	 * The mysqli connection handle.
 	 *
-	 * @type mysqli
+	 * @var mysqli
 	 */
 	private $mysqli;
 

@@ -45,14 +45,14 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 	/**
 	 * The schema.
 	 *
-	 * @type ISqlSchema
+	 * @var ISqlSchema
 	 */
 	private $schema;
 
 	/**
 	 * The tables.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $tables;
 

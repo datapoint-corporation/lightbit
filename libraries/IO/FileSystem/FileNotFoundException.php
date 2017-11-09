@@ -40,7 +40,7 @@ class FileNotFoundException extends IOException
 	/**
 	 * The file path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $filePath;
 

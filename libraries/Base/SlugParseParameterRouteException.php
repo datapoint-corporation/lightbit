@@ -42,14 +42,14 @@ class SlugParseParameterRouteException extends ParameterRouteException
 	/**
 	 * The class name.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $className;
 
 	/**
 	 * The slug.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $slug;
 

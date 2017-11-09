@@ -63,14 +63,14 @@ final class Locale extends Object implements ILocale
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The number formatters.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $numberFormatters;
 

@@ -42,7 +42,7 @@ class PatternRule extends Rule
 	/**
 	 * The pattern.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $pattern;
 

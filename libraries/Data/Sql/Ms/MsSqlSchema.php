@@ -44,7 +44,7 @@ class MsSqlSchema extends MsSqlObject implements ISqlSchema
 	/**
 	 * The databases.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $databases;
 

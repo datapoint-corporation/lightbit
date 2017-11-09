@@ -46,56 +46,56 @@ class HtmlDocument extends Component implements IHtmlDocument
 	/**
 	 * The breadcrumbs.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $breadcrumbs;
 
 	/**
 	 * The inline scripts.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $inlineScripts;
 
 	/**
 	 * The inline styles.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $inlineStyles;
 
 	/**
 	 * The meta attributes.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $metaAttributes;
 
 	/**
 	 * The scripts.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $scripts;
 
 	/**
 	 * The styles.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $styles;
 
 	/**
 	 * The tags.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $tags;
 
 	/**
 	 * The title.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $title;
 

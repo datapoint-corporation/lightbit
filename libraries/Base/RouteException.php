@@ -42,7 +42,7 @@ class RouteException extends ContextException
 	/**
 	 * The route.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $route;
 

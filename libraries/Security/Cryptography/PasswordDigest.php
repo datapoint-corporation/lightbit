@@ -43,14 +43,14 @@ class PasswordDigest extends Component implements IPasswordDigest
 	/**
 	 * The cost.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $cost;
 
 	/**
 	 * The salt.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $salt;
 

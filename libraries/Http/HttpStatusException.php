@@ -40,14 +40,14 @@ class HttpStatusException extends Exception
 	/**
 	 * The status code.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $statusCode;
 
 	/**
 	 * The status message.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $statusMessage;
 

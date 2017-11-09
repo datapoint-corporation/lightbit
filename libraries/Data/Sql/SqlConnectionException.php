@@ -42,7 +42,7 @@ class SqlConnectionException extends SqlException
 	/**
 	 * The sql connection.
 	 *
-	 * @type ISqlConnection
+	 * @var ISqlConnection
 	 */
 	private $sqlConnection;
 

@@ -42,7 +42,7 @@ class EnumerationRule extends Rule
 	/**
 	 * The available options.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $options;
 

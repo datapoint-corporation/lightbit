@@ -41,7 +41,7 @@ class HttpSessionException extends Exception
 	/**
 	 * The http session.
 	 *
-	 * @type IHttpSession
+	 * @var IHttpSession
 	 */
 	private $httpSession;
 

@@ -43,56 +43,56 @@ class MySqlStatement extends Object implements ISqlStatement
 	/**
 	 * The mysqli internal handle.
 	 *
-	 * @type mysqli
+	 * @var mysqli
 	 */
 	private $mysqli;
 
 	/**
 	 * The mysqli statement internal handle.
 	 *
-	 * @type mysqli_stmt
+	 * @var mysqli_stmt
 	 */
 	private $mysqliStatement;
 	
 	/**
 	 * The sql connection.
 	 *
-	 * @type ISqlConnection
+	 * @var ISqlConnection
 	 */
 	private $mySqlConnection;
 
 	/**
 	 * The parameter names.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $names;
 
 	/**
 	 * The parameter positions.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $positions;
 
 	/**
 	 * The statement.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $statement;
 
 	/**
 	 * The quoted statement.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $statementQ;
 
 	/**
 	 * The parameters value.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $values;
 

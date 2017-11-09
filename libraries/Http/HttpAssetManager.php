@@ -44,35 +44,35 @@ class HttpAssetManager extends Component implements IHttpAssetManager
 	/**
 	 * The publish directory.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $publishDirectory;
 
 	/**
 	 * The publish directory path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $publishDirectoryPath;
 
 	/**
 	 * The publish directory url.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $publishDirectoryUrl;
 
 	/**
 	 * The publish url.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $publishUrl;
 
 	/**
 	 * The refresh flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $refresh;
 

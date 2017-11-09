@@ -43,14 +43,14 @@ abstract class Component extends Element implements IComponent
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 

@@ -41,7 +41,7 @@ class Expression extends Object implements IExpression
 	/**
 	 * The expression.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $expression;
 

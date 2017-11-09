@@ -42,14 +42,14 @@ class LengthRule extends Rule
 	/**
 	 * The minimum length.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $minimum;
 
 	/**
 	 * The maximum length.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $maximum;
 

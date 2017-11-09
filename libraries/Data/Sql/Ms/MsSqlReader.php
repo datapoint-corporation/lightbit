@@ -50,49 +50,49 @@ class MsSqlReader extends Object implements ISqlReader
 	/**
 	 * The state.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $closed;
 
 	/**
 	 * The fields.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $fields;
 
 	/**
 	 * The fields count.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $fieldsCount;
 
 	/**
 	 * The sql connection.
 	 *
-	 * @type ISqlConnection
+	 * @var ISqlConnection
 	 */
 	private $msSqlConnection;
 
 	/**
 	 * The sql statement.
 	 *
-	 * @type ISqlStatement
+	 * @var ISqlStatement
 	 */
 	private $msSqlStatement;
 
 	/**
 	 * The connection internal handle.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $sqlsrv;
 
 	/**
 	 * The statement internal handle.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $stmt;
 

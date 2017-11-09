@@ -41,49 +41,49 @@ class SqlSelectCriteria extends SqlCriteria implements ISqlSelectCriteria
 	/**
 	 * The distinct flag.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $distinct;
 
 	/**
 	 * The from.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $from;
 
 	/**
 	 * The group.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $group;
 
 	/**
 	 * The limit.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $limit;
 
 	/**
 	 * The offset.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $offset;
 
 	/**
 	 * The select.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $select;
 
 	/**
 	 * The sort.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $sort;
 

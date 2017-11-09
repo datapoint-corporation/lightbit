@@ -44,49 +44,49 @@ class MySqlReader extends Object implements ISqlReader
 	/**
 	 * The closed state.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $closed;
 
 	/**
 	 * The fields schemata.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $fields;
 
 	/**
 	 * The fields count.
 	 *
-	 * @type int
+	 * @var int
 	 */
 	private $fieldsCount;
 
 	/**
 	 * The row.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $row;
 
 	/**
 	 * The result meta data.
 	 *
-	 * @type mysqli_result
+	 * @var mysqli_result
 	 */
 	private $meta;
 
 	/**
 	 * The sql statement.
 	 *
-	 * @type ISqlStatement
+	 * @var ISqlStatement
 	 */
 	private $mySqlStatement;
 
 	/**
 	 * The sql statement handle.
 	 *
-	 * @type mysqli_stmt
+	 * @var mysqli_stmt
 	 */
 	private $mysqliStatement;
 

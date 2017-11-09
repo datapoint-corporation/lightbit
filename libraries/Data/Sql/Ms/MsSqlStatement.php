@@ -56,63 +56,63 @@ class MsSqlStatement extends Object implements ISqlStatement
 	/**
 	 * The sql connection.
 	 *
-	 * @type MsSqlConnection
+	 * @var MsSqlConnection
 	 */
 	private $msSqlConnection;
 
 	/**
 	 * The names.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $names;
 
 	/**
 	 * The positions.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $positions;
 
 	/**
 	 * The references.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $references;
 
 	/**
 	 * The statement.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $statement;
 
 	/**
 	 * The statement, quoted.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $statementQ;
 
 	/**
 	 * The sqlsrv resource.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $sqlsrv;
 
 	/**
 	 * The stmt resource.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $stmt;
 
 	/**
 	 * The values.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $values;
 
@@ -122,7 +122,7 @@ class MsSqlStatement extends Object implements ISqlStatement
 	 * It contains the variables bound by reference to the internal statement
 	 * handle.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $variables;
 

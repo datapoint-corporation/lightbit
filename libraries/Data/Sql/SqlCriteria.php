@@ -42,28 +42,28 @@ class SqlCriteria extends Object implements ISqlCriteria
 	/**
 	 * The alias.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $alias;
 
 	/**
 	 * The join.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $join;
 
 	/**
 	 * The condition.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $condition;
 
 	/**
 	 * The parameters.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $parameters;
 

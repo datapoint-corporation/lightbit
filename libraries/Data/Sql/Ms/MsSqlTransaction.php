@@ -44,21 +44,21 @@ class MsSqlTransaction extends Object implements ISqlTransaction
 	/**
 	 * The state.
 	 *
-	 * @type bool
+	 * @var bool
 	 */
 	private $closed;
 
 	/**
 	 * The sql connection.
 	 *
-	 * @type MsSqlConnection;
+	 * @var MsSqlConnection;
 	 */
 	private $msSqlConnection;
 
 	/**
 	 * The sql connection handle.
 	 *
-	 * @type resource
+	 * @var resource
 	 */
 	private $sqlsrv;
 

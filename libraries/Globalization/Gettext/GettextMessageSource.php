@@ -47,21 +47,21 @@ class GettextMessageSource extends Component implements IMessageSource
 	/**
 	 * The directory.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $directory;
 
 	/**
 	 * The directory path.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $directoryPath;
 
 	/**
 	 * The messages.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $messages;
 

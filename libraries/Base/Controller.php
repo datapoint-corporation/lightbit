@@ -51,35 +51,35 @@ abstract class Controller extends Element implements IController
 	/**
 	 * The context.
 	 *
-	 * @type IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * The global identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $globalID;
 
 	/**
 	 * The identifier.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $id;
 
 	/**
 	 * The views.
 	 *
-	 * @type array
+	 * @var array
 	 */
 	private $views;
 
 	/**
 	 * The views base paths.
 	 *
-	 * @type string
+	 * @var string
 	 */
 	private $viewsBasePaths;
 
