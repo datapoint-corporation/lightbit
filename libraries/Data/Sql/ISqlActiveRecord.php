@@ -27,7 +27,7 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Data\Sql\ISqlModel;
+use \Lightbit\Data\IModel;
 use \Lightbit\Data\Sql\ISqlTable;
 
 /**
@@ -36,20 +36,16 @@ use \Lightbit\Data\Sql\ISqlTable;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ISqlActiveRecord extends ISqlModel
-{
+interface ISqlActiveRecord extends IModel
+{	
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * all results as an instance of this model, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve all records matching the current criteria.
+	 * 
 	 * @return array
-	 *	The result.
+	 *	The results.
 	 */
-	public function all(array $criteria = null) : array;
+	public function all() : array;
 
 	/**
 	 * Performs a commit.
@@ -57,51 +53,28 @@ interface ISqlActiveRecord extends ISqlModel
 	public function commit() : void;
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the number of matching results, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve the number of records matching the current criteria.
+	 * 
 	 * @return int
 	 *	The result.
 	 */
-	public function count(array $criteria = null) : int;
+	public function count() : int;
 
 	/**
-	 * Creates, prepares and executes a delete statement matching the
-	 * model instance identity.
-	 *
-	 * If the instance is new (see: isNew), this method performs
-	 * no action at all.
+	 * Creates, prepares and executes a query statement that is meant to
+	 * delete this active record.
 	 */
 	public function delete() : void;
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the existance of any matching results, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * check the existence of records matching the current criteria.
+	 * 
 	 * @return bool
 	 *	The result.
 	 */
-	public function exists(array $criteria = null) : bool;
-
-	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * all results matching the given attributes as an instance of this model.
-	 *
-	 * @param array $attributes
-	 *	The attributes to match.
-	 *
-	 * @return array
-	 *	The results.
-	 */
-	public function filter(array $attributes) : array;
+	public function exists() : bool;
 
 	/**
 	 * Gets the attributes with update.
@@ -118,6 +91,14 @@ interface ISqlActiveRecord extends ISqlModel
 	 *	The difference.
 	 */
 	public function getAttributesWithUpdate(bool $inverse = false) : array;
+	
+	/**
+	 * Gets the criteria.
+	 * 
+	 * @return ISqlCriteria
+	 *	The criteria.
+	 */
+	public function getCriteria() : ISqlCriteria;
 
 	/**
 	 * Gets the identity.
@@ -179,30 +160,13 @@ interface ISqlActiveRecord extends ISqlModel
 	public function isNew() : bool;
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * a single result matching the given attributes as an instance of this
-	 * model.
-	 *
-	 * @param array $attributes
-	 *	The attributes to match.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve a single record matching the current criteria.
+	 * 
 	 * @return ISqlModel
 	 *	The result.
 	 */
-	public function match(array $attributes) : ?ISqlModel;
-
-	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the first result as an instance of this model, optionally based on a
-	 * given select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
-	 * @return ISqlModel
-	 *	The result.
-	 */
-	public function one(array $criteria = null) : ?ISqlModel;
+	public function single() : ?ISqlModel;
 
 	/**
 	 * Performs a rollback.
@@ -221,4 +185,15 @@ interface ISqlActiveRecord extends ISqlModel
 	 * at the end of this procedure.
 	 */
 	public function save() : void;
+	
+	/**
+	 * Sets additional comparisons.
+	 * 
+	 * @param array $comparisons
+	 *	The comparisons.
+	 * 
+	 * @return ISqlActiveRecord
+	 *	This instance.
+	 */
+	public function with(array $comparisons) : ISqlActiveRecord;
 }

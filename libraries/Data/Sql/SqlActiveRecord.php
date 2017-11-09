@@ -28,10 +28,10 @@
 namespace Lightbit\Data\Sql;
 
 use \Lightbit\Exception;
+use \Lightbit\Data\Model;
 use \Lightbit\Data\Sql\ISqlActiveRecord;
 use \Lightbit\Data\Sql\ISqlTable;
 use \Lightbit\Data\Sql\SqlCriteria;
-use \Lightbit\Data\Sql\SqlModel;
 
 /**
  * ISqlActiveRecord.
@@ -46,7 +46,7 @@ use \Lightbit\Data\Sql\SqlModel;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
+abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 {
 	/**
 	 * The schema.
@@ -61,6 +61,13 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	 * @var array
 	 */
 	private $attributes;
+	
+	/**
+	 * The criteria.
+	 * 
+	 * @var ISqlSelectCriteria
+	 */
+	private $criteria;
 
 	/**
 	 * The identity.
@@ -90,37 +97,27 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 			self::$schema[static::class] = [];
 		}
 	}
-
+	
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * all results as an instance of this model, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve all records matching the current criteria.
+	 * 
 	 * @return array
-	 *	The result.
+	 *	The results.
 	 */
-	public function all(array $criteria = null) : array
+	public function all() : array
 	{
-		if (isset($criteria))
-		{
-			$criteria = new SqlSelectCriteria($criteria);
-		}
-
-		$results = $this->getSqlConnection()
+		$result = $this->getSqlConnection()
 			->getStatementFactory()
-				->select($this->getTableName(), $criteria)
-					->query()
-						->all();
-
-		foreach ($results as $i => $result)
+				->select($this->getTableName(), $this->criteria)
+					->all(null, false);
+		
+		foreach ($result as $i => $result)
 		{
-			$results[$i] = $this->construct($result);
+			$result[$i] = $this->construct($result);
 		}
-
-		return $results;
+		
+		return $result;
 	}
 
 	/**
@@ -149,30 +146,6 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the number of matching results, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
-	 * @return int
-	 *	The result.
-	 */
-	public function count(array $criteria = null) : int
-	{
-		if (isset($criteria))
-		{
-			$criteria = new SqlSelectCriteria($criteria);
-		}
-
-		return $this->getSqlConnection()
-			->getStatementFactory()
-				->count($this->getTableName(), $criteria)
-					->scalar();
-	}
-
-	/**
 	 * Constructs a new instance for update.
 	 *
 	 * @param array $attributes
@@ -188,6 +161,21 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		$instance->commit();
 
 		return $instance;
+	}
+	
+	/**
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve the number of records matching the current criteria.
+	 * 
+	 * @return int
+	 *	The result.
+	 */
+	public function count() : int
+	{
+		return $this->getSqlConnection()
+			->getStatementFactory()
+				->count($this->getTableName(), $this->criteria)
+					->scalar();
 	}
 
 	/**
@@ -218,50 +206,17 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 
 		$this->onAfterDelete();
 	}
-
+	
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the existance of any matching results, optionally based on a given
-	 * select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * check the existence of records matching the current criteria.
+	 * 
 	 * @return bool
 	 *	The result.
 	 */
-	public function exists(array $criteria = null) : bool
+	public function exists() : bool
 	{
-		return $this->count($criteria) > 0;
-	}
-
-	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * all results matching the given attributes as an instance of this model.
-	 *
-	 * @param array $attributes
-	 *	The attributes to match.
-	 *
-	 * @return array
-	 *	The results.
-	 */
-	public function filter(array $attributes) : array
-	{
-		$criteria = new SqlCriteria();
-		$criteria->addComparisons($attributes);
-
-		$results = $this->getSqlConnection()
-			->getStatementFactory()
-				->select($this->getTableName(), $criteria)
-					->query()
-						->all();
-
-		foreach ($results as $i => $result)
-		{
-			$results[$i] = $this->construct($result);
-		}
-
-		return $results;
+		return $this->count() > 0;
 	}
 
 	/**
@@ -309,6 +264,22 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		return $this->getAttributes();
+	}
+	
+	/**
+	 * Gets the criteria.
+	 * 
+	 * @return ISqlCriteria
+	 *	The criteria.
+	 */
+	public function getCriteria(): ISqlCriteria 
+	{
+		if (!$this->criteria)
+		{
+			$this->criteria = new SqlSelectCriteria();
+		}
+		
+		return $this->criteria;
 	}
 
 	/**
@@ -437,63 +408,25 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * a single result matching the given attributes as an instance of this
-	 * model.
-	 *
-	 * @param array $attributes
-	 *	The attributes to match.
-	 *
+	 * Creates, prepares and executes a query statement that is meant to
+	 * retrieve a single record matching the current criteria.
+	 * 
 	 * @return ISqlModel
 	 *	The result.
 	 */
-	public function match(array $attributes) : ?ISqlModel
+	public function single() : ?ISqlModel
 	{
-		$criteria = new SqlCriteria();
-		$criteria->addComparisons($attributes);
-
 		$result = $this->getSqlConnection()
 			->getStatementFactory()
-				->select($this->getTableName(), $criteria)
-					->single();
-
+				->select($this->getTableName(), $this->criteria)
+					->single(null, false);
+		
 		if ($result)
 		{
-			$result = $this->construct($result);
+			return $this->construct($result);
 		}
-
-		return $result;
-	}
-
-	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * the first result as an instance of this model, optionally based on a
-	 * given select criteria.
-	 *
-	 * @param array $criteria
-	 *	The select criteria configuration.
-	 *
-	 * @return ISqlModel
-	 *	The result.
-	 */
-	public function one(array $criteria = null) : ?ISqlModel
-	{
-		if (isset($criteria))
-		{
-			$criteria = new SqlSelectCriteria($criteria);
-		}
-
-		$result = $this->getSqlConnection()
-			->getStatementFactory()
-				->select($this->getTableName(), $criteria)
-					->single();
-
-		if ($result)
-		{
-			$result = $this->construct($result);
-		}
-
-		return $result;
+		
+		return null;
 	}
 
 	/**
@@ -569,56 +502,6 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 	}
 
 	/**
-	 * Creates, prepares and executes a query statement that's meant to fetch
-	 * a single result as an instance of this model.
-	 *
-	 * @param string $statement
-	 *	The statement to create, prepare and execute, as a string.
-	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @return ISqlModel
-	 *	The result.
-	 */
-	public function single(string $statement, array $arguments = null) : ?ISqlModel
-	{
-		$instance = parent::single($statement, $arguments);
-
-		if ($instance)
-		{
-			$instance->commit();
-		}
-
-		return $instance;
-	}
-
-	/**
-	 * Creates, prepares and executes a query statement to fetch all results
-	 * as instances of this model.
-	 *
-	 * @param string $statement
-	 *	The statement to prepare, execute and read from.
-	 *
-	 * @param array $arguments
-	 *	The statement arguments.
-	 *
-	 * @return array
-	 *	The results.
-	 */
-	public function query(string $statement, array $arguments = null) : array
-	{
-		$instances = parent::query($statement, $arguments);
-
-		foreach ($instances as $i => $instance)
-		{
-			$instance->commit();
-		}
-
-		return $instances;
-	}
-
-	/**
 	 * Creates the table name.
 	 *
 	 * The default implementation creates the table name based on the active
@@ -637,6 +520,21 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		}
 
 		return $className;
+	}
+	
+	/**
+	 * Sets additional comparisons.
+	 * 
+	 * @param array $comparisons
+	 *	The comparisons.
+	 * 
+	 * @return ISqlActiveRecord
+	 *	This instance.
+	 */
+	public function with(array $comparisons) : ISqlActiveRecord
+	{
+		$this->getCriteria()->addComparisons($comparisons);
+		return $this;
 	}
 
 	/**

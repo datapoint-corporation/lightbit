@@ -79,3 +79,13 @@ function __class_register(string $class, string $path) : void
 		$__LIGHTBIT_CLASS[$class] = $path;
 	}
 }
+
+function __class_name(string $class) : string
+{
+	if (($i = strrpos($class, '\\')) !== false)
+	{
+		return substr($class, $i + 1);
+	}
+	
+	return $class;
+}
