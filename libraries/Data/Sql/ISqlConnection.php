@@ -98,6 +98,14 @@ interface ISqlConnection extends IComponent, IChannel
 	 *	The database.
 	 */
 	public function getDatabase() : ISqlDatabase;
+	
+	/**
+	 * Gets the last insert identifier.
+	 * 
+	 * @return string
+	 *	The last insert identifier.
+	 */
+	public function getLastInsertID() : ?string;
 
 	/**
 	 * Gets the schema.

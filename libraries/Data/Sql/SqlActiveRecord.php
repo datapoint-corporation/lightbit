@@ -29,7 +29,6 @@ namespace Lightbit\Data\Sql;
 
 use \Lightbit\Exception;
 use \Lightbit\Data\Sql\ISqlActiveRecord;
-use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlTable;
 use \Lightbit\Data\Sql\SqlCriteria;
 use \Lightbit\Data\Sql\SqlModel;
@@ -414,14 +413,16 @@ abstract class SqlActiveRecord extends SqlModel implements ISqlActiveRecord
 		{
 			foreach ($this->attributes as $property => $attribute)
 			{
-				if ($attribute !== $this->getAttribute($attribute))
+				if ($attribute !== $this->getAttribute($property))
 				{
 					return true;
 				}
 			}
+			
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	/**

@@ -30,7 +30,6 @@ namespace Lightbit\Data\Sql\My;
 use \Lightbit\Base\Component;
 use \Lightbit\Data\Sql\My\MySqlSchema;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlReader;
@@ -225,6 +224,17 @@ class MySqlConnection extends Component implements ISqlConnection
 	{
 		return $this->host;
 	}
+	
+	/**
+	 * Gets the last insert identifier.
+	 * 
+	 * @return string
+	 *	The last insert identifier.
+	 */
+	public final function getLastInsertID() : ?string
+	{
+		return mysqli_insert_id($this->mysqli);
+	}
 
 	/**
 	 * Gets the internal connection handler.
@@ -362,8 +372,8 @@ class MySqlConnection extends Component implements ISqlConnection
 						$this->all
 						(
 							'SELECT
-								T.TABLE_SCHEMA SCHEMA_NAME,
-								T.TABLE_CATALOG DATABASE_NAME,
+								T.TABLE_CATALOG SCHEMA_NAME,
+								T.TABLE_SCHEMA DATABASE_NAME,
 								T.TABLE_NAME TABLE_NAME,
 								KCU.COLUMN_NAME COLUMN_NAME,
 								TC.CONSTRAINT_NAME CONSTRAINT_NAME,

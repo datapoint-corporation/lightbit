@@ -31,7 +31,6 @@ use \Lightbit\Base\Component;
 use \Lightbit\Data\Sql\Ms\MsSqlStatement;
 use \Lightbit\Data\Sql\Ms\MsSqlTransaction;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlReader;
@@ -212,6 +211,17 @@ class MsSqlConnection extends Component implements ISqlConnection
 		}
 
 		return $throwable;
+	}
+	
+	/**
+	 * Gets the last insert identifier.
+	 * 
+	 * @return string
+	 *	The last insert identifier.
+	 */
+	public final function getLastInsertID() : ?string
+	{
+		return $this->scalar('SELECT SCOPE_IDENTITY()');
 	}
 
 	/**

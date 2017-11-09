@@ -139,7 +139,7 @@ class MySqlTransaction extends Object implements ISqlTransaction
 	 */
 	public function rollback() : void
 	{
-		if (!mysqli_rollback($this->rollback))
+		if (!mysqli_rollback($this->mysqli))
 		{
 			throw new MySqlConnectionException
 			(

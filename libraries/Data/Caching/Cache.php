@@ -52,30 +52,6 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	private $attributes;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param IContext $context
-	 *	The component context.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @param array $configuration
-	 *	The component configuration.
-	 */
-	public function __construct(IContext $context, string $id, array $configuration = null)
-	{
-		parent::__construct($context, $id);
-
-		$this->attributes = [];
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
-	}
-
-	/**
 	 * Deletes a attribute.
 	 *
 	 * @param string $property
@@ -158,5 +134,18 @@ final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetwor
 	public function set(string $property, $attribute) : void
 	{
 		$this->attributes[$property] = $attribute;
+	}
+	
+	/**
+	 * On Construct.
+	 *
+	 * This method is invoked during the component construction procedure,
+	 * before the dynamic configuration is applied.
+	 */
+	protected function onConstruct() : void
+	{
+		parent::onConstruct();
+
+		$this->attributes = [];
 	}
 }
