@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Validation;
 
-use \Lightbit\Base\Exception;
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\Rule;
 

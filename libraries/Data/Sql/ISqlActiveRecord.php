@@ -163,10 +163,10 @@ interface ISqlActiveRecord extends IModel
 	 * Creates, prepares and executes a query statement that is meant to
 	 * retrieve a single record matching the current criteria.
 	 * 
-	 * @return ISqlModel
+	 * @return ISqlActiveRecord
 	 *	The result.
 	 */
-	public function single() : ?ISqlModel;
+	public function single() : ?ISqlActiveRecord;
 
 	/**
 	 * Performs a rollback.

@@ -27,6 +27,19 @@
 
 use \Lightbit\Data\Expression;
 
+function __data_cache_key(?string $class, string $function, ...$arguments) : string
+{
+	$result = ($class ? strtr($class, [ '\\' => '.' ]) : 'global')
+		. '://' . $function;
+	
+	foreach ($arguments as $argument)
+	{
+		$result .= '/' . strtr(__type_to_string($argument), [ '/' => '$' ]);
+	}
+	
+	return $result;
+}
+
 function __data_expression(string $expression) : Expression
 {
 	return new Expression($expression);

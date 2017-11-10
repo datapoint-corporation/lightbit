@@ -112,9 +112,9 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 				->select($this->getTableName(), $this->criteria)
 					->all(null, false);
 		
-		foreach ($result as $i => $result)
+		foreach ($result as $i => $single)
 		{
-			$result[$i] = $this->construct($result);
+			$result[$i] = $this->construct($single);
 		}
 		
 		return $result;
@@ -411,10 +411,10 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	 * Creates, prepares and executes a query statement that is meant to
 	 * retrieve a single record matching the current criteria.
 	 * 
-	 * @return ISqlModel
+	 * @return ISqlActiveRecord
 	 *	The result.
 	 */
-	public function single() : ?ISqlModel
+	public function single() : ?ISqlActiveRecord
 	{
 		$result = $this->getSqlConnection()
 			->getStatementFactory()

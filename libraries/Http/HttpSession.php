@@ -30,7 +30,6 @@ namespace Lightbit\Http;
 use \Lightbit\Base\Component;
 use \Lightbit\Http\HttpSessionException;
 
-use \Lightbit\Base\IContext;
 use \Lightbit\Base\IChannel;
 use \Lightbit\Http\IHttpSession;
 
