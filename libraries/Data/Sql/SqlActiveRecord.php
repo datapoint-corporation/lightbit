@@ -304,18 +304,11 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	 * @return array
 	 *	The primary key.
 	 */
-	public function getPrimaryKey() : array
+	public final function getPrimaryKey() : array
 	{
 		if (!isset(self::$schema[static::class]['primary-key']))
 		{
-			$primaryKey = $this->getTable()->getPrimaryKey();
-
-			if (!$primaryKey)
-			{
-				throw new Exception(sprintf('Active record primary key is not available: %s', static::class));
-			}
-
-			self::$schema[static::class]['primary-key'] = $primaryKey;
+			self::$schema[static::class]['primary-key'] = $this->primaryKey();
 		}
 
 		return self::$schema[static::class]['primary-key'];
@@ -405,6 +398,27 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	public function isNew() : bool
 	{
 		return !$this->id;
+	}
+
+	/**
+	 * Creates the primary key.
+	 *
+	 * The default implementation creates the primary key to match the table
+	 * primary key constraint.
+	 *
+	 * @return array
+	 *	The primary key.
+	 */
+	protected function primaryKey() : array
+	{
+		$primaryKey = $this->getTable()->getPrimaryKey();
+
+		if (!$primaryKey)
+		{
+			throw new Exception(sprintf('Active record primary key is not available: %s', static::class));
+		}
+
+		return $primaryKey;
 	}
 
 	/**
