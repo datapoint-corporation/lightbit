@@ -29,6 +29,18 @@ use \Lightbit\Base\Object;
 use \Lightbit\Base\ITheme;
 use \Lightbit\Data\IModel;
 
+/**
+ * Creates the markup for a single html attribute.
+ *
+ * @param string $property
+ *	The property name.
+ *
+ * @param mixed $attribute
+ *	The attribute.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_attribute(string $property, $attribute) : string
 {
 	if ($attribute)
@@ -56,6 +68,15 @@ function __html_attribute(string $property, $attribute) : string
 	return '';
 }
 
+/**
+ * Creates the markup for an array of html attributes.
+ *
+ * @param array $attributes
+ *	The associative array of attributes, indexed by property name.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_attribute_array(?array ...$attributes) : string
 {
 	$attributes = __html_attribute_array_merge(...$attributes);
@@ -76,6 +97,15 @@ function __html_attribute_array(?array ...$attributes) : string
 	return $result;
 }
 
+/**
+ * Combines multiple arrays of html attributes into one.
+ *
+ * @param array $attributes
+ *	The associative array of attributes, indexed by property name.
+ *
+ * @return array
+ *	The result.
+ */
 function __html_attribute_array_merge(?array ...$attributes) : array
 {
 	$result = [];
@@ -102,6 +132,18 @@ function __html_attribute_array_merge(?array ...$attributes) : array
 	return $result;
 }
 
+/**
+ * Creates the markup for a html element opening tag.
+ *
+ * @param string $tag
+ *	The element tag name.
+ *
+ * @param array $attributes
+ *	The element attributes.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_begin(string $tag, array $attributes = null) : string
 {
 	$result = '<' . __html_encode($tag);
@@ -114,27 +156,15 @@ function __html_begin(string $tag, array $attributes = null) : string
 	return $result . '>';
 }
 
-function __html_body_begin(array $attributes = null) : string
-{
-	$context = __context();
-	$theme = $context->getTheme();
-
-	if ($theme)
-	{
-		return __html_begin('body', $attributes);
-	}
-
-	return __html_begin('body', $attributes);
-}
-
-function __html_body_end() : string
-{
-	$context = __context();
-	$document = $context->getHtmlDocument();
-
-	return $document->inflate('body') . __html_end('body');
-}
-
+/**
+ * Creates the markup for a html comment.
+ *
+ * @param string $content
+ *	The comment content.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_comment(string $content) : string
 {
 	return '<!--' . __html_encode($content) . ' //-->';
@@ -154,6 +184,24 @@ function __html_decode(string $content) : string
 	return htmlspecialchars_decode($content, (ENT_QUOTES | ENT_HTML5));
 }
 
+/**
+ * Creates the markup for a html element.
+ *
+ * @param string $tag
+ *	The element tag name.
+ *
+ * @param array $attributes
+ *	The element attributes.
+ *
+ * @param string $content
+ *	The element content.
+ *
+ * @param bool $encode
+ *	The element content encode flag.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_element(string $tag, array $attributes = null, string $content = null, bool $encode = true) : string
 {
 	$result = '<' . __html_encode($tag);
@@ -178,6 +226,15 @@ function __html_element(string $tag, array $attributes = null, string $content =
 	return $result . __html_end($tag);
 }
 
+/**
+ * Checks if an element is void.
+ *
+ * @param string $tag
+ *	The element tag name.
+ *
+ * @return bool
+ *	The result.
+ */
 function __html_element_is_void(string $tag) : bool
 {
 	static $voids =
@@ -203,6 +260,15 @@ function __html_element_is_void(string $tag) : bool
 	return isset($voids[$tag]);
 }
 
+/**
+ * Creates the markup for an html element ending tag.
+ *
+ * @param string $tag
+ *	The element tag name.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_end(string $tag) : string
 {
 	return '</' . __html_encode($tag) . '>';
@@ -222,6 +288,25 @@ function __html_encode(string $content) : string
 	return htmlspecialchars($content, (ENT_QUOTES | ENT_HTML5), 'UTF-8');
 }
 
+/**
+ * Creates a basic html form.
+ *
+ * This method was implemented to ease the development and testing of features
+ * that depend on user submitted data and is not meant to be used in a 
+ * production scenario.
+ *
+ * @param IModel $model
+ *	The model.
+ *
+ * @param string $method
+ *	The method.
+ *
+ * @param array $action
+ *	The route resolving to a controller action.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_form(IModel $model, string $method = 'POST', array $action = null) : string
 {
 	$html = __context()->getHtmlAdapter();
@@ -280,39 +365,12 @@ function __html_form(IModel $model, string $method = 'POST', array $action = nul
 	return $result;
 }
 
-function __html_form_begin(array $attributes = null) : string
-{
-	if (!isset($attributes))
-	{
-		$attributes = [];
-	}
-
-	// Set the default action
-	if (!isset($attributes['action']))
-	{
-		$attributes['action'] = __url(__action()->getRoute());
-	}
-
-	// Set action as the resolved url.
-	else if (is_array($attributes['action']))
-	{
-		$attributes['action'] = __url($attributes['action']);
-	}
-
-	// Set the default method
-	if (!isset($attributes['method']))
-	{
-		$attributes['method'] = 'POST';
-	}
-
-	return __html_begin('form', $attributes);
-}
-
-function __html_form_end() : string
-{
-	return __html_end('form');
-}
-
+/**
+ * Creates the head html element.
+ *
+ * @return string
+ *	The markup.
+ */
 function __html_head() : string
 {
 	$context = __context();
