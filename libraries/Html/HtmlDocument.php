@@ -51,6 +51,13 @@ class HtmlDocument extends Component implements IHtmlDocument
 	private $breadcrumbs;
 
 	/**
+	 * The default title.
+	 *
+	 * @var string
+	 */
+	private $defaultTitle;
+
+	/**
 	 * The inline scripts.
 	 *
 	 * @var array
@@ -335,6 +342,11 @@ class HtmlDocument extends Component implements IHtmlDocument
 				$result .= __html_element('title', null, $this->title) . PHP_EOL;
 			}
 
+			else if ($this->defaultTitle)
+			{
+				$result .= __html_element('title', null, $this->defaultTitle) . PHP_EOL;
+			}
+
 			foreach ($this->styles as $i => $style)
 			{
 				$result .=
@@ -434,6 +446,17 @@ class HtmlDocument extends Component implements IHtmlDocument
 	{
 		$this->breadcrumbs = [];
 		$this->addBreadcrumbs($breadcrumbs);
+	}
+
+	/**
+	 * Sets the default title.
+	 *
+	 * @param string $defaultTitle
+	 *	The default title.
+	 */
+	public function setDefaultTitle(?string $defaultTitle) : void
+	{
+		$this->defaultTitle = $defaultTitle;
 	}
 
 	/**
