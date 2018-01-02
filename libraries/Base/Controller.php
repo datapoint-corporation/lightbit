@@ -517,7 +517,6 @@ abstract class Controller extends Element implements IController
 			$content = __json_encode($result);
 
 			$response = $this->getHttpResponse();
-			$response->reset();
 			$response->setStatusCode($status);
 			$response->setHeader('Content-Type', 'application/json; charset=utf-8');
 			$response->setHeader('Content-Length', strlen($content));

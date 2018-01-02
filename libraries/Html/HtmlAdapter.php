@@ -42,66 +42,6 @@ use \Lightbit\Html\IHtmlAdapter;
 class HtmlAdapter extends Component implements IHtmlAdapter
 {
 	/**
-	 * Creates an active input name.
-	 *
-	 * @param IModel $model
-	 *	The active input model.
-	 *
-	 * @param string $attribute
-	 *	The active input attribute name.
-	 *
-	 * @return string
-	 *	The active input name.
-	 */
-	protected function activeInputName(IModel $model, string $attribute) : string
-	{
-		$session = $this->getAction()->getController()->getHttpSession();
-
-		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
-		$id = 'lightbit.html.adapter.input.' . $hash;
-
-		$result = $session->get('?string', $id);
-
-		if (!$result)
-		{
-			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID()))));
-			$session->set($id, $result);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Creates an active input identifier.
-	 *
-	 * @param IModel $model
-	 *	The active input model.
-	 *
-	 * @param string $attribute
-	 *	The active input attribute name.
-	 *
-	 * @return string
-	 *	The active input identifier.
-	 */
-	protected function activeInputID(IModel $model, string $attribute) : string
-	{
-		$session = __context()->getHttpSession();
-
-		$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
-		$id = 'lightbit.html.adapter.input.' . $hash . 'id';
-
-		$result = $session->get('?string', $id);
-
-		if (!$result)
-		{
-			$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID() . '/id'))));
-			$session->set($id, $result);
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Gets an active input identifier.
 	 *
 	 * @param IModel $model
@@ -113,7 +53,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 * @return string
 	 *	The active input identifier.
 	 */
-	public final function getActiveInputID(IModel $model, string $attribute) : string
+	public function getActiveInputID(IModel $model, string $attribute) : string
 	{
 		static $activeInputsID = [];
 
@@ -126,7 +66,20 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 				$activeInputsID[$className] = [];
 			}
 
-			$activeInputsID[$className][$attribute] = $this->activeInputID($model, $attribute);
+			$session = $this->getAction()->getContext()->getHttpSession();
+
+			$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
+			$id = 'lightbit.html.adapter.input.' . $hash;
+
+			$result = $session->get('?string', $id);
+
+			if (!$result)
+			{
+				$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID()))));
+				$session->set($id, $result);
+			}
+
+			$activeInputsID[$className][$attribute] = $result;
 		}
 
 		return $activeInputsID[$className][$attribute];
@@ -144,7 +97,7 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 	 * @return string
 	 *	The active input name.
 	 */
-	public final function getActiveInputName(IModel $model, string $attribute) : string
+	public function getActiveInputName(IModel $model, string $attribute) : string
 	{
 		static $activeInputsName = [];
 
@@ -157,9 +110,38 @@ class HtmlAdapter extends Component implements IHtmlAdapter
 				$activeInputsName[$className] = [];
 			}
 
-			$activeInputsName[$className][$attribute] = $this->activeInputName($model, $attribute);
+			$session = $this->getAction()->getContext()->getHttpSession();
+
+			$hash = hash('md5', (__lightbit_version() . '/' . get_class($model) . '/' . $attribute));
+			$id = 'lightbit.html.adapter.input.' . $hash . '.name';
+
+			$result = $session->get('?string', $id);
+
+			if (!$result)
+			{
+				$result = sprintf('%x', crc32(hash('md5', ($hash . '/' . $session->getClientID() . '/id'))));
+				$session->set($id, $result);
+			}
+
+			$activeInputsName[$className][$attribute] = $result;
 		}
 
 		return $activeInputsName[$className][$attribute];
+	}
+
+	/**
+	 * Gets the document attributes.
+	 *
+	 * @return array
+	 *	The document attributes.
+	 */
+	public function getDocumentAttributes() : array
+	{
+		$locale = $this->getLocale();
+
+		return
+		[
+			'lang' => $locale->getLanguageCode()
+		];
 	}
 }

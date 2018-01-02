@@ -157,6 +157,37 @@ function __html_begin(string $tag, array $attributes = null) : string
 }
 
 /**
+ * Creates the body html element opening tag.
+ *
+ * The body element base attributes are defined by the html adapter linked
+ * to the currently active context.
+ *
+ * @param array $attributes
+ *	The body attributes.
+ *
+ * @return string
+ *	The markup.
+ */
+function __html_body_begin(array $attributes = null) : string
+{
+	$context = __context();
+	$html = $context->getHtmlAdapter();
+
+	return __html_begin('body', __html_attribute_array_merge($html->getBodyAttributes(), $attributes));
+}
+
+/**
+ * Creates the markup for a body html element closing tag.
+ *
+ * @return string
+ *	The markup.
+ */
+function __html_body_end() : string
+{
+	return '</body>';
+}
+
+/**
  * Creates the markup for a html comment.
  *
  * @param string $content
@@ -182,6 +213,45 @@ function __html_comment(string $content) : string
 function __html_decode(string $content) : string
 {
 	return htmlspecialchars_decode($content, (ENT_QUOTES | ENT_HTML5));
+}
+
+/**
+ * Creates the html doctype declaration.
+ *
+ * @return string
+ *	The markup.
+ */
+function __html_doctype() : string
+{
+	return '<!DOCTYPE html>'; 
+}
+
+/**
+ * Creates the document html element opening tag.
+ *
+ * @param array $attributes
+ *	The html element attributes.
+ *
+ * @return string
+ *	The markup.
+ */
+function __html_document_begin(array $attributes = null) : string
+{
+	$context = __context();
+	$html = $context->getHtmlAdapter();
+
+	return __html_doctype() . PHP_EOL . __html_begin('html', __html_attribute_array_merge($html->getDocumentAttributes(), $attributes));
+}
+
+/**
+ * Creates the document html element closing tag.
+ *
+ * @return string
+ *	The markup.
+ */
+function __html_document_end() : string
+{
+	return '</html>';
 }
 
 /**
