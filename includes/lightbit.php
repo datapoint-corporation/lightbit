@@ -290,6 +290,7 @@ function __lightbit_throwable(Throwable $throwable) : void
 		}
 
 		while ($throwable = $throwable->getPrevious());
+		return;
 	}
 
 	do
