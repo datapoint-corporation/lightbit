@@ -72,13 +72,4 @@ interface IApplication extends IContext
 	 *	The script exit status code.
 	 */
 	public function terminate(int $status = 0) : void;
-
-	/**
-	 * Generates the proper response to a throwable caught by the global
-	 * exception handler after application registration.
-	 *
-	 * @param Throwable $throwable
-	 *	The throwable object.
-	 */
-	public function throwable(\Throwable $throwable) : void;
 }

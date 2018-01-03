@@ -76,7 +76,6 @@ require __DIR__ . '/includes/event.php';
 require __DIR__ . '/includes/globalization.php';
 require __DIR__ . '/includes/html.php';
 require __DIR__ . '/includes/http.php';
-require __DIR__ . '/includes/import.php';
 require __DIR__ . '/includes/include.php';
 require __DIR__ . '/includes/json.php';
 require __DIR__ . '/includes/map.php';

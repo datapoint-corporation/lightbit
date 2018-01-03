@@ -114,14 +114,16 @@ interface IController extends IElement
 	public function resolve(string $id, array $parameters) : IAction;
 
 	/**
-	 * Generates the proper response to a throwable caught by the global
-	 * exception handler during an action implemented by this controller.
+	 * Generates the applicable error response.
 	 *
-	 * If the controller can not generate the proper response, false should
-	 * be returned in order to delegate control to the application.
+	 * This method is invoked automatically by the lightbit global exception
+	 * and error handlers when an uncaught exception is thrown.
+	 *
+	 * If the error response is generated, this function should return false
+	 * in order to prevent escalation and, at the end, the default behaviour.
 	 *
 	 * @param Throwable $throwable
-	 *	The throwable object.
+	 *	The uncaught throwable.
 	 *
 	 * @return bool
 	 *	The result.

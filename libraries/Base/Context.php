@@ -1225,6 +1225,26 @@ abstract class Context extends Object implements IContext
 	}
 
 	/**
+	 * Generates the applicable error response.
+	 *
+	 * This method is invoked automatically by the lightbit global exception
+	 * and error handlers when an uncaught exception is thrown.
+	 *
+	 * If the error response is generated, this function should return false
+	 * in order to prevent escalation and, at the end, the default behaviour.
+	 *
+	 * @param Throwable $throwable
+	 *	The uncaught throwable.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function throwable(\Throwable $throwable) : bool
+	{
+		return false;
+	}
+
+	/**
 	 * On After Dispose.
 	 *
 	 * This method is invoked during the context dispose procedure, after

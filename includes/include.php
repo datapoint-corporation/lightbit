@@ -25,10 +25,8 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-function __include(string $library, string $extension = 'php') // : mixed
+function __include(string $library, array $variables = null) // : mixed
 {
-	global $__LIGHTBIT_IMPORT;
-
 	$path = __asset_path_resolve(null, 'php', $library);
 
 	if (!is_file($path))
@@ -40,7 +38,7 @@ function __include(string $library, string $extension = 'php') // : mixed
 			$path,
 			sprintf
 			(
-				'Can not import library, file not found: file %s, at %s (:%d)', 
+				'Can not include library, file not found: file %s, at %s (:%d)', 
 				$path,
 				$breakpoint['file'],
 				$breakpoint['line']
@@ -48,20 +46,11 @@ function __include(string $library, string $extension = 'php') // : mixed
 		);
 	}
 
-	$result = __include_file_ex($path);
-
-	if (!isset($__LIGHTBIT_IMPORT[$path]) && !array_key_exists($path, $__LIGHTBIT_IMPORT))
-	{
-		$__LIGHTBIT_IMPORT[$path] = $result;
-	}
-
-	return $result;
+	return __include_file_ex($path, $variables);
 }
 
-function __include_as($scope, string $library, string $extension = 'php') // : mixed
+function __include_as($scope, string $library, array $variables = null) // : mixed
 {
-	global $__LIGHTBIT_IMPORT;
-
 	$path = __asset_path_resolve(null, 'php', $library);
 
 	if (!is_file($path))
@@ -73,7 +62,7 @@ function __include_as($scope, string $library, string $extension = 'php') // : m
 			$path,
 			sprintf
 			(
-				'Can not import library, file not found: file %s, at %s (:%d)', 
+				'Can not include library, file not found: file %s, at %s (:%d)', 
 				$path,
 				$breakpoint['file'],
 				$breakpoint['line']
@@ -81,14 +70,7 @@ function __include_as($scope, string $library, string $extension = 'php') // : m
 		);
 	}
 
-	$result = __include_file_as_ex($scope, $path);
-
-	if (!isset($__LIGHTBIT_IMPORT[$path]) && !array_key_exists($path, $__LIGHTBIT_IMPORT))
-	{
-		$__LIGHTBIT_IMPORT[$path] = $result;
-	}
-
-	return $result;
+	return __include_file_as_ex($scope, $path, $variables);
 }
 
 function __include_file(string $path, array $variables = null) // : mixed

@@ -187,87 +187,23 @@ class Application extends Context implements IApplication
 	}
 
 	/**
-	 * Generates the proper response to a throwable caught by the global
-	 * exception handler after application registration.
+	 * Generates the applicable error response.
+	 *
+	 * This method is invoked automatically by the lightbit global exception
+	 * and error handlers when an uncaught exception is thrown.
+	 *
+	 * If the error response is generated, this function should return false
+	 * in order to prevent escalation and, at the end, the default behaviour.
 	 *
 	 * @param Throwable $throwable
-	 *	The throwable object.
+	 *	The uncaught throwable.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function throwable(\Throwable $throwable) : void
+	public final function throwable(\Throwable $throwable) : bool
 	{
-		$this->onThrowable($throwable);
-
-		if ($action = __action_get())
-		{
-			if ($action->getController()->throwable($throwable))
-			{
-				$this->onAfterThrowable($throwable);
-				return;
-			}
-
-			$context = $action->getContext();
-
-			while ($context instanceof IModule)
-			{
-				if ($context->throwable($throwable))
-				{
-					$this->onAfterThrowable($throwable);
-					return;
-				}
-
-				$context = $context->getContext();
-			}
-		}
-
-		if (__environment_is_web())
-		{
-			// Calculate the appropriate http status code to be defined
-			// in this response.
-			$status = ($throwable instanceof HttpStatusException)
-				? $throwable->getStatusCode()
-				: 500;
-
-			// Reset the current document and response, defining it with
-			// the appropriate status code.
-			$document = $this->getHtmlDocument();
-			$document->reset();
-
-			$response = $this->getHttpResponse();
-			$response->reset();
-			$response->setStatusCode($status);
-
-			// Resolve to the view containing the applicable error documents,
-			// with a default (catch-all) identifier.
-			foreach ( [ $status, 'default' ] as $i => $suffix)
-			{
-				$view = 'error-documents/' . $suffix;
-
-				if ($this->hasView($view))
-				{
-					$this->getView($view)->run([ 'status' => $status, 'throwable' => $throwable ]);
-					$this->onAfterThrowable($throwable);
-					return;
-				}
-			}
-
-			// If no views were found, we'll have to fallback to the one
-			// bundled with the framework.
-			foreach ( [ $status, 'default' ] as $i => $suffix)
-			{
-				$view = 'lightbit://views/error-documents/' . $suffix;
-
-				if ($this->hasView($view))
-				{
-					$this->getView($view)->run([ 'status' => $status, 'throwable' => $throwable ]);
-					$this->onAfterThrowable($throwable);
-					return;
-				}
-			}
-		}
-
-		__lightbit_throwable($throwable);
-		$this->onAfterThrowable($throwable);
-		return;
+		return false;
 	}
 
 	/**
@@ -282,17 +218,6 @@ class Application extends Context implements IApplication
 	}
 
 	/**
-	 * On After Throwable.
-	 *
-	 * This method is invoked during the application throwable handling
-	 * procedure, after the error response is generated.
-	 */
-	protected function onAfterThrowable(\Throwable $throwable) : void
-	{
-		$this->raise('lightbit.base.application.throwable.after', $this, $throwable);
-	}
-
-	/**
 	 * On Construct.
 	 *
 	 * This method is invoked during the application construction procedure,
@@ -301,16 +226,5 @@ class Application extends Context implements IApplication
 	protected function onConstruct() : void
 	{
 		$this->raise('lightbit.base.application.construct', $this);
-	}
-
-	/**
-	 * On Throwable.
-	 *
-	 * This method is invoked during the application throwable handling
-	 * procedure, before the error response is generated.
-	 */
-	protected function onThrowable(\Throwable $throwable) : void
-	{
-		$this->raise('lightbit.base.application.throwable', $this, $throwable);
 	}
 }
