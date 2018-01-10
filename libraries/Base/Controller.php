@@ -436,7 +436,7 @@ abstract class Controller extends Element implements IController
 						$parameterName,
 						sprintf
 						(
-							'Can not resolve to action, filter failure: %s, at action, %s, at controller %s, at context %s',
+							'Can not resolve to action, filter failure: %s, at action %s, at controller %s, at context %s',
 							$parameterName,
 							$id,
 							$this->id,

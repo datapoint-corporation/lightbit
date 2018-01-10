@@ -62,40 +62,40 @@ const LIGHTBIT_VERSION_BUILD = '201709240118';
 
 // Include the Lightbit class file manually to enable path resolution,
 // autoloading and other core features.
-require __DIR__ . '/includes/lightbit.php';
+require __DIR__ . '/functions/lightbit.php';
 
-require __DIR__ . '/includes/action.php';
-require __DIR__ . '/includes/application.php';
-require __DIR__ . '/includes/asset.php';
-require __DIR__ . '/includes/class.php';
-require __DIR__ . '/includes/context.php';
-require __DIR__ . '/includes/data.php';
-require __DIR__ . '/includes/debug.php';
-require __DIR__ . '/includes/environment.php';
-require __DIR__ . '/includes/event.php';
-require __DIR__ . '/includes/globalization.php';
-require __DIR__ . '/includes/html.php';
-require __DIR__ . '/includes/http.php';
-require __DIR__ . '/includes/include.php';
-require __DIR__ . '/includes/json.php';
-require __DIR__ . '/includes/map.php';
-require __DIR__ . '/includes/math.php';
-require __DIR__ . '/includes/namespace.php';
-require __DIR__ . '/includes/number.php';
-require __DIR__ . '/includes/object.php';
-require __DIR__ . '/includes/path.php';
-require __DIR__ . '/includes/state.php';
-require __DIR__ . '/includes/string.php';
-require __DIR__ . '/includes/throw.php';
-require __DIR__ . '/includes/type.php';
-require __DIR__ . '/includes/url.php';
+require __DIR__ . '/functions/action.php';
+require __DIR__ . '/functions/application.php';
+require __DIR__ . '/functions/asset.php';
+require __DIR__ . '/functions/class.php';
+require __DIR__ . '/functions/context.php';
+require __DIR__ . '/functions/data.php';
+require __DIR__ . '/functions/debug.php';
+require __DIR__ . '/functions/environment.php';
+require __DIR__ . '/functions/event.php';
+require __DIR__ . '/functions/globalization.php';
+require __DIR__ . '/functions/html.php';
+require __DIR__ . '/functions/http.php';
+require __DIR__ . '/functions/include.php';
+require __DIR__ . '/functions/json.php';
+require __DIR__ . '/functions/map.php';
+require __DIR__ . '/functions/math.php';
+require __DIR__ . '/functions/namespace.php';
+require __DIR__ . '/functions/number.php';
+require __DIR__ . '/functions/object.php';
+require __DIR__ . '/functions/path.php';
+require __DIR__ . '/functions/state.php';
+require __DIR__ . '/functions/string.php';
+require __DIR__ . '/functions/throw.php';
+require __DIR__ . '/functions/type.php';
+require __DIR__ . '/functions/url.php';
 
 // Include the lightbit type filters manually, enabling basic support for
 // automatic query string argument binding.
-require __DIR__ . '/includes/type-filters/array.php';
-require __DIR__ . '/includes/type-filters/bool.php';
-require __DIR__ . '/includes/type-filters/float.php';
-require __DIR__ . '/includes/type-filters/int.php';
+require __DIR__ . '/functions/type-filters/array.php';
+require __DIR__ . '/functions/type-filters/bool.php';
+require __DIR__ . '/functions/type-filters/float.php';
+require __DIR__ . '/functions/type-filters/int.php';
 
 // Register the lightbit autoloader, exception and error handler
 // to enable the expected core behaviours.
