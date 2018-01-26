@@ -424,7 +424,7 @@ abstract class Context implements IContext
 	 * @return IHttpRequest
 	 *	The http request.
 	 */
-	public final function getHttpRequest() : IHttpRequest
+	public function getHttpRequest() : IHttpRequest
 	{
 		return $this->getComponent('http.request');
 	}
@@ -435,7 +435,7 @@ abstract class Context implements IContext
 	 * @return IHttpRequest
 	 *	The http response.
 	 */
-	public final function getHttpResponse() : IHttpResponse
+	public function getHttpResponse() : IHttpResponse
 	{
 		return $this->getComponent('http.response');
 	}
@@ -446,7 +446,7 @@ abstract class Context implements IContext
 	 * @return IHttpRouter
 	 *	The http router.
 	 */
-	public final function getHttpRouter() : IHttpRouter
+	public function getHttpRouter() : IHttpRouter
 	{
 		return $this->getComponent('http.router');
 	}

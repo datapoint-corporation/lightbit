@@ -31,6 +31,7 @@ use \Throwable;
 
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
+use \Lightbit\Base\IElement;
 
 /**
  * IView.
@@ -38,7 +39,7 @@ use \Lightbit\Base\IController;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IView
+interface IView extends IElement
 {
 	/**
 	 * Gets the context.

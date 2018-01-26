@@ -27,7 +27,13 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IBase;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IContext;
+use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Http\IHttpRouter;
 
 /**
  * IElement.
@@ -38,10 +44,61 @@ use \Lightbit\Base\IBase;
 interface IElement
 {
 	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext;
+
+	/**
+	 * Gets a component.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @return IComponent
+	 *	The component.
+	 */
+	public function getComponent(string $id) : IComponent;
+
+	/**
+	 * Gets the html composer.
+	 *
+	 * @return IHtmlComposer
+	 *	The html composer.
+	 */
+	public function getHtmlComposer() : IHtmlComposer;
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument;
+
+	/**
 	 * Gets the http request.
 	 *
 	 * @return IHttpRequest
 	 *	The http request.
 	 */
 	public function getHttpRequest() : IHttpRequest;
+
+	/**
+	 * Gets the http response.
+	 *
+	 * @return IHttpResponse
+	 *	The http response.
+	 */
+	public function getHttpResponse() : IHttpResponse;
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public function getHttpRouter() : IHttpRouter;
 }

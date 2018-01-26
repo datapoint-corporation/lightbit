@@ -27,7 +27,7 @@
 
 namespace Lightbit;
 
-use \Lightbit\Data\Manipulation\StringCamelCaseConversion;
+use \Lightbit\Data\Conversing\StringCamelCaseConversion;
 
 /**
  * Scope.

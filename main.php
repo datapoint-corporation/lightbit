@@ -536,7 +536,7 @@ final class Lightbit
 
 		if (isset($configuration))
 		{
-			$properties = (new Script($this->getResourcePath($this->prefixesPath['private'], $configuration, 'php')))->include();
+			$properties = (new Script((new Asset($this->prefixesPath['private'], $configuration, 'php'))->getPath()))->include();
 
 			if (!is_array($properties))
 			{

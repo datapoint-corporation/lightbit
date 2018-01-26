@@ -28,6 +28,7 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IView;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
@@ -40,7 +41,7 @@ use \Lightbit\Script;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class View implements IView
+class View extends Element implements IView
 {
 	/**
 	 * The controller.
@@ -77,6 +78,8 @@ class View implements IView
 	 */
 	public function __construct(IController $controller, string $id, string $path)
 	{
+		parent::__construct();
+
 		$this->controller = $controller;
 		$this->id = $id;
 		$this->path = $path;

@@ -28,8 +28,14 @@
 namespace Lightbit\Base;
 
 use \Lightbit;
+use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
+use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Http\IHttpRouter;
 
 /**
  * Element.
@@ -53,5 +59,74 @@ abstract class Element implements IElement
 	protected function __construct()
 	{
 
+	}
+
+	/**
+	 * Gets a component.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @return IComponent
+	 *	The component.
+	 */
+	public final function getComponent(string $id) : IComponent
+	{
+		return $this->getContext()->getComponent($id);
+	}
+
+	/**
+	 * Gets the html composer.
+	 *
+	 * @return IHtmlComposer
+	 *	The html composer.
+	 */
+	public function getHtmlComposer() : IHtmlComposer
+	{
+		return $this->getComponent('html.composer');
+	}
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument
+	{
+		return $this->getComponent('html.document');
+	}
+
+	/**
+	 * Gets the http request.
+	 *
+	 * @return IHttpRequest
+	 *	The http request.
+	 */
+	public function getHttpRequest() : IHttpRequest
+	{
+		return $this->getComponent('http.request');
+	}
+
+	/**
+	 * Gets the http response.
+	 *
+	 * @return IHttpResponse
+	 *	The http response.
+	 */
+	public function getHttpResponse() : IHttpResponse
+	{
+		return $this->getComponent('http.response');
+	}
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public function getHttpRouter() : IHttpRouter
+	{
+		return $this->getComponent('http.router');
 	}
 }

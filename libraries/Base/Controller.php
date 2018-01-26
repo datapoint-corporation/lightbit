@@ -132,6 +132,24 @@ abstract class Controller implements IController
 	}
 
 	/**
+	 * Gets the application.
+	 *
+	 * @return IApplication
+	 *	The application.
+	 */
+	public final function getApplication() : IApplication
+	{
+		$context = $this->getContext();
+
+		while (! ($context instanceof IApplication))
+		{
+			$context = $context->getContext();
+		}
+
+		return $context;
+	}
+
+	/**
 	 * Gets the context.
 	 *
 	 * @return IContext
