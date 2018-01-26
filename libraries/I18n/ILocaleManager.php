@@ -48,4 +48,18 @@ interface ILocaleManager extends IComponent
 	 *	The locale.
 	 */
 	public function getLocale(string $id) : ILocale;
+
+	/**
+	 * Gets the preferred locale.
+	 *
+	 * If this is a web environment and if the "Accept-Language" request 
+	 * header is set, it will be used as the preferred locale.
+	 *
+	 * If this is a console environment, or if no other means are available,
+	 * the default system locale is used as the preferred locale.
+	 *
+	 * @return ILocale
+	 *	The preferred locale.
+	 */
+	public function getPreferredLocale() : ILocale;
 }

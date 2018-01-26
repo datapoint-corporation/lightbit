@@ -486,7 +486,7 @@ abstract class Context implements IContext
 				return $this->context->getLocale();
 			}
 
-			$this->locale = $this->getLocaleManager()->getLocale(locale_get_default());
+			$this->locale = $this->getLocaleManager()->getPreferredLocale();
 		}
 
 		return $this->locale;

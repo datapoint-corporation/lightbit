@@ -44,11 +44,18 @@ use \ResourceBundle;
 class IcuLocaleManager extends Component implements ILocaleManager
 {
 	/**
-	 * The available locales.
+	 * The locales.
 	 *
 	 * @var array
 	 */
-	private $availableLocales;
+	private $locales;
+
+	/**
+	 * The preferred locales whitelist.
+	 *
+	 * @var array
+	 */
+	private $whitelist;
 
 	/**
 	 * Gets a locale.
@@ -61,12 +68,7 @@ class IcuLocaleManager extends Component implements ILocaleManager
 	 */
 	public function getLocale(string $id) : ILocale
 	{
-		if (!isset($this->availableLocales))
-		{
-			$this->availableLocales = ResourceBundle::getLocales('');
-		}
-
-		if (in_array($id, $this->availableLocales))
+		if ($this->hasLocale($id))
 		{
 			return new IcuLocale($id);
 		}
@@ -85,11 +87,77 @@ class IcuLocaleManager extends Component implements ILocaleManager
 	 */
 	public function hasLocale(string $id) : bool
 	{
-		if (!isset($this->availableLocales))
+		if (!isset($this->locales))
 		{
-			$this->availableLocales = ResourceBundle::getLocales('');
+			$this->locales = ResourceBundle::getLocales('');
+
+			if ($this->whitelist)
+			{
+				$this->locales = array_intersect($this->locales, $this->whitelist);
+			}
 		}
 
-		return in_array($id, $this->availableLocales);
+		return in_array($id, $this->locales);
+	}
+
+	/**
+	 * Gets the preferred locale.
+	 *
+	 * If this is a web environment and if the "Accept-Language" request 
+	 * header is set, it will be used as the preferred locale.
+	 *
+	 * If this is a console environment, or if no other means are available,
+	 * the default system locale is used as the preferred locale.
+	 *
+	 * If a whitelist is set and the preferred locale is not included in it,
+	 * the last locale on that list is returned instead.
+	 *
+	 * @return ILocale
+	 *	The preferred locale.
+	 */
+	public function getPreferredLocale() : ILocale
+	{
+		// No whitelist? We'll simply pass the whole procedure to the
+		// LibICU implementation, as it's faster.
+		if (!$this->whitelist)
+		{
+			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+			{
+				return $this->getLocale(locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+			}
+
+			return $this->getLocale(locale_get_default());
+		}
+
+		// Since the language API doesn't provide a simpler way to do this,
+		// for now, we'll have to settle with a custom parser.
+		// Example: en-US,en;q=0.9,pt-PT;q=0.8,pt;q=0.7
+		$match = null;
+
+		if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+		{
+			$expressions = preg_split('%\\,%', $_SERVER['HTTP_ACCEPT_LANGUAGE'], -1, PREG_SPLIT_NO_EMPTY);
+
+			foreach ($expressions as $i => $expression)
+			{
+			}
+		}
+
+		return $this->getLocale(end($this->whitelist));
+	}
+
+	/**
+	 * Sets the locale whitelist.
+	 *
+	 * @param array $whitelist
+	 *	The locale whitelist.
+	 *
+	 * @return array
+	 *	The result.
+	 */
+	public function setWhitelist(?array $whitelist)
+	{
+		$this->locales = null;
+		$this->whitelist = $whitelist;
 	}
 }

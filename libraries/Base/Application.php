@@ -121,7 +121,8 @@ class Application extends Context implements IApplication
 
 		'locale.manager' =>
 		[
-			'@class' => IcuLocaleManager::class
+			'@class' => IcuLocaleManager::class,
+			'whitelist' => [ 'pt_PT' ]
 		]
 	];
 
