@@ -92,16 +92,19 @@ class GettextMessageSource extends Component implements IMessageSource
 	}
 
 	/**
-	 * Reads a message.
+	 * Reads a message pattern translation.
+	 *
+	 * If a message pattern translation is not found within this source, the
+	 * original pattern is to be returned instead.
 	 *
 	 * @param ILocale $locale
 	 *	The message locale.
 	 *
 	 * @param string $message
-	 *	The message to read.
+	 *	The message pattern.
 	 *
 	 * @return string
-	 *	The message.
+	 *	The result.
 	 */
 	public function read(ILocale $locale, string $message) : string
 	{
