@@ -61,6 +61,7 @@ use \Lightbit\Routing\Action;
 use \Lightbit\Routing\IRouter;
 use \Lightbit\Routing\Route;
 use \Lightbit\RuntimeException;
+use \Lightbit\Security\Cryptography\IPasswordDigest;
 use \Lightbit\Script;
 
 /**
@@ -575,6 +576,17 @@ abstract class Context implements IContext
 	public function getNetworkCache() : INetworkCache
 	{
 		return $this->getComponent('data.cache.network');
+	}
+
+	/**
+	 * Gets the password digest.
+	 *
+	 * @return IPasswordDigest
+	 *	The password digest.
+	 */
+	public function getPasswordDigest() : IPasswordDigest
+	{
+		return $this->getComponent('password.digest');
 	}
 
 	/**

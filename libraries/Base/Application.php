@@ -41,13 +41,14 @@ use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\Icu\IcuLocaleManager;
-use \Lightbit\Scope;
+use \Lightbit\IllegalStateException;
 use \Lightbit\Routing\Action;
-use \Lightbit\Routing\RouteException;
 use \Lightbit\Routing\ActionParameterRouteException;
+use \Lightbit\Routing\RouteException;
 use \Lightbit\Routing\SlugActionParameterRouteException;
 use \Lightbit\Runtime\RuntimeEnvironment;
-use \Lightbit\IllegalStateException;
+use \Lightbit\Scope;
+use \Lightbit\Security\Cryptography\PasswordDigest;
 
 /**
  * Application.
@@ -121,8 +122,12 @@ class Application extends Context implements IApplication
 
 		'locale.manager' =>
 		[
-			'@class' => IcuLocaleManager::class,
-			'whitelist' => [ 'pt_PT' ]
+			'@class' => IcuLocaleManager::class
+		],
+
+		'password.digest' =>
+		[
+			'@class' => PasswordDigest::class
 		]
 	];
 

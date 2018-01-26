@@ -38,6 +38,7 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * Element.
@@ -152,5 +153,16 @@ abstract class Element implements IElement
 	public function getLocale() : ILocale
 	{
 		return $this->getContext()->getLocale();
+	}
+
+	/**
+	 * Gets the password digest.
+	 *
+	 * @return IPasswordDigest
+	 *	The password digest.
+	 */
+	public function getPasswordDigest() : IPasswordDigest
+	{
+		return $this->getComponent('password.digest');
 	}
 }

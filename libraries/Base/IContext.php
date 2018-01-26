@@ -45,6 +45,7 @@ use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
 use \Lightbit\Routing\Action;
+use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * IContext.
@@ -241,6 +242,14 @@ interface IContext
 	 *	The network cache.
 	 */
 	public function getNetworkCache() : INetworkCache;
+
+	/**
+	 * Gets the password digest.
+	 *
+	 * @return IPasswordDigest
+	 *	The password digest.
+	 */
+	public function getPasswordDigest() : IPasswordDigest;
 
 	/**
 	 * Gets the path.
