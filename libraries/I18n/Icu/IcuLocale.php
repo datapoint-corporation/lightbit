@@ -85,12 +85,12 @@ class IcuLocale implements ILocale
 	}
 
 	/**
-	 * Gets the country code.
+	 * Gets the region code.
 	 *
 	 * @return string
-	 *	The country code.
+	 *	The region code.
 	 */
-	public function getCountryCode() : ?string
+	public function getRegionCode() : ?string
 	{
 		return Locale::getRegion($this->id);
 	}

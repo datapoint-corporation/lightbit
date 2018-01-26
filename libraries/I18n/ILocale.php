@@ -56,12 +56,12 @@ interface ILocale
 	public function currency(string $currency, string $amount, int $precision = null) : string;
 
 	/**
-	 * Gets the country code.
+	 * Gets the region code.
 	 *
 	 * @return string
-	 *	The country code.
+	 *	The region code.
 	 */
-	public function getCountryCode() : ?string;
+	public function getRegionCode() : ?string;
 
 	/**
 	 * Gets the identifier.
