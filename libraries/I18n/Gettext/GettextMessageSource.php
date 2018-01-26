@@ -103,9 +103,8 @@ class GettextMessageSource extends Component implements IMessageSource
 	 * @return string
 	 *	The message.
 	 */
-	public function read(?ILocale $locale, string $message) : string
+	public function read(ILocale $locale, string $message) : string
 	{
-		$locale = $locale ?? $this->getLocale();
 		$localeID = $locale->getID();
 
 		if (!isset($this->messages[$localeID]))
