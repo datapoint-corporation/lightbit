@@ -31,12 +31,12 @@ $lightbit = Lightbit::getInstance();
 
 ?>
 
-<!DOCTYPE html />
+<!DOCTYPE html>
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="robots" content="noindex" />
+		<meta name="robots" content="noindex,nofollow" />
 		<title><?= htmlentities($status->toString()) ?></title>
 		<style type="text/css">
 			<?php include (__DIR__ . '/css/main.php') ?>
