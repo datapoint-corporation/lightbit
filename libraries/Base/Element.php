@@ -38,6 +38,7 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\I18n\IMessageSource;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
@@ -156,6 +157,17 @@ abstract class Element implements IElement
 	}
 
 	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource
+	{
+		return $this->getComponent('message.source');
+	}
+
+	/**
 	 * Gets the password digest.
 	 *
 	 * @return IPasswordDigest
@@ -164,5 +176,26 @@ abstract class Element implements IElement
 	public function getPasswordDigest() : IPasswordDigest
 	{
 		return $this->getComponent('password.digest');
+	}
+
+	/**
+	 * Gets a message and formats a message.
+	 *
+	 * @param string $message
+	 *	The message pattern.
+	 *
+	 * @param array $parameters
+	 *	The message parameters.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public function message(string $message, array $parameters = null) : string
+	{
+		return ($locale = $this->getLocale())->message
+		(
+			$this->getMessageSource()->read($locale, $message),
+			$parameters
+		);
 	}
 }

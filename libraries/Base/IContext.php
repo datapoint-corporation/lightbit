@@ -201,14 +201,6 @@ interface IContext
 	public function getMemoryCache() : IMemoryCache;
 
 	/**
-	 * Gets the messages path.
-	 *
-	 * @return string
-	 *	The messages path.
-	 */
-	public function getMessagesPath() : string;
-
-	/**
 	 * Gets a module.
 	 *
 	 * @param string $id

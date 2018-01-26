@@ -36,6 +36,7 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\I18n\IMessageSource;
 
 /**
  * IElement.
@@ -111,4 +112,12 @@ interface IElement
 	 *	The locale.
 	 */
 	public function getLocale() : ILocale;
+
+	/**
+	 * Gets the message source.
+	 *
+	 * @return IMessageSource
+	 *	The message source.
+	 */
+	public function getMessageSource() : IMessageSource;
 }

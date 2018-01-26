@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,32 +25,31 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\I18n;
+namespace Lightbit\I18n\Gettext;
 
-use \Lightbit\Base\IComponent;
+use \Lightbit\Exception;
+
+use \Throwable;
 
 /**
- * IMessageSource.
+ * GettextException.
  *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IMessageSource extends IComponent
+class GettextException extends Exception
 {
 	/**
-	 * Reads a message pattern translation.
-	 *
-	 * If a message pattern translation is not found within this source, the
-	 * original pattern is to be returned instead.
-	 *
-	 * @param ILocale $locale
-	 *	The message locale.
+	 * Constructor.
 	 *
 	 * @param string $message
-	 *	The message pattern.
+	 *	The exception message.
 	 *
-	 * @return string
-	 *	The result.
+	 * @param Throwable $previous
+	 *	The previous throwable.
 	 */
-	public function read(ILocale $locale, string $message) : string;
+	public function __construct(string $message, Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+	}
 }

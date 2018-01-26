@@ -41,6 +41,7 @@ use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\Icu\IcuLocaleManager;
+use \Lightbit\I18n\Gettext\GettextMessageSource;
 use \Lightbit\IllegalStateException;
 use \Lightbit\Routing\Action;
 use \Lightbit\Routing\ActionParameterRouteException;
@@ -123,6 +124,11 @@ class Application extends Context implements IApplication
 		'locale.manager' =>
 		[
 			'@class' => IcuLocaleManager::class
+		],
+
+		'message.source' =>
+		[
+			'@class' => GettextMessageSource::class
 		],
 
 		'password.digest' =>

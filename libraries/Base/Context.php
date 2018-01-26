@@ -53,6 +53,7 @@ use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\I18n\IMessageSource;
 use \Lightbit\IO\FileSystem\Asset;
 use \Lightbit\IO\FileSystem\FileAccessException;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
@@ -516,14 +517,14 @@ abstract class Context implements IContext
 	}
 
 	/**
-	 * Gets the messages path.
+	 * Gets the message source.
 	 *
-	 * @return string
-	 *	The messages path.
+	 * @return IMessageSource
+	 *	The message source.
 	 */
-	public function getMessagesPath() : string
+	public function getMessageSource() : IMessageSource
 	{
-		return $this->path . DIRECTORY_SEPARATOR . 'messages';
+		return $this->getComponent('message.source');
 	}
 
 	/**
