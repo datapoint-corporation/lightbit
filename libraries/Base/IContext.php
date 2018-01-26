@@ -42,6 +42,8 @@ use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
+use \Lightbit\I18n\ILocale;
+use \Lightbit\I18n\ILocaleManager;
 use \Lightbit\Routing\Action;
 
 /**
@@ -180,6 +182,14 @@ interface IContext
 	 *	The identifier.
 	 */
 	public function getID() : string;
+
+	/**
+	 * Gets the locale.
+	 *
+	 * @return string
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale;
 
 	/**
 	 * Gets the memory cache.
@@ -322,14 +332,6 @@ interface IContext
 	 *	The action.
 	 */
 	public function resolve(?array $route) : Action;
-
-	/**
-	 * Sets the theme.
-	 *
-	 * @param string $id
-	 *	The theme identifier.
-	 */
-	public function setTheme(?string $id) : void;
 
 	/**
 	 * Throwable handling.

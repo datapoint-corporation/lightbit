@@ -36,6 +36,8 @@ use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
+use \Lightbit\I18n\ILocale;
+use \Lightbit\I18n\ILocaleManager;
 
 /**
  * Element.
@@ -128,5 +130,27 @@ abstract class Element implements IElement
 	public function getHttpRouter() : IHttpRouter
 	{
 		return $this->getComponent('http.router');
+	}
+
+	/**
+	 * Gets the locale manager.
+	 *
+	 * @return ILocaleManager
+	 *	The locale manager.
+	 */
+	public function getLocaleManager(): ILocaleManager
+	{
+		return $this->getComponent('locale.manager');
+	}
+
+	/**
+	 * Gets the locale.
+	 *
+	 * @return ILocale
+	 *	The locale.
+	 */
+	public function getLocale() : ILocale
+	{
+		return $this->getContext()->getLocale();
 	}
 }

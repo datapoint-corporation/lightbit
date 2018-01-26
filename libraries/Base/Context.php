@@ -51,15 +51,17 @@ use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
+use \Lightbit\I18n\ILocale;
+use \Lightbit\I18n\ILocaleManager;
 use \Lightbit\IO\FileSystem\Asset;
 use \Lightbit\IO\FileSystem\FileAccessException;
 use \Lightbit\IO\FileSystem\FileNotFoundException;
 use \Lightbit\ObjectFactory;
-use \Lightbit\Script;
 use \Lightbit\Routing\Action;
 use \Lightbit\Routing\IRouter;
 use \Lightbit\Routing\Route;
 use \Lightbit\RuntimeException;
+use \Lightbit\Script;
 
 /**
  * Context.
@@ -110,6 +112,13 @@ abstract class Context implements IContext
 	 * @var string
 	 */
 	private $id;
+
+	/**
+	 * The locale.
+	 *
+	 * @var string
+	 */
+	private $locale;
 
 	/**
 	 * The modules.
@@ -463,6 +472,38 @@ abstract class Context implements IContext
 	}
 
 	/**
+	 * Gets the locale.
+	 *
+	 * @return string
+	 *	The locale.
+	 */
+	public final function getLocale() : ILocale
+	{
+		if (!isset($this->locale))
+		{
+			if (isset($this->context))
+			{
+				return $this->context->getLocale();
+			}
+
+			$this->locale = $this->getLocaleManager()->getLocale(locale_get_default());
+		}
+
+		return $this->locale;
+	}
+
+	/**
+	 * Gets the locale manager.
+	 *
+	 * @return ILocaleManager
+	 *	The locale manager.
+	 */
+	public function getLocaleManager() : ILocaleManager
+	{
+		return $this->getComponent('locale.manager');
+	}
+
+	/**
 	 * Gets the memory cache.
 	 *
 	 * @return IMemoryCache
@@ -693,6 +734,17 @@ abstract class Context implements IContext
 		{
 			$this->setComponentConfiguration($id, $configuration);
 		}
+	}
+
+	/**
+	 * Sets the locale.
+	 *
+	 * @param string $id
+	 *	The locale identifier.
+	 */
+	public final function setLocale(string $id) : void
+	{
+		$this->locale = $this->getLocaleManager()->getLocale($id);
 	}
 
 	/**

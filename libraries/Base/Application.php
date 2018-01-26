@@ -40,6 +40,7 @@ use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
 use \Lightbit\Http\HttpStatusException;
 use \Lightbit\Http\IHttpRouter;
+use \Lightbit\I18n\Icu\IcuLocaleManager;
 use \Lightbit\Scope;
 use \Lightbit\Routing\Action;
 use \Lightbit\Routing\RouteException;
@@ -116,6 +117,11 @@ class Application extends Context implements IApplication
 		'http.router' =>
 		[
 			'@class' => HttpQueryStringRouter::class
+		],
+
+		'locale.manager' =>
+		[
+			'@class' => IcuLocaleManager::class
 		]
 	];
 

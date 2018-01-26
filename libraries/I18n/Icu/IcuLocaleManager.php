@@ -25,90 +25,71 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\I18n\Icu;
 
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IContext;
-use \Lightbit\Html\IHtmlComposer;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpResponse;
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Base\Component;
+use \Lightbit\I18n\Icu\IcuLocale;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\I18n\LocaleManagerException;
+
+use \ResourceBundle;
 
 /**
- * IElement.
+ * ILocaleManager.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IElement
+class IcuLocaleManager extends Component implements ILocaleManager
 {
 	/**
-	 * Gets the context.
+	 * The available locales.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * @var array
 	 */
-	public function getContext() : IContext;
+	private $availableLocales;
 
 	/**
-	 * Gets a component.
+	 * Gets a locale.
 	 *
 	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return IComponent
-	 *	The component.
-	 */
-	public function getComponent(string $id) : IComponent;
-
-	/**
-	 * Gets the html composer.
-	 *
-	 * @return IHtmlComposer
-	 *	The html composer.
-	 */
-	public function getHtmlComposer() : IHtmlComposer;
-
-	/**
-	 * Gets the html document.
-	 *
-	 * @return IHtmlDocument
-	 *	The html document.
-	 */
-	public function getHtmlDocument() : IHtmlDocument;
-
-	/**
-	 * Gets the http request.
-	 *
-	 * @return IHttpRequest
-	 *	The http request.
-	 */
-	public function getHttpRequest() : IHttpRequest;
-
-	/**
-	 * Gets the http response.
-	 *
-	 * @return IHttpResponse
-	 *	The http response.
-	 */
-	public function getHttpResponse() : IHttpResponse;
-
-	/**
-	 * Gets the http router.
-	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public function getHttpRouter() : IHttpRouter;
-
-	/**
-	 * Gets the locale.
+	 *	The locale identifier.
 	 *
 	 * @return ILocale
 	 *	The locale.
 	 */
-	public function getLocale() : ILocale;
+	public function getLocale(string $id) : ILocale
+	{
+		if (!isset($this->availableLocales))
+		{
+			$this->availableLocales = ResourceBundle::getLocales('');
+		}
+
+		if (in_array($id, $this->availableLocales))
+		{
+			return new IcuLocale($id);
+		}
+
+		throw new LocaleManagerException($this, sprintf('Can not get locale, not available: "%s"', $id));
+	}
+
+	/**
+	 * Checks if a locale exists.
+	 *
+	 * @param string $id
+	 *	The locale identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasLocale(string $id) : bool
+	{
+		if (!isset($this->availableLocales))
+		{
+			$this->availableLocales = ResourceBundle::getLocales('');
+		}
+
+		return in_array($id, $this->availableLocales);
+	}
 }

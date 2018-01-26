@@ -160,6 +160,24 @@ final class Decimal implements ISerializable
 	}
 
 	/**
+	 * Converts to a float.
+	 *
+	 * @return float
+	 *	The result.
+	 */
+	public function toFloat() : float
+	{
+		$decimal = $this->decimal;
+
+		if ($locale = localeconv())
+		{
+			$decimal = strtr($decimal, [ '.' => $locale['decimal_point'] ]);
+		}
+
+		return floatval($decimal);
+	}
+
+	/**
 	 * Converts to a string.
 	 *
 	 * @param int $precision
@@ -182,6 +200,6 @@ final class Decimal implements ISerializable
 			}
 		}
 
-		return number_format($this->decimal, $precision, '.', '');
+		return number_format($this->toFloat(), $precision, '.', '');
 	}
 }

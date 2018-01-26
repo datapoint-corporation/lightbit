@@ -25,90 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
+namespace Lightbit\I18n;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IContext;
-use \Lightbit\Html\IHtmlComposer;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpResponse;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\I18n\ILocale;
-use \Lightbit\I18n\ILocaleManager;
 
 /**
- * IElement.
+ * IMessageSource.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IElement
+interface IMessageSource extends IComponent
 {
 	/**
-	 * Gets the context.
+	 * Reads a message pattern translation.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * If a message pattern translation is not found within this source, the
+	 * original pattern is to be returned instead.
+	 *
+	 * @param string $message
+	 *	The message pattern.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function getContext() : IContext;
-
-	/**
-	 * Gets a component.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return IComponent
-	 *	The component.
-	 */
-	public function getComponent(string $id) : IComponent;
-
-	/**
-	 * Gets the html composer.
-	 *
-	 * @return IHtmlComposer
-	 *	The html composer.
-	 */
-	public function getHtmlComposer() : IHtmlComposer;
-
-	/**
-	 * Gets the html document.
-	 *
-	 * @return IHtmlDocument
-	 *	The html document.
-	 */
-	public function getHtmlDocument() : IHtmlDocument;
-
-	/**
-	 * Gets the http request.
-	 *
-	 * @return IHttpRequest
-	 *	The http request.
-	 */
-	public function getHttpRequest() : IHttpRequest;
-
-	/**
-	 * Gets the http response.
-	 *
-	 * @return IHttpResponse
-	 *	The http response.
-	 */
-	public function getHttpResponse() : IHttpResponse;
-
-	/**
-	 * Gets the http router.
-	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public function getHttpRouter() : IHttpRouter;
-
-	/**
-	 * Gets the locale.
-	 *
-	 * @return ILocale
-	 *	The locale.
-	 */
-	public function getLocale() : ILocale;
+	public function read(string $message) : string;
 }

@@ -25,90 +25,85 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Base;
-
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\IContext;
-use \Lightbit\Html\IHtmlComposer;
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpRequest;
-use \Lightbit\Http\IHttpResponse;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\I18n\ILocale;
-use \Lightbit\I18n\ILocaleManager;
+namespace Lightbit\I18n;
 
 /**
- * IElement.
+ * ILocale.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IElement
+interface ILocale
 {
 	/**
-	 * Gets the context.
+	 * Formats a currency.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * Considering how important it is to present the correct values, this
+	 * function expects to work with string based decimals.
+	 *
+	 * If no precision is given, the default precision matching the locale
+	 * is expected instead.
+	 *
+	 * @param string $currency
+	 *	The currency.
+	 *
+	 * @param float $amount
+	 *	The currency amount.
+	 *
+	 * @param int $precision
+	 *	The currency precision.
 	 */
-	public function getContext() : IContext;
+	public function currency(string $currency, string $amount, int $precision = null) : string;
 
 	/**
-	 * Gets a component.
+	 * Gets the country code.
 	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return IComponent
-	 *	The component.
+	 * @return string
+	 *	The country code.
 	 */
-	public function getComponent(string $id) : IComponent;
+	public function getCountryCode() : ?string;
 
 	/**
-	 * Gets the html composer.
+	 * Gets the identifier.
 	 *
-	 * @return IHtmlComposer
-	 *	The html composer.
+	 * @return string
+	 *	The identifier.
 	 */
-	public function getHtmlComposer() : IHtmlComposer;
+	public function getID() : string;
 
 	/**
-	 * Gets the html document.
+	 * Gets the language code.
 	 *
-	 * @return IHtmlDocument
-	 *	The html document.
+	 * @return string
+	 *	The language code.
 	 */
-	public function getHtmlDocument() : IHtmlDocument;
+	public function getLanguageCode() : string;
 
 	/**
-	 * Gets the http request.
+	 * Formats a message.
 	 *
-	 * @return IHttpRequest
-	 *	The http request.
+	 * @param string $message
+	 *	The message.
+	 *
+	 * @param array $parameters
+	 *	The message parameters.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function getHttpRequest() : IHttpRequest;
+	public function message(string $message, array $parameters = null) : string;
 
 	/**
-	 * Gets the http response.
+	 * Formats a number.
 	 *
-	 * @return IHttpResponse
-	 *	The http response.
-	 */
-	public function getHttpResponse() : IHttpResponse;
-
-	/**
-	 * Gets the http router.
+	 * @param string $amount
+	 *	The number amount.
 	 *
-	 * @return IHttpRouter
-	 *	The http router.
-	 */
-	public function getHttpRouter() : IHttpRouter;
-
-	/**
-	 * Gets the locale.
+	 * @param int $precision
+	 *	The number precision.
 	 *
-	 * @return ILocale
-	 *	The locale.
+	 * @return string
+	 *	The result.
 	 */
-	public function getLocale() : ILocale;
+	public function number(string $amount, int $precision = null) : string;
 }
