@@ -29,11 +29,11 @@ namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Data\Sql\Ms\MsSqlDatabase;
 use \Lightbit\Data\Sql\Ms\MsSqlObject;
-
 use \Lightbit\Data\Sql\ISqlColumn;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Traversing\ArrayIterator;
 
 /**
  * MsSqlTable.
@@ -92,23 +92,17 @@ class MsSqlTable extends MsSqlObject implements ISqlTable
 		$scope['DATABASE_NAME'] = $database->getName();
 		$scope['TABLE_NAME'] = $schemata['TABLE_NAME'];
 
-		foreach ($columns as $i => $column)
+		foreach ((new ArrayIterator($columns))->with($scope) as $i => $column)
 		{
-			if (__map_match($scope, $column))
-			{
-				$instance = new MsSqlColumn($this, $column, $constraints);
-				$this->columns[$instance->getName()] = $instance;
-			}
+			$instance = new MsSqlColumn($this, $column, $constraints);
+			$this->columns[$instance->getName()] = $instance;
 		}
 
 		$scope['CONSTRAINT_TYPE'] = 'PRIMARY KEY';
 
-		foreach ($constraints as $i => $constraint)
+		foreach ((new ArrayIterator($constraints))->with($scope) as $i => $constraint)
 		{
-			if (__map_match($scope, $constraint))
-			{
-				$this->primaryKey[] = $constraint['COLUMN_NAME'];
-			}
+			$this->primaryKey[] = $constraint['COLUMN_NAME'];
 		}
 	}
 

@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\IExpression;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlCriteria;
@@ -207,6 +206,7 @@ class MySqlStatementFactory extends SqlStatementFactory
 	 */
 	public function insert(string $table, array $values) : ISqlStatement
 	{
+		$lightbit = Lightbit::getInstance();
 		$fields = [];
 		$placeholders = [];
 		$parameters = [];
@@ -221,7 +221,7 @@ class MySqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . __lightbit_next_id();
+				$parameter = ':lb' . $lightbit->increment();
 				$placeholders[] = $parameter;
 				$parameters[$parameter] = $value;
 			}
@@ -334,6 +334,7 @@ class MySqlStatementFactory extends SqlStatementFactory
 	 */
 	public function update(string $table, array $values, ?ISqlCriteria $criteria) : ISqlStatement
 	{
+		$lightbit = Lightbit::getInstance();
 		$parameters = [];
 		$assignments = [];
 
@@ -347,7 +348,7 @@ class MySqlStatementFactory extends SqlStatementFactory
 			}
 			else
 			{
-				$parameter = ':lb' . __lightbit_next_id();
+				$parameter = ':lb' . $lightbit->increment();
 				$assignment .= $parameter;
 				$parameters[$parameter] = $value;
 			}

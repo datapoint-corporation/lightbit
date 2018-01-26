@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,72 +28,123 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
-use \Lightbit\Base\View;
-USE \Lightbit\Data\Caching\Cache;
+use \Lightbit\Base\IApplication;
+use \Lightbit\Cli\CliRouter;
+use \Lightbit\Cli\ICliRouter;
+use \Lightbit\Data\Caching\NoCache;
 use \Lightbit\Data\Sql\My\MySqlConnection;
-use \Lightbit\Globalization\MessageSource;
-use \Lightbit\Html\HtmlAdapter;
+use \Lightbit\Html\HtmlComposer;
 use \Lightbit\Html\HtmlDocument;
-use \Lightbit\Http\HttpAssetManager;
-use \Lightbit\Http\HttpQueryString;
+use \Lightbit\Http\HttpQueryStringRouter;
 use \Lightbit\Http\HttpRequest;
 use \Lightbit\Http\HttpResponse;
-use \Lightbit\Http\HttpRouter;
-use \Lightbit\Http\HttpSession;
 use \Lightbit\Http\HttpStatusException;
-use \Lightbit\Security\Cryptography\PasswordDigest;
-
-use \Lightbit\Base\IApplication;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Scope;
+use \Lightbit\Routing\Action;
+use \Lightbit\Routing\RouteException;
+use \Lightbit\Routing\ActionParameterRouteException;
+use \Lightbit\Routing\SlugActionParameterRouteException;
+use \Lightbit\Runtime\RuntimeEnvironment;
+use \Lightbit\IllegalStateException;
 
 /**
  * Application.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 class Application extends Context implements IApplication
 {
 	/**
+	 * The default component configuration.
+	 *
+	 * @var array
+	 */
+	private const DEFAULT_COMPONENT_CONFIGURATION =
+	[
+		'cli.router' => 
+		[
+			'@class' => CliRouter::class
+		],
+
+		'data.cache' =>
+		[
+			'@class' => NoCache::class
+		],
+
+		'data.cache.file' =>
+		[
+			'@class' => NoCache::class
+		],
+
+		'data.cache.memory' =>
+		[
+			'@class' => NoCache::class
+		],
+
+		'data.cache.network' =>
+		[
+			'@class' => NoCache::class
+		],
+
+		'data.sql.connection' =>
+		[
+			'@class' => MySqlConnection::class
+		],
+
+		'html.composer' =>
+		[
+			'@class' => HtmlComposer::class
+		],
+
+		'html.document' =>
+		[
+			'@class' => HtmlDocument::class
+		],
+
+		'http.request' =>
+		[
+			'@class' => HttpRequest::class
+		],
+
+		'http.response' =>
+		[
+			'@class' => HttpResponse::class
+		],
+
+		'http.router' =>
+		[
+			'@class' => HttpQueryStringRouter::class
+		]
+	];
+
+	/**
 	 * Constructor.
 	 *
+	 * @param Context $context
+	 *	The context parent.
+	 *
+	 * @param string $id
+	 *	The context identifier.
+	 *
 	 * @param string $path
-	 *	The application path.
+	 *	The context install path.
 	 *
 	 * @param array $configuration
-	 *	The application configuration.
+	 *	The context configuration.
 	 */
 	public final function __construct(string $path, array $configuration = null)
 	{
-		parent::__construct(null, 'application', $path, null);
+		parent::__construct(null, 'application', $path);
 
-		$this->setComponentsConfiguration
-		(
-			[
-				'data.cache' => [ '@class' => Cache::class ],
-				'data.cache.file' => [ '@class' => Cache::class ],
-				'data.cache.memory' => [ '@class' => Cache::class ],
-				'data.cache.network' => [ '@class' => Cache::class ],
-				'data.sql.connection' => [ '@class' => MySqlConnection::class ],
-				'globalization.message.source' => [ '@class' => MessageSource::class ],
-				'html.adapter' => [ '@class' => HtmlAdapter::class ],
-				'html.document' => [ '@class' => HtmlDocument::class ],
-				'http.asset.manager' => [ '@class' => HttpAssetManager::class ],
-				'http.query.string' => [ '@class' => HttpQueryString::class ],
-				'http.request' => [ '@class' => HttpRequest::class ],
-				'http.response' => [ '@class' => HttpResponse::class ],
-				'http.router' => [ '@class' => HttpRouter::class ],
-				'http.session' => [ '@class' => HttpSession::class ],
-				'security.cryptography.password.digest' => [ '@class' => PasswordDigest::class ],
-			]
-		);
-
-		$this->setLocale('en-US');
+		$this->setComponentsConfiguration(self::DEFAULT_COMPONENT_CONFIGURATION);
 
 		$this->onConstruct();
 
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			(new Scope($this))->configure($configuration);
 		}
 
 		$this->onAfterConstruct();
@@ -102,129 +153,82 @@ class Application extends Context implements IApplication
 	/**
 	 * Gets the default route.
 	 *
+	 * @override
 	 * @return array
 	 *	The default route.
 	 */
 	public function getDefaultRoute() : array
 	{
-		return [ '/site/index' ];
-	}
-
-	/**
-	 * Checks the debug flag.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isDebug() : bool
-	{
-		return __debug();
+		return [ '//site/index' ];
 	}
 
 	/**
 	 * Runs the application.
 	 *
 	 * @return int
-	 *	The exit status code.
+	 *	The exit status.
 	 */
-	public function run() : int
+	public final function run() : int
 	{
-		switch (__environment_type())
-		{
-			case 'web':
-				return $this->runAsWeb();
+		$action;
+		$environment = RuntimeEnvironment::getInstance();
 
-			case 'cli':
-				return $this->runAsCli();
+		if ($environment->isHttp())
+		{
+			try
+			{
+				$action = $this->getHttpRouter()->getRoute()->resolve();
+			}
+			catch (SlugActionParameterRouteException $e)
+			{
+				throw new HttpStatusException(404, 'Document Not Found', $e);
+			}
+			catch (ActionParameterRouteException $e)
+			{
+				throw new HttpStatusException(400, 'Bad Request', $e);
+			}
+			catch (ActionParameterRouteException $e)
+			{
+				throw new HttpStatusException(400, 'Bad Request', $e);
+			}
+			catch (RouteException $e)
+			{
+				throw new HttpStatusException(404, 'Document Not Found', $e);
+			}
 		}
 
-		return 1;
-	}
+		else if ($environment->isCli())
+		{
+			$action = $this->getCliRouter()->getRoute()->resolve();
+		}
 
-	/**
-	 * Runs as a command line interface application.
-	 *
-	 * @return int
-	 *	The exit status code.
-	 */
-	private function runAsCli() : int
-	{
-		return $this->resolve($this->getDefaultRoute())->run();
-	}
+		else
+		{
+			$action = $this->resolve($this->getDefaultRoute());
+		}
 
-	/**
-	 * Runs as a web application.
-	 *
-	 * @return int
-	 *	The exit status code.
-	 */
-	private function runAsWeb() : int
-	{
-		return $this->getHttpRouter()->resolve()->run();
-	}
-
-	/**
-	 * Sets the debug flag.
-	 *
-	 * @param bool $debug
-	 *	The debug flag.
-	 */
-	public final function setDebug(bool $debug) : void
-	{
-		__debug_set($debug);
-	}
-
-	/**
-	 * Safely terminates the script execution after disposing of all
-	 * application elements.
-	 *
-	 * @param int $status
-	 *	The script exit status code.
-	 */
-	public final function terminate(int $status = 0) : void
-	{
-		__exit($status);
-	}
-
-	/**
-	 * Generates the applicable error response.
-	 *
-	 * This method is invoked automatically by the lightbit global exception
-	 * and error handlers when an uncaught exception is thrown.
-	 *
-	 * If the error response is generated, this function should return false
-	 * in order to prevent escalation and, at the end, the default behaviour.
-	 *
-	 * @param Throwable $throwable
-	 *	The uncaught throwable.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function throwable(\Throwable $throwable) : bool
-	{
-		return false;
+		return $action->run();
 	}
 
 	/**
 	 * On After Construct.
 	 *
-	 * This method is invoked during the application construction procedure,
-	 * after the dynamic configuration is applied.
+	 * It is invoked automatically during the application construction
+	 * procedure, after applying the custom configuration.
 	 */
 	protected function onAfterConstruct() : void
 	{
-		$this->raise('lightbit.base.application.construct.after', $this);
+		
 	}
 
 	/**
 	 * On Construct.
 	 *
-	 * This method is invoked during the application construction procedure,
-	 * before the dynamic configuration is applied.
+	 * It is invoked automatically during the application construction
+	 * procedure, before applying the custom configuration.
 	 */
 	protected function onConstruct() : void
 	{
-		$this->raise('lightbit.base.application.construct', $this);
+		
 	}
 }

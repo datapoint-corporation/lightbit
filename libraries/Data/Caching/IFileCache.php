@@ -32,9 +32,10 @@ use \Lightbit\Data\Caching\ICache;
 /**
  * IFileCache.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IFileCache extends ICache
 {
+	
 }

@@ -29,10 +29,10 @@ namespace Lightbit\Data\Sql\My;
 
 use \Lightbit\Data\Sql\My\MySqlColumn;
 use \Lightbit\Data\Sql\My\MySqlObject;
-
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Traversing\ArrayIterator;
 
 /**
  * MySqlDatabase.
@@ -82,13 +82,10 @@ class MySqlDatabase extends MySqlObject implements ISqlDatabase
 		$scope['SCHEMA_NAME'] = $schemata['SCHEMA_NAME'];
 		$scope['DATABASE_NAME'] = $schemata['DATABASE_NAME'];
 
-		foreach ($tables as $i => $table)
+		foreach ((new ArrayIterator($tables))->with($scope) as $i => $table)
 		{
-			if (__map_match($scope, $table))
-			{
-				$instance = new MySqlTable($this, $table, $columns, $constraints);
-				$this->tables[$instance->getName()] = $instance;
-			}
+			$instance = new MySqlTable($this, $table, $columns, $constraints);
+			$this->tables[$instance->getName()] = $instance;
 		}
 	}
 

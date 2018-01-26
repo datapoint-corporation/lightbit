@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\IExpression;
 use \Lightbit\Data\Sql\ISqlCriteria;
 
@@ -37,7 +36,7 @@ use \Lightbit\Data\Sql\ISqlCriteria;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class SqlCriteria extends Object implements ISqlCriteria
+class SqlCriteria implements ISqlCriteria
 {
 	/**
 	 * The alias.
@@ -102,7 +101,7 @@ class SqlCriteria extends Object implements ISqlCriteria
 			}
 			else
 			{
-				$parameter = ':lb' . __lightbit_next_id();
+				$parameter = ':lb' . Lightbit::getInstance()->increment();
 				$comparison .= '= ' . $parameter;
 
 				$this->parameters[$parameter] = $candidate;

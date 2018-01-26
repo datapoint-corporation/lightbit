@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,10 +30,7 @@ namespace Lightbit;
 /**
  * Exception.
  *
- * This class a base exception type thrown by Lightbit elements, removing
- * the need to pass on an exception code as a constructor argument.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 class Exception extends \Exception
@@ -42,7 +39,7 @@ class Exception extends \Exception
 	 * Constructor.
 	 *
 	 * @param string $message
-	 *	The exception message.
+	 *	The exception human readable message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.

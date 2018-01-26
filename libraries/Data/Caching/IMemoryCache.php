@@ -32,9 +32,10 @@ use \Lightbit\Data\Caching\ICache;
 /**
  * IMemoryCache.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IMemoryCache extends ICache
 {
+	
 }

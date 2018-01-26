@@ -27,11 +27,10 @@
 
 namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
-
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
+use \Lightbit\Type;
 
 /**
  * MySqlReader.
@@ -39,7 +38,7 @@ use \Lightbit\Data\Sql\ISqlStatement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlReader extends Object implements ISqlReader
+class MySqlReader implements ISqlReader
 {
 	/**
 	 * The closed state.
@@ -269,7 +268,7 @@ class MySqlReader extends Object implements ISqlReader
 					$result[$i] =
 					(
 						isset($this->row[$i]) 
-						? __type_to_string($this->row[$i]) 
+						? Type::getInstanceByValue($this->row[$i])->stringify($this->row[$i])
 						: null
 					);
 				}
@@ -281,7 +280,7 @@ class MySqlReader extends Object implements ISqlReader
 					$result[($this->fields[$i])->name] = 
 					(
 						isset($this->row[$i]) 
-						? __type_to_string($this->row[$i]) 
+						? Type::getInstanceByValue($this->row[$i])->stringify($this->row[$i])
 						: null
 					);
 				}

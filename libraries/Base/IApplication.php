@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@ use \Lightbit\Base\IContext;
 /**
  * IApplication.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IApplication extends IContext
@@ -40,36 +40,19 @@ interface IApplication extends IContext
 	/**
 	 * Constructor.
 	 *
-	 * @param string $path
-	 *	The application path.
+	 * @param string $id
+	 *	The context identifier.
 	 *
-	 * @param array $configuration
-	 *	The application configuration.
+	 * @param string $path
+	 *	The context install path.
 	 */
 	public function __construct(string $path, array $configuration = null);
-
-	/**
-	 * Gets the default route.
-	 *
-	 * @return array
-	 *	The default route.
-	 */
-	public function getDefaultRoute() : array;
 
 	/**
 	 * Runs the application.
 	 *
 	 * @return int
-	 *	The exit status code.
+	 *	The exit status.
 	 */
 	public function run() : int;
-
-	/**
-	 * Safely terminates the script execution after disposing of all
-	 * application elements.
-	 *
-	 * @param int $status
-	 *	The script exit status code.
-	 */
-	public function terminate(int $status = 0) : void;
 }

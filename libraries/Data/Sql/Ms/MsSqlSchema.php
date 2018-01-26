@@ -29,9 +29,9 @@ namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Data\Sql\Ms\MsSqlDatabase;
 use \Lightbit\Data\Sql\Ms\MsSqlObject;
-
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
+use \Lightbit\Data\Traversing\ArrayIterator;
 
 /**
  * MsSqlSchema.
@@ -75,13 +75,10 @@ class MsSqlSchema extends MsSqlObject implements ISqlSchema
 		$scope = [];
 		$scope['SCHEMA_NAME'] = $schema;
 
-		foreach ($databases as $i => $database)
+		foreach ((new ArrayIterator($databases))->with($scope) as $i => $database)
 		{
-			if (__map_match($scope, $database))
-			{
-				$instance = new MsSqlDatabase($this, $database, $tables, $columns, $constraints);
-				$this->databases[$instance->getName()] = $instance;
-			}
+			$instance = new MsSqlDatabase($this, $database, $tables, $columns, $constraints);
+			$this->databases[$instance->getName()] = $instance;
 		}
 	}
 

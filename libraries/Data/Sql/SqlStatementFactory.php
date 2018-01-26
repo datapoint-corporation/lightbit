@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlStatement;
 use \Lightbit\Data\Sql\ISqlStatementFactory;
@@ -38,7 +37,7 @@ use \Lightbit\Data\Sql\ISqlStatementFactory;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class SqlStatementFactory extends Object implements ISqlStatementFactory
+abstract class SqlStatementFactory implements ISqlStatementFactory
 {
 	/**
 	 * Creates a delete statement.

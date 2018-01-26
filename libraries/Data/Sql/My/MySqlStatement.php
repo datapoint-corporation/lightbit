@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
@@ -38,7 +37,7 @@ use \Lightbit\Data\Sql\ISqlStatement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlStatement extends Object implements ISqlStatement
+class MySqlStatement implements ISqlStatement
 {
 	/**
 	 * The mysqli internal handle.

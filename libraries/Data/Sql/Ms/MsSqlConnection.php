@@ -30,7 +30,6 @@ namespace Lightbit\Data\Sql\Ms;
 use \Lightbit\Base\Component;
 use \Lightbit\Data\Sql\Ms\MsSqlStatement;
 use \Lightbit\Data\Sql\Ms\MsSqlTransaction;
-
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlReader;
@@ -246,12 +245,12 @@ class MsSqlConnection extends Component implements ISqlConnection
 				. '/'
 				. $this->database;
 
-			if (! ($this->schema = $memory->get('?' . MsSqlSchema::class, $mkey)))
+			if (!$memory->read($mkey, $this->schema))
 			{
 				// Get the current schema name.
 				$schema = $this->scalar('SELECT SCHEMA_NAME()');
 
-				$memory->set
+				$memory->write
 				(
 					$mkey,
 					$this->schema = new MsSqlSchema

@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\Ms\MsSqlConnection;
 use \Lightbit\Data\Sql\Ms\MsSqlConnectionException;
 
@@ -39,7 +38,7 @@ use \Lightbit\Data\Sql\ISqlTransaction;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MsSqlTransaction extends Object implements ISqlTransaction
+class MsSqlTransaction implements ISqlTransaction
 {
 	/**
 	 * The state.

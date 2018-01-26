@@ -28,19 +28,19 @@
 namespace Lightbit\Data\Validation;
 
 use \Lightbit\Base\Element;
+use \Lightbit\Base\IContext;
+use \Lightbit\Data\IModel;
 use \Lightbit\Data\Validation\EmailAddressRule;
 use \Lightbit\Data\Validation\EnumerationRule;
 use \Lightbit\Data\Validation\FullNameRule;
+use \Lightbit\Data\Validation\IRule;
 use \Lightbit\Data\Validation\LengthRule;
 use \Lightbit\Data\Validation\MatchRule;
 use \Lightbit\Data\Validation\PatternRule;
 use \Lightbit\Data\Validation\SafeRule;
 use \Lightbit\Data\Validation\UniqueRule;
 use \Lightbit\Exception;
-
-use \Lightbit\Base\IContext;
-use \Lightbit\Data\IModel;
-use \Lightbit\Data\Validation\IRule;
+use \Lightbit\Scope;
 
 /**
  * Rule.
@@ -176,7 +176,7 @@ abstract class Rule extends Element implements IRule
 
 		if ($configuration)
 		{
-			__object_apply($this, $configuration);
+			(new Scope($this))->configure($configuration);
 		}
 	}
 

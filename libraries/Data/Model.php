@@ -29,8 +29,10 @@ namespace Lightbit\Data;
 
 use \Lightbit\Base\Element;
 use \Lightbit\Data\IModel;
+use \Lightbit\Data\Manipulation\StringLabelConversion;
 use \Lightbit\Data\Validation\IRule;
 use \Lightbit\Data\Validation\Rule;
+use \Lightbit\Scope;
 
 /**
  * IModel.
@@ -38,7 +40,7 @@ use \Lightbit\Data\Validation\Rule;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class Model extends Element implements IModel
+abstract class Model extends Element implements IModel
 {
 	/**
 	 * Creates a model instance.
@@ -94,15 +96,19 @@ class Model extends Element implements IModel
 		$this->attributesErrors = [];
 		$this->scenario = $scenario;
 
+		$this->onConstruct();
+
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			(new Scope($this))->configure($configuration);
 		}
 
 		if ($attributes)
 		{
-			__object_attribute_set_array($this, $attributes);
+			(new Scope($this))->setAttributes($attributes);
 		}
+
+		$this->onAfterConstruct();
 	}
 
 	/**
@@ -146,7 +152,7 @@ class Model extends Element implements IModel
 	 */
 	public function getAttribute(string $attribute) // : mixed
 	{
-		return __object_attribute_get($this, $attribute);
+		return (new Scope($this))->getAttribute($attribute);
 	}
 
 	/**
@@ -167,7 +173,7 @@ class Model extends Element implements IModel
 			return $labels[$attribute];
 		}
 
-		return ucwords(implode(' ', __string_split_word($attribute)));
+		return (new StringLabelConversion($attribute, true))->toLabel();
 	}
 
 	/**
@@ -218,7 +224,7 @@ class Model extends Element implements IModel
 	 */
 	public final function getAttributes() : array
 	{
-		return __object_attribute_get_array($this, $this->getAttributesName());
+		return (new Scope($this))->getAttributes($this->getAttributesName());
 	}
 
 	/**
@@ -241,7 +247,7 @@ class Model extends Element implements IModel
 			{
 				if (!isset($attributesLabel[$locale][$attribute]))
 				{
-					$attributesLabel[$locale][$attribute] = ucwords(strtolower(implode(' ', __string_split_word($attribute))));
+					$attributesLabel[$locale][$attribute] = (new StringLabelConversion($attribute, true))->toLabel();
 				}
 			}
 		}
@@ -404,7 +410,7 @@ class Model extends Element implements IModel
 	 */
 	public final function hasAttribute(string $attribute) : bool
 	{
-		return __object_attribute_is_set($this, $attribute);
+		return (new Scope($this->object))->hasAttribute($attribute);
 	}
 
 	/**
@@ -561,7 +567,7 @@ class Model extends Element implements IModel
 	 */
 	public final function setAttribute(string $attribute, $value) : void
 	{
-		__object_attribute_set($this, $attribute, $value);
+		(new Scope($this))->setAttribute($attribute, $value);
 	}
 
 	/**
@@ -596,7 +602,7 @@ class Model extends Element implements IModel
 	 */
 	public final function setAttributes(array $attributes) : void
 	{
-		__object_attribute_set_array($this, $attributes);
+		(new Scope($this))->setAttributes($attributes);
 	}
 
 	/**
@@ -672,6 +678,18 @@ class Model extends Element implements IModel
 	}
 
 	/**
+	 * On After Construct.
+	 *
+	 * It is invoked automatically during the model construction
+	 * procedure, after applying the custom configuration and initial
+	 * attribute set.
+	 */
+	protected function onAfterConstruct() : void
+	{
+
+	}
+
+	/**
 	 * On After Import.
 	 *
 	 * This method is called during the import procedure, after the rules
@@ -682,7 +700,7 @@ class Model extends Element implements IModel
 	 */
 	protected function onAfterImport(array $attributes) : void
 	{
-		$this->raise('data.model.import.after', $this, $attributes);
+		
 	}
 
 	/**
@@ -693,7 +711,19 @@ class Model extends Element implements IModel
 	 */
 	protected function onAfterValidate() : void
 	{
-		$this->raise('data.model.validate.after', $this);
+		
+	}
+
+	/**
+	 * On Construct.
+	 *
+	 * It is invoked automatically during the model construction
+	 * procedure, before applying the custom configuration and initial
+	 * attribute set.
+	 */
+	protected function onConstruct() : void
+	{
+
 	}
 
 	/**
@@ -707,7 +737,7 @@ class Model extends Element implements IModel
 	 */
 	protected function onImport(array $attributes) : void
 	{
-		$this->raise('data.model.import', $this, $attributes);
+		
 	}
 
 	/**
@@ -718,6 +748,6 @@ class Model extends Element implements IModel
 	 */
 	protected function onValidate() : void
 	{
-		$this->raise('data.model.validate', $this);
+		
 	}
 }

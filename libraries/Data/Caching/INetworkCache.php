@@ -32,9 +32,10 @@ use \Lightbit\Data\Caching\ICache;
 /**
  * INetworkCache.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface INetworkCache extends ICache
 {
+	
 }

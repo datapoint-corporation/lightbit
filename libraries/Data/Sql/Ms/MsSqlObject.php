@@ -27,8 +27,6 @@
 
 namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Base\Object;
-
 use \Lightbit\Data\Sql\ISqlObject;
 
 /**
@@ -37,7 +35,7 @@ use \Lightbit\Data\Sql\ISqlObject;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MsSqlObject extends Object implements ISqlObject
+class MsSqlObject implements ISqlObject
 {
 	/**
 	 * The name.

@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\ISqlSelectCriteria;
 
 /**

@@ -272,8 +272,8 @@ class MySqlConnection extends Component implements ISqlConnection
 	{
 		if (!$this->schema)
 		{
-			$memory = $this->getMemoryCache();
-			$mkey = '__lightbit.data.sql.connection://my/'
+			$memory = $this->getContext()->getMemoryCache();
+			$mkey = 'lightbit.data.sql.connection://my/'
 				. $this->user
 				. '@'
 				. $this->host
@@ -282,9 +282,9 @@ class MySqlConnection extends Component implements ISqlConnection
 				. '/'
 				. $this->database;
 
-			if (! ($this->schema = $memory->get('?' . MySqlSchema::class, $mkey)))
+			if (!$memory->read($mkey, $this->schema))
 			{
-				$memory->set
+				$memory->write
 				(
 					$mkey,
 					$this->schema = new MySqlSchema
@@ -856,6 +856,8 @@ class MySqlConnection extends Component implements ISqlConnection
 	{
 		$this->database = 'lightbit';
 		$this->host = '127.0.0.1';
+		$this->user = 'root';
+		$this->password = '';
 		$this->persistent = false;
 		$this->port = 3306;
 	}

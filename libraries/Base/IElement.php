@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,40 +27,21 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IAction;
-use \Lightbit\Base\IApplication;
 use \Lightbit\Base\IBase;
-use \Lightbit\Base\IContext;
 
 /**
  * IElement.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IElement extends IBase
+interface IElement
 {
 	/**
-	 * Gets the action.
+	 * Gets the http request.
 	 *
-	 * @return Action
-	 *	The action.
+	 * @return IHttpRequest
+	 *	The http request.
 	 */
-	public function getAction() : IAction;
-
-	/**
-	 * Gets the application.
-	 *
-	 * @return Application
-	 *	The application.
-	 */
-	public function getApplication() : IApplication;
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return Context
-	 *	The context.
-	 */
-	public function getContext() : IContext;
+	public function getHttpRequest() : IHttpRequest;
 }

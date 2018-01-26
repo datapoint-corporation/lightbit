@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,38 +27,46 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IAction;
-use \Lightbit\Base\IBase;
-use \Lightbit\Base\IComponent;
+use \Throwable;
+
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Base\IModule;
-use \Lightbit\Globalization\ILocale;
+use \Lightbit\Cli\ICliRouter;
+use \Lightbit\Data\Caching\IFileCache;
+use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Data\Sql\ISqlConnection;
+use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\IHtmlDocument;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Routing\Action;
 
 /**
  * IContext.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IContext extends IBase
+interface IContext
 {
 	/**
-	 * Safely disposes all sub-modules, followed by any active components,
-	 * in reverse order as they were first loaded in order to avoid breaking
-	 * any dependencies in between them.
+	 * Disposes the context.
+	 *
+	 * It disposes each module, followed by each component, in reverse order
+	 * as they were first accessed, before disposing any of its own resources.
 	 */
 	public function dispose() : void;
 
 	/**
-	 * Gets a component.
+	 * Gets the command line interface router.
 	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return IComponent
-	 *	The component.
+	 * @return ICliRouter
+	 *	The command line interface router.
 	 */
-	public function getComponent(string $id) : IComponent;
+	public function getCliRouter() : ICliRouter;
 
 	/**
 	 * Gets the context.
@@ -80,6 +88,36 @@ interface IContext extends IBase
 	public function getController(string $id) : IController;
 
 	/**
+	 * Gets a controller class name.
+	 *
+	 * @param string $id
+	 *	The controller identifier.
+	 *
+	 * @return string
+	 *	The controller class name.
+	 */
+	public function getControllerClassName(string $id) : string;
+
+	/**
+	 * Gets a component.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @return IComponent
+	 *	The component.
+	 */
+	public function getComponent(string $id) : IComponent;
+
+	/**
+	 * Gets the default action.
+	 *
+	 * @return Action
+	 *	The default action.
+	 */
+	public function getDefaultAction() : Action;
+
+	/**
 	 * Gets the default route.
 	 *
 	 * @return array
@@ -88,12 +126,52 @@ interface IContext extends IBase
 	public function getDefaultRoute() : array;
 
 	/**
-	 * Gets the global identifier.
+	 * Gets the file cache.
 	 *
-	 * @return string
-	 *	The global identifier.
+	 * @return IFileCache
+	 *	The file cache.
 	 */
-	public function getGlobalID() : string;
+	public function getFileCache() : IFileCache;
+
+	/**
+	 * Gets the html composer.
+	 *
+	 * @return IHtmlComposer
+	 *	The html composer.
+	 */
+	public function getHtmlComposer() : IHtmlComposer;
+
+	/**
+	 * Gets the html document.
+	 *
+	 * @return IHtmlDocument
+	 *	The html document.
+	 */
+	public function getHtmlDocument() : IHtmlDocument;
+
+	/**
+	 * Gets the http request.
+	 *
+	 * @return IHttpRequest
+	 *	The http request.
+	 */
+	public function getHttpRequest() : IHttpRequest;
+
+	/**
+	 * Gets the http response.
+	 *
+	 * @return IHttpRequest
+	 *	The http response.
+	 */
+	public function getHttpResponse() : IHttpResponse;
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public function getHttpRouter() : IHttpRouter;
 
 	/**
 	 * Gets the identifier.
@@ -104,20 +182,20 @@ interface IContext extends IBase
 	public function getID() : string;
 
 	/**
-	 * Gets the locale.
+	 * Gets the memory cache.
 	 *
-	 * @return Locale
-	 *	The locale.
+	 * @return IMemoryCache
+	 *	The memory cache.
 	 */
-	public function getLocale() : ILocale;
+	public function getMemoryCache() : IMemoryCache;
 
 	/**
-	 * Gets the namespace name.
+	 * Gets the messages path.
 	 *
 	 * @return string
-	 *	The namespace name.
+	 *	The messages path.
 	 */
-	public function getNamespaceName() : string;
+	public function getMessagesPath() : string;
 
 	/**
 	 * Gets a module.
@@ -125,10 +203,34 @@ interface IContext extends IBase
 	 * @param string $id
 	 *	The module identifier.
 	 *
-	 * @return Module
+	 * @return IModule
 	 *	The module.
 	 */
 	public function getModule(string $id) : IModule;
+
+	/**
+	 * Gets the modules.
+	 *
+	 * @return array
+	 *	The modules.
+	 */
+	public function getModules() : array;
+
+	/**
+	 * Gets the modules path.
+	 *
+	 * @return string
+	 *	The modules path.
+	 */
+	public function getModulesPath() : string;
+
+	/**
+	 * Gets the network cache.
+	 *
+	 * @return INetworkCache
+	 *	The network cache.
+	 */
+	public function getNetworkCache() : INetworkCache;
 
 	/**
 	 * Gets the path.
@@ -139,45 +241,39 @@ interface IContext extends IBase
 	public function getPath() : string;
 
 	/**
-	 * Gets the prefix.
+	 * Gets the sql connection.
+	 *
+	 * @return ISqlConnection
+	 *	The sql connection.
+	 */
+	public function getSqlConnection() : ISqlConnection;
+
+	/**
+	 * Gets the theme.
+	 *
+	 * @return ITheme
+	 *	The theme.
+	 */
+	public function getTheme() : ?ITheme;
+
+	/**
+	 * Gets the themes path.
 	 *
 	 * @return string
-	 *	The prefix.
+	 *	The themes path.
 	 */
-	public function getPrefix() : string;
+	public function getThemesPath() : string;
 
 	/**
-	 * Gets a view.
-	 *
-	 * @param string $view
-	 *	The view identifier.
-	 *
-	 * @return IView
-	 *	The view.
-	 */
-	public function getView(string $view) : IView;
-
-	/**
-	 * Gets the views base path.
+	 * Gets the views path.
 	 *
 	 * @return string
-	 *	The views base path.
+	 *	The views path.
 	 */
-	public function getViewsBasePath() : string;
+	public function getViewsPath() : string;
 
 	/**
-	 * Checks a component availability.
-	 *
-	 * @param string $id
-	 *	The component identifier.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasComponent(string $id) : bool;
-
-	/**
-	 * Checks a controller availability.
+	 * Checks if a controller is available.
 	 *
 	 * @param string $id
 	 *	The controller identifier.
@@ -188,7 +284,18 @@ interface IContext extends IBase
 	public function hasController(string $id) : bool;
 
 	/**
-	 * Checks for a module availability.
+	 * Checks if a component is available.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function hasComponent(string $id) : bool;
+
+	/**
+	 * Checks if a module is available.
 	 *
 	 * @param string $id
 	 *	The module identifier.
@@ -196,44 +303,49 @@ interface IContext extends IBase
 	 * @return bool
 	 *	The result.
 	 */
-	public function hasModule(string $id) : string;
-
-	/**
-	 * Checks if a view exists.
-	 *
-	 * @param string $view
-	 *	The view identifier.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function hasView(string $view) : bool;
+	public function hasModule(string $id) : bool;
 
 	/**
 	 * Resolves a route.
 	 *
+	 * A route is represented through a hybrid array holding a zero indexed
+	 * action identifier and the parameters matching the criteria imposed by
+	 * the action method signature.
+	 *
+	 * If a route is not provided, or the action identifier is missing, the
+	 * default route will be used as applicable.
+	 *
 	 * @param array $route
-	 *	The route.
+	 *	The route to resolve.
 	 *
 	 * @return Action
 	 *	The action.
 	 */
-	public function resolve(?array $route) : IAction;
+	public function resolve(?array $route) : Action;
 
 	/**
-	 * Generates the applicable error response.
+	 * Sets the theme.
 	 *
-	 * This method is invoked automatically by the lightbit global exception
-	 * and error handlers when an uncaught exception is thrown.
+	 * @param string $id
+	 *	The theme identifier.
+	 */
+	public function setTheme(?string $id) : void;
+
+	/**
+	 * Throwable handling.
 	 *
-	 * If the error response is generated, this function should return false
-	 * in order to prevent escalation and, at the end, the default behaviour.
+	 * It is invoked automatically once a throwable is caught by the global
+	 * handler, giving the controller the opportunity to generate the
+	 * applicable error response.
+	 *
+	 * If the result is positivie, the throwable handling will not propagate
+	 * to the parent contexts.
 	 *
 	 * @param Throwable $throwable
-	 *	The uncaught throwable.
+	 *	The throwable.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function throwable(\Throwable $throwable) : bool;
+	public function throwable(Throwable $throwable) : bool;
 }

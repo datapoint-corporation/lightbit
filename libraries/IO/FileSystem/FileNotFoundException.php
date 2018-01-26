@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,15 +27,15 @@
 
 namespace Lightbit\IO\FileSystem;
 
-use \Lightbit\IO\IOException;
+use \Lightbit\IO\FileSystem\FileAccessException;
 
 /**
  * FileNotFoundException.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class FileNotFoundException extends IOException
+class FileNotFoundException extends FileAccessException
 {
 	/**
 	 * The file path.
@@ -51,26 +51,13 @@ class FileNotFoundException extends IOException
 	 *	The file path.
 	 *
 	 * @param string $message
-	 *	The exception message.
+	 *	The exception human readable message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
 	public function __construct(string $filePath, string $message, \Throwable $previous = null)
 	{
-		parent::__construct($message, $previous);
-
-		$this->filePath = $filePath;
-	}
-
-	/**
-	 * Gets the file path.
-	 *
-	 * @return string
-	 *	The file path.
-	 */
-	public final function getFilePath() : string
-	{
-		return $this->filePath;
+		parent::__construct($filePath, $message, $previous);
 	}
 }

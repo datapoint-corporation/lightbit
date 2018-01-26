@@ -54,27 +54,19 @@ interface IHtmlDocument extends IComponent
 	/**
 	 * Sets an additional inline style.
 	 *
-	 * @param string $style
-	 *	The style file system alias.
+	 * @param string $content
+	 *	The style content.
 	 *
 	 * @param array $attributes
 	 *	The style attributes.
 	 */
-	public function addInlineStyle(string $style, array $attributes = null) : void;
-
-	/**
-	 * Sets additional meta attributes.
-	 *
-	 * @param array $attributes
-	 *	The meta attributes.
-	 */
-	public function addMetaAttributes(array $attributes) : void;
+	public function addInlineStyle(string $content, array $attributes = null) : void;
 
 	/**
 	 * Sets an additional script.
 	 *
-	 * @param string $location
-	 *	The script location.
+	 * @param string $content
+	 *	The script content.
 	 *
 	 * @param array $attributes
 	 *	The script attributes.
@@ -107,12 +99,12 @@ interface IHtmlDocument extends IComponent
 	public function addTag(string $tag, array $attributes = null) : void;
 
 	/**
-	 * Gets the meta attributes.
+	 * Gets the inline scripts.
 	 *
 	 * @return array
-	 *	The meta attributes.
+	 *	The inline scripts, by position.
 	 */
-	public function getMetaAttributes() : array;
+	public function getInlineScripts() : array;
 
 	/**
 	 * Gets the scripts.
@@ -144,23 +136,20 @@ interface IHtmlDocument extends IComponent
 	 * @return string
 	 *	The title.
 	 */
-	public function getTitle() : ?string;
-
-	/**
-	 * Inflates the document.
-	 *
-	 * @param string $position
-	 *	The position.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function inflate(string $position) : string;
+	public function getTitle() : string;
 
 	/**
 	 * Resets the document.
 	 */
 	public function reset() : void;
+
+	/**
+	 * Sets the default title.
+	 *
+	 * @param string $title
+	 *	The title.
+	 */
+	public function setDefaultTitle(string $title) : void;
 
 	/**
 	 * Sets the title.

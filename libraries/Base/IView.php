@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,48 +27,42 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Exception;
-use \Lightbit\Base\Element;
-use \Lightbit\Base\IWidget;
-use \Lightbit\IO\FileSystem\FileNotFoundException;
+use \Throwable;
+
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
 
 /**
- * View.
+ * IView.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IView extends IElement
+interface IView
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param Context $context
-	 *	The view context.
-	 *
-	 * @param string $path
-	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The configuration.
-	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null);
-
-	/**
-	 * Gets the base path.
-	 *
-	 * @return string
-	 *	The base path.
-	 */
-	public function getBasePath() : string;
-
 	/**
 	 * Gets the context.
 	 *
-	 * @return Context
+	 * @return IContext
 	 *	The context.
 	 */
 	public function getContext() : IContext;
+
+	/**
+	 * Gets the controller.
+	 *
+	 * @return IController
+	 *	The controller.
+	 */
+	public function getController() : IController;
+
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public function getID() : string;
 
 	/**
 	 * Gets the path.
@@ -79,85 +73,16 @@ interface IView extends IElement
 	public function getPath() : string;
 
 	/**
-	 * Imports a variable.
-	 *
-	 * @param mixed $variable
-	 *	The variable to import.
-	 *
-	 * @param mixed $default
-	 *	The variable default value.
-	 *
-	 * @param Closure $closure
-	 *	The variable validation closure.
-	 */
-	public function import(&$variable, \Closure $closure = null) : void;
-
-	/**
-	 * Checks if the view is available.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function isAvailable() : bool;
-
-	/**
-	 * Renders a view.
-	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
-	 *
-	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output
-	 *	buffer to capture any generated contents.
-	 *
-	 * @return string
-	 *	The captured content.
-	 */
-	public function render(string $view, array $parameters = null, bool $capture = false) : ?string;
-
-	/**
 	 * Runs the view.
 	 *
 	 * @param array $parameters
-	 *	The parameters.
+	 *	The execution parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output
-	 *	buffer to capture any generated contents.
+	 *	The execution output capturing flag.
 	 *
 	 * @return string
-	 *	The captured content.
+	 *	The output, if captured.
 	 */
-	public function run(array $parameters = null, bool $capture = false) : ?string;
-
-	/**
-	 * Creates a widget.
-	 *
-	 * @param string $className
-	 *	The widget class name.
-	 *
-	 * @param array $arguments
-	 *	The widget constructor arguments.
-	 *
-	 * @return IWidget
-	 *	The widget.
-	 */
-	public function widget(string $className, ...$arguments) : IWidget;
-
-	/**
-	 * Creates and instantly inflates an inline widget.
-	 *
-	 * @param string $className
-	 *	The widget class name.
-	 *
-	 * @param array $arguments
-	 *	The widget constructor arguments.
-	 *
-	 * @return string
-	 *	The content.
-	 */
-	public function inflate(string $className, ...$arguments) : string;
+	public function run(array $parameters = null, bool $capture = true) : ?string;
 }
