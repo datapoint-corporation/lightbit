@@ -31,7 +31,9 @@ use \ReflectionClass;
 use \ReflectionException;
 
 use \Lightbit;
+use \Lightbit\Base\ControllerNotFoundContextException;
 use \Lightbit\Base\IContext;
+use \Lightbit\Base\ModuleNotFoundContextException;
 use \Lightbit\Data\Parsing\BooleanParser;
 use \Lightbit\Data\Parsing\FloatParser;
 use \Lightbit\Data\Parsing\IntegerParser;

@@ -201,7 +201,10 @@ final class Lightbit
 			(
 				function($__FILE__)
 				{
-					return require ($__FILE__);
+					if (is_file($__FILE__))
+					{
+						include ($__FILE__);
+					}
 				}
 			)
 
