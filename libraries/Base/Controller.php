@@ -31,6 +31,7 @@ use \ReflectionClass;
 use \Throwable;
 
 use \Lightbit;
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
 use \Lightbit\Data\Conversing\StringCamelCaseConversion;
@@ -43,7 +44,7 @@ use \Lightbit\Scope;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Controller implements IController
+abstract class Controller extends Element implements IController
 {
 	/**
 	 * The context.
@@ -73,6 +74,8 @@ abstract class Controller implements IController
 	 */
 	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
+		parent::__construct();
+
 		$this->context = $context;
 		$this->id = $id;
 
