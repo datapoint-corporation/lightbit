@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -33,24 +33,40 @@ use \Lightbit\Base\IElement;
 /**
  * IComponent.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IComponent extends IElement
+interface IComponent
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The component context.
 	 *
 	 * @param string $id
 	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The component configuration.
+	 *	The component configuration map.
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null);
+
+	/**
+	 * Disposes.
+	 *
+	 * It first closes any persistent resources, followed by the disposal of
+	 * any temporary memory information and, finally, the state.
+	 */
+	public function dispose() : void;
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IContext
+	 *	The context.
+	 */
+	public function getContext() : IContext;
 
 	/**
 	 * Gets the identifier.

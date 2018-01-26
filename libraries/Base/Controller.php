@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,23 +27,21 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
-use \Lightbit\Base\Element;
-use \Lightbit\Base\IllegalParameterRouteException;
-use \Lightbit\Base\MethodNotFoundRouteException;
-use \Lightbit\Base\MissingParameterRouteException;
-use \Lightbit\Http\HttpStatusException;
+use \ReflectionClass;
+use \Throwable;
 
-use \Lightbit\Base\IAction;
+use \Lightbit;
+use \Lightbit\Base\Element;
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IController;
-use \Lightbit\Base\ITheme;
-use \Lightbit\Data\IModel;
+use \Lightbit\Data\Conversing\StringCamelCaseConversion;
+use \Lightbit\IO\FileSystem\Asset;
+use \Lightbit\Scope;
 
 /**
  * Controller.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 abstract class Controller extends Element implements IController
@@ -56,13 +54,6 @@ abstract class Controller extends Element implements IController
 	private $context;
 
 	/**
-	 * The global identifier.
-	 *
-	 * @var string
-	 */
-	private $globalID;
-
-	/**
 	 * The identifier.
 	 *
 	 * @var string
@@ -70,30 +61,16 @@ abstract class Controller extends Element implements IController
 	private $id;
 
 	/**
-	 * The views.
-	 *
-	 * @var array
-	 */
-	private $views;
-
-	/**
-	 * The views base paths.
-	 *
-	 * @var string
-	 */
-	private $viewsBasePaths;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param IContext $context
-	 *	The context.
+	 *	The controller context.
 	 *
 	 * @param string $id
-	 *	The identifier.
+	 *	The controller identifier.
 	 *
 	 * @param array $configuration
-	 *	The configuration.
+	 *	The controller configuration map.
 	 */
 	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
@@ -101,30 +78,78 @@ abstract class Controller extends Element implements IController
 
 		$this->context = $context;
 		$this->id = $id;
-		$this->views = [];
 
 		$this->onConstruct();
 
 		if ($configuration)
 		{
-			__object_apply($this, $configuration);
+			(new Scope($this))->configure($configuration);
 		}
 
 		$this->onAfterConstruct();
 	}
 
 	/**
-	 * Delegates the action behaviour.
+	 * Displays a view.
 	 *
-	 * @param array $route
-	 *	The route resolving to the delegate action.
+	 * If the view identifier is not absolute, a theme is set and a matching
+	 * view override exists, the override is rendered instead of the default
+	 * controller view.
 	 *
-	 * @return int
-	 *	The result.
+	 * @param string $id
+	 *	The view identifier.
+	 *
+	 * @param array $parameters
+	 *	The view parameters.
+	 *
+	 * @param bool $capture
+	 *	The view output capture flag.
+	 *
+	 * @return string
+	 *	The view output, if captured.
 	 */
-	protected function delegate(array $route) : int
+	public final function display(string $id, array $parameters = null) : void
 	{
-		return $this->context->resolve($route)->run();
+		if ($theme = $this->getTheme())
+		{
+			$theme->run($this->getView($id), $parameters);
+		}
+		else
+		{
+			$this->getView($id)->run($parameters, false);
+		}
+	}
+
+	/**
+	 * Gets a action method name.
+	 *
+	 * @param string $id
+	 *	The action identifier.
+	 *
+	 * @return string
+	 *	The action method name.
+	 */
+	public function getActionMethodName(string $id) : string
+	{
+		return (new StringCamelCaseConversion($id, false))->toLowerCamelCase();
+	}
+
+	/**
+	 * Gets the application.
+	 *
+	 * @return IApplication
+	 *	The application.
+	 */
+	public final function getApplication() : IApplication
+	{
+		$context = $this->getContext();
+
+		while (! ($context instanceof IApplication))
+		{
+			$context = $context->getContext();
+		}
+
+		return $context;
 	}
 
 	/**
@@ -133,133 +158,9 @@ abstract class Controller extends Element implements IController
 	 * @return IContext
 	 *	The context.
 	 */
-	public function getContext() : IContext
+	public final function getContext() : IContext
 	{
 		return $this->context;
-	}
-
-	/**
-	 * Creates a default action method name.
-	 *
-	 * @param string $action
-	 *	The action name.
-	 *
-	 * @return string
-	 *	The default action method name.
-	 */
-	protected function actionMethodName(string $action) : string
-	{
-		return lcfirst(strtr(ucwords(strtr($action, [ '-' => ' ' ])), [ ' ' => '' ]));
-	}
-
-	/**
-	 * Displays a view.
-	 *
-	 * @param string $view
-	 *	The view file system alias.
-	 *
-	 * @param array $parameters
-	 *	The view parameters.
-	 */
-	public final function display(string $view, array $parameters = null) : void
-	{
-		$this->onDisplay();
-
-		$view = $this->getView($view);
-
-		if ($theme = $this->getTheme())
-		{
-			$theme->run
-			(
-				$view->run($parameters, true)
-			);
-		}
-		else
-		{
-			$view->run($parameters);
-		}
-
-		$this->onAfterDisplay();
-	}
-
-	/**
-	 * Exports the current http request.
-	 *
-	 * @param string $method
-	 *	The http request method.
-	 *
-	 * @param IModel $model
-	 *	The http request model.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function export(string $method, IModel ...$model) : bool
-	{
-		$request = $this->getHttpRequest();
-
-		if ($request->isOfMethod($method))
-		{
-			$result = true;
-
-			foreach ($model as $i => $subject)
-			{
-				if (!$request->export($subject))
-				{
-					$result = false;
-				}
-			}
-
-			return $result;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Gets an action method name.
-	 *
-	 * @param string $id
-	 *	The action identifier.
-	 *
-	 * @return string
-	 *	The action method name.
-	 */
-	public final function getActionMethodName(string $id) : string
-	{
-		static $actionMethodNames = [];
-
-		if (!isset($actionMethodNames[$id]))
-		{
-			$actionMethodNames[$id] = $this->actionMethodName($id);
-		}
-
-		return $actionMethodNames[$id];
-	}
-
-	/**
-	 * Gets the global identifier.
-	 *
-	 * @return string
-	 *	The global identifier.
-	 */
-	public function getGlobalID() : string
-	{
-		if (!$this->globalID)
-		{
-			$this->globalID = '';
-			$context = $this->context;
-
-			while ($parent = $context->getContext())
-			{
-				$this->globalID = $context->getID() . '/' . $this->globalID;
-				$context = $parent;
-			}
-
-			$this->globalID .= $this->id;
-		}
-
-		return $this->globalID;
 	}
 
 	/**
@@ -276,10 +177,10 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Gets the theme.
 	 *
-	 * @return string
+	 * @return ITheme
 	 *	The theme.
 	 */
-	public final function getTheme() : ?ITheme
+	public function getTheme() : ?ITheme
 	{
 		return $this->context->getTheme();
 	}
@@ -287,331 +188,98 @@ abstract class Controller extends Element implements IController
 	/**
 	 * Gets a view.
 	 *
-	 * @param string $view
+	 * @param string $id
 	 *	The view identifier.
 	 *
 	 * @return IView
 	 *	The view.
 	 */
-	public final function getView(string $view) : IView
+	public final function getView(string $id) : IView
 	{
-		return $this->context->getView($this->id . '/' . $view);
+		$asset = new Asset($this->getViewsPath(), $id);
+
+		if (!$asset->isAbsolute())
+		{
+			if ($theme = $this->getTheme())
+			{
+				if ($view = $theme->getView($this, $id))
+				{
+					return $view;
+				}
+			}
+		}
+
+		return new View($this, $id, (new Asset($this->getViewsPath(), $id))->getPath());
 	}
 
 	/**
-	 * Checks if a view exists.
+	 * Gets the views path.
 	 *
-	 * @param string $view
-	 *	The view identifier.
-	 *
-	 * @return bool
-	 *	The result.
+	 * @return string
+	 *	The views path.
 	 */
-	public final function hasView(string $view) : bool
+	public function getViewsPath() : string
 	{
-		return $this->context->hasView($this->id . '/' . $view);
-	}
-
-	/**
-	 * Sets a response redirection.
-	 *
-	 * @param array $route
-	 *	The response redirection route.
-	 *
-	 * @param int $statusCode
-	 *	The response redirection status code.
-	 */
-	public final function redirect(array $route, int $statusCode = 303) : void
-	{
-		$response = $this->getHttpResponse();
-		$response->reset();
-		$response->setHeader('Location', $this->getHttpRouter()->url($route, true));
-		$response->setStatusCode($statusCode);
-		__exit(0);
+		return $this->context->getViewsPath() 
+			. DIRECTORY_SEPARATOR
+			. strtr($this->id, [ '/' => DIRECTORY_SEPARATOR ]);
 	}
 
 	/**
 	 * Renders a view.
 	 *
-	 * @param string $view
-	 *	The view file system alias.
+	 * If the view identifier is not absolute, a theme is set and a matching
+	 * view override exists, the override is rendered instead of the default
+	 * controller view.
+	 *
+	 * @param string $id
+	 *	The view identifier.
 	 *
 	 * @param array $parameters
 	 *	The view parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output
-	 *	buffer to capture any generated contents.
+	 *	The view output capture flag.
 	 *
 	 * @return string
-	 *	The captured content.
+	 *	The view output, if captured.
 	 */
-	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
+	public function render(string $id, array $parameters = null, bool $capture = false) : ?string
 	{
-		$this->onRender();
-
-		$result = ($this->getView($view))->run($parameters, $capture);
-
-		$this->onAfterRender();
-
-		return $result;
+		return $this->getView($id)->run($parameters, $capture);
 	}
 
 	/**
-	 * Resolves an action.
+	 * Generates a response based on an action result.
 	 *
-	 * @param string $id
-	 *	The action identifier.
+	 * It is invoked automatically during the action run procedure, after 
+	 * and only if a value is returned by its implementation.
 	 *
-	 * @param array $parameters
-	 *	The action parameters.
-	 *
-	 * @return IAction
+	 * @param mixed $result
 	 *	The result.
 	 */
-	public final function resolve(string $id, array $parameters) : IAction
+	public final function result($result) : void
 	{
-		$method;
-
-		try
-		{
-			$method = (new \ReflectionClass($this))
-				->getMethod($this->getActionMethodName($id));
-		}
-		catch (\ReflectionException $e)
-		{
-			throw new MethodNotFoundRouteException
-			(
-				$this->context,
-				($route = ([ $this->id . '/' . $id ] + $parameters)),
-				sprintf
-				(
-					'Can not resolve to action, method is undefined: action %s, at controller %s, at context %s',
-					$id,
-					$this->id,
-					$this->context->getGlobalID()
-				)
-			);
-		}
-
-		if (!$method->isPublic() || $method->isAbstract() || $method->isStatic())
-		{
-			throw new MethodNotFoundRouteException
-			(
-				$this->context,
-				($route = ([ $this->id . '/' . $id ] + $parameters)),
-				sprintf
-				(
-					'Can not resolve to action, method signature mismatch: action %s, at controller %s, at context %s',
-					$id,
-					$this->id,
-					$this->context->getGlobalID()
-				)
-			);
-		}
-
-		$params = [];
-		foreach ($method->getParameters() as $i => $parameter)
-		{
-			$parameterName = $parameter->getName();
-
-			if (isset($parameters[$parameterName]))
-			{
-				try
-				{
-					$params[$parameterName] = __type_filter
-					(
-						__type_signature($parameter->getType()),
-						$parameters[$parameterName]
-					);
-
-					continue;
-				}
-				catch (\Throwable $e)
-				{
-					throw new IllegalParameterRouteException
-					(
-						$this->context,
-						($route = ([ $this->id . '/' . $id ] + $parameters)),
-						$parameterName,
-						sprintf
-						(
-							'Can not resolve to action, filter failure: %s, at action %s, at controller %s, at context %s',
-							$parameterName,
-							$id,
-							$this->id,
-							$this->context->getPrefix()
-						),
-						$e
-					);
-				}
-			}
-
-			if ($parameter->isDefaultValueAvailable())
-			{
-				$params[$parameterName] = $parameter->getDefaultValue();
-				continue;
-			}
-
-			if ($parameter->allowsNull())
-			{
-				$params[$parameterName] = null;
-				continue;
-			}
-
-			throw new MissingParameterRouteException
-			(
-				$this->context,
-				($route = ([ $this->id . '/' . $id ] + $parameters)),
-				$parameterName,
-				sprintf
-				(
-					'Can not resolve to action, parameter missing: %s, at action, %s, at controller %s, at context %s',
-					$parameterName,
-					$id,
-					$this->id,
-					$this->context->getPrefix()
-				)
-			);
-		}
-
-		return new Action($this, $id, $params);
+		$this->onResult($result);
 	}
 
 	/**
-	 * Runs an action.
+	 * Throwable handling.
 	 *
-	 * @param IAction $action
-	 *	The action.
+	 * It is invoked automatically once a throwable is caught by the global
+	 * handler, giving the controller the opportunity to generate the
+	 * applicable error response.
 	 *
-	 * @return int
-	 *	The result.
-	 */
-	public final function run(IAction $action) : int
-	{
-		// Save the previous action and context.
-		$pAction = __action_replace($action);
-		$pContext = __context_replace($this->context);
-
-		// Run
-		$this->onRun();
-
-		$controller = $action->getController();
-
-		$result = __object_call_array
-		(
-			$controller,
-			$controller->getActionMethodName($action->getName()),
-			array_values($action->getParameters())
-		);
-
-		if (is_int($result))
-		{
-			// If the result is an integer matching the range of an http status
-			// code, handle it as such.
-			if ($result > 99 && $result < 600)
-			{
-				// If it's an error, we'll simply throw a http status exception
-				// and delegate the behaviour to the parent context.
-				if ($result > 299)
-				{
-					throw new HttpStatusException($result, __http_status_message($result));
-				}
-
-				// If not, simply change the status code.
-				$this->getHttpResponse()->setStatusCode($result);
-			}
-		}
-
-		else if (is_array($result))
-		{
-			// If the result is an array, we'll generate a json response with
-			// the contents of it encoded as json.
-			$status = (__map_extract($result, '?int', '@status') ?? 200);
-			$content = __json_encode($result);
-
-			$response = $this->getHttpResponse();
-			$response->setStatusCode($status);
-			$response->setHeader('Content-Type', 'application/json; charset=utf-8');
-			$response->setHeader('Content-Length', strlen($content));
-
-			echo $content;
-		}
-
-		$this->onAfterRun();
-
-		// Restore action and context.
-		__action_set($pAction);
-		__context_set($pContext);
-
-		return (is_int($result) ? $result : 0);
-	}
-
-	/**
-	 * Sets the layout.
-	 *
-	 * @param string $layout
-	 *	The layout.
-	 */
-	public function setLayout(?string $layout) : void
-	{
-		if ($theme = $this->getTheme())
-		{
-			$theme->setLayout($layout);
-		}
-	}
-
-	/**
-	 * Creates and starts a new sql transaction to execute the procedure(s)
-	 * implemented by the given closure.
-	 *
-	 * If the closure throws an uncaught exception, the transaction will
-	 * automatically rollback before that exception is re-thrown.
-	 *
-	 * @param \Closure $closure
-	 *	The transaction closure.
-	 *
-	 * @return mixed
-	 *	The closure result.
-	 */
-	public function transaction(\Closure $closure) // : mixed;
-	{
-		$sql = $this->getSqlConnection();
-		$transaction = $sql->transaction();
-
-		try
-		{
-			$result = $closure($sql);
-			$transaction->commit();
-			return $result;
-		}
-		catch (\Throwable $e)
-		{
-			if (!$transaction->isClosed())
-			{
-				$transaction->rollback();
-			}
-
-			throw $e;
-		}
-	}	
-
-	/**
-	 * Generates the applicable error response.
-	 *
-	 * This method is invoked automatically by the lightbit global exception
-	 * and error handlers when an uncaught exception is thrown.
-	 *
-	 * If the error response is generated, this function should return false
-	 * in order to prevent escalation and, at the end, the default behaviour.
+	 * If the result is positivie, the throwable handling will not propagate
+	 * to the parent contexts.
 	 *
 	 * @param Throwable $throwable
-	 *	The uncaught throwable.
+	 *	The throwable.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function throwable(\Throwable $throwable) : bool
+	public function throwable(Throwable $throwable) : bool
 	{
 		return false;
 	}
@@ -619,88 +287,36 @@ abstract class Controller extends Element implements IController
 	/**
 	 * On After Construct.
 	 *
-	 * This method is invoked during the application construction procedure,
-	 * after the dynamic configuration is applied.
+	 * It is invoked automatically during the controller construction
+	 * procedure, after applying the custom configuration.
 	 */
 	protected function onAfterConstruct() : void
 	{
-		$this->raise('lightbit.base.controller.construct.after', $this);
-	}
 
-	/**
-	 * On After Display.
-	 *
-	 * Called during the controller display procedure, after the view is
-	 * resolved, constructed and executed.
-	 */
-	protected function onAfterDisplay() : void
-	{
-		$this->raise('base.controller.display.after');
-	}
-
-	/**
-	 * On After Render.
-	 *
-	 * Called during the controller render procedure, after the view is
-	 * resolved, constructed and executed.
-	 */
-	protected function onAfterRender() : void
-	{
-		$this->raise('base.controller.render.after');
-	}
-
-	/**
-	 * On After Run.
-	 *
-	 * Called during the controller run procedure, after the applicable
-	 * action method is invoked.
-	 */
-	protected function onAfterRun() : void
-	{
-		$this->raise('base.controller.run.after');
 	}
 
 	/**
 	 * On Construct.
 	 *
-	 * This method is invoked during the application construction procedure,
-	 * before the dynamic configuration is applied.
+	 * It is invoked automatically during the controller construction
+	 * procedure, before applying the custom configuration.
 	 */
 	protected function onConstruct() : void
 	{
-		$this->raise('lightbit.base.controller.construct', $this);
+
 	}
 
 	/**
-	 * On Display.
+	 * On Result.
 	 *
-	 * Called during the controller display procedure, before the view is
-	 * resolved, constructed and executed.
-	 */
-	protected function onDisplay() : void
-	{
-		$this->raise('base.controller.display');
-	}
-
-	/**
-	 * On Render.
+	 * It is invoked automatically during the action run procedure, after 
+	 * and only if a value is returned by its implementation.
 	 *
-	 * Called during the controller render procedure, before the view is
-	 * resolved, constructed and executed.
+	 * @param mixed $result
+	 *	The result.
 	 */
-	protected function onRender() : void
+	protected function onResult($result) : void
 	{
-		$this->raise('base.controller.render');
-	}
-
-	/**
-	 * On Run.
-	 *
-	 * Called during the controller run procedure, before the applicable
-	 * action method is invoked.
-	 */
-	protected function onRun() : void
-	{
-		$this->raise('base.controller.run');
+		
 	}
 }

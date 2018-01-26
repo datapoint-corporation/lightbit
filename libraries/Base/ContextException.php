@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,14 +27,13 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IContext;
-
 use \Lightbit\Exception;
+use \Lightbit\Base\IContext;
 
 /**
  * ContextException.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 class ContextException extends Exception
@@ -42,18 +41,18 @@ class ContextException extends Exception
 	/**
 	 * The context.
 	 *
-	 * @var Context
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The context.
 	 *
 	 * @param string $message
-	 *	The exception message.
+	 *	The exception human readable message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.
@@ -63,16 +62,5 @@ class ContextException extends Exception
 		parent::__construct($message, $previous);
 
 		$this->context = $context;
-	}
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return IContext
-	 *	The context.
-	 */
-	public final function getContext() : IContext
-	{
-		return $this->context;
 	}
 }

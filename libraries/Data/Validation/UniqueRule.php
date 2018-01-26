@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +27,10 @@
 
 namespace Lightbit\Data\Validation;
 
-use \Lightbit\Data\Validation\Rule;
-
 use \Lightbit\Data\IModel;
 use \Lightbit\Data\Sql\ISqlActiveRecord;
+use \Lightbit\Data\Validation\Rule;
+use \Lightbit\Scope;
 
 /**
  * UniqueRule.
@@ -63,7 +63,7 @@ class UniqueRule extends Rule
 				sprintf
 				(
 					'Can not use unique rule for non active record: model %s, rule %s',
-					__type_of($model),
+					get_class($model),
 					$id
 				)
 			);
@@ -71,7 +71,7 @@ class UniqueRule extends Rule
 
 		if ($configuration)
 		{
-			__object_apply($this, $configuration);
+			(new Scope($this))->configure($configuration);
 		}
 	}
 

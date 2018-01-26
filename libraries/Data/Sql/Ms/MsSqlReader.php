@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,8 +27,7 @@
 
 namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Base\Object;
-
+use \Lightbit\Data\Manipulation\GenericStringConversion;
 use \Lightbit\Data\Sql\ISqlConnection;
 use \Lightbit\Data\Sql\ISqlReader;
 use \Lightbit\Data\Sql\ISqlStatement;
@@ -45,7 +44,7 @@ use \Lightbit\Data\Sql\ISqlStatement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MsSqlReader extends Object implements ISqlReader
+class MsSqlReader implements ISqlReader
 {
 	/**
 	 * The state.
@@ -251,7 +250,7 @@ class MsSqlReader extends Object implements ISqlReader
 				$result[$i] = 
 				(
 					isset($value) 
-					? __type_to_string($value) 
+					? (new GenericStringConversion($value))->toString()
 					: null
 				);
 			}

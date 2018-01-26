@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\My;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\My\MySqlConnection;
 use \Lightbit\Data\Sql\My\MySqlConnectionException;
 
@@ -39,7 +38,7 @@ use \Lightbit\Data\Sql\ISqlTransaction;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MySqlTransaction extends Object implements ISqlTransaction
+class MySqlTransaction implements ISqlTransaction
 {
 	/**
 	 * The state.

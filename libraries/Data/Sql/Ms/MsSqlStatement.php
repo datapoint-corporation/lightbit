@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@
 
 namespace Lightbit\Data\Sql\Ms;
 
-use \Lightbit\Base\Object;
 use \Lightbit\Data\Sql\Ms\MsSqlConnection;
 use \Lightbit\Data\Sql\Ms\MsSqlConnectionException;
 use \Lightbit\Data\Sql\Ms\MsSqlReader;
@@ -51,7 +50,7 @@ use \Lightbit\Data\Sql\ISqlStatement;
  * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class MsSqlStatement extends Object implements ISqlStatement
+class MsSqlStatement implements ISqlStatement
 {
 	/**
 	 * The sql connection.

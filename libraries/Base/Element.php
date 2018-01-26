@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,82 +27,42 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Object;
-
-use \Lightbit\Base\IAction;
-use \Lightbit\Base\IApplication;
+use \Lightbit;
 use \Lightbit\Base\IComponent;
 use \Lightbit\Base\IContext;
-use \Lightbit\Base\IController;
-use \Lightbit\Base\IEnvironment;
-use \Lightbit\Base\IModule;
-use \Lightbit\Base\IView;
-use \Lightbit\Data\Caching\ICache;
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
-use \Lightbit\Data\Sql\ISqlConnection;
-use \Lightbit\Globalization\ILocale;
-use \Lightbit\Globalization\IMessageSource;
-use \Lightbit\Html\IHtmlAdapter;
+use \Lightbit\Base\IElement;
+use \Lightbit\Html\IHtmlComposer;
 use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Http\IHttpAssetManager;
-use \Lightbit\Http\IHttpQueryString;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpSession;
+use \Lightbit\I18n\ILocale;
+use \Lightbit\I18n\ILocaleManager;
+use \Lightbit\I18n\IMessageSource;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
  * Element.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Element extends Object implements IElement
+abstract class Element implements IElement
 {
 	/**
-	 * Constructor.
+	 * Gets the context.
 	 *
-	 * @param IContext $context
-	 *	The element context.
+	 * @return IContext
+	 *	The context.
+	 */
+	abstract public function getContext() : IContext;
+
+	/**
+	 * Constructor.
 	 */
 	protected function __construct()
 	{
-	}
 
-	/**
-	 * Gets the action.
-	 *
-	 * @return IAction
-	 *	The action.
-	 */
-	public final function getAction() : IAction
-	{
-		return __action();
-	}
-
-	/**
-	 * Gets the application.
-	 *
-	 * @return IApplication
-	 *	The application.
-	 */
-	public final function getApplication() : IApplication
-	{
-		return __application();
-	}
-
-	/**
-	 * Gets the cache.
-	 *
-	 * @return ICache
-	 *	The cache.
-	 */
-	public function getCache() : ICache
-	{
-		return $this->getContext()->getCache();
 	}
 
 	/**
@@ -120,47 +80,14 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
-	 * Gets the context.
+	 * Gets the html composer.
 	 *
-	 * @return IContext
-	 *	The context.
+	 * @return IHtmlComposer
+	 *	The html composer.
 	 */
-	public function getContext() : IContext
+	public function getHtmlComposer() : IHtmlComposer
 	{
-		return __context();
-	}
-
-	/**
-	 * Gets the environment.
-	 *
-	 * @return IEnvironment
-	 *	The environment.
-	 */
-	public function getEnvironment() : IEnvironment
-	{
-		return $this->getContext()->getEnvironment();
-	}
-
-	/**
-	 * Gets the file cache.
-	 *
-	 * @return IFileCache
-	 *	The file cache.
-	 */
-	public function getFileCache() : IFileCache
-	{
-		return $this->getContext()->getFileCache();
-	}
-
-	/**
-	 * Gets the html adapter.
-	 *
-	 * @return IHtmlAdapter
-	 *	The html adapter.
-	 */
-	public function getHtmlAdapter() : IHtmlAdapter
-	{
-		return $this->getContext()->getHtmlAdapter();
+		return $this->getComponent('html.composer');
 	}
 
 	/**
@@ -171,51 +98,29 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHtmlDocument() : IHtmlDocument
 	{
-		return $this->getContext()->getHtmlDocument();
+		return $this->getComponent('html.document');
 	}
 
 	/**
-	 * Gets the http asset manager.
+	 * Gets the http request.
 	 *
-	 * @return IHttpAssetManager
-	 *	The http asset manager.
-	 */
-	public function getHttpAssetManager() : IHttpAssetManager
-	{
-		return $this->getContext()->getHttpAssetManager();
-	}
-
-	/**
-	 * Gets the http query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The http query string.
-	 */
-	public function getHttpQueryString() : IHttpQueryString
-	{
-		return $this->getContext()->getHttpQueryString();
-	}
-
-	/**
-	 * Gets the http request component.
-	 *
-	 * @param IHttpRequest
-	 *	The http request component.
+	 * @return IHttpRequest
+	 *	The http request.
 	 */
 	public function getHttpRequest() : IHttpRequest
 	{
-		return $this->getContext()->getHttpRequest();
+		return $this->getComponent('http.request');
 	}
 
 	/**
-	 * Gets the http response component.
+	 * Gets the http response.
 	 *
-	 * @param IHttpResponse
-	 *	The http response component.
+	 * @return IHttpResponse
+	 *	The http response.
 	 */
 	public function getHttpResponse() : IHttpResponse
 	{
-		return $this->getContext()->getHttpResponse();
+		return $this->getComponent('http.response');
 	}
 
 	/**
@@ -226,18 +131,18 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getHttpRouter() : IHttpRouter
 	{
-		return $this->getContext()->getHttpRouter();
+		return $this->getComponent('http.router');
 	}
 
 	/**
-	 * Gets the http session.
+	 * Gets the locale manager.
 	 *
-	 * @return IHttpSession
-	 *	The http session.
+	 * @return ILocaleManager
+	 *	The locale manager.
 	 */
-	public function getHttpSession() : IHttpSession
+	public function getLocaleManager(): ILocaleManager
 	{
-		return $this->getContext()->getHttpSession();
+		return $this->getComponent('locale.manager');
 	}
 
 	/**
@@ -252,17 +157,6 @@ abstract class Element extends Object implements IElement
 	}
 
 	/**
-	 * Gets the memory cache.
-	 *
-	 * @return IMemoryCache
-	 *	The memory cache.
-	 */
-	public function getMemoryCache() : IMemoryCache
-	{
-		return $this->getContext()->getMemoryCache();
-	}
-
-	/**
 	 * Gets the message source.
 	 *
 	 * @return IMessageSource
@@ -270,18 +164,7 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getMessageSource() : IMessageSource
 	{
-		return $this->getContext()->getMessageSource();
-	}
-
-	/**
-	 * Gets the network cache.
-	 *
-	 * @return INetworkCache
-	 *	The network cache.
-	 */
-	public function getNetworkCache() : INetworkCache
-	{
-		return $this->getContext()->getNetworkCache();
+		return $this->getComponent('message.source');
 	}
 
 	/**
@@ -292,28 +175,27 @@ abstract class Element extends Object implements IElement
 	 */
 	public function getPasswordDigest() : IPasswordDigest
 	{
-		return $this->getContext()->getPasswordDigest();
+		return $this->getComponent('password.digest');
 	}
 
 	/**
-	 * Gets the sql connection.
+	 * Gets a message and formats a message.
 	 *
-	 * @return ISqlConnection
-	 *	The sql connection.
-	 */
-	public function getSqlConnection() : ISqlConnection
-	{
-		return $this->getContext()->getSqlConnection();
-	}
-
-	/**
-	 * Gets the theme.
+	 * @param string $message
+	 *	The message pattern.
 	 *
-	 * @return ITheme
-	 *	The theme.
+	 * @param array $parameters
+	 *	The message parameters.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function getTheme() : ?ITheme
+	public function message(string $message, array $parameters = null) : string
 	{
-		return $this->getContext()->getTheme();
+		return ($locale = $this->getLocale())->message
+		(
+			$this->getMessageSource()->read($locale, $message),
+			$parameters
+		);
 	}
 }

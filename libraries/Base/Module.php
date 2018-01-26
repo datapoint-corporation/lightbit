@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,17 +28,15 @@
 namespace Lightbit\Base;
 
 use \Lightbit\Base\Context;
-use \Lightbit\Data\SlugManager;
-use \Lightbit\Globalization\MessageSource;
-
-use \Lightbit\Base\IApplication;
-use \Lightbit\Base\IContext;
 use \Lightbit\Base\IModule;
+use \Lightbit\Cli\ICliRouter;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Scope;
 
 /**
  * Module.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 abstract class Module extends Context implements IModule
@@ -46,89 +44,51 @@ abstract class Module extends Context implements IModule
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
-	 *	The module context.
+	 * @param IContext $context
+	 *	The context parent.
 	 *
 	 * @param string $id
-	 *	The module identifier.
+	 *	The context identifier.
 	 *
 	 * @param string $path
-	 *	The module path.
+	 *	The context install path.
 	 *
 	 * @param array $configuration
-	 *	The module configuration.
+	 *	The context configuration map.
 	 */
-	public final function __construct(IContext $context, string $id, string $path, array $configuration = null)
+	public final function __construct(?IContext $context, string $id, string $path, array $configuration = null)
 	{
 		parent::__construct($context, $id, $path);
-
-		$this->setComponentsConfiguration
-		(
-			[
-				'data.slug.manager' => [ '@class' => SlugManager::class ],
-				'globalization.message.source' => [ '@class' => MessageSource::class ]
-			]
-		);
 
 		$this->onConstruct();
 
 		if ($configuration)
 		{
-			$this->configure($configuration);
+			(new Scope($this))->configure($configuration);
 		}
 
 		$this->onAfterConstruct();
 	}
 
 	/**
-	 * Gets the application.
-	 *
-	 * @return Application
-	 *	The application.
-	 */
-	public final function getApplication() : IApplication
-	{
-		return __application();
-	}
-
-	/**
-	 * Generates the proper response to a throwable caught by the global
-	 * exception handler during an action implemented by a child controller.
-	 *
-	 * If the module can not generate the proper response, false should
-	 * be returned in order to delegate control to its parent, the application
-	 * and the global exception handler.
-	 *
-	 * @param Throwable $throwable
-	 *	The throwable object.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function throwable(\Throwable $throwable) : bool
-	{
-		return false;
-	}
-
-	/**
 	 * On After Construct.
 	 *
-	 * This method is invoked during the module construction procedure,
-	 * after the dynamic configuration is applied.
+	 * It is invoked automatically during the module construction
+	 * procedure, after applying the custom configuration.
 	 */
 	protected function onAfterConstruct() : void
 	{
-		$this->raise('lightbit.base.module.construct.after', $this);
+
 	}
 
 	/**
 	 * On Construct.
 	 *
-	 * This method is invoked during the module construction procedure,
-	 * before the dynamic configuration is applied.
+	 * It is invoked automatically during the module construction
+	 * procedure, before applying the custom configuration.
 	 */
 	protected function onConstruct() : void
 	{
-		$this->raise('lightbit.base.module.construct', $this);
+
 	}
 }

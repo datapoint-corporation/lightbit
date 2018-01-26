@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,18 +27,18 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Element;
-
-use \Lightbit\Base\IComponent;
+use \Lightbit\Base\IChannel;
 use \Lightbit\Base\IContext;
+use \Lightbit\Base\IComponent;
+use \Lightbit\Scope;
 
 /**
  * Component.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-abstract class Component extends Element implements IComponent
+abstract class Component implements IComponent
 {
 	/**
 	 * The context.
@@ -64,12 +64,10 @@ abstract class Component extends Element implements IComponent
 	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The component configuration.
+	 *	The component configuration map.
 	 */
 	public final function __construct(IContext $context, string $id, array $configuration = null)
 	{
-		parent::__construct();
-
 		$this->context = $context;
 		$this->id = $id;
 
@@ -77,10 +75,31 @@ abstract class Component extends Element implements IComponent
 
 		if ($configuration)
 		{
-			__object_apply($this, $configuration);
+			(new Scope($this))->configure($configuration);
 		}
 
 		$this->onAfterConstruct();
+	}
+
+	/**
+	 * Disposes.
+	 *
+	 * It first closes any persistent resources, followed by the disposal of
+	 * any temporary memory information and, finally, the state.
+	 */
+	public final function dispose() : void
+	{
+		$this->onDispose();
+
+		if ($this instanceof IChannel)
+		{
+			if (!$this->isClosed())
+			{
+				$this->close();
+			}
+		}
+
+		$this->onAfterDispose();
 	}
 
 	/**
@@ -89,18 +108,18 @@ abstract class Component extends Element implements IComponent
 	 * @return IContext
 	 *	The context.
 	 */
-	public function getContext() : IContext
+	public final function getContext() : IContext
 	{
 		return $this->context;
 	}
-	
+
 	/**
 	 * Gets the identifier.
 	 *
 	 * @return string
 	 *	The identifier.
 	 */
-	public final function getID() : string
+	public function getID() : string
 	{
 		return $this->id;
 	}
@@ -108,22 +127,44 @@ abstract class Component extends Element implements IComponent
 	/**
 	 * On After Construct.
 	 *
-	 * This method is invoked during the component construction procedure,
-	 * after the dynamic configuration is applied.
+	 * It is invoked automatically during the component construction
+	 * procedure, after applying the custom configuration.
 	 */
 	protected function onAfterConstruct() : void
 	{
-		$this->raise('lightbit.base.component.construct.after', $this);
+
+	}
+
+	/**
+	 * On After Dispose.
+	 *
+	 * It is invoked automatically during the component disposal procedure, 
+	 * after the component is closed.
+	 */
+	protected function onAfterDispose() : void
+	{
+
 	}
 
 	/**
 	 * On Construct.
 	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
+	 * It is invoked automatically during the component construction
+	 * procedure, before applying the custom configuration.
 	 */
 	protected function onConstruct() : void
 	{
-		$this->raise('lightbit.base.component.construct', $this);
+
+	}
+
+	/**
+	 * On Dispose.
+	 *
+	 * It is invoked automatically during the component construction
+	 * procedure, before the channel is closed.
+	 */
+	protected function onDispose() : void
+	{
+
 	}
 }

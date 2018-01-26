@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,7 +32,7 @@ use \Lightbit\Exception;
 /**
  * IllegalStateException.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 class IllegalStateException extends Exception
@@ -41,7 +41,7 @@ class IllegalStateException extends Exception
 	 * Constructor.
 	 *
 	 * @param string $message
-	 *	The exception message.
+	 *	The exception human readable message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.

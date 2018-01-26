@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,124 +28,79 @@
 namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
-use \Lightbit\Data\Caching\CacheBase;
-
-use \Lightbit\Base\IContext;
 use \Lightbit\Data\Caching\ICache;
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
 
 /**
  * Cache.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class Cache extends CacheBase implements IFileCache, IMemoryCache, INetworkCache
+abstract class Cache extends Component implements ICache
 {
 	/**
-	 * The attributes.
+	 * Checks if content is available.
 	 *
-	 * @var array
-	 */
-	private $attributes;
-
-	/**
-	 * Deletes a attribute.
-	 *
-	 * @param string $property
-	 *	The property.
-	 */
-	public function delete(string $property) : void
-	{
-		unset($this->attributes[$property]);
-	}
-
-	/**
-	 * Extracts a attribute.
-	 *
-	 * @param string $type
-	 *	The property data type (e.g.: '?string').
-	 *
-	 * @param string $property
-	 *	The property.
-	 *
-	 * @return mixed
-	 *	The attribute.
-	 */
-	public function extract(?string $type, string $property) // : mixed
-	{
-		return __map_extract($this->attributes, $type, $property);
-	}
-
-	/**
-	 * Gets a attribute.
-	 *
-	 * @param string $type
-	 *	The property data type (e.g.: '?string').
-	 *
-	 * @param string $property
-	 *	The property.
-	 *
-	 * @return mixed
-	 *	The attribute.
-	 */
-	public function get(?string $type, string $property) // : mixed
-	{
-		try
-		{
-			return __map_get($this->attributes, $type, $property);
-		}
-		catch (\Throwable $e)
-		{
-			throw new CacheException
-			(
-				$this,
-				sprintf('Can not get session attribute: property %s', $property),
-				$e
-			);
-		}
-	}
-
-	/**
-	 * Checks if a attribute is set.
-	 *
-	 * @param string $property
-	 *	The property.
+	 * @param string $id
+	 *	The content identifier.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function has(string $property) : bool
-	{
-		return isset($this->attributes[$property]);
-	}
+	abstract public function contains(string $id) : bool;
 
 	/**
-	 * Sets a attribute.
+	 * Reads content into a variable.
 	 *
-	 * @param string $property
-	 *	The property.
+	 * @param string $id
+	 *	The content identifier.
 	 *
-	 * @param mixed $attribute
-	 *	The attribute.
+	 * @param mixed $variable
+	 *	The variable to read into.
+	 *
+	 * @return bool
+	 *	The result.
 	 */
-	public function set(string $property, $attribute) : void
-	{
-		$this->attributes[$property] = $attribute;
-	}
-	
-	/**
-	 * On Construct.
-	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
+	abstract public function read(string $id, &$variable) : bool;
 
-		$this->attributes = [];
+	/**
+	 * Writes content.
+	 *
+	 * @param string $id
+	 *	The content identifier.
+	 *
+	 * @param mixed $content
+	 *	The content.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	abstract public function write(string $id, $content) : bool;
+
+	/**
+	 * Closure.
+	 *
+	 * If the content is not available, the closure is invoked to generate it
+	 * before being written and returned for use.
+	 *
+	 * @param string $id
+	 *	The content identifier.
+	 *
+	 * @param Closure $closure
+	 *	The content closure.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public final function closure(string $id, Closure $closure)
+	{
+		$result;
+		
+		if (!$this->read($id, $result))
+		{
+			$this->write($id, $result = $closure());
+		}
+
+		return $result;
 	}
 }

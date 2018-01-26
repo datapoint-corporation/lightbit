@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,58 +27,65 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IAction;
+use \Throwable;
+
 use \Lightbit\Base\IContext;
 use \Lightbit\Base\IElement;
+use \Lightbit\Base\ITheme;
 
 /**
  * IController.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IController extends IElement
+interface IController
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
+	 * @param IContext $context
 	 *	The controller context.
 	 *
 	 * @param string $id
 	 *	The controller identifier.
 	 *
 	 * @param array $configuration
-	 *	The component configuration.
+	 *	The controller configuration map.
 	 */
 	public function __construct(IContext $context, string $id, array $configuration = null);
 
 	/**
-	 * Gets an action method name.
+	 * Displays a view.
 	 *
-	 * @param string $action
-	 *	The action name.
+	 * If the view identifier is not absolute, a theme is set and a matching
+	 * view override exists, the override is rendered instead of the default
+	 * controller view.
+	 *
+	 * @param string $id
+	 *	The view identifier.
+	 *
+	 * @param array $parameters
+	 *	The view parameters.
+	 *
+	 * @param bool $capture
+	 *	The view output capture flag.
+	 *
+	 * @return string
+	 *	The view output, if captured.
+	 */
+	public function display(string $id, array $parameters = null) : void;
+
+	/**
+	 * Gets a action method name.
+	 *
+	 * @param string $id
+	 *	The action identifier.
 	 *
 	 * @return string
 	 *	The action method name.
 	 */
-	public function getActionMethodName(string $action) : string;
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return Context
-	 *	The context.
-	 */
-	public function getContext() : IContext;
-
-	/**
-	 * Gets the global identifier.
-	 *
-	 * @return string
-	 *	The global identifier.
-	 */
-	public function getGlobalID() : string;
+	public function getActionMethodName(string $id) : string;
 
 	/**
 	 * Gets the identifier.
@@ -89,55 +96,83 @@ interface IController extends IElement
 	public function getID() : string;
 
 	/**
+	 * Gets the theme.
+	 *
+	 * @return ITheme
+	 *	The theme.
+	 */
+	public function getTheme() : ?ITheme;
+
+	/**
 	 * Gets a view.
 	 *
-	 * @param string $view
+	 * If the view identifier is not absolute, a theme is set and a matching
+	 * view override exists, the override is returned instead of the default
+	 * controller view.
+	 *
+	 * @param string $id
 	 *	The view identifier.
 	 *
 	 * @return IView
 	 *	The view.
 	 */
-	public function getView(string $view) : IView;
+	public function getView(string $id) : IView;
 
 	/**
-	 * Resolves to an action.
+	 * Gets the views path.
+	 *
+	 * @return string
+	 *	The views path.
+	 */
+	public function getViewsPath() : string;
+
+	/**
+	 * Renders a view.
+	 *
+	 * If the view identifier is not absolute, a theme is set and a matching
+	 * view override exists, the override is rendered instead of the default
+	 * controller view.
 	 *
 	 * @param string $id
-	 *	The action identifier.
+	 *	The view identifier.
 	 *
 	 * @param array $parameters
-	 *	The action parameters.
+	 *	The view parameters.
 	 *
-	 * @return Action
-	 *	The action.
+	 * @param bool $capture
+	 *	The view output capture flag.
+	 *
+	 * @return string
+	 *	The view output, if captured.
 	 */
-	public function resolve(string $id, array $parameters) : IAction;
+	public function render(string $id, array $parameters = null, bool $capture = false) : ?string;
 
 	/**
-	 * Generates the applicable error response.
+	 * Generates a response based on an action result.
 	 *
-	 * This method is invoked automatically by the lightbit global exception
-	 * and error handlers when an uncaught exception is thrown.
+	 * It is invoked automatically during the action run procedure, after 
+	 * and only if a value is returned by its implementation.
 	 *
-	 * If the error response is generated, this function should return false
-	 * in order to prevent escalation and, at the end, the default behaviour.
+	 * @param mixed $result
+	 *	The result.
+	 */
+	public function result($result) : void;
+
+	/**
+	 * Throwable handling.
+	 *
+	 * It is invoked automatically once a throwable is caught by the global
+	 * handler, giving the controller the opportunity to generate the
+	 * applicable error response.
+	 *
+	 * If the result is positivie, the throwable handling will not propagate
+	 * to the parent contexts.
 	 *
 	 * @param Throwable $throwable
-	 *	The uncaught throwable.
+	 *	The throwable.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function throwable(\Throwable $throwable) : bool;
-
-	/**
-	 * Runs an action.
-	 *
-	 * @param IAction $action
-	 *	The action.
-	 *
-	 * @return int
-	 *	The result.
-	 */
-	public function run(IAction $action) : int;
+	public function throwable(Throwable $throwable) : bool;
 }

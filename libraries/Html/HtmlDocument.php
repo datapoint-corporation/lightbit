@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,11 +29,9 @@ namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
 use \Lightbit\Base\View;
+use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Navigation\HtmlBreadcrumb;
 use \Lightbit\Html\Navigation\IHtmlBreadcrumb;
-
-use \Lightbit\Base\IContext;
-use \Lightbit\Html\IHtmlDocument;
 
 /**
  * HtmlDocument.
@@ -109,38 +107,25 @@ class HtmlDocument extends Component implements IHtmlDocument
 	/**
 	 * Sets an additional breadcrumb.
 	 *
-	 * @param IHtmlBreadcrumb $title
-	 *	The breadcrumb.
-	 */
-	public function addBreadcrumb(IHtmlBreadcrumb $breadcrumb) : void
-	{
-		$this->breadcrumbs[] = $breadcrumb;
-	}
-
-	/**
-	 * Sets additional breadcrumbs.
+	 * @param string $label
+	 *	The breadcrumb label.
 	 *
-	 * @param array $breadcrumbs
-	 *	The breadcrumbs.
+	 * @param array $route
+	 *	The breadcrumb route.
+	 *
+	 * @param array $attributes
+	 *	The breadcrumb attributes.
 	 */
-	public function addBreadcrumbs(array $breadcrumbs) : void
+	public function addBreadcrumb(string $label, array $route, array $attributes = null) : void
 	{
-		foreach ($breadcrumbs as $i => $breadcrumb)
-		{
-			if (! ($breadcrumb instanceof IHtmlBreadcrumb))
-			{
-				$breadcrumb = HtmlBreadcrumb::create($breadcrumb);
-			}
-
-			$this->addBreadcrumb($breadcrumb);
-		}
+		$this->breadcrumbs[] = new HtmlDocumentBreadcrumb($this, $label, $route, $attributes);
 	}
 
 	/**
 	 * Sets an additional inline script.
 	 *
-	 * @param string $script
-	 *	The inline script file system alias.
+	 * @param string $content
+	 *	The script content.
 	 *
 	 * @param array $attributes
 	 *	The script attributes.
@@ -148,42 +133,23 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 * @param string $position
 	 *	The script position.
 	 */
-	public function addInlineScript(string $script, array $attributes = null, string $position = 'body') : void
+	public function addInlineScript(string $content, array $attributes = null, string $position = 'body') : void
 	{
-		$this->inlineScripts[$position][] =
-		[
-			'attributes' => $attributes,
-			'script' => $script
-		];
+		$this->inlineScripts[$position][] = new HtmlDocumentInlineScript($this, $content, $attributes);
 	}
 
 	/**
 	 * Sets an additional inline style.
 	 *
-	 * @param string $style
-	 *	The style file system alias.
+	 * @param string $content
+	 *	The style content.
 	 *
 	 * @param array $attributes
 	 *	The style attributes.
 	 */
-	public function addInlineStyle(string $style, array $attributes = null) : void
+	public function addInlineStyle(string $content, array $attributes = null) : void
 	{
-		$this->inlineStyles[] =
-		[
-			'attributes' => $attributes,
-			'style' => $style
-		];
-	}
-
-	/**
-	 * Sets additional meta attributes.
-	 *
-	 * @param array $attributes
-	 *	The meta attributes.
-	 */
-	public function addMetaAttributes(array $attributes) : void
-	{
-		$this->metaAttributes[] = $attributes;
+		$this->inlineStyles[] = new HtmlDocumentInlineStyle($this, $content, $attributes);
 	}
 
 	/**
@@ -218,11 +184,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addStyle(string $location, array $attributes = null) : void
 	{
-		$this->styles[] =
-		[
-			'attributes' => $attributes,
-			'location' => $location
-		];
+		$this->styles[] = new HtmlDocumentStyle($this, $location, $attributes);
 	}
 
 	/**
@@ -236,11 +198,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addTag(string $tag, array $attributes = null) : void
 	{
-		$this->tags[] =
-		[
-			'attributes' => $attributes,
-			'tag' => $tag
-		];
+		$this->tags[] = new HtmlDocumentTag($this, $tag, $attributes);
 	}
 
 	/**
@@ -255,14 +213,25 @@ class HtmlDocument extends Component implements IHtmlDocument
 	}
 
 	/**
-	 * Gets the meta attributes.
+	 * Gets the inline scripts.
 	 *
 	 * @return array
-	 *	The meta attributes.
+	 *	The inline scripts, by position.
 	 */
-	public function getMetaAttributes() : array
+	public function getInlineScripts() : array
 	{
-		return $this->metaAttributes;
+		return $this->inlineScripts;
+	}
+
+	/**
+	 * Gets the inline styles.
+	 *
+	 * @return string
+	 *	The inline styles.
+	 */
+	public function getInlineStyles() : array
+	{
+		return $this->inlineStyles;
 	}
 
 	/**
@@ -304,128 +273,9 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 * @return string
 	 *	The title.
 	 */
-	public function getTitle() : ?string
+	public function getTitle() : string
 	{
-		return $this->title;
-	}
-
-	/**
-	 * Inflates the document.
-	 *
-	 * @param string $position
-	 *	The position.
-	 *
-	 * @return string
-	 *	The markup.
-	 */
-	public function inflate(string $position) : string
-	{
-		$html = $this->getHtmlAdapter();
-		$result = '';
-
-		if ($position === 'head')
-		{
-			$result .= __html_element('base', [ 'href' => $this->getHttpRouter()->getBaseUrl() ]) . PHP_EOL;
-
-			foreach ($this->tags as $i => $tag)
-			{
-				$result .= __html_element($tag['tag'], $tag['attributes']) . PHP_EOL;
-			}
-
-			foreach ($this->metaAttributes as $i => $attributes)
-			{
-				$result .= __html_element('meta', $attributes) . PHP_EOL;
-			}
-
-			if ($this->title)
-			{
-				$result .= __html_element('title', null, $this->title) . PHP_EOL;
-			}
-
-			else if ($this->defaultTitle)
-			{
-				$result .= __html_element('title', null, $this->defaultTitle) . PHP_EOL;
-			}
-
-			foreach ($this->styles as $i => $style)
-			{
-				$result .=
-
-				__html_element
-				(
-					'link',
-					__html_attribute_array_merge
-					(
-						[ 'rel' => 'stylesheet', 'type' => 'text/css' ],
-						$style['attributes'],
-						[ 'href' => $style['location'] ]
-					)
-				)
-
-				. PHP_EOL;
-			}
-
-			foreach ($this->inlineStyles as $i => $style)
-			{
-				$result .=
-
-				__html_element
-				(
-					'style',
-					__html_attribute_array_merge([ 'type' => 'text/css' ], $style['attributes']),
-					(new View($this->getContext(), (__asset_path_resolve(null, 'php', $style['style']))))->run(null, true),
-					false
-				)
-
-				. PHP_EOL;
-			}
-		}
-
-		if (isset($this->scripts[$position]))
-		{
-			foreach ($this->scripts[$position] as $i => $script)
-			{
-				$result .=
-
-				__html_element
-				(
-					'script',
-					__html_attribute_array_merge
-					(
-						[
-							'language' => 'javascript',
-							'type' => 'text/javascript'
-						],
-						$script['attributes'],
-						[
-							'src' => $script['location']
-						]
-					)
-				)
-
-				. PHP_EOL;
-			}
-		}
-
-		if (isset($this->inlineScripts[$position]))
-		{
-			foreach ($this->inlineScripts as $i => $script)
-			{
-				$result .=
-
-				__html_element
-				(
-					'script',
-					__html_attribute_array_merge([ 'type' => 'text/javascript', 'language' => 'javascript' ], $script['attributes']),
-					(new View($this->getContext(), (__asset_path_resolve(null, 'php', $script['script']))))->run(null, true),
-					false
-				)
-
-				. PHP_EOL;
-			}
-		}
-
-		return $result;
+		return $this->title ?? $this->defaultTitle;
 	}
 
 	/**
@@ -434,6 +284,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	public function reset() : void
 	{
 		$this->breadcrumbs = [];
+		$this->defaultTitle = 'Untitled Page';
 		$this->inlineScripts = [];
 		$this->inlineStyles = [];
 		$this->metaAttributes = [];

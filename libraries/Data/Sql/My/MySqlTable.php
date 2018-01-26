@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,11 +29,11 @@ namespace Lightbit\Data\Sql\My;
 
 use \Lightbit\Data\Sql\My\MySqlDatabase;
 use \Lightbit\Data\Sql\My\MySqlObject;
-
 use \Lightbit\Data\Sql\ISqlColumn;
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
 use \Lightbit\Data\Sql\ISqlTable;
+use \Lightbit\Data\Traversing\ArrayIterator;
 
 /**
  * MySqlTable.
@@ -92,23 +92,17 @@ class MySqlTable extends MySqlObject implements ISqlTable
 		$scope['DATABASE_NAME'] = $database->getName();
 		$scope['TABLE_NAME'] = $schemata['TABLE_NAME'];
 
-		foreach ($columns as $i => $column)
+		foreach ((new ArrayIterator($columns))->with($scope) as $i => $column)
 		{
-			if (__map_match($scope, $column))
-			{
-				$instance = new MySqlColumn($this, $column, $constraints);
-				$this->columns[$instance->getName()] = $instance;
-			}
+			$instance = new MySqlColumn($this, $column, $constraints);
+			$this->columns[$instance->getName()] = $instance;
 		}
 
 		$scope['CONSTRAINT_TYPE'] = 'PRIMARY KEY';
 
-		foreach ($constraints as $i => $constraint)
+		foreach ((new ArrayIterator($constraints))->with($scope) as $i => $constraint)
 		{
-			if (__map_match($scope, $constraint))
-			{
-				$this->primaryKey[] = $constraint['COLUMN_NAME'];
-			}
+			$this->primaryKey[] = $constraint['COLUMN_NAME'];
 		}
 	}
 

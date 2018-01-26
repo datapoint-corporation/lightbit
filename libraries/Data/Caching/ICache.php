@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,14 +28,51 @@
 namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\IComponent;
-use \Lightbit\Data\IMap;
 
 /**
  * ICache.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface ICache extends IComponent, IMap
+interface ICache extends IComponent
 {
+	/**
+	 * Checks if content is available.
+	 *
+	 * @param string $id
+	 *	The content identifier.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function contains(string $id) : bool;
+
+	/**
+	 * Reads content into a variable.
+	 *
+	 * @param string $id
+	 *	The content identifier.
+	 *
+	 * @param mixed $variable
+	 *	The variable to read into.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function read(string $id, &$variable) : bool;
+
+	/**
+	 * Writes content.
+	 *
+	 * @param string $id
+	 *	The content identifier.
+	 *
+	 * @param mixed $content
+	 *	The content.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function write(string $id, $content) : bool;
 }

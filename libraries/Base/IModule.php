@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,20 +27,12 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\Action;
-use \Lightbit\Base\Context;
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\Module;
-use \Lightbit\Data\SlugManager;
-use \Lightbit\Globalization\Locale;
-use \Lightbit\Globalization\MessageSource;
-use \Lightbit\Security\Cryptography\PasswordDigest;
-use \Lightbit\Exception;
+use \Lightbit\Base\IContext;
 
 /**
  * IModule.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IModule extends IContext
@@ -48,41 +40,17 @@ interface IModule extends IContext
 	/**
 	 * Constructor.
 	 *
-	 * @param Context $context
-	 *	The module context.
+	 * @param IContext $context
+	 *	The context parent.
 	 *
 	 * @param string $id
-	 *	The module identifier.
+	 *	The context identifier.
 	 *
 	 * @param string $path
-	 *	The module path.
+	 *	The context install path.
 	 *
 	 * @param array $configuration
-	 *	The module configuration.
+	 *	The context configuration map.
 	 */
-	public function __construct(IContext $context, string $id, string $path, array $configuration = null);
-
-	/**
-	 * Gets the application.
-	 *
-	 * @return IApplication
-	 *	The application.
-	 */
-	public function getApplication() : IApplication;
-
-	/**
-	 * Generates the proper response to a throwable caught by the global
-	 * exception handler during an action implemented by a child controller.
-	 *
-	 * If the module can not generate the proper response, false should
-	 * be returned in order to delegate control to its parent, the application
-	 * and the global exception handler.
-	 *
-	 * @param Throwable $throwable
-	 *	The throwable object.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public function throwable(\Throwable $throwable) : bool;
+	public function __construct(?IContext $context, string $id, string $path, array $configuration = null);
 }

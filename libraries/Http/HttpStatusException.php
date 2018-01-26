@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,73 +27,53 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Exception;
+use \Throwable;
+
+use \Lightbit\Http\HttpException;
+use \Lightbit\Http\HttpStatusException;
 
 /**
  * HttpStatusException.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpStatusException extends Exception
+class HttpStatusException extends HttpException
 {
 	/**
-	 * The status code.
+	 * The status.
 	 *
-	 * @var int
+	 * @var HttpStatus
 	 */
-	private $statusCode;
-
-	/**
-	 * The status message.
-	 *
-	 * @var string
-	 */
-	private $statusMessage;
+	private $status;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param int $statusCode
-	 *	The http status code.
+	 * @param int $status
+	 *	The status code.
 	 *
 	 * @param string $message
-	 *	The exception message.
+	 *	The exception human readable message.
 	 *
 	 * @param Throwable $previous
 	 *	The previous throwable.
 	 */
-	public function __construct(int $statusCode, string $message, \Throwable $previous = null)
+	public function __construct(int $status, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 
-		$this->statusCode = $statusCode;
+		$this->status = new HttpStatus($status);
 	}
 
 	/**
-	 * Gets the http status code.
+	 * Gets the status.
 	 *
-	 * @return int
-	 *	The http status code.
+	 * @return HttpStatus
+	 *	The status.
 	 */
-	public final function getStatusCode() : int
+	public final function getStatus() : HttpStatus
 	{
-		return $this->statusCode;
-	}
-
-	/**
-	 * Gets the http status message.
-	 *
-	 * @return string
-	 *	The http status message.
-	 */
-	public final function getStatusMessage() : string
-	{
-		if (!$this->statusMessage)
-		{
-			$this->statusMessage = __http_status_message($this->statusCode);
-		}
-
-		return $this->statusMessage;
+		return $this->status;
 	}
 }

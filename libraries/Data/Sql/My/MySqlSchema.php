@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,9 +29,9 @@ namespace Lightbit\Data\Sql\My;
 
 use \Lightbit\Data\Sql\My\MySqlDatabase;
 use \Lightbit\Data\Sql\My\MySqlObject;
-
 use \Lightbit\Data\Sql\ISqlDatabase;
 use \Lightbit\Data\Sql\ISqlSchema;
+use \Lightbit\Data\Traversing\ArrayIterator;
 
 /**
  * MySqlSchema.
@@ -75,13 +75,10 @@ class MySqlSchema extends MySqlObject implements ISqlSchema
 		$scope = [];
 		$scope['SCHEMA_NAME'] = $schema;
 
-		foreach ($databases as $i => $database)
+		foreach ((new ArrayIterator($databases))->with($scope) as $i => $database)
 		{
-			if (__map_match($scope, $database))
-			{
-				$instance = new MySqlDatabase($this, $database, $tables, $columns, $constraints);
-				$this->databases[$instance->getName()] = $instance;
-			}
+			$instance = new MySqlDatabase($this, $database, $tables, $columns, $constraints);
+			$this->databases[$instance->getName()] = $instance;
 		}
 	}
 

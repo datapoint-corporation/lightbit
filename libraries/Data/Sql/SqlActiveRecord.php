@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -107,7 +107,7 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	 */
 	public function all() : array
 	{
-		$result = $this->getSqlConnection()
+		$result = $this->getContext()->getSqlConnection()
 			->getStatementFactory()
 				->select($this->getTableName(), $this->criteria)
 					->all(null, false);
@@ -172,7 +172,7 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	 */
 	public function count() : int
 	{
-		return $this->getSqlConnection()
+		return $this->getContext()->getSqlConnection()
 			->getStatementFactory()
 				->count($this->getTableName(), $this->criteria)
 					->scalar();
@@ -194,7 +194,7 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 			$criteria = new SqlCriteria();
 			$criteria->addComparisons($this->id);
 
-			$statement = $this->getSqlConnection()->getStatementFactory()->delete
+			$statement = $this->getContext()->getSqlConnection()->getStatementFactory()->delete
 			(
 				$this->getTableName(),
 				$criteria
@@ -324,7 +324,7 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	{
 		if (!isset(self::$schema[static::class]['table']))
 		{
-			self::$schema[static::class]['table'] = $this->getSqlConnection()->getDatabase()->getTable($this->getTableName());
+			self::$schema[static::class]['table'] = $this->getContext()->getSqlConnection()->getDatabase()->getTable($this->getTableName());
 		}
 
 		return self::$schema[static::class]['table'];
@@ -430,7 +430,7 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 	 */
 	public function single() : ?ISqlActiveRecord
 	{
-		$result = $this->getSqlConnection()
+		$result = $this->getContext()->getSqlConnection()
 			->getStatementFactory()
 				->select($this->getTableName(), $this->criteria)
 					->single(null, false);
@@ -484,14 +484,14 @@ abstract class SqlActiveRecord extends Model implements ISqlActiveRecord
 				$criteria = new SqlCriteria();
 				$criteria->addComparisons($this->id);
 
-				$this->getSqlConnection()
+				$this->getContext()->getSqlConnection()
 					->getStatementFactory()
 						->update($table->getName(), $attributes, $criteria)
 							->execute();
 			}
 			else
 			{
-				$sql = $this->getSqlConnection();
+				$sql = $this->getContext()->getSqlConnection();
 				$sql->getStatementFactory()
 					->insert($table->getName(), $attributes)
 						->execute();

@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,34 +27,29 @@
 
 namespace Lightbit\Base;
 
-use \Lightbit\Base\IComponent;
-
 /**
  * IChannel.
  *
- * A channel is a special type of component that must be started before
- * use and closed during the application dispose procedure.
- *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IChannel extends IComponent
+interface IChannel
 {
 	/**
-	 * Closes the channel.
+	 * Close.
 	 */
 	public function close() : void;
 
 	/**
-	 * Checks the channel status.
+	 * Checks the state.
 	 *
 	 * @return bool
-	 *	The status.
+	 *	The result.
 	 */
 	public function isClosed() : bool;
 
 	/**
-	 * Starts the channel.
+	 * Starts.
 	 */
-	public function start() : void;
+	public function start() : void;	
 }

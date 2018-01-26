@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,33 +27,35 @@
 
 namespace Lightbit\Base;
 
+use \Lightbit;
 use \Lightbit\Base\Element;
-use \Lightbit\IO\FileSystem\FileNotFoundException;
-
-use \Lightbit\Base\IContext;
 use \Lightbit\Base\IView;
+use \Lightbit\Base\IContext;
+use \Lightbit\Base\IController;
+use \Lightbit\IO\FileSystem\Asset;
+use \Lightbit\Script;
 
 /**
  * View.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 class View extends Element implements IView
 {
 	/**
-	 * The context.
+	 * The controller.
 	 *
-	 * @var IContext
+	 * @var IController
 	 */
-	private $context;
-	
+	private $controller;
+
 	/**
-	 * The base path.
+	 * The identifier.
 	 *
 	 * @var string
 	 */
-	private $basePath;
+	private $id;
 
 	/**
 	 * The path.
@@ -65,26 +67,22 @@ class View extends Element implements IView
 	/**
 	 * Constructor.
 	 *
-	 * @param IContext $context
-	 *	The view context.
+	 * @param IController $controller
+	 *	The view controller.
+	 *
+	 * @param string $id
+	 *	The view identifier.
 	 *
 	 * @param string $path
 	 *	The view path.
-	 *
-	 * @param array $configuration
-	 *	The configuration.
 	 */
-	public function __construct(?IContext $context, string $path, array $configuration = null)
+	public function __construct(IController $controller, string $id, string $path)
 	{
-		parent::__construct($context);
+		parent::__construct();
 
-		$this->context = $context;
+		$this->controller = $controller;
+		$this->id = $id;
 		$this->path = $path;
-
-		if ($configuration)
-		{
-			__object_apply($this, $configuration);
-		}
 	}
 
 	/**
@@ -95,23 +93,29 @@ class View extends Element implements IView
 	 */
 	public function getContext() : IContext
 	{
-		return $this->context;
+		return $this->controller->getContext();
 	}
 
 	/**
-	 * Gets the base path.
+	 * Gets the controller.
+	 *
+	 * @return IController
+	 *	The controller.
+	 */
+	public final function getController() : IController
+	{
+		return $this->controller;
+	}
+
+	/**
+	 * Gets the identifier.
 	 *
 	 * @return string
-	 *	The base path.
+	 *	The identifier.
 	 */
-	public final function getBasePath() : string
+	public final function getID() : string
 	{
-		if (!$this->basePath)
-		{
-			$this->basePath = dirname($this->path);
-		}
-
-		return $this->basePath;
+		return $this->id;
 	}
 
 	/**
@@ -126,115 +130,80 @@ class View extends Element implements IView
 	}
 
 	/**
-	 * Imports a variable.
+	 * Gets a view.
 	 *
-	 * @param mixed $variable
-	 *	The variable to import.
+	 * @param string $id
+	 *	The view identifier.
 	 *
-	 * @param mixed $default
-	 *	The variable default value.
-	 *
-	 * @param Closure $closure
-	 *	The variable validation closure.
+	 * @return IView
+	 *	The view.
 	 */
-	public final function import(&$variable, \Closure $closure = null) : void
+	public function getView(string $id) : IView
 	{
-		if ($closure)
-		{
-			$result = false;
-
-			try
-			{
-				$result = ($closure($variable) === true);
-			}
-			catch (\Throwable $e)
-			{
-				throw new Exception(sprintf('View variable validation failure, %s: %s, at context %s', lcfirst($e->getMessage()), $this->path, $this->getContext()->getPrefix()));
-			}
-
-			if (!$result)
-			{
-				throw new Exception(sprintf('View variable validation failure: %s, at context %s', $this->path, $this->getContext()->getPrefix()));
-			}
-		}
-	}
-
-	/**
-	 * Checks if the view is available.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isAvailable() : bool
-	{
-		return is_file($this->path);
+		return new View
+		(
+			$this->controller,
+			$id,
+			((new Asset(dirname($this->path), $id))->getPath())
+		);
 	}
 
 	/**
 	 * Renders a view.
 	 *
-	 * @param string $view
-	 *	The view file system alias.
+	 * @param string $id
+	 *	The view identifier.
 	 *
 	 * @param array $parameters
 	 *	The view parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output
-	 *	buffer to capture any generated contents.
+	 *	The view output capture flag.
 	 *
 	 * @return string
-	 *	The captured content.
+	 *	The view output, if captured.
 	 */
-	public final function render(string $view, array $parameters = null, bool $capture = false) : ?string
+	public function render(string $id, array $parameters = null, bool $capture = false) : ?string
 	{
-		return $this->view(__asset_path_resolve($this->getBasePath(), 'php', $view))
-			->run($parameters, $capture);
+		return $this->getView($id)->run($parameters, $capture);
 	}
 
 	/**
 	 * Runs the view.
 	 *
 	 * @param array $parameters
-	 *	The parameters.
+	 *	The execution parameters.
 	 *
 	 * @param bool $capture
-	 *	The capture flag which, when set, will use an additional output
-	 *	buffer to capture any generated contents.
+	 *	The execution output capturing flag.
 	 *
 	 * @return string
-	 *	The captured content.
+	 *	The output, if captured.
 	 */
 	public final function run(array $parameters = null, bool $capture = false) : ?string
 	{
-		$ob;
+		$buffer;
 
 		if ($capture)
 		{
-			$ob = ob_get_level();
+			$buffer = ob_get_level();
 
 			if (!ob_start())
 			{
-				throw new Exception('Can not run view, output buffer start failure');
+				throw new ViewOutputBufferException($this, sprintf('Can not run view, output buffer startup failure: "%s"', $this->id));
 			}
 		}
 
-		if (!is_file($this->path))
-		{
-			throw new FileNotFoundException($this->path, sprintf('Can not run view, file not found: file %s', $this->path));
-		}
-
-		// During the view script inclusion, the context is meant to be the
-		// one the view was originally created with.
-		$context = __context_replace($this->context);
-		__include_file_as_ex($this, $this->path, $parameters);
-		__context_set($context);
+		$lightbit = Lightbit::getInstance();
+		$context = $lightbit->setContext($this->getContext());
+		(new Script($this->path))->include($this, $parameters);
+		$lightbit->setContext($context);
 
 		if ($capture)
 		{
 			$result = '';
 
-			while ($ob < ob_get_level())
+			while ($buffer < ob_get_level())
 			{
 				$result .= ob_get_clean();
 			}
@@ -243,46 +212,5 @@ class View extends Element implements IView
 		}
 
 		return null;
-	}
-
-	/**
-	 * Creates a widget.
-	 *
-	 * @param string $className
-	 *	The widget class name.
-	 *
-	 * @param array $arguments
-	 *	The widget constructor arguments.
-	 *
-	 * @return IWidget
-	 *	The widget.
-	 */
-	public function widget(string $className, ...$arguments) : IWidget
-	{
-		return new $className(...$arguments);
-	}
-
-	/**
-	 * Creates and instantly inflates an inline widget.
-	 *
-	 * @param string $className
-	 *	The widget class name.
-	 *
-	 * @param array $arguments
-	 *	The widget constructor arguments.
-	 *
-	 * @return string
-	 *	The content.
-	 */
-	public function inflate(string $className, ...$arguments) : string
-	{
-		$widget = $this->widget($className, ...$arguments);
-
-		if (! ($widget instanceof IWidgetInline))
-		{
-			throw new Exception(sprintf('Can not inflate inline widget: %s', $className));
-		}
-
-		return $widget->inflate();
 	}
 }

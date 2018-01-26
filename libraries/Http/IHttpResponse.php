@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,10 +60,10 @@ interface IHttpResponse extends IHttpMessage
 	public function setHeader(string $header, string $content, bool $replace = true) : void;
 
 	/**
-	 * Sets the status code.
+	 * Sets the status.
 	 *
-	 * @param int $statusCode
+	 * @param int $status
 	 *	The status code.
 	 */
-	public function setStatusCode(int $statusCode) : void;
+	public function setStatus(int $status) : void;
 }

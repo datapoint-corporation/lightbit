@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 // -----------------------------------------------------------------------------
+
+$lightbit = Lightbit::getInstance();
 
 ?>
 
@@ -48,10 +50,33 @@ p
 	margin: 1em 0;
 }
 
-<?php if (__debug()) : ?>
+<?php if ($lightbit->isDebug()) : ?>
+div.throwable
+{
+	margin: 2rem 0;
+}
+
+h2.message
+{
+	font-size: 1.5em;
+	margin: 1em 0 1rem 0;
+}
+
+p.class
+{
+	font-weight: 700;
+	margin: 1rem 0 0 0;
+}
+
 p.monospace
 {
 	font-family: monospace;
+}
+
+p.source
+{
+	margin: 0 0 1em 0;
+	font-weight: 400;
 }
 
 hr
@@ -59,7 +84,7 @@ hr
 	border: none;
 	border-top: 1px dashed #171717;
 	display: block;
-	margin: 2em 0 2em 0;
+	margin: 2rem 0 2rem 0;
 	overflow: visible;
 }
 
@@ -72,12 +97,6 @@ hr::after
 	font-family: monospace;
 	font-size: .85em;
 	margin: .5em 0 0 0;
-}
-
-h2
-{
-	font-size: 1.5em;
-	margin: 1em 0 1rem 0;
 }
 
 pre

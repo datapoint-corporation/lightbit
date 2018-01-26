@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,18 +27,17 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\IComponent;
-use \Lightbit\Base\Object;
+use \Lightbit\Routing\IRouter;
+use \Lightbit\Routing\Route;
 
 /**
  * IHttpRouter.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter extends IComponent
+interface IHttpRouter extends IRouter
 {
-
 	/**
 	 * Gets the address.
 	 *
@@ -72,6 +71,14 @@ interface IHttpRouter extends IComponent
 	public function getPort() : int;
 
 	/**
+	 * Gets the route.
+	 *
+	 * @return Route
+	 *	The route.
+	 */
+	public function getRoute() : Route;
+
+	/**
 	 * Checks if the port is the default for the procotol.
 	 *
 	 * @return bool
@@ -88,14 +95,16 @@ interface IHttpRouter extends IComponent
 	public function isHttps() : bool;
 
 	/**
-	 * Creates an url.
+	 * Creates a url.
+	 *
+	 * It begins by resolving the given route through the current active
+	 * context, followed by the creation of a matching url.
 	 *
 	 * @param array $route
-	 *	The route to resolve to.
+	 *	The route.
 	 *
 	 * @param bool $absolute
-	 *	The absolute flag which, when set, will cause the url to be
-	 *	created as an absolute url.
+	 *	The absolute url flag.
 	 *
 	 * @return string
 	 *	The result.

@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,39 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$counter = 0;
+use \Lightbit\Http\HttpStatus;
 
-$title = $status . ' ' . __http_status_message($status);
-
-$document = $this->getHtmlDocument();
-$document->setTitle($title);
-$document->addInlineStyle('lightbit://views/error-documents/css/main');
+$lightbit = Lightbit::getInstance();
 
 ?>
 
-<!DOCTYPE html />
+<!DOCTYPE html>
 
 <html lang="en">
-	<head><?= $document->inflate('head') ?></head>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="robots" content="noindex,nofollow" />
+		<title><?= htmlentities($status->toString()) ?></title>
+		<style type="text/css">
+			<?php include (__DIR__ . '/css/main.php') ?>
+		</style>
+	</head>
 	<body>
-		<?= __html_element('h1', null, $title) ?>
-		<?php if (__debug()) : ?>
+		<h1><?= htmlentities($status->toString()) ?></h1>
+		<?php if ($lightbit->isDebug()) : ?>
 		<hr />
-		<?php while ($throwable) : ++$counter; ?>
-		<h2><?= __html_encode($throwable->getMessage()) ?></h2>
-		<p class="monospace"><?= __html_encode(__type_of($throwable)) ?></p>
-		<?= __html_element
-		(
-			'pre',
-			null,
-			(
-				__html_element('strong', null, $throwable->getFile() . ' :' . $throwable->getLine()) .
-				PHP_EOL . 
-				$throwable->getTraceAsString()
-			),
-			false
-		) ?>
-		<?php $throwable = $throwable->getPrevious(); endwhile; ?>
-		<?php endif; ?>
+		<?php while ($throwable) : ?>
+		<div class="throwable">
+			<h2 class="message"><?= htmlentities($throwable->getMessage()) ?></h2>
+			<p class="monospace class"><?= htmlentities(get_class($throwable)) ?></p>
+			<p class="monospace source"><?= htmlentities($throwable->getFile()) ?> (:<?= $throwable->getLine() ?>)</p>
+			<pre><?= $throwable->getTraceAsString() ?></pre>
+			<?php $throwable = $throwable->getPrevious(); ?>
+		</div>
+		<?php endwhile; ?>
+		<?php endif ?>
 	</body>
 </html>

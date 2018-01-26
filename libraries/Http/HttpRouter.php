@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // Lightbit
 //
-// Copyright (c) 2017 Datapoint — Sistemas de Informação, Unipessoal, Lda.
+// Copyright (c) 2018 Datapoint — Sistemas de Informação, Unipessoal, Lda.
 // https://www.datapoint.pt/
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,136 +27,203 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Base\IAction;
-use \Lightbit\Base\Component;
-use \Lightbit\Base\IContext;
-use \Lightbit\Base\IllegalParameterRouteException;
-use \Lightbit\Base\MissingParameterRouteException;
-use \Lightbit\Base\ParameterRouteException;
-use \Lightbit\Base\RouteException;
-use \Lightbit\Exception;
-use \Lightbit\Http\HttpRouterBase;
+use \Lightbit\Data\Parsing\Parser;
+use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Routing\Route;
+use \Lightbit\Routing\Router;
 
 /**
  * HttpRouter.
  *
- * @author Datapoint – Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-class HttpRouter extends HttpRouterBase
+abstract class HttpRouter extends Router implements IHttpRouter
 {
 	/**
-	 * The script name.
+	 * Gets the route.
+	 *
+	 * @return Route
+	 *	The route.
+	 */
+	abstract public function getRoute() : Route;
+
+	/**
+	 * The base url.
 	 *
 	 * @var string
 	 */
-	private $scriptName;
+	private $baseUrl;
 
 	/**
-	 * Gets the script name.
+	 * Gets the address.
 	 *
 	 * @return string
-	 *	The script name.
+	 *	The address.
 	 */
-	public final function getScriptName() : ?string
+	public final function getAddress() : string
 	{
-		return $this->scriptName;
+		static $address;
+
+		if (!$address)
+		{
+			$address = $this->getHost() . ':' . $this->getPort();
+		}
+
+    	return $address;
 	}
 
 	/**
-	 * Sets the script name.
-	 *
-	 * @param string $scriptName
-	 *	The script name.
-	 */
-	public final function setScriptName(?string $scriptName) : void
-	{
-		$this->scriptName = $scriptName;
-	}
-
-	/**
-	 * Resolves the current request to a controller action.
-	 *
-	 * @return IAction
-	 *	The action.
-	 */
-	public final function resolve() : IAction
-	{
-		$path = strtr
-		(
-			'/' . $this->getHttpQueryString()->get('?string', 'action'),
-			[ '.' => '/', '_' => '-' ]
-		);
-
-		try
-		{
-			return __application()->resolve([ ($path === '/' ? null : $path) ] + $_GET);
-		}
-		catch (IllegalParameterRouteException $e)
-		{
-			throw new HttpStatusException(404, $e->getMessage(), $e);
-		}
-		catch (MissingParameterRouteException $e)
-		{
-			throw new HttpStatusException(400, $e->getMessage(), $e);
-		}
-		catch (RouteException $e)
-		{
-			throw new HttpStatusException(404, $e->getMessage(), $e);
-		}
-	}
-
-	/**
-	 * Creates an url.
-	 *
-	 * @param array $route
-	 *	The route to resolve to.
-	 *
-	 * @param bool $absolute
-	 *	The absolute flag which, when set, will cause the url to be
-	 *	created as an absolute url.
+	 * Gets the base url.
 	 *
 	 * @return string
+	 *	The base url.
+	 */
+	public final function getBaseUrl() : string
+	{
+		if (!$this->baseUrl)
+        {
+        	if (!isset($_SERVER['HTTP_HOST']))
+        	{
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'HTTP_HOST'));
+        	}
+
+        	if (!isset($_SERVER['SCRIPT_NAME']))
+        	{
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'SCRIPT_NAME'));
+        	}
+
+        	$this->baseUrl
+        		= ($this->isHttps() ? 'https://' : 'http://')
+        		. $this->getHost()
+        		. ($this->isDefaultPort() ?  '' : (':' . $this->getPort()))
+        		. (($x = dirname($_SERVER['SCRIPT_NAME'])) == '/' ? '/' : ($x . '/'));
+        }
+
+		return $this->baseUrl;
+	}
+
+	/**
+	 * Gets the host.
+	 *
+	 * @return string
+	 *	The host.
+	 */
+	public final function getHost() : string
+	{
+		static $host;
+
+		if (!$host)
+		{
+			if (!isset($_SERVER['HTTP_HOST']))
+        	{
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'HTTP_HOST'));
+        	}
+
+        	$host = $_SERVER['HTTP_HOST'];
+		}
+
+		return $host;
+	}
+
+	/**
+	 * Gets the port.
+	 *
+	 * @return int
+	 *	The port.
+	 */
+	public final function getPort() : int
+	{
+		static $port;
+
+		if (!$port)
+		{
+			if (!isset($_SERVER['SERVER_PORT']))
+			{
+				throw new Exception(sprintf('Bad environment, missing variable: %s', 'SERVER_PORT'));
+			}
+
+			$port = intval($_SERVER['SERVER_PORT']);
+		}
+
+		return $port;
+	}
+
+	/**
+	 * Checks if the port is the default for the procotol.
+	 *
+	 * @return bool
 	 *	The result.
 	 */
-	public function url(array $route, bool $absolute = false) : string
+	public final function isDefaultPort() : bool
 	{
-		$action = __action_context()->resolve($route);
+		static $default;
 
-		$result = '' . $this->scriptName;
-
-		$parameters = [ 'action' => strtr($action->getGlobalID(), '/-', '._') ]
-			+ $action->getParameters()
-			+ $route;
-
-		unset($parameters[0]);
-
-		if ($parameters)
+		if (!isset($default))
 		{
-			$result .= '?' . __http_query_encode($parameters);
+			$port = $this->getPort();
+			$default = $this->isHttps()
+				? ($port == 443)
+				: ($port == 80);
 		}
 
-		if ($absolute)
-		{
-			$result = $this->getBaseUrl() . $result;
-		}
-
-		return $result;
+		return $default;
 	}
 
 	/**
-	 * On Construct.
+	 * Checks if it's the secure hypertext transport protocol.
 	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
+	 * @return bool
+	 *	The result.
 	 */
-	protected function onConstruct() : void
+	public final function isHttps() : bool
 	{
-		parent::onConstruct();
+		return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+	}
 
-		if (isset($_SERVER['SCRIPT_NAME']))
+	/**
+	 * Sets the base url.
+	 *
+	 * @param string $baseUrl
+	 *	The base url.
+	 */
+	public final function setBaseUrl(string $baseUrl) : void
+	{
+		$this->baseUrl = $baseUrl;
+	}
+
+	/**
+	 * Creates a query string.
+	 *
+	 * @param array $parameters
+	 *	The query string parameters.
+	 *
+	 * @return string
+	 *	The query string.
+	 */
+	protected final function queryString(?array $parameters) : string
+	{
+		if ($parameters)
 		{
-			$this->scriptName = basename($_SERVER['SCRIPT_NAME']);
+			$result = [];
+
+			foreach ($parameters as $i => $parameter)
+			{
+				if (!isset($parameter))
+				{
+					unset($parameters[$i]);
+					continue;
+				}
+
+				$result[$i] = Parser::getInstance(gettype($parameter))->compose($parameter);
+			}
+
+			if ($result)
+			{
+				return '?' . http_build_query($result);
+			}
 		}
+
+		return '';
 	}
 }
