@@ -264,6 +264,23 @@ abstract class Controller extends Element implements IController
 	}
 
 	/**
+	 * Runs an action.
+	 *
+	 * @param string $method
+	 *	The action method.
+	 *
+	 * @param array $arguments
+	 *	The action method arguments.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public final function run(string $method, array $arguments)
+	{
+		return $this->{$method}(...$arguments);
+	}
+
+	/**
 	 * Throwable handling.
 	 *
 	 * It is invoked automatically once a throwable is caught by the global

@@ -71,7 +71,7 @@ class HttpQueryStringRouter extends HttpRouter
 						throw new HttpStatusException(400, sprintf('Bad format for action parameter: "%s"', $path));
 					}
 
-					$route[0] = '//' . strtr($path, '.', '/');	
+					$route[0] = '//' . strtr($path, [ '.' => '/', '_' => '-' ]);	
 				}				
 			}
 
