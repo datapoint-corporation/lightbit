@@ -81,6 +81,13 @@ final class Action
 	private $method;
 
 	/**
+	 * The virtual path.
+	 *
+	 * @var string
+	 */
+	private $path;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IController $controller
@@ -131,6 +138,31 @@ final class Action
 	public function getID() : string
 	{
 		return $this->id;
+	}
+
+	/**
+	 * Gets the virtual path.
+	 *
+	 * @return string
+	 *	The virtual path.
+	 */
+	public function getPath() : string
+	{
+		if (!isset($this->path))
+		{
+			$this->path = $this->controller->getID() . '/' . $this->id;
+
+			$current = $this->controller->getContext();
+			while ($next = $current->getContext())
+			{
+				$this->path = $current->getID() . '/' . $this->path;
+				$current = $next;
+			}
+
+			$this->path = '//' . $this->path;
+		}
+
+		return $this->path;
 	}
 
 	/**

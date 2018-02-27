@@ -28,6 +28,7 @@
 namespace Lightbit\Data\Sql\Ms;
 
 use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
 use \Lightbit\Data\Sql\Ms\MsSqlStatement;
 use \Lightbit\Data\Sql\Ms\MsSqlTransaction;
 use \Lightbit\Data\Sql\ISqlConnection;
@@ -123,6 +124,36 @@ class MsSqlConnection extends Component implements ISqlConnection
 	 * @var string
 	 */
 	private $user;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, null);
+
+		$this->charset = 'UTF-8';
+		$this->database = 'Lightbit';
+		$this->instance = '127.0.0.1';
+		$this->user = 'Lightbit';
+
+		$this->options = [];
+		$this->statementFactory = new MsSqlStatementFactory($this);
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
+	}
 
 	/**
 	 * Creates, prepares and executes a query statement, pre-fetching
@@ -753,24 +784,5 @@ class MsSqlConnection extends Component implements ISqlConnection
 	public function transaction() : ISqlTransaction
 	{
 		return new MsSqlTransaction($this);
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
-
-		$this->charset = 'UTF-8';
-		$this->database = 'Lightbit';
-		$this->instance = '127.0.0.1';
-		$this->user = 'Lightbit';
-
-		$this->options = [];
-		$this->statementFactory = new MsSqlStatementFactory($this);
 	}
 }

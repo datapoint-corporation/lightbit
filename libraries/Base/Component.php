@@ -64,21 +64,28 @@ abstract class Component implements IComponent
 	 *	The component identifier.
 	 *
 	 * @param array $configuration
-	 *	The component configuration map.
+	 *	The component configuration.
 	 */
-	public final function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		$this->context = $context;
 		$this->id = $id;
 
-		$this->onConstruct();
-
 		if ($configuration)
 		{
-			(new Scope($this))->configure($configuration);
+			$this->configure($configuration);
 		}
+	}
 
-		$this->onAfterConstruct();
+	/**
+	 * Configures the component.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public final function configure(array $configuration) : void
+	{
+		(new Scope($this))->configure($configuration);
 	}
 
 	/**
@@ -87,10 +94,8 @@ abstract class Component implements IComponent
 	 * It first closes any persistent resources, followed by the disposal of
 	 * any temporary memory information and, finally, the state.
 	 */
-	public final function dispose() : void
+	public function dispose() : void
 	{
-		$this->onDispose();
-
 		if ($this instanceof IChannel)
 		{
 			if (!$this->isClosed())
@@ -98,8 +103,6 @@ abstract class Component implements IComponent
 				$this->close();
 			}
 		}
-
-		$this->onAfterDispose();
 	}
 
 	/**
@@ -122,49 +125,5 @@ abstract class Component implements IComponent
 	public function getID() : string
 	{
 		return $this->id;
-	}
-
-	/**
-	 * On After Construct.
-	 *
-	 * It is invoked automatically during the component construction
-	 * procedure, after applying the custom configuration.
-	 */
-	protected function onAfterConstruct() : void
-	{
-
-	}
-
-	/**
-	 * On After Dispose.
-	 *
-	 * It is invoked automatically during the component disposal procedure, 
-	 * after the component is closed.
-	 */
-	protected function onAfterDispose() : void
-	{
-
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the component construction
-	 * procedure, before applying the custom configuration.
-	 */
-	protected function onConstruct() : void
-	{
-
-	}
-
-	/**
-	 * On Dispose.
-	 *
-	 * It is invoked automatically during the component construction
-	 * procedure, before the channel is closed.
-	 */
-	protected function onDispose() : void
-	{
-
 	}
 }

@@ -152,20 +152,16 @@ class Application extends Context implements IApplication
 	 * @param array $configuration
 	 *	The context configuration.
 	 */
-	public final function __construct(string $path, array $configuration = null)
+	public function __construct(string $path, array $configuration = null)
 	{
 		parent::__construct(null, 'application', $path);
 
 		$this->setComponentsConfiguration(self::DEFAULT_COMPONENT_CONFIGURATION);
 
-		$this->onConstruct();
-
 		if ($configuration)
 		{
 			(new Scope($this))->configure($configuration);
 		}
-
-		$this->onAfterConstruct();
 	}
 
 	/**
@@ -186,7 +182,7 @@ class Application extends Context implements IApplication
 	 * @return int
 	 *	The exit status.
 	 */
-	public final function run() : int
+	public function run() : int
 	{
 		$action;
 		$environment = RuntimeEnvironment::getInstance();
@@ -226,27 +222,5 @@ class Application extends Context implements IApplication
 		}
 
 		return $action->run();
-	}
-
-	/**
-	 * On After Construct.
-	 *
-	 * It is invoked automatically during the application construction
-	 * procedure, after applying the custom configuration.
-	 */
-	protected function onAfterConstruct() : void
-	{
-		
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the application construction
-	 * procedure, before applying the custom configuration.
-	 */
-	protected function onConstruct() : void
-	{
-		
 	}
 }

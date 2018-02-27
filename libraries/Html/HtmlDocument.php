@@ -28,6 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
 use \Lightbit\Base\View;
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Navigation\HtmlBreadcrumb;
@@ -105,6 +106,37 @@ class HtmlDocument extends Component implements IHtmlDocument
 	private $title;
 
 	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, null);
+
+		$this->breadcrumbs = [];
+		$this->defaultTitle = 'Untitled Page';
+		$this->inlineScripts = [];
+		$this->inlineStyles = [];
+		$this->metaAttributes = [];
+		$this->scripts = [];
+		$this->styles = [];
+		$this->tags = [];
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
+	}
+
+	/**
 	 * Sets an additional breadcrumb.
 	 *
 	 * @param string $label
@@ -166,11 +198,7 @@ class HtmlDocument extends Component implements IHtmlDocument
 	 */
 	public function addScript(string $location, array $attributes = null, string $position = 'body') : void
 	{
-		$this->scripts[$position][] =
-		[
-			'attributes' => $attributes,
-			'location' => $location
-		];
+		$this->scripts[$position][] = new HtmlDocumentScript($this, $location, $attributes);
 	}
 
 	/**
@@ -319,18 +347,5 @@ class HtmlDocument extends Component implements IHtmlDocument
 	public function setTitle(?string $title) : void
 	{
 		$this->title = $title;
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
-		
-		$this->reset();
 	}
 }

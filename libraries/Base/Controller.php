@@ -72,21 +72,17 @@ abstract class Controller extends Element implements IController
 	 * @param array $configuration
 	 *	The controller configuration map.
 	 */
-	public final function __construct(IContext $context, string $id, array $configuration = null)
+	public function __construct(IContext $context, string $id, array $configuration = null)
 	{
 		parent::__construct();
 
 		$this->context = $context;
 		$this->id = $id;
 
-		$this->onConstruct();
-
 		if ($configuration)
 		{
 			(new Scope($this))->configure($configuration);
 		}
-
-		$this->onAfterConstruct();
 	}
 
 	/**
@@ -282,28 +278,6 @@ abstract class Controller extends Element implements IController
 	public function throwable(Throwable $throwable) : bool
 	{
 		return false;
-	}
-
-	/**
-	 * On After Construct.
-	 *
-	 * It is invoked automatically during the controller construction
-	 * procedure, after applying the custom configuration.
-	 */
-	protected function onAfterConstruct() : void
-	{
-
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the controller construction
-	 * procedure, before applying the custom configuration.
-	 */
-	protected function onConstruct() : void
-	{
-
 	}
 
 	/**

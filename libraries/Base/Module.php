@@ -60,35 +60,9 @@ abstract class Module extends Context implements IModule
 	{
 		parent::__construct($context, $id, $path);
 
-		$this->onConstruct();
-
 		if ($configuration)
 		{
 			(new Scope($this))->configure($configuration);
 		}
-
-		$this->onAfterConstruct();
-	}
-
-	/**
-	 * On After Construct.
-	 *
-	 * It is invoked automatically during the module construction
-	 * procedure, after applying the custom configuration.
-	 */
-	protected function onAfterConstruct() : void
-	{
-
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the module construction
-	 * procedure, before applying the custom configuration.
-	 */
-	protected function onConstruct() : void
-	{
-
 	}
 }

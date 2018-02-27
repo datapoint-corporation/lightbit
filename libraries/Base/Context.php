@@ -130,6 +130,13 @@ abstract class Context implements IContext
 	private $modules;
 
 	/**
+	 * The modules configuration.
+	 *
+	 * @var array
+	 */
+	private $modulesConfiguration;
+
+	/**
 	 * The install path.
 	 *
 	 * @var string
@@ -163,6 +170,7 @@ abstract class Context implements IContext
 		$this->componentsConfiguration1 = [];
 		$this->id = $id;
 		$this->modules = [];
+		$this->modulesConfiguration = [];
 		$this->path = $path;
 
 		// Scan the modules path against child module directories and make
@@ -225,16 +233,16 @@ abstract class Context implements IContext
 	{
 		if (!isset($this->modules[$id]))
 		{
-			$configuration = (new Script($path . DIRECTORY_SEPARATOR . 'main.php'))->include();
+			$class = (new Script($path . DIRECTORY_SEPARATOR . 'main.php'))->include();
 
 			$this->modules[$id] = (new ObjectFactory())->getObjectOfClass
 			(
 				IModule::class,
-				$configuration['@class'],
+				$class,
 				$this,
 				$id,
 				$path,
-				$configuration
+				(isset($this->modulesConfiguration[$id]) ? $this->modulesConfiguration[$id] : null)
 			);
 		}
 
@@ -393,7 +401,7 @@ abstract class Context implements IContext
 	 */
 	public function getDefaultRoute() : array
 	{
-		return [ '~/default/index' ];
+		return [ '@/default/index' ];
 	}
 
 	/**
@@ -714,6 +722,27 @@ abstract class Context implements IContext
 	}
 
 	/**
+	 * Gets a message and formats a message.
+	 *
+	 * @param string $message
+	 *	The message pattern.
+	 *
+	 * @param array $parameters
+	 *	The message parameters.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public function message(string $message, array $parameters = null) : string
+	{
+		return ($locale = $this->getLocale())->message
+		(
+			$this->getMessageSource()->read($locale, $message),
+			$parameters
+		);
+	}
+
+	/**
 	 * Sets the component configuration.
 	 *
 	 * @param string $id
@@ -758,6 +787,34 @@ abstract class Context implements IContext
 	public final function setLocale(string $id) : void
 	{
 		$this->locale = $this->getLocaleManager()->getLocale($id);
+	}
+
+	/**
+	 * Sets the module configuration.
+	 *
+	 * @param string $id
+	 *	The module identifier.
+	 *
+	 * @param array $configuration
+	 *	The module configuration.
+	 */
+	public final function setModuleConfiguration(string $id, ?array $configuration)
+	{
+		$this->modulesConfiguration[$id] = $configuration;
+	}
+
+	/**
+	 * Sets the modules configuration.
+	 *
+	 * @param array $modulesConfiguration
+	 *	The modules configuration.
+	 */
+	public final function setModulesConfiguration(array $modulesConfiguration)
+	{
+		foreach ($modulesConfiguration as $id => $configuration)
+		{
+			$this->modulesConfiguration[$id] = $configuration;
+		}
 	}
 
 	/**

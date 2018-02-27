@@ -65,6 +65,31 @@ class GettextMessageSource extends Component implements IMessageSource
 	private $messages;
 
 	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, null);
+
+		$this->directory = 'messages';
+		$this->messages = [];
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
+	}
+
+	/**
 	 * Gets the directory.
 	 *
 	 * @return string
@@ -165,19 +190,5 @@ class GettextMessageSource extends Component implements IMessageSource
 	{
 		$this->directory = $directory;
 		$this->directoryPath = null;
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
-
-		$this->directory = 'messages';
-		$this->messages = [];
 	}
 }

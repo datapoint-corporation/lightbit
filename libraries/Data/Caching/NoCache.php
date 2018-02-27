@@ -27,6 +27,7 @@
 
 namespace Lightbit\Data\Caching;
 
+use \Lightbit\Base\IContext;
 use \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
@@ -46,6 +47,30 @@ class NoCache extends Cache implements IFileCache, IMemoryCache, INetworkCache
 	 * @var array
 	 */
 	private $memory;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, null);
+
+		$this->memory = [];
+
+		if ($configuration)
+		{
+			$this->configure($configuration);
+		}
+	}
 
 	/**
 	 * Checks if content is available.
@@ -101,18 +126,5 @@ class NoCache extends Cache implements IFileCache, IMemoryCache, INetworkCache
 	{
 		$this->memory[$id] = $content;
 		return true;
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the component construction
-	 * procedure, before applying the custom configuration.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
-
-		$this->memory = [];
 	}
 }

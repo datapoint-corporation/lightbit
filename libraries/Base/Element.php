@@ -39,6 +39,7 @@ use \Lightbit\Http\IHttpRouter;
 use \Lightbit\I18n\ILocale;
 use \Lightbit\I18n\ILocaleManager;
 use \Lightbit\I18n\IMessageSource;
+use \Lightbit\Routing\Action;
 use \Lightbit\Security\Cryptography\IPasswordDigest;
 
 /**
@@ -63,6 +64,17 @@ abstract class Element implements IElement
 	protected function __construct()
 	{
 
+	}
+
+	/**
+	 * Gets the action.
+	 *
+	 * @return Action
+	 *	The action.
+	 */
+	public function getAction() : Action
+	{
+		return Lightbit::getInstance()->getAction();
 	}
 
 	/**

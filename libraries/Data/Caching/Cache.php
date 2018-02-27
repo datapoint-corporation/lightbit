@@ -28,6 +28,7 @@
 namespace Lightbit\Data\Caching;
 
 use \Lightbit\Base\Component;
+use \Lightbit\Base\IContext;
 use \Lightbit\Data\Caching\ICache;
 
 /**
@@ -76,6 +77,23 @@ abstract class Cache extends Component implements ICache
 	 *	The result.
 	 */
 	abstract public function write(string $id, $content) : bool;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, $configuration);
+	}
 
 	/**
 	 * Closure.

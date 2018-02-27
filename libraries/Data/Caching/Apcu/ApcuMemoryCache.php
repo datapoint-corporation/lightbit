@@ -25,7 +25,7 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Caching\Memory;
+namespace Lightbit\Data\Caching\Apcu;
 
 use \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\Caching\IMemoryCache;
@@ -38,6 +38,23 @@ use \Lightbit\Data\Caching\IMemoryCache;
  */
 class ApcuMemoryCache extends Cache implements IMemoryCache
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, $configuration);
+	}
+
 	/**
 	 * Checks if content is available.
 	 *

@@ -36,7 +36,6 @@ use \Lightbit\IO\FileSystem\Asset;
 use \Lightbit\NamespacePathException;
 use \Lightbit\ObjectFactory;
 use \Lightbit\Script;
-use \Lightbit\ResourceException;
 use \Lightbit\Routing\Action;
 use \Lightbit\Runtime\RuntimeEnvironment;
 use \Lightbit\Runtime\RuntimeException;
@@ -543,7 +542,7 @@ final class Lightbit
 
 			if (!is_array($properties))
 			{
-				throw new ResourceException($configuration, sprintf('Can not get application configuration, bad script return data type: "%s"', $configuration));
+				throw new Exception(sprintf('Can not get application configuration, illegal script return data type: "%s"', $configuration));
 			}
 		}
 

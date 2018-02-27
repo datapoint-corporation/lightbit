@@ -179,17 +179,6 @@ class HtmlComposer extends Component implements IHtmlComposer
 	}
 
 	/**
-	 * Composes the doctype.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public function doctype() : string
-	{
-		return '<!DOCTYPE html>';
-	}
-
-	/**
 	 * Composes an element.
 	 *
 	 * @param string $tag
@@ -283,15 +272,12 @@ class HtmlComposer extends Component implements IHtmlComposer
 			{
 				$result .= $this->element
 				(
-					'style',
+					'link',
 					$this->merge
 					(
-						[ 'type' => 'text/css' ],
+						[ 'href' => $style->getLocation(), 'rel' => 'stylesheet', 'type' => 'text/css' ],
 						$style->getAttributes()
-					),
-
-					$style->getContent(),
-					false
+					)
 				)
 
 				. PHP_EOL;

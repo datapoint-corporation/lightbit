@@ -55,6 +55,26 @@ class PasswordDigest extends Component implements IPasswordDigest
 	private $salt;
 
 	/**
+	 * Constructor.
+	 *
+	 * @param IContext $context
+	 *	The component context.
+	 *
+	 * @param string $id
+	 *	The component identifier.
+	 *
+	 * @param array $configuration
+	 *	The component configuration.
+	 */
+	public function __construct(IContext $context, string $id, array $configuration = null)
+	{
+		parent::__construct($context, $id, null);
+
+		$this->cost = 7;
+		$this->salt = '';
+	}
+
+	/**
 	 * Compares a password against a digest.
 	 *
 	 * @param string $password
@@ -158,19 +178,5 @@ class PasswordDigest extends Component implements IPasswordDigest
 	public function validate(string $digest) : bool
 	{
 		return password_needs_rehash($digest, PASSWORD_BCRYPT, [ 'cost' => $this->cost ]);
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * This method is invoked during the component construction procedure,
-	 * before the dynamic configuration is applied.
-	 */
-	protected function onConstruct() : void
-	{
-		parent::onConstruct();
-
-		$this->cost = 7;
-		$this->salt = '';
 	}
 }

@@ -69,14 +69,6 @@ interface IHtmlComposer extends IComponent
 	public function begin(string $tag, array $attributes = null) : string;
 
 	/**
-	 * Composes the doctype.
-	 *
-	 * @return string
-	 *	The result.
-	 */
-	public function doctype() : string;
-
-	/**
 	 * Composes an element.
 	 *
 	 * @param string $tag

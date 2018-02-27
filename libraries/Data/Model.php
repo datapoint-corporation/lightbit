@@ -96,8 +96,6 @@ abstract class Model extends Element implements IModel
 		$this->attributesErrors = [];
 		$this->scenario = $scenario;
 
-		$this->onConstruct();
-
 		if ($configuration)
 		{
 			(new Scope($this))->configure($configuration);
@@ -107,8 +105,6 @@ abstract class Model extends Element implements IModel
 		{
 			(new Scope($this))->setAttributes($attributes);
 		}
-
-		$this->onAfterConstruct();
 	}
 
 	/**
@@ -678,18 +674,6 @@ abstract class Model extends Element implements IModel
 	}
 
 	/**
-	 * On After Construct.
-	 *
-	 * It is invoked automatically during the model construction
-	 * procedure, after applying the custom configuration and initial
-	 * attribute set.
-	 */
-	protected function onAfterConstruct() : void
-	{
-
-	}
-
-	/**
 	 * On After Import.
 	 *
 	 * This method is called during the import procedure, after the rules
@@ -712,18 +696,6 @@ abstract class Model extends Element implements IModel
 	protected function onAfterValidate() : void
 	{
 		
-	}
-
-	/**
-	 * On Construct.
-	 *
-	 * It is invoked automatically during the model construction
-	 * procedure, before applying the custom configuration and initial
-	 * attribute set.
-	 */
-	protected function onConstruct() : void
-	{
-
 	}
 
 	/**
