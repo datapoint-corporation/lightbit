@@ -266,11 +266,13 @@ final class Route
 			$id = substr($path, $i + 1);
 
 			__LIGHTBIT_ROUTING_ROUTE__RESOLVE__FROM_ACTION:
+			
+			$class = new ReflectionClass($controller);
 			$reference = $controller->getActionMethodName($id);
 
 			try
 			{
-				$method = (new ReflectionClass($controller))->getMethod($reference);
+				$method = $class->getMethod($reference);
 			}
 			catch (ReflectionException $e)
 			{
@@ -280,6 +282,14 @@ final class Route
 			if ($method->isStatic() || !$method->isPublic())
 			{
 				throw new ActionNotFoundRouteException($route, sprintf('Can not resolve route, action method signature mismatch: "%s"', $id));	
+			}
+
+			// Do not disable this, it is a critical security check to ensure
+			// inherited methods can not be invoked through the browser,
+			// potentially allowing the execution of arbitrary code.
+			if (($class->name !== $method->class) || ($parent = $class->getParentClass()) && $parent->hasMethod($method->name))
+			{
+				throw new ActionNotFoundRouteException($route, sprintf('Can not resolve route, action method is inherited: "%s"', $id));
 			}
 
 			$arguments = [];

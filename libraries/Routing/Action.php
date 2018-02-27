@@ -130,6 +130,17 @@ final class Action
 	}
 
 	/**
+	 * Gets the method name.
+	 *
+	 * @return string
+	 *	The method name.
+	 */
+	public function getMethodName() : string
+	{
+		return $this->method;
+	}
+
+	/**
 	 * Gets the identifier.
 	 *
 	 * @return string
@@ -212,7 +223,7 @@ final class Action
 
 		try
 		{
-			$result = $this->controller->{$this->method}(...$this->arguments);
+			$result = $this->controller->run($this->method, $this->arguments);
 		}
 		catch (Throwable $e)
 		{

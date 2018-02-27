@@ -127,6 +127,20 @@ interface IController
 	public function getViewsPath() : string;
 
 	/**
+	 * Runs an action.
+	 *
+	 * @param string $method
+	 *	The action method.
+	 *
+	 * @param array $arguments
+	 *	The action method arguments.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public function run(string $method, array $arguments);
+
+	/**
 	 * Renders a view.
 	 *
 	 * If the view identifier is not absolute, a theme is set and a matching
