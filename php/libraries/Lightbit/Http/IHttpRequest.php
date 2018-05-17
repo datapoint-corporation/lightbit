@@ -27,92 +27,111 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\CommandOutOfSyncException;
-use \Lightbit\Http\HttpRouter;
-use \Lightbit\Http\HttpRouterFactory;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\IHttpMessage;
+use \Lightbit\Http\IHttpUserAgent;
 
 /**
- * HttpRouterFactory.
+ * IHttpRequest.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class HttpRouterProvider implements IHttpRouterProvider
+interface IHttpRequest extends IHttpMessage
 {
 	/**
-	 * The instance.
+	 * Gets the content.
 	 *
-	 * @var HttpRouterProvider
+	 * @return string
+	 *	The content.
 	 */
-	private static $instance;
+	public function getContent() : ?string;
 
 	/**
-	 * Gets the instance.
+	 * Gets the content length.
 	 *
-	 * @return HttpRouterProvider
-	 * 	The instance.
+	 * @return int
+	 *	The content length.
 	 */
-	public static final function getInstance() : HttpRouterProvider
-	{
-		return (self::$instance ?? (self::$instance = new HttpRouterProvider()));
-	}
+	public function getContentLength() : int;
 
 	/**
-	 * The http router.
+	 * Gets the content type.
 	 *
-	 * @var IHttpRouter
+	 * @return string
+	 *	The content type.
 	 */
-	private $router;
+	public function getContentType() : ?string;
 
 	/**
-	 * The http router factory.
+	 * Gets the context.
 	 *
-	 * @var IHttpRouterFactory
+	 * @return IHttpContext
+	 *	The context.
 	 */
-	private $routerFactory;
+	public function getContext() : IHttpContext;
 
 	/**
-	 * Constructor.
+	 * Gets the cookies.
+	 *
+	 * @return array
+	 *	The cookies.
 	 */
-	private function __construct()
-	{
-		$this->routerFactory = new HttpRouterFactory();
-	}
+	public function getCookies() : array;
 
 	/**
-	 * Gets the router.
+	 * Gets the files.
 	 *
-	 * @return IHttpRouter
-	 * 	The router.
+	 * @return array
+	 *	The files.
 	 */
-	public function getRouter() : IHttpRouter
-	{
-		return ($this->router ?? ($this->router = $this->routerFactory->createRouter()));
-	}
+	public function getFiles() : array;
 
 	/**
-	 * Gets the router factory.
+	 * Gets the form.
 	 *
-	 * @return IHttpRouterFactory
-	 * 	The router factory.
+	 * @return IHttpForm
+	 *	The form.
 	 */
-	public final function getRouterFactory() : IHttpRouterFactory
-	{
-		return $this->routerFactory;
-	}
+	public function getForm() : ?IHttpForm;
 
 	/**
-	 * Gets the router factory.
+	 * Gets the method.
 	 *
-	 * @throws CommandOutOfSyncException
-	 * 	Thrown if the router instance is already in use by the application,
-	 * 	rendering the given router factory useless.
-	 *
-	 * @param IHttpRouterFactory $routerFactory
-	 * 	The router factory.
+	 * @return IHttpMethod
+	 *	The method.
 	 */
-	public final function setRouterFactory(IHttpRouterFactory $routerFactory)
-	{
-		$this->routerFactory = $routerFactory;
-	}
+	public function getMethod() : IHttpMethod;
+
+	/**
+	 * Gets the path.
+	 *
+	 * @return string
+	 *	The path.
+	 */
+	public function getPath() : string;
+
+	/**
+	 * Gets the uniform resource location.
+	 *
+	 * @return string
+	 *	The uniform resource location.
+	 */
+	public function getUrl() : string;
+
+	/**
+	 * Gets the user agent.
+	 *
+	 * @return IHttpUserAgent
+	 *	The user agent.
+	 */
+	public function getUserAgent() : IHttpUserAgent;
+
+	/**
+	 * Gets the user languages.
+	 *
+	 * @return array
+	 *	The user languages.
+	 */
+	public function getUserLanguages() : array;
 }

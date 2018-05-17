@@ -27,27 +27,84 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Http\IHttpUserAgent;
+
 /**
- * IHttpRouter.
+ * HttpUserAgentProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+final class HttpUserAgentProvider implements IHttpUserAgentProvider
 {
 	/**
-	 * Sets an additional route.
+	 * The user agent provider.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @var IHttpUserAgentProvider
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	private static $instance;
 
 	/**
-	 * Sets an additional route list.
+	 * Gets the user agent provider.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @return IHttpUserAgentProvider
+	 *	The user agent provider.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public static final function getInstance() : IHttpUserAgentProvider
+	{
+		return (self::$instance ?? (self::$instance = new HttpUserAgentProvider()));
+	}
+
+	/**
+	 * The user agent factory.
+	 *
+	 * @var array
+	 */
+	private $userAgentFactory;
+
+	/**
+	 * The instances.
+	 *
+	 * @var array
+	 */
+	private $userAgents;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->userAgentFactory = new HttpUserAgentFactory();
+		$this->userAgents = [];
+	}
+
+	/**
+	 * Gets a user agent.
+	 *
+	 * @param string $userAgentString
+	 *	The user agent string.
+	 *
+	 * @return IHttpUserAgent
+	 *	The user agent.
+	 */
+	public final function getUserAgent(string $userAgentString) : IHttpUserAgent
+	{
+		if (!isset($this->userAgents[$userAgentString]))
+		{
+			$this->userAgents[$userAgentString] = $this->userAgentFactory->createUserAgent($userAgentString);
+		}
+
+		return $this->userAgents[$userAgentString];
+	}
+
+	/**
+	 * Sets the user agent factory.
+	 *
+	 * @param IHttpUserAgentFactory $userAgentFactory
+	 *	The user agent factory.
+	 */
+	public final function setUserAgentFactory(IHttpUserAgentFactory $userAgentFactory) : void
+	{
+		$this->userAgentFactory = $userAgentFactory;
+	}
 }

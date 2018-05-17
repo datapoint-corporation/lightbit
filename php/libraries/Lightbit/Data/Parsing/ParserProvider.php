@@ -25,38 +25,90 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
 
-use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpRouterFactory;
+use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Data\Parsing\IParserFactory;
+use \Lightbit\Data\Parsing\IParserProvider;
+use \Lightbit\Data\Parsing\ParserFactory;
 
 /**
- * HttpRouterFactory.
+ * ParserProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class HttpRouterFactory implements IHttpRouterFactory
+class ParserProvider implements IParserProvider
 {
+	/**
+	 * The parser provider.
+	 *
+	 * @var IParserProvider
+	 */
+	private static $instance;
+
+	/**
+	 * Gets the parser provider.
+	 *
+	 * @return IParserProvider
+	 *	The parser provider.
+	 */
+	public static function getInstance() : IParserProvider
+	{
+		return (self::$instance ?? (self::$instance = new ParserProvider()));
+	}
+
+	/**
+	 * The parser factory.
+	 *
+	 * @var IParserFactory
+	 */
+	private $parserFactory;
+
+	/**
+	 * The parsers.
+	 *
+	 * @var array
+	 */
+	private $parsers;
+
 	/**
 	 * Constructor.
 	 */
 	public function __construct()
 	{
-
+		$this->parserFactory = new ParserFactory();
+		$this->parsers = [];
 	}
 
 	/**
-	 * Creates a new router.
+	 * Gets a parser.
 	 *
-	 * @return IHttpRouter
-	 * 	The router.
+	 * @throws ParserNotFoundException
+	 *	Thrown when a parser is not found matching the given type allowing
+	 *	for safe parsing and composition of this kind of values.
+	 *
+	 * @return IParser
+	 *	The parser.
 	 */
-	public final function createRouter() : IHttpRouter
+	public final function getParser(string $type) : IParser
 	{
-		$router = new HttpRouter();
-		$router->configure(ConfigurationProvider::getInstance()->getConfiguration());
-		return $router;
+		if (!isset($this->parsers[$type]))
+		{
+			$this->parsers[$type] = $this->parserFactory->createParser($type);
+		}
+
+		return $this->parsers[$type];
+	}
+
+	/**
+	 * Sets the parser factory.
+	 *
+	 * @param IParserFactory $parserFactory
+	 *	The parser factory.
+	 */
+	public final function setParserFactory(IParserFactory $parserFactory) : void
+	{
+		$this->parserFactory = $parserFactory;
 	}
 }

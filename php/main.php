@@ -67,13 +67,29 @@ include (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
 (
 	function()
 	{
+		// Debug flag.
+		if (!defined('LB_DEBUG'))
+		{
+			define('LB_DEBUG', true);
+		}
+
+		// Configuration.
+		if (!defined('LB_CONFIGURATION'))
+		{
+			define('LB_CONFIGURATION', (LB_DEBUG ? 'development' : 'production'));
+		}
+
+		// Script path.
+		if (!isset($_SERVER['SCRIPT_FILENAME']) || !($path = realpath($_SERVER['SCRIPT_FILENAME'])))
+		{
+			throw new \Lightbit\ConstantNotSetBootstrapException('LB_PATH_APPLICATION');
+		}
+
+		define('LB_PATH_SCRIPT', $path);
+
+		// Application path.
 		if (!defined('LB_PATH_APPLICATION'))
 		{
-			if (!isset($_SERVER['SCRIPT_FILENAME']) || !($path = realpath($_SERVER['SCRIPT_FILENAME'])))
-			{
-				throw new \Lightbit\ConstantNotSetBootstrapException('LB_PATH_APPLICATION');
-			}
-
 			define('LB_PATH_APPLICATION', dirname($path));
 		}
 

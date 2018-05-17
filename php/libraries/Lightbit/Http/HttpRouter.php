@@ -27,6 +27,7 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Http\IHttpRouter;
 
 /**
@@ -37,6 +38,20 @@ use \Lightbit\Http\IHttpRouter;
  */
 class HttpRouter implements IHttpRouter
 {
+	/**
+	 * The url.
+	 *
+	 * @var string
+	 */
+	private $baseUrl;
+
+	/**
+	 * The configuration.
+	 *
+	 * @var IConfiguration
+	 */
+	private $configuration;
+
 	/**
 	 * The routes.
 	 *
@@ -49,31 +64,83 @@ class HttpRouter implements IHttpRouter
 	 */
 	public function __construct()
 	{
+		$this->baseUrl = '/';
 		$this->routes = [];
 	}
 
 	/**
-	 * Sets a http route.
+	 * Sets a route.
 	 *
-	 * @param IHttpRoute $httpRoute
+	 * @param IHttpRoute $route
 	 * 	The http route.
 	 */
-	public function addHttpRoute(IHttpRoute $httpRoute) : void
+	public final function addRoute(IHttpRoute $route) : void
 	{
-		$this->routes[$httpRoute->getMethod()->getName()][$httpRoute->getPath()] = $httpRoute;
+		$this->routes[$route->getMethod()->getName()][$route->getPath()] = $route;
 	}
 
 	/**
-	 * Sets a http route list.
+	 * Sets a route list.
 	 *
-	 * @param array $httpRouteList
+	 * @param array $routeList
 	 * 	The http route list.
 	 */
-	public function addHttpRouteList(array $httpRouteList) : void
+	public final function addRouteList(array $routeList) : void
 	{
-		foreach ($httpRouteList as $i => $httpRoute)
+		foreach ($routeList as $i => $route)
 		{
-			$this->setHttpRoute($httpRoute);
+			$this->addRoute($route);
 		}
+	}
+
+	/**
+	 * Configure.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The configuration to accept from.
+	 */
+	public final function configure(IConfiguration $configuration) : void
+	{
+		$configuration->accept($this, [
+			'lightbit.http.router.baseUrl' => 'setBaseUrl'
+		]);
+	}
+
+	/**
+	 * Gets the base url.
+	 *
+	 *
+	 *
+	 * @return string
+	 *	The base url.
+	 */
+	public final function getBaseUrl() : string
+	{
+		return $this->baseUrl;
+	}
+
+	/**
+	 * Resolves an incomming request.
+	 *
+	 * @param IHttpRequest $request
+	 *	The incomming request.
+	 *
+	 * @return IAction
+	 *	The action.
+	 */
+	public final function resolve(IHttpRequest $request) : IAction
+	{
+
+	}
+
+	/**
+	 * Sets the base uniform resource location.
+	 *
+	 * @param string $baseUrl
+	 *	The base uniform resource location.
+	 */
+	public final function setBaseUrl(string $baseUrl) : void
+	{
+		$this->baseUrl = '/' . trim($baseUrl, '/');
 	}
 }

@@ -25,29 +25,62 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
+
+use \Lightbit\ArgumentException;
+use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Data\Parsing\ParserException;
 
 /**
- * IHttpRouter.
+ * StringParser.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class StringParser implements IParser
 {
 	/**
-	 * Sets an additional route.
-	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * Constructor.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	public function __construct()
+	{
+
+	}
 
 	/**
-	 * Sets an additional route list.
+	 * Compose.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function compose($subject) : string
+	{
+		if (is_string($subject))
+		{
+			return $subject;
+		}
+
+		throw new ParserException(
+			$this,
+			sprintf('Can not compose string, wrong argument type: "%s"', gettype($subject)),
+			new ArgumentException('subject', sprintf('Can not accept argument, bad type: "%s", of type "%s"', 'subject', gettype($subject)))
+		);
+	}
+
+	/**
+	 * Parse.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public function parse(string $subject) : string
+	{
+		return $subject;
+	}
 }

@@ -28,26 +28,12 @@
 namespace Lightbit\Http;
 
 /**
- * IHttpRouter.
+ * IHttpMessage.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IHttpMessage
 {
-	/**
-	 * Sets an additional route.
-	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
-	 */
-	public function addRoute(IHttpRoute $route) : void;
-
-	/**
-	 * Sets an additional route list.
-	 *
-	 * @param array $routeList
-	 * 	The route list.
-	 */
-	public function addRouteList(array $routeList) : void;
+	
 }

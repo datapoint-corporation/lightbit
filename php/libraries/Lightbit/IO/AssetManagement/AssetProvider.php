@@ -156,7 +156,7 @@ class AssetProvider implements IAssetProvider
 
 			if (file_exists($filePath))
 			{
-				return $this->getAssetFactory()->createAsset($type, $asset, $filePath);
+				return $this->assetFactory->createAsset($type, $asset, $filePath);
 			}
 		}
 

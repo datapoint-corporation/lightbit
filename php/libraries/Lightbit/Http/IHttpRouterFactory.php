@@ -31,17 +31,17 @@ use \Lightbit\Http\IHttpRouter;
 
 /**
  * IHttpRouterFactory.
- * 
+ *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IHttpRouterFactory
 {
 	/**
-	 * Creates a new http router.
-	 * 
+	 * Creates a new router.
+	 *
 	 * @return IHttpRouter
-	 * 	The http router.
+	 * 	The router.
 	 */
-	public function createHttpRouter() : IHttpRouter;
+	public function createRouter() : IHttpRouter;
 }

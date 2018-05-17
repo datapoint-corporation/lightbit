@@ -25,29 +25,50 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Configuration;
+
+use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Configuration\IConfigurationFactory;
+use \Lightbit\IO\AssetManagement\AssetNotFoundAssetProviderException;
+use \Lightbit\IO\AssetManagement\AssetProvider;
 
 /**
- * IHttpRouter.
+ * ConfigurationFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class ConfigurationFactory implements IConfigurationFactory
 {
 	/**
-	 * Sets an additional route.
+	 * Creates the configuration.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @return IConfiguration
+	 *	The configuration.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	public function createConfiguration() : IConfiguration
+	{
+		$asset;
 
-	/**
-	 * Sets an additional route list.
-	 *
-	 * @param array $routeList
-	 * 	The route list.
-	 */
-	public function addRouteList(array $routeList) : void;
+		try
+		{
+			$asset = AssetProvider::getInstance()->getPhpAsset('settings://' . LB_CONFIGURATION);
+		}
+		catch (AssetNotFoundAssetProviderException $e)
+		{
+			return new Configuration([]);
+		}
+
+		if ($asset->exists())
+		{
+			$configuration = $asset->include();
+
+			if (is_array($configuration))
+			{
+				return new Configuration($configuration);
+			}
+		}
+
+		return new Configuration([]);
+	}
 }

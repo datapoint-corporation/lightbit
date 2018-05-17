@@ -84,7 +84,6 @@ final class HttpApplication implements IHttpApplication
 	public final function run() : int
 	{
 		$router = HttpRouterProvider::getInstance()->getHttpRouter();
-
 		return 0;
 	}
 }

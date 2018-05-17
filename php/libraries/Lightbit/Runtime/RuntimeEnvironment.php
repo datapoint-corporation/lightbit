@@ -77,6 +77,17 @@ final class RuntimeEnvironment
 	}
 
 	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public final function getName() : string
+	{
+		return LB_CONFIGURATION;
+	}
+
+	/**
 	 * Gets the lightbit path.
 	 *
 	 * @return string
@@ -85,5 +96,27 @@ final class RuntimeEnvironment
 	public final function getLightbitPath() : string
 	{
 		return LB_PATH_LIGHTBIT;
+	}
+
+	/**
+	 * Gets the script path.
+	 *
+	 * @return string
+	 *	The script path.
+	 */
+	public final function getScriptPath() : string
+	{
+		return LB_PATH_SCRIPT;
+	}
+
+	/**
+	 * Gets the debug flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isDebug() : bool
+	{
+		return LB_DEBUG;
 	}
 }

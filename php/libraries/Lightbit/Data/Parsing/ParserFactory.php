@@ -25,29 +25,63 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
+
+use \Lightbit\Data\Parsing\BooleanParser;
+use \Lightbit\Data\Parsing\IntegerParser;
+use \Lightbit\Data\Parsing\FloatParser;
+use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Data\Parsing\IParserFactory;
+use \Lightbit\Data\Parsing\IParserProvider;
+use \Lightbit\Data\Parsing\ParserFactory;
+use \Lightbit\Data\Parsing\StringParser;
 
 /**
- * IHttpRouter.
+ * ParserFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class ParserFactory implements IParserFactory
 {
 	/**
-	 * Sets an additional route.
-	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * Constructor.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	public function __construct()
+	{
+
+	}
 
 	/**
-	 * Sets an additional route list.
+	 * Gets a parser.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @throws ParserNotFoundException
+	 *	Thrown when a parser is not found matching the given type allowing
+	 *	for safe parsing and composition of this kind of values.
+	 *
+	 * @return IParser
+	 *	The parser.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function createParser(string $type) : IParser
+	{
+		switch ($type)
+		{
+			case 'bool':
+			case 'boolean':
+				return new BooleanParser();
+
+			case 'double':
+			case 'float':
+				return new FloatParser();
+
+			case 'int':
+			case 'integer':
+				return new IntegerParser();
+
+			case 'string':
+				return new StringParser();
+		}
+
+		throw new ParserNotFoundException(sprintf('Can not get type parser, not found: "%s"', $type));
+	}
 }

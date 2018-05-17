@@ -29,11 +29,81 @@ namespace Lightbit\Http;
 
 /**
  * IHttpRoute.
- * 
+ *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
 interface IHttpRoute
 {
-	
+	/**
+	 * Extracts tokens from a unform resource location relative to the
+	 * host document root.
+	 *
+	 * @param string $subject
+	 *	The uniform resource location.
+	 *
+	 * @param array $tokens
+	 *	The tokens output variable.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
+	public function extract(string $subject, array &$tokens = null) : bool;
+
+	/**
+	 * Gets the controller class.
+	 *
+	 * @return ReflectionClass
+	 *	The controller class.
+	 */
+	public function getControllerClass() : ReflectionClass;
+
+	/**
+	 * Gets the controller class name.
+	 *
+	 * @return string
+	 *	The controller class name.
+	 */
+	public function getControllerClassName() : string;
+
+	/**
+	 * Gets the controller method.
+	 *
+	 * @return ReflectionMethod
+	 *	The controller method.
+	 */
+	public function getControllerMethod() : ReflectionMethod;
+
+	/**
+	 * Gets the controller method name.
+	 *
+	 * @return string
+	 *	The controller method name.
+	 */
+	public function getControllerMethodName() : string;
+
+	/**
+	 * Gets the methods.
+	 *
+	 * @return array
+	 *	The methods.
+	 */
+	public function getMethods() : array;
+
+	/**
+	 * Gets the pattern.
+	 *
+	 * @return string
+	 *	The pattern.
+	 */
+	public function getPattern() : string;
+
+	/**
+	 * Checks if the route is compatible with the four standard methods,
+	 * namely the "GET", "POST", "PUT" and "DELETE".
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isGeneric() : bool;
 }

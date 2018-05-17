@@ -25,29 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
 
 /**
- * IHttpRouter.
+ * IParser.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IParser
 {
 	/**
-	 * Sets an additional route.
+	 * Compose.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	public function compose($subject) : string;
 
 	/**
-	 * Sets an additional route list.
+	 * Parse.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return mixed
+	 *	The result.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function parse(string $subject); // : mixed;
 }

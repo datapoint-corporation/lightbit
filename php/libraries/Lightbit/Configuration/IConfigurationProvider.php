@@ -25,29 +25,23 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Configuration;
+
+use \Lightbit\Configuration\IConfiguration;
 
 /**
- * IHttpRouter.
+ * IConfigurationProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IConfigurationProvider
 {
 	/**
-	 * Sets an additional route.
+	 * Gets the configuration.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @return IConfiguration
+	 *	The configuration.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
-
-	/**
-	 * Sets an additional route list.
-	 *
-	 * @param array $routeList
-	 * 	The route list.
-	 */
-	public function addRouteList(array $routeList) : void;
+	public function getConfiguration() : IConfiguration;
 }

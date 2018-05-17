@@ -25,29 +25,68 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Configuration;
+
+use \Lightbit\Configuration\ConfigurationFactory;
+use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Configuration\IConfigurationProvider;
 
 /**
- * IHttpRouter.
+ * ConfigurationProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class ConfigurationProvider implements IConfigurationProvider
 {
 	/**
-	 * Sets an additional route.
+	 * Gets the instance.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @var IConfigurationProvider
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	private static $instance;
 
 	/**
-	 * Sets an additional route list.
+	 * Gets the instance.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @return IConfigurationProvider
+	 *	The configuration provider.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public static final function getInstance() : IConfigurationProvider
+	{
+		return (self::$instance ?? (self::$instance = new ConfigurationProvider()));
+	}
+
+	/**
+	 * The configuration.
+	 *
+	 * @var IConfiguration
+	 */
+	private $configuration;
+
+	/**
+	 * The configuration factory.
+	 *
+	 * @var IConfigurationFactory
+	 */
+	private $configurationFactory;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->configurationFactory = new ConfigurationFactory();
+	}
+
+	/**
+	 * Gets a configuration.
+	 *
+	 * @return IConfiguration
+	 *	The configuration.
+	 */
+	public function getConfiguration() : IConfiguration
+	{
+		return ($this->configuration ?? ($this->configuration = $this->configurationFactory->createConfiguration()));
+	}
 }

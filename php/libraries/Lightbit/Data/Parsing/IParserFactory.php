@@ -25,29 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
+
+use \Lightbit\Data\Parsing\IParser;
 
 /**
- * IHttpRouter.
+ * IParserFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IParserFactory
 {
 	/**
-	 * Sets an additional route.
+	 * Gets a parser.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
-	 */
-	public function addRoute(IHttpRoute $route) : void;
-
-	/**
-	 * Sets an additional route list.
+	 * @throws ParserNotFoundException
+	 *	Thrown when a parser is not found matching the given type allowing
+	 *	for safe parsing and composition of this kind of values.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @return IParser
+	 *	The parser.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function createParser(string $type) : IParser;
 }

@@ -28,26 +28,34 @@
 namespace Lightbit\Http;
 
 /**
- * IHttpRouter.
+ * IHttpMethod.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IHttpMethod
 {
 	/**
-	 * Sets an additional route.
+	 * Gets the name.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @return string
+	 *	The name.
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	public function getName() : string;
 
 	/**
-	 * Sets an additional route list.
+	 * Checks the idempotent flag.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @return bool
+	 *	The result.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function isIdempotent() : bool;
+
+	/**
+	 * Checks the safe flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isSafe() : bool;
 }

@@ -27,36 +27,113 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpRouterFactory;
+use \Lightbit\ArgumentException;
 
 /**
- * HttpRouterFactory.
+ * HttpMethod.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class HttpRouterFactory implements IHttpRouterFactory
+class HttpMethod implements IHttpMethod
 {
 	/**
-	 * Constructor.
+	 * Gets an instance.
+	 *
+	 * @param string $name
+	 *	The method name.
+	 *
+	 * @return HttpMethod
+	 *	The method.
 	 */
-	public function __construct()
+	public static function getInstance(string $name) : HttpMethod
 	{
+		switch ($name)
+		{
+			case 'GET':
+			case 'HEAD':
+				return new HttpMethod($name, true, true);
 
+			case 'DELETE':
+			case 'OPTIONS':
+			case 'PUT':
+			case 'TRACE':
+				return new HttpMethod($name, true, false);
+		}
+
+		throw new ArgumentException('name', sprintf('Can not get http method, it does not exist: "%s"', $name));
 	}
 
 	/**
-	 * Creates a new router.
+	 * The name.
 	 *
-	 * @return IHttpRouter
-	 * 	The router.
+	 * @var string
 	 */
-	public final function createRouter() : IHttpRouter
+	private $name;
+
+	/**
+	 * The idempotent flag.
+	 *
+	 * @var bool
+	 */
+	private $idempotent;
+
+	/**
+	 * The safe flag.
+	 *
+	 * @var bool
+	 */
+	private $safe;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param string $name
+	 *	The method name.
+	 *
+	 * @param bool $idempotent
+	 *	The method idempotent flag.
+	 *
+	 * @param bool $safe
+	 *	The method safe flag.
+	 */
+	public function __construct(string $name, bool $idempotent, bool $safe)
 	{
-		$router = new HttpRouter();
-		$router->configure(ConfigurationProvider::getInstance()->getConfiguration());
-		return $router;
+		$this->name = $name;
+		$this->idempotent = $idempotent;
+		$this->safe = $safe;
+	}
+
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public final function getName() : string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Checks the idempotent flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isIdempotent() : bool
+	{
+		return $this->idempotent;
+	}
+
+	/**
+	 * Checks the safe flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isSafe() : bool
+	{
+		return $this->safe;
 	}
 }

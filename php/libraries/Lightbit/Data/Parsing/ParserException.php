@@ -25,29 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Data\Parsing;
+
+use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Exception;
+
+use \Throwable;
 
 /**
- * IHttpRouter.
+ * ParserException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class ParserException extends Exception
 {
 	/**
-	 * Sets an additional route.
+	 * Constructor.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
-	 */
-	public function addRoute(IHttpRoute $route) : void;
-
-	/**
-	 * Sets an additional route list.
+	 * @param IParser $parser
+	 *	The exception parser.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @param string $message
+	 * 	The exception message.
+	 *
+	 * @param Throwable $previous
+	 * 	The exception previous throwable.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function __construct(IParser $parser, string $message, Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+	}
 }

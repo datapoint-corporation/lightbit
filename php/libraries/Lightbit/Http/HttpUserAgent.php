@@ -27,27 +27,42 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Http\IHttpUserAgent;
+
 /**
- * IHttpRouter.
+ * HttpUserAgent.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class HttpUserAgent implements IHttpUserAgent
 {
 	/**
-	 * Sets an additional route.
+	 * The user agent.
 	 *
-	 * @param IHttpRoute $route
-	 * 	The route.
+	 * @var string
 	 */
-	public function addRoute(IHttpRoute $route) : void;
+	private $userAgent;
 
 	/**
-	 * Sets an additional route list.
+	 * Constructor.
 	 *
-	 * @param array $routeList
-	 * 	The route list.
+	 * @param string $userAgent
+	 *	The user agent.
 	 */
-	public function addRouteList(array $routeList) : void;
+	public function __construct(string $userAgent)
+	{
+		$this->userAgent = $userAgent;
+	}
+
+	/**
+	 * Gets the user agent.
+	 *
+	 * @return string
+	 *	The user agent.
+	 */
+	public final function toString() : string
+	{
+		return $this->userAgent;
+	}
 }
