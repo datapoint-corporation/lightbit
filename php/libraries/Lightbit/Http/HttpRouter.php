@@ -27,8 +27,11 @@
 
 namespace Lightbit\Http;
 
+use \Throwable;
+
 use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Http\IHttpRouter;
+use \Lightbit\IO\AssetManagement\AssetProvider;
 
 /**
  * HttpRouter.
@@ -39,7 +42,15 @@ use \Lightbit\Http\IHttpRouter;
 class HttpRouter implements IHttpRouter
 {
 	/**
-	 * The url.
+	 * The base uniform resource location.
+	 *
+	 * @var string
+	 */
+	private $absoluteBaseUrl;
+
+	/**
+	 * The base uniform resource location relative to the current host
+	 * document root.
 	 *
 	 * @var string
 	 */
@@ -51,6 +62,13 @@ class HttpRouter implements IHttpRouter
 	 * @var IConfiguration
 	 */
 	private $configuration;
+
+	/**
+	 * The incomming request.
+	 *
+	 * @var IHttpRequest
+	 */
+	private $request;
 
 	/**
 	 * The routes.
@@ -76,7 +94,7 @@ class HttpRouter implements IHttpRouter
 	 */
 	public final function addRoute(IHttpRoute $route) : void
 	{
-		$this->routes[$route->getMethod()->getName()][$route->getPath()] = $route;
+		$this->routes[] = $route;
 	}
 
 	/**
@@ -102,17 +120,33 @@ class HttpRouter implements IHttpRouter
 	public final function configure(IConfiguration $configuration) : void
 	{
 		$configuration->accept($this, [
-			'lightbit.http.router.baseUrl' => 'setBaseUrl'
+			'lightbit.http.router.base' => 'setBaseUrl'
 		]);
 	}
 
 	/**
-	 * Gets the base url.
-	 *
-	 *
+	 * Gets the base uniform resource location.
 	 *
 	 * @return string
-	 *	The base url.
+	 *	The base uniform resource location.
+	 */
+	public final function getAbsoluteBaseUrl() : string
+	{
+		if (!isset($this->absoluteBaseUrl))
+		{
+			$this->absoluteBaseUrl = ((isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) !== 'off')) ? 'https://' : 'http://');
+			$this->absoluteBaseUrl .= ((isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '127.0.0.1');
+		}
+
+		return $this->absoluteBaseUrl . $this->baseUrl;
+	}
+
+	/**
+	 * Gets the base uniform resource location relative to the current host
+	 * document root.
+	 *
+	 * @return string
+	 *	The base uniform resource location.
 	 */
 	public final function getBaseUrl() : string
 	{
@@ -120,17 +154,73 @@ class HttpRouter implements IHttpRouter
 	}
 
 	/**
-	 * Resolves an incomming request.
+	 * Imports the routes from a script asset.
 	 *
-	 * @param IHttpRequest $request
-	 *	The incomming request.
+	 * @param string $asset
+	 *	The asset identifier.
+	 */
+	public final function import(string $asset) : void
+	{
+		try
+		{
+			$routes = AssetProvider::getInstance()->getPhpAsset($asset)->include();
+
+			foreach ($routes as $i => $route)
+			{
+				if (! ($route instanceof IHttpRoute))
+				{
+					throw new ErrorException(sprintf('Can not import route list, invalid element at position: "%s", of type "%s"', $i, gettype($route)));
+				}
+
+				$this->addRoute($route);
+			}
+		}
+		catch (Throwable $e)
+		{
+			throw new HttpRouterException($this, sprintf('Can not import routes, unexpected error: "%s"', $asset), $e);
+		}
+	}
+
+	/**
+	 * Resolves an context to an action.
 	 *
-	 * @return IAction
+	 * @throws HttpRouteNotFoundException
+	 *	Thrown when the given context can not be resolved through any of
+	 *	the available routes.
+	 *
+	 * @param IHttpContext $context
+	 *	The action context.
+	 *
+	 * @return IHttpAction
 	 *	The action.
 	 */
-	public final function resolve(IHttpRequest $request) : IAction
+	public function resolve(IHttpContext $context) : IHttpAction
 	{
+		// We need to ensure the base url is removed from the route path,
+		// or else patterns will never match.
+		$path = '/' . trim($context->getRequest()->getPath(), '/') . '/';
 
+		if (strlen($path) > ($i = strlen($this->baseUrl)))
+		{
+			$path = substr($path, ($i - 1));
+		}
+
+		else
+		{
+			$path = '/';
+		}
+
+		// Go through each route and make an attempt at matching and extracting
+		// any relevant parameters from the path.
+		foreach ($this->routes as $i => $route)
+		{
+			if ($action = $route->resolve($path, $_GET))
+			{
+				return $action;
+			}
+		}
+
+		throw new HttpRouteNotFoundException(sprintf('Can not resolve from context, route not found: "%s"', $path));
 	}
 
 	/**
@@ -141,6 +231,13 @@ class HttpRouter implements IHttpRouter
 	 */
 	public final function setBaseUrl(string $baseUrl) : void
 	{
-		$this->baseUrl = '/' . trim($baseUrl, '/');
+		if ($baseUrl = trim($baseUrl, '/'))
+		{
+			$this->baseUrl = '/' . $baseUrl . '/';
+		}
+		else
+		{
+			$this->baseUrl = '/';
+		}
 	}
 }

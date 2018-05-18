@@ -25,55 +25,47 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Runtime;
+namespace Lightbit\Reflection;
+
+use \ReflectionClass;
+
+use \Lightbit\Reflection\IType;
 
 /**
- * RuntimeEnvironment.
+ * InterfaceType.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class RuntimeEnvironment
+final class InterfaceType implements IType
 {
 	/**
-	 * The instance.
+	 * The reflection.
 	 *
-	 * @var RuntimeEnvironment
+	 * @var ReflectionClass
 	 */
-	private static $instance;
-
-	/**
-	 * Gets the instance.
-	 *
-	 * @return RuntimeEnvironment
-	 *	The runtime environment.
-	 */
-	public static final function getInstance() : RuntimeEnvironment
-	{
-		return (self::$instance ?? (self::$instance = new RuntimeEnvironment()));
-	}
+	private $reflection;
 
 	/**
 	 * Constructor.
+	 *
+	 * @param ReflectionClass $reflection
+	 *	The interface reflection.
 	 */
-	private function __construct()
+	public function __construct(ReflectionClass $reflection)
 	{
-
+		$this->reflection = $reflection;
 	}
 
 	/**
-	 * Gets the application path.
-	 *
-	 * Please note the application path may not match the directory containing
-	 * the current entry-point script, as it can be explicitly set by
-	 * defining the "LB_PATH_APPLICATION" constant.
+	 * Gets the base name.
 	 *
 	 * @return string
-	 *	The application directory path.
+	 *	The base name.
 	 */
-	public final function getApplicationPath() : string
+	public final function getBaseName() : string
 	{
-		return LB_PATH_APPLICATION;
+		return $this->reflection->getShortName();
 	}
 
 	/**
@@ -84,61 +76,72 @@ final class RuntimeEnvironment
 	 */
 	public final function getName() : string
 	{
-		return LB_CONFIGURATION;
+		return $this->reflection->getName();
 	}
 
 	/**
-	 * Gets the lightbit path.
+	 * Gets the namespace.
 	 *
 	 * @return string
-	 *	The lightbit path.
+	 *	The namespace.
 	 */
-	public final function getLightbitPath() : string
+	public final function getNamespace() : string
 	{
-		return LB_PATH_LIGHTBIT;
+		return $this->reflection->getNamespaceName();
 	}
 
 	/**
-	 * Gets the script path.
-	 *
-	 * @return string
-	 *	The script path.
-	 */
-	public final function getScriptPath() : string
-	{
-		return LB_PATH_SCRIPT;
-	}
-
-	/**
-	 * Checks if it is a http environment.
+	 * Checks if it equals another type.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public final function isHttp() : bool
+	public final function equals(IType $type) : bool
 	{
-		return (isset($_SERVER['HTTP_HOST']));
+		return ($this->getName() === $type->getName());
 	}
 
 	/**
-	 * Checks if it is a http environment.
+	 * Checks if it is a class.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public final function isHttps() : bool
+	public final function isClass() : bool
 	{
-		return (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off');
+		return true;
 	}
 
 	/**
-	 * Gets the debug flag.
+	 * Checks if it is an interface.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public final function isDebug() : bool
+	public final function isInterface() : bool
 	{
-		return LB_DEBUG;
+		return false;
+	}
+
+	/**
+	 * Checks if it is native.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isNative() : bool
+	{
+		return !$this->reflection->isUserDefined();
+	}
+
+	/**
+	 * Checks if it is scalar.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isScalar() : bool
+	{
+		return false;
 	}
 }

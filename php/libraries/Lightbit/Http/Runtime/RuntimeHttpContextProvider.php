@@ -25,41 +25,78 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Runtime;
+
+use \Lightbit\Http\Runtime\IRuntimeHttpContext;
+use \Lightbit\Http\Runtime\IRuntimeHttpContextFactory;
+use \Lightbit\Http\Runtime\IRuntimeHttpContextProvider;
+use \Lightbit\Http\Runtime\RuntimeHttpContext;
 
 /**
- * IHttpRouter.
+ * RuntimeHttpContextProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class RuntimeHttpContextProvider implements IRuntimeHttpContextProvider
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * The instance.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @var IRuntimeHttpContextProvider
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	private static $instance;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the context provider.
 	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * @return IRuntimeHttpContextProvider
+	 *	The context provider.
 	 */
-	public function getBaseUrl() : string;
+	public static final function getInstance() : IRuntimeHttpContextProvider
+	{
+		return (self::$instance ?? (self::$instance = new RuntimeHttpContextProvider()));
+	}
 
 	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * The context.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	private $context;
+
+	/**
+	 * The context factory.
+	 *
+	 * @var IRuntimeHttpContextFactory
+	 */
+	private $contextFactory;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->contextFactory = new RuntimeHttpContextFactory();
+	}
+
+	/**
+	 * Gets the context.
+	 *
+	 * @return IHttpContext
+	 *	The context.
+	 */
+	public final function getContext() : IRuntimeHttpContext
+	{
+		return ($this->context ?? ($this->context = $this->contextFactory->createContext()));
+	}
+
+	/**
+	 * Sets the context factory.
+	 *
+	 * @param IRuntimeHttpContextFactory $contextFactory
+	 *	The context factory.
+	 */
+	public final function setContextFactory(IRuntimeHttpContextFactory $contextFactory) : void
+	{
+		$this->contextFactory = $contextFactory;
+	}
 }

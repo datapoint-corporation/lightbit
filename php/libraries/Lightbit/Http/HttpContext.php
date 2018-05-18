@@ -27,39 +27,65 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
+
 /**
- * IHttpRouter.
+ * HttpContext.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class HttpContext implements IHttpContext
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * The request.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @var IHttpRequest
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	private $request;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * The response.
 	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * @var IHttpResponse
 	 */
-	public function getBaseUrl() : string;
+	private $response;
 
 	/**
-	 * Resolves an context to an action.
+	 * Constructor.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
+	 * @param IHttpRequest $request
+	 *	The request.
 	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * @param IHttpResponse $response
+	 *	The response.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function __construct(IHttpRequest $request, IHttpResponse $response)
+	{
+		$this->request = $request;
+		$this->response = $response;
+	}
+
+	/**
+	 * Gets the request.
+	 *
+	 * @return IHttpRequest
+	 *	The request.
+	 */
+	public final function getRequest() : IHttpRequest
+	{
+		return $this->request;
+	}
+
+	/**
+	 * Gets the response.
+	 *
+	 * @return IHttpRequest
+	 *	The response.
+	 */
+	public final function getResponse() : IHttpResponse
+	{
+		return $this->request;
+	}
 }

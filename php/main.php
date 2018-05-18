@@ -65,7 +65,7 @@ include (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
 // Bootstrap
 // -----------------------------------------------------------------------------
 (
-	function()
+	function(Lightbit $lightbit)
 	{
 		// Debug flag.
 		if (!defined('LB_DEBUG'))
@@ -93,8 +93,35 @@ include (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
 			define('LB_PATH_APPLICATION', dirname($path));
 		}
 
-		Lightbit::getInstance()->restore();
+		// Include path.
+		$lightbit->addIncludePath(LB_PATH_APPLICATION . DIRECTORY_SEPARATOR . 'libraries');
+
+		// Restore.
+		$lightbit->restore();
 	}
 )
 
-();
+(Lightbit::getInstance());
+
+// Core functions
+// -----------------------------------------------------------------------------
+
+function hook(string $hook, Closure $closure) : void
+{
+	\Lightbit\Hooking\HookManager::getInstance()->attach($hook, $closure);
+}
+
+function trigger(string $hook, ...$arguments) : void
+{
+	\Lightbit\Hooking\HookManager::getInstance()->trigger($hook, ...$arguments);
+}
+
+function type(string $type) : \Lightbit\Reflection\IType
+{
+	return new \Lightbit\Reflection\Type($type);
+}
+
+function typeof($variable) : \Lightbit\Reflection\IType
+{
+	return \Lightbit\Reflection\Type::getInstanceOf($variable);
+}

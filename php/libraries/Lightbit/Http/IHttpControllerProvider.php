@@ -27,39 +27,28 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Http\IHttpController;
+
 /**
- * IHttpRouter.
+ * IHttpControllerProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IHttpControllerProvider
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Gets a controller.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @throws HttpControllerFactoryException
+	 *	Thrown as a generic exception when the controller fails to be created
+	 *	by the factory regardless of the actual reason for it.
+	 *
+	 * @param IHttpAction $action
+	 *	The controller action.
+	 *
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public function getAbsoluteBaseUrl() : string;
-
-	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
-	 *
-	 * @return string
-	 *	The base uniform resource location.
-	 */
-	public function getBaseUrl() : string;
-
-	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
-	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function getController(IHttpAction $action) : IHttpController;
 }

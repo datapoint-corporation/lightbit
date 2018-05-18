@@ -62,7 +62,7 @@ class AssetProvider implements IAssetProvider
 			// Set the standard application prefixes.
 			self::$instance->setAssetPrefixPath('application', LB_PATH_APPLICATION);
 
-			foreach ([ 'hooks', 'layouts', 'messages', 'settings', 'views' ] as $i => $token)
+			foreach ([ 'hooks', 'layouts', 'messages', 'routes', 'settings', 'views' ] as $i => $token)
 			{
 				self::$instance->setAssetPrefixPath($token, LB_PATH_APPLICATION . DIRECTORY_SEPARATOR . $token);
 			}

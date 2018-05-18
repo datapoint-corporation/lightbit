@@ -28,38 +28,31 @@
 namespace Lightbit\Http;
 
 /**
- * IHttpRouter.
+ * IHttpAction.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IHttpAction
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Gets the controller.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	public function getController() : IHttpController;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the route.
 	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * @return IHttpRoute
+	 *	The route.
 	 */
-	public function getBaseUrl() : string;
+	public function getRoute() : IHttpRoute;
 
 	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * Run.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function run() : void;
 }

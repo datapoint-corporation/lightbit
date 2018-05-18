@@ -25,41 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Runtime;
+
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\Runtime\RuntimeHttpContext;
 
 /**
- * IHttpRouter.
+ * RuntimeHttpContextFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class RuntimeHttpContextFactory implements IRuntimeHttpContextFactory
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Creates the context.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @return IHttpContext
+	 *	The context.
 	 */
-	public function getAbsoluteBaseUrl() : string;
-
-	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
-	 *
-	 * @return string
-	 *	The base uniform resource location.
-	 */
-	public function getBaseUrl() : string;
-
-	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
-	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function createContext() : IHttpContext
+	{
+		return new RuntimeHttpContext();
+	}
 }

@@ -25,41 +25,118 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Reflection;
+
+use \Lightbit\Reflection\IType;
 
 /**
- * IHttpRouter.
+ * UnknownType.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+final class UnknownType implements IType
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * The name.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @var string
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	private $name;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
-	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * Constructor.
 	 */
-	public function getBaseUrl() : string;
+	public function __construct(string $name)
+	{
+		$this->name = $name;
+	}
 
 	/**
-	 * Resolves an context to an action.
+	 * Gets the base name.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * @return string
+	 *	The base name.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public final function getBaseName() : string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Gets the name.
+	 *
+	 * @return string
+	 *	The name.
+	 */
+	public final function getName() : string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Gets the namespace.
+	 *
+	 * @return string
+	 *	The namespace.
+	 */
+	public final function getNamespace() : string
+	{
+		return '';
+	}
+
+	/**
+	 * Checks if it equals another type.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function equals(IType $type) : bool
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if it is a class.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isClass() : bool
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if it is an interface.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isInterface() : bool
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if it is native.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isNative() : bool
+	{
+		return true;
+	}
+
+	/**
+	 * Checks if it is scalar.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isScalar() : bool
+	{
+		return false;
+	}
 }

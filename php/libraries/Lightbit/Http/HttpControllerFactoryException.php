@@ -27,39 +27,33 @@
 
 namespace Lightbit\Http;
 
+use \Throwable;
+
+use \Lightbit\Exception;
+use \Lightbit\Http\IHttpRouter;
+
 /**
- * IHttpRouter.
+ * HttpControllerFactoryException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class HttpControllerFactoryException extends Exception
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Constructor.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @param IHttpControllerFactory $factory
+	 *	The exception factory.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function getAbsoluteBaseUrl() : string;
-
-	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
-	 *
-	 * @return string
-	 *	The base uniform resource location.
-	 */
-	public function getBaseUrl() : string;
-
-	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
-	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function __construct(IHttpControllerFactory $factory, string $message, Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+	}
 }

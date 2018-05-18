@@ -25,41 +25,77 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Reflection;
 
 /**
- * IHttpRouter.
+ * IType.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IType
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Gets the base name.
 	 *
 	 * @return string
-	 *	The base uniform resource identifier.
+	 *	The base name.
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	public function getBaseName() : string;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the name.
 	 *
 	 * @return string
-	 *	The base uniform resource location.
+	 *	The name.
 	 */
-	public function getBaseUrl() : string;
+	public function getName() : string;
 
 	/**
-	 * Resolves an context to an action.
+	 * Gets the namespace.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * @return string
+	 *	The namespace.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function getNamespace() : string;
+
+	/**
+	 * Checks if it is a class.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isClass() : bool;
+
+	/**
+	 * Checks if it is an interface.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isInterface() : bool;
+
+	/**
+	 * Checks if it is native.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isNative() : bool;
+
+	/**
+	 * Checks if it is scalar.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function isScalar() : bool;
+
+	/**
+	 * Checks if it equals another type.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public function equals(IType $type) : bool;
 }

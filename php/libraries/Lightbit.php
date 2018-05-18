@@ -230,7 +230,7 @@ final class Lightbit
 	{
 		if ($this->apcu)
 		{
-			if ($classPathMath = apcu_fetch('lightbit.class.path.map'))
+			if ($classPathMap = apcu_fetch('lightbit.class.path.map'))
 			{
 				$this->classPathMap = $classPathMap;
 			}

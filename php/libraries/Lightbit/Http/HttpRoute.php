@@ -27,6 +27,13 @@
 
 namespace Lightbit\Http;
 
+use \ReflectionClass;
+use \ReflectionException;
+use \ReflectionMethod;
+
+use \Lightbit\Data\Parsing\ParserProvider;
+use \Lightbit\Http\IHttpRoute;
+
 /**
  * HttpRoute.
  *
@@ -35,7 +42,11 @@ namespace Lightbit\Http;
  */
 class HttpRoute implements IHttpRoute
 {
+	private $controllerClass;
+
 	private $controllerClassName;
+
+	private $controllerMethod;
 
 	private $controllerMethodName;
 
@@ -124,8 +135,8 @@ class HttpRoute implements IHttpRoute
 	 */
 	public function extract(string $subject, array &$tokens = null) : bool
 	{
-		$subject = '/' . trim($subject, '/');
 		$tokens = [];
+		$subject = '/' . trim($subject, '/');
 
 		if (isset($this->expression))
 		{
@@ -148,12 +159,32 @@ class HttpRoute implements IHttpRoute
 	/**
 	 * Gets the controller class.
 	 *
+	 * @throws HttpRouteControllerClassException
+	 *	Thrown when the controller class reflection fails to be fetched
+	 *	for usage in a route resolution context.
+	 *
 	 * @return ReflectionClass
 	 *	The controller class.
 	 */
 	public function getControllerClass() : ReflectionClass
 	{
-		return new ReflectionClass($this->controllerClassName);
+		if (!isset($this->controllerClass))
+		{
+			$subject;
+
+			try
+			{
+				$subject = new ReflectionClass($this->controllerClassName);
+			}
+			catch (ReflectionException $e)
+			{
+				throw new HttpRouteControllerClassException($this, sprintf('Can not get controller class, reflection failure: "%s"', $this->controllerClassName), $e);
+			}
+
+			$this->controllerClass = $subject;
+		}
+
+		return $this->controllerClass;
 	}
 
 	/**
@@ -170,12 +201,37 @@ class HttpRoute implements IHttpRoute
 	/**
 	 * Gets the controller action method.
 	 *
+	 * @throws HttpRouteControllerMethodException
+	 *	Thrown when the controller method reflection fails to be fetched
+	 *	for usage in a route resolution context.
+	 *
 	 * @return ReflectionMethod
 	 *	The controller action method.
 	 */
 	public function getControllerMethod() : ReflectionMethod
 	{
-		return $this->getControllerClass()->getMethod($this->controllerMethodName);
+		if (!isset($this->controllerMethod))
+		{
+			$subject;
+
+			try
+			{
+				$subject = $this->getControllerClass()->getMethod($this->controllerMethodName);
+			}
+			catch (ReflectionException $e)
+			{
+				throw new HttpRouteControllerMethodException($this, sprintf('Can not get controller method, reflection failure: "%s", on method "%s"', $this->controllerClassName, $this->controllerMethodName), $e);
+			}
+
+			if (!$subject->isPublic())
+			{
+				throw new HttpRouteControllerMethodException($this, sprintf('Can not get controller method, it is not public: "%s", on method "%s"', $this->controllerClassName, $this->controllerMethodName));
+			}
+
+			$this->controllerMethod = $subject;
+		}
+
+		return $this->controllerMethod;
 	}
 
 	/**
@@ -221,5 +277,138 @@ class HttpRoute implements IHttpRoute
 	public function isGeneric() : bool
 	{
 		return $this->generic;
+	}
+
+	/**
+	 * Resolve.
+	 *
+	 * @throws HttpRouteParameterNotSetException
+	 *	Thrown when a parameter can not be parsed according to the
+	 *	constraint imposed by the action method parameter type hint.
+	 *
+	 * @throws HttpRouteParameterCompositionException
+	 *	Thrown when a parameter can not be composed according to the
+	 *	constraint imposed by the action method parameter type hint.
+	 *
+	 * @throws HttpRouteParameterParseException
+	 *	Thrown when a parameter can not be parsed according to the
+	 *	constraint imposed by the action method parameter type hint.
+	 *
+	 * @param string $path
+	 *	The resolution path.
+	 *
+	 * @param array $parameters
+	 *	The resolution parameters.
+	 *
+	 * @return IHttpAction
+	 *	The action, on success.
+	 */
+	public function resolve(string $path, array $parameters = null) : ?IHttpAction
+	{
+		$tokens;
+		$path = '/' . trim($path, '/');
+
+		if ($this->extract($path, $tokens))
+		{
+			// Set the tokens to the parameters array, where tokens have
+			// precedence over the given parameters.
+			$parameters = ($tokens + ($parameters ?? []));
+
+			// Get the method and go through each parameter to assemble the
+			// action arguments.
+			$method = $this->getControllerMethod();
+			$parserProvider = ParserProvider::getInstance();
+			$arguments = [];
+
+			foreach ($method->getParameters() as $i => $parameter)
+			{
+				$name = $parameter->getName();
+
+				// When a parameter exists...
+				if (isset($parameters[$name]))
+				{
+					// We must first check for an existing constraint and
+					// match it against the candidate type.
+					if ($type = $parameter->getType())
+					{
+						$constraint = type($type->__toString());
+						$candidate = typeof($parameter[$name]);
+
+						// If the constraint is equals to or assignable from
+						// the candidate, just assign it.
+						if ($constraint->equals($candidate) || $constraint->isAssignableFrom($candidate))
+						{
+							// $parameters[$name] = $parameters[$name];
+							continue;
+						}
+
+						// If the candidate is a string, we can make an attempt
+						// at parsing it before assignment.
+						if ('string' === $candidate->getName())
+						{
+							try
+							{
+								$parameters[$name] = $parserProvider->getParser($constraint->getName())->parse($parameters[$name]);
+							}
+							catch (ParserException $e)
+							{
+								if (isset($tokens[$name]))
+								{
+									throw new HttpRouteTokenParseException($this, $name, sprintf('Can not bind controller action argument, token parse failure: "%s", at token "%s", of type "%s"', $path, $name, $constraint->getName()), $e);
+								}
+
+								throw new HttpRouteParameterParseException($this, $name, sprintf('Can not bind controller action argument, parameter parse failure: "%s", at parameter "%s", of type "%s"', $path, $name, $constraint->getName()), $e);
+							}
+						}
+
+						// If the constraint is a string, we can make an attempt
+						// at composing it before assignment.
+						if ('string' === $constraint->getName())
+						{
+							try
+							{
+								$parameters[$name] = $parserProvider->getParser($candidate->getName())->compose($parameters[$name]);
+							}
+							catch (ParserException $e)
+							{
+								if (isset($tokens[$name]))
+								{
+									throw new HttpRouteTokenCompositionException($this, $name, sprintf('Can not bind controller action argument, token composition failure: "%s", at token "%s", of type "%s"', $path, $name, $constraint->getName()), $e);
+								}
+
+								throw new HttpRouteParameterCompositionException($this, $name, sprintf('Can not bind controller action argument, parameter composition failure: "%s", at parameter "%s", of type "%s"', $path, $name, $constraint->getName()), $e);
+							}
+						}
+
+						// Give up, the constraint is probably not supported
+						// and we can't do this safely.
+						throw new HttpRouteParameterParseException($this, $name, sprintf('Can not bind controller action argument, constraint is not supported: "%s", at parameter "%s", of type "%s"', $path, $name, $constraint->getName()), $e);
+					}
+
+					// If the constraint is not set, we simply let everything
+					// go and hope the developer is aware of the security
+					// implications.
+					$parameters[$name] = $parameters[$name];
+					continue;
+				}
+
+				// If it does not exist, we make an attempt at using the
+				// default parameter.
+				if ($parameter->isOptional())
+				{
+					$parameters[$name] = $parameter->getDefaultValue();
+				}
+
+				// If it's nullable, guess what...
+				if ($parameter->allowsNull())
+				{
+					$parameters[$name] = null;
+				}
+			}
+
+			return new HttpAction($this, $parameters);
+		}
+
+		return null;
 	}
 }

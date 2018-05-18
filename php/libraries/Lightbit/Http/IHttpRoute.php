@@ -27,6 +27,9 @@
 
 namespace Lightbit\Http;
 
+use \ReflectionClass;
+use \ReflectionMethod;
+
 /**
  * IHttpRoute.
  *

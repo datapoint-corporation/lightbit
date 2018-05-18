@@ -27,8 +27,12 @@
 
 namespace Lightbit\Http;
 
+use \Throwable;
+
+use \Lightbit;
 use \Lightbit\Http\HttpRouterProvider;
 use \Lightbit\Http\IHttpApplication;
+use \Lightbit\Http\Runtime\RuntimeHttpContextProvider;
 
 /**
  * HttpApplication.
@@ -59,7 +63,7 @@ final class HttpApplication implements IHttpApplication
 	/**
 	 * Constructor.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 
 	}
@@ -83,7 +87,16 @@ final class HttpApplication implements IHttpApplication
 	 */
 	public final function run() : int
 	{
-		$router = HttpRouterProvider::getInstance()->getHttpRouter();
+		// Resolve and run.
+		HttpRouterProvider::getInstance()->getRouter()->resolve(
+			RuntimeHttpContextProvider::getInstance()->getContext()
+		)
+
+		->run();
+
+		// Commit.
+		Lightbit::getInstance()->commit();
+
 		return 0;
 	}
 }

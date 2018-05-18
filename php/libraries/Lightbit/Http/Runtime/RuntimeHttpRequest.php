@@ -47,6 +47,24 @@ use \Lightbit\Runtime\RuntimeEnvironment;
 class RuntimeHttpRequest implements IHttpRequest
 {
 	/**
+	 * The instance.
+	 *
+	 * @var IHttpRequest
+	 */
+	private static $instance;
+
+	/**
+	 * Gets the request.
+	 *
+	 * @return IHttpRequest
+	 *	The request.
+	 */
+	public static final function getInstance() : IHttpRequest
+	{
+		return (self::$instance ?? (self::$instance = new RuntimeHttpRequest()));
+	}
+
+	/**
 	 * The content.
 	 *
 	 * @var string
@@ -56,7 +74,7 @@ class RuntimeHttpRequest implements IHttpRequest
 	/**
 	 * The content length.
 	 *
-	 * @return string
+	 * @var string
 	 *	The content length.
 	 */
 	private $contentLength;
@@ -64,7 +82,7 @@ class RuntimeHttpRequest implements IHttpRequest
 	/**
 	 * The content type.
 	 *
-	 * @return string
+	 * @var string
 	 *	The content type.
 	 */
 	private $contentType;
@@ -72,15 +90,22 @@ class RuntimeHttpRequest implements IHttpRequest
 	/**
 	 * The cookies.
 	 *
-	 * @return array
+	 * @var array
 	 *	The cookies.
 	 */
 	private $cookies;
 
 	/**
+	 * The path.
+	 *
+	 * @var string
+	 */
+	private $path;
+
+	/**
 	 * The url.
 	 *
-	 * @return string
+	 * @var string
 	 *	The url.
 	 */
 	private $url;
@@ -242,7 +267,12 @@ class RuntimeHttpRequest implements IHttpRequest
 	 */
 	public final function getPath() : string
 	{
-		return RuntimeEnvironment::getInstance()->getApplicationScriptPath();
+		if (!isset($this->path))
+		{
+			$this->path = (($i = strpos($url = $this->getUrl(), '?')) ? substr($url, 0, $i) : $url);
+		}
+
+		return $this->path;
 	}
 
 	/**

@@ -27,39 +27,36 @@
 
 namespace Lightbit\Http;
 
+use \Throwable;
+
+use \Lightbit\Http\HttpRouteParameterException;
+use \Lightbit\Http\IHttpRoute;
+
 /**
- * IHttpRouter.
+ * HttpRouteParameterNotSetException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class HttpRouteParameterNotSetException extends HttpRouteParameterException
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Constructor.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @param IHttpRoute $route
+	 *	The exception route.
+	 *
+	 * @param string $parameterName
+	 *	The parameter name.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function getAbsoluteBaseUrl() : string;
-
-	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
-	 *
-	 * @return string
-	 *	The base uniform resource location.
-	 */
-	public function getBaseUrl() : string;
-
-	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
-	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function __construct(IHttpRoute $route, string $parameterName, string $message, Throwable $previous = null)
+	{
+		parent::__construct($route, $parameterName, $message, $previous);
+	}
 }

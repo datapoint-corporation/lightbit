@@ -25,41 +25,111 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Reflection;
+
+use \Lightbit\Reflection\IType;
 
 /**
- * IHttpRouter.
+ * FloatType.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+final class FloatType implements IType
 {
 	/**
-	 * Gets the base uniform resource identifier.
-	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * Constructor.
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	public function __construct()
+	{
+
+	}
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the base name.
 	 *
 	 * @return string
-	 *	The base uniform resource location.
+	 *	The base name.
 	 */
-	public function getBaseUrl() : string;
+	public final function getBaseName() : string
+	{
+		return 'float';
+	}
 
 	/**
-	 * Resolves an context to an action.
+	 * Gets the name.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * @return string
+	 *	The name.
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public final function getName() : string
+	{
+		return 'float';
+	}
+
+	/**
+	 * Gets the namespace.
+	 *
+	 * @return string
+	 *	The namespace.
+	 */
+	public final function getNamespace() : string
+	{
+		return '';
+	}
+
+	/**
+	 * Checks if it equals another type.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function equals(IType $type) : bool
+	{
+		return ($this->getName() === $type->getName());
+	}
+
+	/**
+	 * Checks if it is a class.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isClass() : bool
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if it is an interface.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isInterface() : bool
+	{
+		return false;
+	}
+
+	/**
+	 * Checks if it is native.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isNative() : bool
+	{
+		return true;
+	}
+
+	/**
+	 * Checks if it is scalar.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isScalar() : bool
+	{
+		return true;
+	}
 }

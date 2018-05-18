@@ -54,6 +54,9 @@ class HttpMethod implements IHttpMethod
 			case 'HEAD':
 				return new HttpMethod($name, true, true);
 
+			case 'POST':
+				return new HttpMethod($name, false, false);
+
 			case 'DELETE':
 			case 'OPTIONS':
 			case 'PUT':

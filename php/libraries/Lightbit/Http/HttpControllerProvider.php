@@ -27,39 +27,65 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\IHttpControllerProvider;
+
 /**
- * IHttpRouter.
+ * HttpControllerProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+class HttpControllerProvider implements IHttpControllerProvider
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * The instance.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @var IHttpControllerProvider
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	private static $instance;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the controller provider.
 	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * @return IHttpControllerProvider
+	 *	The controller provider.
 	 */
-	public function getBaseUrl() : string;
+	public static final function getInstance() : IHttpControllerProvider
+	{
+		return (self::$instance ?? (self::$instance = new HttpControllerProvider()));
+	}
 
 	/**
-	 * Resolves an context to an action.
+	 * The controller factory.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
+	 * @var IHttpControllerFactory
 	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	private $controllerFactory;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		$this->controllerFactory = new HttpControllerFactory();
+	}
+
+	/**
+	 * Gets a controller.
+	 *
+	 * @throws HttpControllerFactoryException
+	 *	Thrown as a generic exception when the controller fails to be created
+	 *	by the factory regardless of the actual reason for it.
+	 *
+	 * @param IHttpAction $action
+	 *	The controller action.
+	 *
+	 * @return IHttpController
+	 *	The controller.
+	 */
+	public function getController(IHttpAction $action) : IHttpController
+	{
+		return $this->controllerFactory->createController($action);
+	}
 }

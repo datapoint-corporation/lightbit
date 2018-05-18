@@ -25,41 +25,33 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Runtime;
+
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
 
 /**
- * IHttpRouter.
+ * IRuntimeHttpContext.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-interface IHttpRouter
+interface IRuntimeHttpContext extends IHttpContext
 {
 	/**
-	 * Gets the base uniform resource identifier.
+	 * Gets the request.
 	 *
-	 * @return string
-	 *	The base uniform resource identifier.
+	 * @return IHttpRequest
+	 *	The request.
 	 */
-	public function getAbsoluteBaseUrl() : string;
+	public function getRequest() : IHttpRequest;
 
 	/**
-	 * Gets the base uniform resource location relative to the current host
-	 * document root.
+	 * Gets the response.
 	 *
-	 * @return string
-	 *	The base uniform resource location.
+	 * @return IHttpResponse
+	 *	The response.
 	 */
-	public function getBaseUrl() : string;
-
-	/**
-	 * Resolves an context to an action.
-	 *
-	 * @param IHttpContext $context
-	 *	The action context.
-	 *
-	 * @return IHttpAction
-	 *	The action.
-	 */
-	public function resolve(IHttpContext $context) : ?IHttpAction;
+	public function getResponse() : IHttpResponse;
 }

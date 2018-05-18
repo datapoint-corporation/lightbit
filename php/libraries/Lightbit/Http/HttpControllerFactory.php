@@ -27,18 +27,17 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpRouterFactory;
-use \Lightbit\IO\AssetManagement\AssetNotFoundAssetProviderException;
+use \ReflectionClass;
+
+use \Lightbit\Http\IHttpController;
 
 /**
- * HttpRouterFactory.
+ * HttpControllerFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 1.0.0
  */
-final class HttpRouterFactory implements IHttpRouterFactory
+class HttpControllerFactory implements IHttpControllerFactory
 {
 	/**
 	 * Constructor.
@@ -49,17 +48,46 @@ final class HttpRouterFactory implements IHttpRouterFactory
 	}
 
 	/**
-	 * Creates a new router.
+	 * Creates a controller.
 	 *
-	 * @return IHttpRouter
-	 * 	The router.
+	 * @throws HttpControllerFactoryException
+	 *	Thrown as a generic exception when the controller fails to be created
+	 *	regardless of the actual reason for it.
+	 *
+	 * @param IHttpAction $action
+	 *	The controller action.
+	 *
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public final function createRouter() : IHttpRouter
+	public function createController(IHttpAction $action) : IHttpController
 	{
-		$router = new HttpRouter();
-		$router->configure(ConfigurationProvider::getInstance()->getConfiguration());
-		$router->import('routes://http');
+		$controllerClassName = $action->getRoute()->getControllerClassName();
 
-		return $router;
+		try
+		{
+			$subject = new ReflectionClass($controllerClassName);
+
+			if ($subject->isAbstract())
+			{
+				throw new HttpControllerFactoryException($this, sprintf('Can not get controller class, it is abstract: "%s"', $controllerClassName));
+			}
+
+			if (!$subject->implementsInterface(IHttpController::class))
+			{
+				throw new HttpControllerFactoryException($this, sprintf('Can not get controller class, it does not implement the expected interface: "%s"', $controllerClassName));
+			}
+
+			return $subject->newInstance($action);
+		}
+		catch (Throwable $e)
+		{
+			if (! ($e instanceof HttpControllerFactoryException))
+			{
+				throw new HttpControllerFactoryException($this, sprintf('Can not create controller, construction failure: "%s"', $controllerClassName), $e);
+			}
+		}
+
+		throw new HttpControllerFactoryException($this, sprintf('Can not create controller, it is missing a required interface: "%s"', $controllerClassName));
 	}
 }
