@@ -404,6 +404,8 @@ class HttpRoute implements IHttpRoute
 				{
 					$parameters[$name] = null;
 				}
+
+				throw new HttpRouteParameterNotSetException($this, $name, sprintf('Can not bind controller action argument, parameter is not set: "%s", at parameter "%s"', $path, $name));
 			}
 
 			return new HttpAction($this, $parameters);
