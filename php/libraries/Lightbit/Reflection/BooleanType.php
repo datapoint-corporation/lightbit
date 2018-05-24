@@ -30,10 +30,10 @@ namespace Lightbit\Reflection;
 use \Lightbit\Reflection\IType;
 
 /**
- * Exception.
+ * BooleanType.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 final class BooleanType implements IType
 {

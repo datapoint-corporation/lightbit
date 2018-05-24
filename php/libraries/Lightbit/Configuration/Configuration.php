@@ -27,20 +27,30 @@
 
 namespace Lightbit\Configuration;
 
+use \Throwable;
+
+use \Lightbit\Data\Collections\StringMap;
+use \Lightbit\Data\Collections\IStringMapKeyNotSetException;
+use \Lightbit\Data\Collections\IStringMapKeyTypeException;
+use \Lightbit\Configuration\ConfigurationException;
+use \Lightbit\Configuration\ConfigurationKeyNotSetException;
+use \Lightbit\Configuration\ConfigurationKeyTypeException;
 use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Configuration\IConfigurationKeyNotSetException;
+use \Lightbit\Configuration\IConfigurationKeyTypeException;
 
 /**
  * Configuration.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class Configuration implements IConfiguration
 {
 	/**
 	 * The configuration.
 	 *
-	 * @var array
+	 * @var StringMap
 	 */
 	private $configuration;
 
@@ -48,280 +58,195 @@ class Configuration implements IConfiguration
 	 * Constructor.
 	 *
 	 * @param array $configuration
-	 *	The configuration properties map.
+	 *	The configuration properties.
 	 */
 	public function __construct(array $configuration = null)
 	{
-		$this->configuration = ($configuration ?? []);
+		$this->configuration = new StringMap($configuration);
 	}
 
 	/**
-	 * Accepts a configuration to an object.
+	 * Accepts a configuration by invoking the setter methods for the
+	 * available properties, according to a given configuration map.
 	 *
 	 * @param object $subject
 	 *	The configuration subject.
 	 *
 	 * @param array $configuration
-	 *	The configuration setter methods, by property.
+	 *	The configuration map.
 	 */
 	public function accept(object $subject, array $configuration) : void
 	{
+		$values = $this->configuration->toArray();
+
 		foreach ($configuration as $property => $method)
 		{
-			if (isset($this->configuration[$property]))
+			try
 			{
-				$subject->{$method}($this->configuration[$property]);
+				if (isset($values[$property]))
+				{
+					$subject->{$method}($values[$property]);
+				}
+			}
+			catch (Throwable $e)
+			{
+				throw new ConfigurationException($this, sprintf('Can not set configurable property, uncaught throwable: "%s"', $property), $e);
 			}
 		}
 	}
 
 	/**
-	 * Gets an array.
+	 * Gets a boolean.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
+	 *	The value optional flag.
 	 *
-	 * @param array $default
-	 *	The property default value.
-	 *
-	 * @return double
+	 * @return bool
 	 *	The value.
 	 */
-	public function getArray(string $property, bool $optional = false, array $default = null) : ?array
+	public function getBool(string $key, bool $optional = false) : ?bool
 	{
-		if (isset($this->configuration[$property]))
+		try
 		{
-			if (is_array($this->configuration[$property]))
-			{
-				return $this->configuration[$property];
-			}
-
-			throw new ConfigurationException(
-				$this,
-				sprintf(
-					'Can not get configuration property, wrong type for property value: "%s", got a "%s", expecting a "%s"',
-					$property,
-					gettype($this->configuration[$property]),
-					'array'
-				)
-			);
+			return $this->configuration->getBool($key, $optional);
 		}
-
-		if ($optional)
+		catch (IStringMapKeyNotSetException $e)
 		{
-			return $default;
+			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-
-		throw new ConfigurationException(
-			$this,
-			sprintf(
-				'Can not get configuration property, it is not set: "%s", expecting a "%s"',
-				$property,
-				'array'
-			)
-		);
+		catch (IStringMapKeyTypeException $e)
+		{
+			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+		}
 	}
 
 	/**
-	 * Gets a double precision point number.
+	 * Gets a float.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
 	 *
-	 * @param bool $optional
-	 *	The property optional flag.
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
 	 *
-	 * @param double $default
-	 *	The property default value.
-	 *
-	 * @return double
-	 *	The value.
-	 */
-	public function getDouble(string $property, bool $optional = false, double $default = null) : ?double
-	{
-		if (isset($this->configuration[$property]))
-		{
-			if (is_float($this->configuration[$property]))
-			{
-				return $this->configuration[$property];
-			}
-
-			throw new ConfigurationException(
-				$this,
-				sprintf(
-					'Can not get configuration property, wrong type for property value: "%s", got a "%s", expecting a "%s"',
-					$property,
-					gettype($this->configuration[$property]),
-					'float'
-				)
-			);
-		}
-
-		if ($optional)
-		{
-			return $default;
-		}
-
-		throw new ConfigurationException(
-			$this,
-			sprintf(
-				'Can not get configuration property, it is not set: "%s", expecting a "%s"',
-				$property,
-				'float'
-			)
-		);
-	}
-
-	/**
-	 * Gets a floating point number.
-	 *
-	 * @param string $property
-	 *	The property name.
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param float $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return float
 	 *	The value.
 	 */
-	public function getFloat(string $property, bool $optional = false, float $default = null) : ?float
+	public function getFloat(string $key, bool $optional = false) : ?float
 	{
-		if (isset($this->configuration[$property]))
+		try
 		{
-			if (is_float($this->configuration[$property]))
-			{
-				return $this->configuration[$property];
-			}
-
-			throw new ConfigurationException(
-				$this,
-				sprintf(
-					'Can not get configuration property, wrong type for property value: "%s", got a "%s", expecting a "%s"',
-					$property,
-					gettype($this->configuration[$property]),
-					'float'
-				)
-			);
+			return $this->configuration->getFloat($key, $optional);
 		}
-
-		if ($optional)
+		catch (IStringMapKeyNotSetException $e)
 		{
-			return $default;
+			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-
-		throw new ConfigurationException(
-			$this,
-			sprintf(
-				'Can not get configuration property, it is not set: "%s", expecting a "%s"',
-				$property,
-				'float'
-			)
-		);
+		catch (IStringMapKeyTypeException $e)
+		{
+			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+		}
 	}
 
 	/**
 	 * Gets an integer.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param int $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return int
 	 *	The value.
 	 */
-	public function getInteger(string $property, bool $optional = false, int $default = null) : ?int
+	public function getInt(string $key, bool $optional = false) : ?int
 	{
-		if (isset($this->configuration[$property]))
+		try
 		{
-			if (is_int($this->configuration[$property]))
-			{
-				return $this->configuration[$property];
-			}
-
-			throw new ConfigurationException(
-				$this,
-				sprintf(
-					'Can not get configuration property, wrong type for property value: "%s", got a "%s", expecting a "%s"',
-					$property,
-					gettype($this->configuration[$property]),
-					'int'
-				)
-			);
+			return $this->configuration->getInt($key, $optional);
 		}
-
-		if ($optional)
+		catch (IStringMapKeyNotSetException $e)
 		{
-			return $default;
+			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-
-		throw new ConfigurationException(
-			$this,
-			sprintf(
-				'Can not get configuration property, it is not set: "%s", expecting a "%s"',
-				$property,
-				'int'
-			)
-		);
+		catch (IStringMapKeyTypeException $e)
+		{
+			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+		}
 	}
 
 	/**
 	 * Gets a string.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param string $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return string
 	 *	The value.
 	 */
-	public function getString(string $property, bool $optional = false, string $default = null) : ?string
+	public function getString(string $key, bool $optional = false) : ?string
 	{
-		if (isset($this->configuration[$property]))
+		try
 		{
-			if (is_string($this->configuration[$property]))
-			{
-				return $this->configuration[$property];
-			}
-
-			throw new ConfigurationException(
-				$this,
-				sprintf(
-					'Can not get configuration property, wrong type for property value: "%s", got a "%s", expecting a "%s"',
-					$property,
-					gettype($this->configuration[$property]),
-					'string'
-				)
-			);
+			return $this->configuration->getString($key, $optional);
 		}
-
-		if ($optional)
+		catch (IStringMapKeyNotSetException $e)
 		{
-			return $default;
+			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
+		catch (IStringMapKeyTypeException $e)
+		{
+			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+		}
+	}
 
-		throw new ConfigurationException(
-			$this,
-			sprintf(
-				'Can not get configuration property, it is not set: "%s", expecting a "%s"',
-				$property,
-				'string'
-			)
-		);
+	/**
+	 * Converts to an associative array.
+	 *
+	 * @return array
+	 *	The associative array.
+	 */
+	public final function toArray() : array
+	{
+		return $this->configuration->toArray();
 	}
 }

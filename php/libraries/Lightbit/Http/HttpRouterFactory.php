@@ -30,13 +30,12 @@ namespace Lightbit\Http;
 use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpRouterFactory;
-use \Lightbit\IO\AssetManagement\AssetNotFoundAssetProviderException;
 
 /**
- * HttpRouterFactory.
+ * HttpRouterProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 final class HttpRouterFactory implements IHttpRouterFactory
 {
@@ -45,21 +44,21 @@ final class HttpRouterFactory implements IHttpRouterFactory
 	 */
 	public function __construct()
 	{
-
+		
 	}
 
 	/**
-	 * Creates a new router.
+	 * Create the router.
+	 *
+	 * @throws IHttpRouterFactoryException
+	 *	Thrown if the router fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
 	 *
 	 * @return IHttpRouter
-	 * 	The router.
+	 *	The router.
 	 */
-	public final function createRouter() : IHttpRouter
+	public function createRouter() : IHttpRouter
 	{
-		$router = new HttpRouter();
-		$router->configure(ConfigurationProvider::getInstance()->getConfiguration());
-		$router->import('routes://http');
-
-		return $router;
+		return new HttpRouter();
 	}
 }

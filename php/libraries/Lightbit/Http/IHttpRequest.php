@@ -27,111 +27,15 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Http\IHttpContext;
 use \Lightbit\Http\IHttpMessage;
-use \Lightbit\Http\IHttpUserAgent;
 
 /**
  * IHttpRequest.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 interface IHttpRequest extends IHttpMessage
 {
-	/**
-	 * Gets the content.
-	 *
-	 * @return string
-	 *	The content.
-	 */
-	public function getContent() : ?string;
 
-	/**
-	 * Gets the content length.
-	 *
-	 * @return int
-	 *	The content length.
-	 */
-	public function getContentLength() : int;
-
-	/**
-	 * Gets the content type.
-	 *
-	 * @return string
-	 *	The content type.
-	 */
-	public function getContentType() : ?string;
-
-	/**
-	 * Gets the context.
-	 *
-	 * @return IHttpContext
-	 *	The context.
-	 */
-	public function getContext() : IHttpContext;
-
-	/**
-	 * Gets the cookies.
-	 *
-	 * @return array
-	 *	The cookies.
-	 */
-	public function getCookies() : array;
-
-	/**
-	 * Gets the files.
-	 *
-	 * @return array
-	 *	The files.
-	 */
-	public function getFiles() : array;
-
-	/**
-	 * Gets the form.
-	 *
-	 * @return IHttpForm
-	 *	The form.
-	 */
-	public function getForm() : ?IHttpForm;
-
-	/**
-	 * Gets the method.
-	 *
-	 * @return IHttpMethod
-	 *	The method.
-	 */
-	public function getMethod() : IHttpMethod;
-
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
-	public function getPath() : string;
-
-	/**
-	 * Gets the uniform resource location.
-	 *
-	 * @return string
-	 *	The uniform resource location.
-	 */
-	public function getUrl() : string;
-
-	/**
-	 * Gets the user agent.
-	 *
-	 * @return IHttpUserAgent
-	 *	The user agent.
-	 */
-	public function getUserAgent() : IHttpUserAgent;
-
-	/**
-	 * Gets the user languages.
-	 *
-	 * @return array
-	 *	The user languages.
-	 */
-	public function getUserLanguages() : array;
 }

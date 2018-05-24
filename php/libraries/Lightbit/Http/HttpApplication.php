@@ -27,33 +27,31 @@
 
 namespace Lightbit\Http;
 
-use \Throwable;
-
 use \Lightbit;
-use \Lightbit\Http\HttpRouterProvider;
-use \Lightbit\Http\IHttpApplication;
-use \Lightbit\Http\Runtime\RuntimeHttpContextProvider;
+use \Lightbit\Application;
+use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Http\HttpServer;
 
 /**
  * HttpApplication.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
-final class HttpApplication implements IHttpApplication
+class HttpApplication
 {
 	/**
-	 * The instance.
+	 * The singleton instance.
 	 *
 	 * @var HttpApplication
 	 */
 	private static $instance;
 
 	/**
-	 * Gets the instance.
+	 * Gets the singleton instance.
 	 *
 	 * @return HttpApplication
-	 * 	The instance.
+	 *	The singleton instance.
 	 */
 	public static final function getInstance() : HttpApplication
 	{
@@ -61,42 +59,108 @@ final class HttpApplication implements IHttpApplication
 	}
 
 	/**
-	 * Constructor.
+	 * The document root path.
+	 *
+	 * @var string
 	 */
-	public function __construct()
-	{
+	private $documentRootPath;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param IEnvironment $environment
+	 *	The application environment.
+	 *
+	 * @param IHttpServer $server
+	 *	The application server.
+	 */
+	private function __construct()
+	{
+		ConfigurationProvider::getInstance()->getConfiguration(
+			'lightbit.http.application'
+		)
+
+		->accept($this, [
+			'debug' => 'setDebug',
+			'document_root_path' => 'setDocumentRootPath'
+		]);
+	}
+
+	/**
+	 * Gets the document root path.
+	 *
+	 * @return string
+	 *	The document root path.
+	 */
+	public final function getDocumentRootPath() : string
+	{
+		return ($this->documentRootPath ?? (
+			$this->documentRootPath = $this->getServer()->getDocumentDirectoryPath()
+		));
+	}
+
+	/**
+	 * Gets the environment.
+	 *
+	 * @return Environment
+	 *	The environment.
+	 */
+	public final function getEnvironment() : Environment
+	{
+		return Environment::getInstance();
 	}
 
 	/**
 	 * Gets the path.
 	 *
 	 * @return string
-	 * 	The path.
+	 *	The path.
 	 */
 	public final function getPath() : string
 	{
-		return LB_PATH_APPLICATION_DIRECTORY;
+		return LB_PATH_APPLICATION;
 	}
 
 	/**
-	 * Runs the application.
+	 * Gets the server.
 	 *
-	 * @return int
-	 *	The exit status code.
+	 * @return HttpServer
+	 *	The server.
 	 */
-	public final function run() : int
+	public final function getServer() : HttpServer
 	{
-		// Resolve and run.
-		HttpRouterProvider::getInstance()->getRouter()->resolve(
-			RuntimeHttpContextProvider::getInstance()->getContext()
-		)
+		return HttpServer::getInstance();
+	}
 
-		->run();
+	/**
+	 * Checks the debug flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function isDebug() : bool
+	{
+		return ($this->debug ?? ($this->debug = !Environment::getInstance()->isProduction()));
+	}
+	/**
+	 * Sets the debug flag.
+	 *
+	 * @param bool $debug
+	 *	The debug flag.
+	 */
+	public final function setDebug(bool $debug) : void
+	{
+		$this->debug = $debug;
+	}
 
-		// Commit.
-		Lightbit::getInstance()->commit();
-
-		return 0;
+	/**
+	 * Sets the document root path.
+	 *
+	 * @param string $documentRootPath
+	 *	The document root path.
+	 */
+	public final function setDocumentRootPath(string $documentRootPath) : void
+	{
+		$this->documentRootPath = rtrim($documentRootPath, '/');
 	}
 }

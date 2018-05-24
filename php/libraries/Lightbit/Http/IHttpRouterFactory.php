@@ -33,15 +33,19 @@ use \Lightbit\Http\IHttpRouter;
  * IHttpRouterFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 interface IHttpRouterFactory
 {
 	/**
-	 * Creates a new router.
+	 * Creates the router.
+	 *
+	 * @throws IHttpRouterFactoryException
+	 *	Thrown if the router fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
 	 *
 	 * @return IHttpRouter
-	 * 	The router.
+	 *	The router.
 	 */
 	public function createRouter() : IHttpRouter;
 }

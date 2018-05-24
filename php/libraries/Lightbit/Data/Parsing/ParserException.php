@@ -30,13 +30,11 @@ namespace Lightbit\Data\Parsing;
 use \Lightbit\Data\Parsing\IParser;
 use \Lightbit\Exception;
 
-use \Throwable;
-
 /**
  * ParserException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class ParserException extends Exception
 {
@@ -47,10 +45,10 @@ class ParserException extends Exception
 	 *	The exception parser.
 	 *
 	 * @param string $message
-	 * 	The exception message.
+	 *	The exception message.
 	 *
-	 * @param Throwable $previous
-	 * 	The exception previous throwable.
+	 * @param Throwable $throwable
+	 *	The exception previous throwable.
 	 */
 	public function __construct(IParser $parser, string $message, Throwable $previous = null)
 	{

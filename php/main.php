@@ -25,103 +25,162 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-// Constants
+// Core constants
 // -----------------------------------------------------------------------------
-const LB_PATH_LIGHTBIT = __DIR__;
+/**
+ * The framework path.
+ *
+ * @var string
+ */
+const LB_PATH_LIGHTBIT = (__DIR__);
 
-// Base
+// Core inclusions
 // -----------------------------------------------------------------------------
-include (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
-
 (
-	function(Lightbit $lightbit)
+	/**
+	 * Core inclusions.
+	 *
+	 * Requires the files defining the classes required to bootstrap and
+	 * sustain the framework, from a safe context, without exposing
+	 * members of the current inclusion scope.
+	 */
+	function()
 	{
-		$lightbit->addIncludePath(__DIR__ . '/libraries');
+		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
+		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
+		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
+	}
+)();
 
+// Core bootstrap
+// -----------------------------------------------------------------------------
+(
+	/**
+	 * Bootstrap.
+	 *
+	 * Checks for the necessary constants, defining them to default, as
+	 * possible; adds the relevant directories to the library paths; registers
+	 * the class autoloaders; registers the error and exception handlers;
+	 */
+	function (Lightbit $lightbit)
+	{
+		//
+		// Constants
+		//
+		if (!defined('LB_PATH_APPLICATION'))
+		{
+			throw new BootstrapException(sprintf('Can not bootstrap Lightbit, constant is not defined: "%s"', 'LB_PATH_APPLICATION'));
+		}
+
+		/**
+		 * The environment name.
+		 *
+		 * @var string
+		 */
+		defined('LB_ENVIRONMENT') || define('LB_ENVIRONMENT', 'production');
+
+		//
+		// Library lookup paths
+		//
+		$lightbit->addLibraryLookupPathList([
+			(__DIR__ . '/libraries'),
+			(LB_PATH_APPLICATION . '/libraries')
+		]);
+
+		//
+		// Class autoloaders
+		//
 		spl_autoload_register
 		(
-			function(string $subject) use ($lightbit)
+			/**
+			 * Lightbit autoloader.
+			 *
+			 * Tries to locate the class file through the framework library
+			 * lookup path and, if found, includes it.
+			 *
+			 * @param string $className
+			 *	The class name.
+			 */
+			function(string $className) use ($lightbit) : void
 			{
-				if ($path = $lightbit->getClassPath($subject))
+				if ($filePath = $lightbit->getClassPath($className))
 				{
-					include $path;
+					$lightbit->include($filePath);
 				}
 			}
 		);
 
-		set_error_handler
-		(
-			// int $level , string $errstr [, string $errfile [, int $errline [, array $errcontext ]]]
-			function(int $level, string $message, string $filePath = null, int $line = null, array $context = null)
-			{
-				throw new Lightbit\ErrorException($level, $message, $filePath, $line);
-			}
-		);
+		//
+		// Error and exception handlers
+		//
 	}
 )
-
-(Lightbit::getInstance());
-
-// Bootstrap
-// -----------------------------------------------------------------------------
-(
-	function(Lightbit $lightbit)
-	{
-		// Debug flag.
-		if (!defined('LB_DEBUG'))
-		{
-			define('LB_DEBUG', true);
-		}
-
-		// Configuration.
-		if (!defined('LB_CONFIGURATION'))
-		{
-			define('LB_CONFIGURATION', (LB_DEBUG ? 'development' : 'production'));
-		}
-
-		// Script path.
-		if (!isset($_SERVER['SCRIPT_FILENAME']) || !($path = realpath($_SERVER['SCRIPT_FILENAME'])))
-		{
-			throw new \Lightbit\ConstantNotSetBootstrapException('LB_PATH_APPLICATION');
-		}
-
-		define('LB_PATH_SCRIPT', $path);
-
-		// Application path.
-		if (!defined('LB_PATH_APPLICATION'))
-		{
-			define('LB_PATH_APPLICATION', dirname($path));
-		}
-
-		// Include path.
-		$lightbit->addIncludePath(LB_PATH_APPLICATION . DIRECTORY_SEPARATOR . 'libraries');
-
-		// Restore.
-		$lightbit->restore();
-	}
-)
-
 (Lightbit::getInstance());
 
 // Core functions
 // -----------------------------------------------------------------------------
-
-function hook(string $hook, Closure $closure) : void
+function lbcompose($subject) // : mixed
 {
-	\Lightbit\Hooking\HookManager::getInstance()->attach($hook, $closure);
+	static $provider;
+
+	if (!isset($provider))
+	{
+		$provider = Lightbit\Data\Parsing\ParserProvider::getInstance();
+	}
+
+	return $provider->getParser(lbstypeof($subject))->compose($subject);
 }
 
-function trigger(string $hook, ...$arguments) : void
+function lbparse(string $type, string $subject) // : mixed
 {
-	\Lightbit\Hooking\HookManager::getInstance()->trigger($hook, ...$arguments);
+	static $provider;
+
+	if (!isset($provider))
+	{
+		$provider = Lightbit\Data\Parsing\ParserProvider::getInstance();
+	}
+
+	return $provider->getParser($type)->parse($subject);
 }
 
-function type(string $type) : \Lightbit\Reflection\IType
+/**
+ * Gets a type.
+ *
+ * @param string $type
+ *	The type name.
+ *
+ * @return Type
+ *	The type.
+ */
+function lbtype(string $type) : Lightbit\Reflection\Type
 {
-	return new \Lightbit\Reflection\Type($type);
+	return new Lightbit\Reflection\Type($type);
 }
 
-function typeof($variable) : \Lightbit\Reflection\IType
+/**
+ * Gets the type of a variable.
+ *
+ * @param array $variable
+ *	The variable to get the type of.
+ *
+ * @return Type
+ *	The variable type.
+ */
+function lbtypeof($variable) : Lightbit\Reflection\Type
 {
-	return \Lightbit\Reflection\Type::getInstanceOf($variable);
+	return Lightbit\Reflection\Type::getInstanceOf($variable);
+}
+
+/**
+ * Gets the type of a variable.
+ *
+ * @param array $variable
+ *	The variable to get the type of.
+ *
+ * @return string
+ *	The variable type name.
+ */
+function lbstypeof($variable) : string
+{
+	return Lightbit\Reflection\Type::getInstanceOf($variable)->getName();
 }

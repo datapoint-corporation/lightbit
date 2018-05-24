@@ -27,15 +27,16 @@
 
 namespace Lightbit\Data\Parsing;
 
-use \Lightbit\ArgumentException;
 use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Data\Parsing\ParserCompositionException;
 use \Lightbit\Data\Parsing\ParserException;
+use \Lightbit\Data\Parsing\ParserProvider;
 
 /**
  * FloatParser.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class FloatParser implements IParser
 {
@@ -48,44 +49,52 @@ class FloatParser implements IParser
 	}
 
 	/**
-	 * Compose.
+	 * Composes a subject.
+	 *
+	 * @throws ParserCompositionException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
 	 *
 	 * @param mixed $subject
 	 *	The composition subject.
 	 *
 	 * @return string
-	 *	The result.
+	 *	The composition result.
 	 */
-	public function compose($subject) : string
+	public final function compose($subject) : string
 	{
-		if (is_int($subject) || is_float($subject))
+		if (!is_float($subject) && !is_int($subject))
 		{
-			return rtrim(rtrim(number_format($subject, 16, '.', ''), '0'), '.');
+			throw new ParserCompositionException($this, sprintf('Can not compose integer, bad subject type: "%s"', lbstypeof($subject)));
 		}
 
-		throw new ParserException(
-			$this,
-			sprintf('Can not compose boolean, wrong argument type: "%s"', gettype($subject)),
-			new ArgumentException('subject', sprintf('Can not accept argument, bad type: "%s", of type "%s"', 'subject', gettype($subject)))
-		);
+		return rtrim(rtrim(number_format($subject, 16, '.', ''), '0'), '.');
 	}
 
 	/**
-	 * Parse.
+	 * Parses a subject.
+	 *
+	 * @throws ParserException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
+	 *
+	 * @throws ParserCompositionException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
 	 *
 	 * @param string $subject
 	 *	The parsing subject.
 	 *
-	 * @return mixed
-	 *	The result.
+	 * @return int
+	 *	The parsing result, on success.
 	 */
-	public function parse(string $subject) : string
+	public final function parse(string $subject) : int
 	{
-		if (preg_match('%^(\\-|\\+)?((\\d+(\\.\\d+)?)|(.\\d+))$%', $subject))
+		if (preg_match('%^(\\-|\\+)?((\\d+\\.\\d+)|(.\\d+))$%', $subject))
 		{
-			return floatval($subject);
+			return intval($subject);
 		}
 
-		throw new ParserException($this, sprintf('Can not parse float, wrong format: "%s"', $subject));
+		throw new ParserException($this, sprintf('Can not parse integer, bad subject format: "%s"', $subject));
 	}
 }

@@ -27,107 +27,115 @@
 
 namespace Lightbit\Configuration;
 
+use \Lightbit\Configuration\IConfigurationKeyNotSetException;
+use \Lightbit\Configuration\IConfigurationKeyTypeException;
+use \Lightbit\Data\Collections\IStringMap;
+
 /**
  * IConfiguration.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
-interface IConfiguration
+interface IConfiguration extends IStringMap
 {
 	/**
-	 * Accepts a configuration to an object.
+	 * Accepts a configuration by invoking the setter methods for the
+	 * available properties, according to a given configuration map.
 	 *
 	 * @param object $subject
 	 *	The configuration subject.
 	 *
 	 * @param array $configuration
-	 *	The configuration setter methods, by property.
+	 *	The configuration map.
 	 */
 	public function accept(object $subject, array $configuration) : void;
 
 	/**
-	 * Gets an array.
+	 * Gets a boolean.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
+	 *	The value optional flag.
 	 *
-	 * @param array $default
-	 *	The property default value.
-	 *
-	 * @return double
+	 * @return bool
 	 *	The value.
 	 */
-	public function getArray(string $property, bool $optional = false, array $default = null) : ?array;
+	public function getBool(string $key, bool $optional = false) : ?bool;
 
 	/**
-	 * Gets a double precision point number.
+	 * Gets a float.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
 	 *
-	 * @param bool $optional
-	 *	The property optional flag.
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
 	 *
-	 * @param double $default
-	 *	The property default value.
-	 *
-	 * @return double
-	 *	The value.
-	 */
-	public function getDouble(string $property, bool $optional = false, double $default = null) : ?double;
-
-	/**
-	 * Gets a floating point number.
-	 *
-	 * @param string $property
-	 *	The property name.
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param float $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return float
 	 *	The value.
 	 */
-	public function getFloat(string $property, bool $optional = false, float $default = null) : ?float;
+	public function getFloat(string $key, bool $optional = false) : ?float;
 
 	/**
 	 * Gets an integer.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param int $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return int
 	 *	The value.
 	 */
-	public function getInteger(string $property, bool $optional = false, int $default = null) : ?int;
+	public function getInt(string $key, bool $optional = false) : ?int;
 
 	/**
 	 * Gets a string.
 	 *
-	 * @param string $property
-	 *	The property name.
+	 * @throws IConfigurationKeyNotSetException
+	 *	Thrown when a non optional value fails to be retrieved from this map
+	 *	because the given key is not set.
+	 *
+	 * @throws IConfigurationKeyTypeException
+	 *	Thrown when a value fails to be retrieved from this map because it
+	 *	does not match and can not be converted to the expected type.
+	 *
+	 * @param string $key
+	 *	The value key.
 	 *
 	 * @param bool $optional
-	 *	The property optional flag.
-	 *
-	 * @param string $default
-	 *	The property default value.
+	 *	The value optional flag.
 	 *
 	 * @return string
 	 *	The value.
 	 */
-	public function getString(string $property, bool $optional = false, string $default = null) : ?string;
+	public function getString(string $key, bool $optional = false) : ?string;
 }

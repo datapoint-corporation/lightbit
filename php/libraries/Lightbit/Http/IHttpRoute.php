@@ -27,86 +27,31 @@
 
 namespace Lightbit\Http;
 
-use \ReflectionClass;
-use \ReflectionMethod;
-
 /**
  * IHttpRoute.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 interface IHttpRoute
 {
 	/**
-	 * Extracts tokens from a unform resource location relative to the
-	 * host document root.
+	 * Matches against a method and path.
 	 *
-	 * @param string $subject
-	 *	The uniform resource location.
+	 * On success, the path tokens will be extracted into the third variable,
+	 * according to the route pattern.
+	 *
+	 * @param string $method
+	 *	The request method.
+	 *
+	 * @param string $path
+	 *	The request path.
 	 *
 	 * @param array $tokens
-	 *	The tokens output variable.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
-	public function extract(string $subject, array &$tokens = null) : bool;
-
-	/**
-	 * Gets the controller class.
-	 *
-	 * @return ReflectionClass
-	 *	The controller class.
-	 */
-	public function getControllerClass() : ReflectionClass;
-
-	/**
-	 * Gets the controller class name.
-	 *
-	 * @return string
-	 *	The controller class name.
-	 */
-	public function getControllerClassName() : string;
-
-	/**
-	 * Gets the controller method.
-	 *
-	 * @return ReflectionMethod
-	 *	The controller method.
-	 */
-	public function getControllerMethod() : ReflectionMethod;
-
-	/**
-	 * Gets the controller method name.
-	 *
-	 * @return string
-	 *	The controller method name.
-	 */
-	public function getControllerMethodName() : string;
-
-	/**
-	 * Gets the methods.
-	 *
-	 * @return array
-	 *	The methods.
-	 */
-	public function getMethods() : array;
-
-	/**
-	 * Gets the pattern.
-	 *
-	 * @return string
-	 *	The pattern.
-	 */
-	public function getPattern() : string;
-
-	/**
-	 * Checks if the route is compatible with the four standard methods,
-	 * namely the "GET", "POST", "PUT" and "DELETE".
+	 *	The request path tokens.
 	 *
 	 * @return bool
 	 *	The result.
 	 */
-	public function isGeneric() : bool;
+	public function match(string $method, string $path, array &$tokens = null) : bool;
 }

@@ -27,48 +27,68 @@
 
 namespace Lightbit\Configuration;
 
-use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Environment;
+use \Lightbit\Exception;
+use \Lightbit\AssetManagement\AssetProvider;
+use \Lightbit\Configuration\Configuration;
+use \Lightbit\Configuration\ConfigurationFactoryException;
 use \Lightbit\Configuration\IConfigurationFactory;
-use \Lightbit\IO\AssetManagement\AssetNotFoundAssetProviderException;
-use \Lightbit\IO\AssetManagement\AssetProvider;
+use \Lightbit\Configuration\IConfigurationFactoryException;
 
 /**
- * ConfigurationFactory.
+ * ConfigurationFactoryException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class ConfigurationFactory implements IConfigurationFactory
 {
 	/**
-	 * Creates the configuration.
-	 *
-	 * @return IConfiguration
-	 *	The configuration.
+	 * Constructor.
 	 */
-	public function createConfiguration() : IConfiguration
+	public function __construct()
 	{
-		$asset;
 
-		try
-		{
-			$asset = AssetProvider::getInstance()->getPhpAsset('settings://' . LB_CONFIGURATION);
-		}
-		catch (AssetNotFoundAssetProviderException $e)
-		{
-			return new Configuration([]);
-		}
+	}
 
-		if ($asset->exists())
-		{
-			$configuration = $asset->include();
+	/**
+	 * Creates a configuration.
+	 *
+	 * @throws IConfigurationFactoryException
+	 *	Thrown if the configuration fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
+	 *
+	 * @param string $configuration
+	 *	The configuration identifier.
+	 */
+	public final function createConfiguration(string $configuration) : IConfiguration
+	{
+		$properties = [];
+		$environment = Environment::getInstance();
+		$provider = AssetProvider::getInstance();
 
-			if (is_array($configuration))
+		// Base
+		foreach ($provider->getAssetList('php', ('settings://' . $configuration)) as $i => $asset)
+		{
+			$subject = $asset->include([ 'environment' => $environment ]);
+
+			if (is_array($subject))
 			{
-				return new Configuration($configuration);
+				$properties = $subject + $properties;
 			}
 		}
 
-		return new Configuration([]);
+		// Environment
+		foreach ($provider->getAssetList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $asset)
+		{
+			$subject = $asset->include([ 'environment' => $environment ]);
+
+			if (is_array($subject))
+			{
+				$properties = $subject + $properties;
+			}
+		}
+
+		return new Configuration($properties);
 	}
 }

@@ -27,20 +27,14 @@
 
 namespace Lightbit\Data\Parsing;
 
-use \Lightbit\Data\Parsing\BooleanParser;
-use \Lightbit\Data\Parsing\IntegerParser;
-use \Lightbit\Data\Parsing\FloatParser;
 use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\IParserFactory;
-use \Lightbit\Data\Parsing\IParserProvider;
-use \Lightbit\Data\Parsing\ParserFactory;
-use \Lightbit\Data\Parsing\StringParser;
+use \Lightbit\Data\Parsing\ParserFactoryException;
 
 /**
  * ParserFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class ParserFactory implements IParserFactory
 {
@@ -53,11 +47,14 @@ class ParserFactory implements IParserFactory
 	}
 
 	/**
-	 * Gets a parser.
+	 * Creates a parser.
 	 *
-	 * @throws ParserNotFoundException
-	 *	Thrown when a parser is not found matching the given type allowing
-	 *	for safe parsing and composition of this kind of values.
+	 * @throws ParserFactoryException
+	 *	Thrown if a parser does not exist for the given type and fails to be
+	 *	dynamically created, if even possible.
+	 *
+	 * @param string $type
+	 *	The parser type.
 	 *
 	 * @return IParser
 	 *	The parser.
@@ -82,6 +79,6 @@ class ParserFactory implements IParserFactory
 				return new StringParser();
 		}
 
-		throw new ParserNotFoundException(sprintf('Can not get type parser, not found: "%s"', $type));
+		throw new ParserFactoryException($this, sprintf('Can not create type parser, out of options: "%s"', $type));
 	}
 }

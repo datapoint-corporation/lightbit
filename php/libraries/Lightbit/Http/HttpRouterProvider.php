@@ -27,30 +27,29 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\CommandOutOfSyncException;
-use \Lightbit\Http\HttpRouter;
-use \Lightbit\Http\HttpRouterFactory;
+use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Http\IHttpRouter;
 
 /**
- * HttpRouterFactory.
+ * HttpRouterProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
-final class HttpRouterProvider implements IHttpRouterProvider
+final class HttpRouterProvider
 {
 	/**
-	 * The instance.
+	 * The singleton instance.
 	 *
 	 * @var HttpRouterProvider
 	 */
 	private static $instance;
 
 	/**
-	 * Gets the instance.
+	 * Gets the singleton instance.
 	 *
 	 * @return HttpRouterProvider
-	 * 	The instance.
+	 *	The singleton instance.
 	 */
 	public static final function getInstance() : HttpRouterProvider
 	{
@@ -58,14 +57,14 @@ final class HttpRouterProvider implements IHttpRouterProvider
 	}
 
 	/**
-	 * The http router.
+	 * The router.
 	 *
 	 * @var IHttpRouter
 	 */
 	private $router;
 
 	/**
-	 * The http router factory.
+	 * The router factory.
 	 *
 	 * @var IHttpRouterFactory
 	 */
@@ -76,43 +75,50 @@ final class HttpRouterProvider implements IHttpRouterProvider
 	 */
 	private function __construct()
 	{
-		$this->routerFactory = new HttpRouterFactory();
+		ConfigurationProvider::getInstance()->getConfiguration(
+			'lightbit.http.router'
+		)
+
+		->accept($this, [
+			'factory' => 'setRouterFactory'
+		]);
 	}
 
 	/**
 	 * Gets the router.
 	 *
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the router fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
+	 *
 	 * @return IHttpRouter
-	 * 	The router.
+	 *	The router.
 	 */
-	public function getRouter() : IHttpRouter
+	public final function getRouter() : IHttpRouter
 	{
-		return ($this->router ?? ($this->router = $this->routerFactory->createRouter()));
+		return ($this->router ?? ($this->router = $this->getRouterFactory()->createRouter()));
 	}
 
 	/**
 	 * Gets the router factory.
 	 *
 	 * @return IHttpRouterFactory
-	 * 	The router factory.
+	 *	The router factory.
 	 */
 	public final function getRouterFactory() : IHttpRouterFactory
 	{
-		return $this->routerFactory;
+		return ($this->routerFactory ?? ($this->routerFactory = new HttpRouterFactory()));
 	}
 
 	/**
-	 * Gets the router factory.
-	 *
-	 * @throws CommandOutOfSyncException
-	 * 	Thrown if the router instance is already in use by the application,
-	 * 	rendering the given router factory useless.
+	 * Sets the router factory.
 	 *
 	 * @param IHttpRouterFactory $routerFactory
-	 * 	The router factory.
+	 *	The router factory.
 	 */
-	public final function setRouterFactory(IHttpRouterFactory $routerFactory)
+	public final function setRouterFactory(IHttpRouterFactory $routerFactory) : void
 	{
+		$this->router = null;
 		$this->routerFactory = $routerFactory;
 	}
 }

@@ -27,26 +27,26 @@
 
 namespace Lightbit;
 
-use \Lightbit\Exception;
-
 use \Throwable;
+
+use \Lightbit\Exception;
 
 /**
  * BootstrapException.
- * 
+ *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class BootstrapException extends Exception
 {
 	/**
-	 * Constructor.
-	 * 
+	 * Construct.
+	 *
 	 * @param string $message
-	 * 	The exception message.
-	 * 
+	 *	The exception message.
+	 *
 	 * @param Throwable $previous
-	 * 	The exception previous throwable.
+	 *	The exception previous throwable.
 	 */
 	public function __construct(string $message, Throwable $previous = null)
 	{

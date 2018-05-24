@@ -28,32 +28,29 @@
 namespace Lightbit\Data\Parsing;
 
 use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\IParserFactory;
-use \Lightbit\Data\Parsing\IParserProvider;
-use \Lightbit\Data\Parsing\ParserFactory;
 
 /**
  * ParserProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
-class ParserProvider implements IParserProvider
+final class ParserProvider
 {
 	/**
-	 * The parser provider.
+	 * The singleton instance.
 	 *
-	 * @var IParserProvider
+	 * @var ParserProvider
 	 */
 	private static $instance;
 
 	/**
-	 * Gets the parser provider.
+	 * Gets the singleton instance.
 	 *
-	 * @return IParserProvider
-	 *	The parser provider.
+	 * @return ParserProvider
+	 *	The singleton instance.
 	 */
-	public static function getInstance() : IParserProvider
+	public static final function getInstance() : ParserProvider
 	{
 		return (self::$instance ?? (self::$instance = new ParserProvider()));
 	}
@@ -77,38 +74,31 @@ class ParserProvider implements IParserProvider
 	 */
 	public function __construct()
 	{
-		$this->parserFactory = new ParserFactory();
 		$this->parsers = [];
 	}
 
 	/**
 	 * Gets a parser.
 	 *
-	 * @throws ParserNotFoundException
-	 *	Thrown when a parser is not found matching the given type allowing
-	 *	for safe parsing and composition of this kind of values.
+	 * @param string $type
+	 *	The parser type.
 	 *
 	 * @return IParser
 	 *	The parser.
 	 */
 	public final function getParser(string $type) : IParser
 	{
-		if (!isset($this->parsers[$type]))
-		{
-			$this->parsers[$type] = $this->parserFactory->createParser($type);
-		}
-
-		return $this->parsers[$type];
+		return ($this->parsers[$type] ?? ($this->parsers[$type] = $this->getParserFactory()->createParser($type)));
 	}
 
 	/**
-	 * Sets the parser factory.
+	 * Gets the parser factory.
 	 *
-	 * @param IParserFactory $parserFactory
+	 * @return IParserFactory
 	 *	The parser factory.
 	 */
-	public final function setParserFactory(IParserFactory $parserFactory) : void
+	public final function getParserFactory() : IParserFactory
 	{
-		$this->parserFactory = $parserFactory;
+		return ($this->parserFactory ?? ($this->parserFactory = new ParserFactory()));
 	}
 }

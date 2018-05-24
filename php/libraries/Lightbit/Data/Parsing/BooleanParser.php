@@ -27,15 +27,16 @@
 
 namespace Lightbit\Data\Parsing;
 
-use \Lightbit\ArgumentException;
 use \Lightbit\Data\Parsing\IParser;
+use \Lightbit\Data\Parsing\ParserCompositionException;
 use \Lightbit\Data\Parsing\ParserException;
+use \Lightbit\Data\Parsing\ParserProvider;
 
 /**
  * BooleanParser.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 class BooleanParser implements IParser
 {
@@ -48,44 +49,52 @@ class BooleanParser implements IParser
 	}
 
 	/**
-	 * Compose.
+	 * Composes a subject.
+	 *
+	 * @throws ParserCompositionException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
 	 *
 	 * @param mixed $subject
 	 *	The composition subject.
 	 *
 	 * @return string
-	 *	The result.
+	 *	The composition result.
 	 */
-	public function compose($subject) : string
+	public final function compose($subject) : string
 	{
-		if (is_bool($subject))
+		if (!is_bool($subject))
 		{
-			return ($subject ? 'true' : 'false');
+			throw new ParserCompositionException($this, sprintf('Can not compose integer, bad subject type: "%s"', lbstypeof($subject)));
 		}
 
-		throw new ParserException(
-			$this,
-			sprintf('Can not compose boolean, wrong argument type: "%s"', gettype($subject)),
-			new ArgumentException('subject', sprintf('Can not accept argument, bad type: "%s", of type "%s"', 'subject', gettype($subject)))
-		);
+		return ($subject ? 'true' : 'false');
 	}
 
 	/**
-	 * Parse.
+	 * Parses a subject.
+	 *
+	 * @throws ParserException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
+	 *
+	 * @throws ParserCompositionException
+	 *	Thrown when the subject composition fails, containing the reason as
+	 *	a previous throwable, if applicable.
 	 *
 	 * @param string $subject
 	 *	The parsing subject.
 	 *
-	 * @return mixed
-	 *	The result.
+	 * @return bool
+	 *	The parsing result, on success.
 	 */
-	public function parse(string $subject) : string
+	public final function parse(string $subject) : bool
 	{
 		if (preg_match('%^(true|false)$%', $subject))
 		{
 			return ($subject === 'true');
 		}
 
-		throw new ParserException($this, sprintf('Can not parse boolean, wrong format: "%s"', $subject));
+		throw new ParserException($this, sprintf('Can not parse boolean, bad subject format: "%s"', $subject));
 	}
 }

@@ -27,42 +27,28 @@
 
 namespace Lightbit\Configuration;
 
-use \Lightbit\Configuration\ConfigurationFactory;
 use \Lightbit\Configuration\IConfiguration;
-use \Lightbit\Configuration\IConfigurationProvider;
+use \Lightbit\Configuration\IConfigurationFactory;
 
-/**
- * ConfigurationProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
- */
-class ConfigurationProvider implements IConfigurationProvider
+final class ConfigurationProvider
 {
 	/**
-	 * Gets the instance.
+	 * The singleton instance.
 	 *
-	 * @var IConfigurationProvider
+	 * @var ConfigurationProvider
 	 */
 	private static $instance;
 
 	/**
-	 * Gets the instance.
+	 * Gets the singleton instance.
 	 *
-	 * @return IConfigurationProvider
-	 *	The configuration provider.
+	 * @return ConfigurationProvider
+	 *	The singleton instance.
 	 */
-	public static final function getInstance() : IConfigurationProvider
+	public static final function getInstance() : ConfigurationProvider
 	{
 		return (self::$instance ?? (self::$instance = new ConfigurationProvider()));
 	}
-
-	/**
-	 * The configuration.
-	 *
-	 * @var IConfiguration
-	 */
-	private $configuration;
 
 	/**
 	 * The configuration factory.
@@ -72,21 +58,57 @@ class ConfigurationProvider implements IConfigurationProvider
 	private $configurationFactory;
 
 	/**
+	 * The configurations.
+	 *
+	 * @var array
+	 */
+	private $configurations;
+
+	/**
 	 * Constructor.
 	 */
-	public function __construct()
+	private function __construct()
 	{
-		$this->configurationFactory = new ConfigurationFactory();
+		$this->configurations = [];
 	}
 
 	/**
 	 * Gets a configuration.
 	 *
-	 * @return IConfiguration
-	 *	The configuration.
+	 * @throws IConfigurationFactoryException
+	 *	Thrown if the configuration fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
+	 *
+	 * @param string $configuration
+	 *	The configuration identifier.
 	 */
-	public function getConfiguration() : IConfiguration
+	public final function getConfiguration(string $configuration) : IConfiguration
 	{
-		return ($this->configuration ?? ($this->configuration = $this->configurationFactory->createConfiguration()));
+		return ($this->configurations[$configuration] ?? (
+			$this->configurations[$configuration] = $this->getConfigurationFactory()->createConfiguration($configuration)
+		));
+	}
+
+	/**
+	 * Gets the configuration factory.
+	 *
+	 * @return IConfigurationFactory
+	 *	The configuration factory.
+	 */
+	public final function getConfigurationFactory() : IConfigurationFactory
+	{
+		return ($this->configurationFactory ?? ($this->configurationFactory = new ConfigurationFactory()));
+	}
+
+	/**
+	 * Sets the configuration factory.
+	 *
+	 * @param IConfigurationFactory $configurationFactory
+	 *	The configuration factory.
+	 */
+	public final function setConfigurationFactory(IConfigurationFactory $configurationFactory) : void
+	{
+		$this->configurationFactory = $configurationFactory;
+		$this->configurations = [];
 	}
 }

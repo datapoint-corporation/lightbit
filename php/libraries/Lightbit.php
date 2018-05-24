@@ -25,18 +25,18 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\Hooking\HookManager;
+use \Lightbit\AssetManagement\AssetProvider;
 
 /**
  * Lightbit.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 final class Lightbit
 {
 	/**
-	 * The singleton instance.
+	 * The instance.
 	 *
 	 * @var Lightbit
 	 */
@@ -46,51 +46,34 @@ final class Lightbit
 	 * Gets the instance.
 	 *
 	 * @return Lightbit
-	 * 	The instance.
+	 *	The instance.
 	 */
-	public static final function getInstance() : Lightbit
+	public static function getInstance() : Lightbit
 	{
 		return (self::$instance ?? (self::$instance = new Lightbit()));
 	}
 
 	/**
-	 * The apcu support flag.
-	 *
-	 * @var bool
-	 */
-	private $apcu;
-
-	/**
-	 * The class path map.
-	 *
-	 * @var array
-	 */
-	private $classPathMap;
-
-	/**
-	 * The hook manager.
-	 *
-	 * @var HookManager
-	 */
-	private $hookManager;
-
-	/**
-	 * The inclusion closure.
+	 * The inclusion.
 	 *
 	 * @var Closure
 	 */
 	private $inclusion;
 
 	/**
+	 * The library lookup path list.
+	 *
+	 * @var array
+	 */
+	private $libraryLookupPathList;
+
+	/**
 	 * Constructor.
 	 */
-	private function __construct()
+	public function __construct()
 	{
-		$this->apcu = function_exists('apcu_store');
-		$this->classPathMap = [];
+		$this->libraryLookupPathList = [];
 
-		// Setup the inclusion closure, which is used to safely include
-		// script files without exposing members.
 		$this->inclusion =
 		(
 			function(string $__FILE__, array $__DATA__ = null)
@@ -105,88 +88,89 @@ final class Lightbit
 					unset($__K__, $__V__);
 				}
 
-				return include ($__FILE__);
+				unset($__DATA__);
+
+				return require ($__FILE__);
 			}
-		)
-
-		->bindTo(null, 'static');
+		);
 	}
 
 	/**
-	 * Sets an additional include path.
+	 * Sets an additional library lookup path.
 	 *
-	 * @param string $includePath
-	 * 	The additional include path.
+	 * @param string $path
+	 *	The library lookup path.
 	 */
-	public final function addIncludePath(string $includePath) : void
+	public function addLibraryLookupPath(string $path) : void
 	{
-		set_include_path(get_include_path() . PATH_SEPARATOR . strtr($includePath, [ '/' => DIRECTORY_SEPARATOR ]));
+		$this->libraryLookupPathList[] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 	}
 
 	/**
-	 * Commits relevant information to persistent memory storage engines,
-	 * as available, to allow for optimization in future requests.
+	 * Sets an additional library lookup path list.
+	 *
+	 * @param string[] $pathList
+	 *	The library lookup path list.
 	 */
-	public final function commit() : void
+	public function addLibraryLookupPathList(array $pathList) : void
 	{
-		$this->hookManager->trigger('commit');
-
-		if ($this->apcu)
+		foreach ($pathList as $i => $path)
 		{
-			apcu_store('lightbit.class.path.map', $this->classPathMap);
+			$this->addLibraryLookupPath($path);
 		}
+	}
+
+	/**
+	 * Sets an additional module path.
+	 *
+	 * @param string $path
+	 *	The module path.
+	 */
+	public function addModulePath(string $path) : void
+	{
+		$this->addLibraryLookupPath($path . '/libraries');
+
+		AssetProvider::getInstance()->addAssetPrefixLookupPathMap([
+			'hooks' => ($path . '/hooks'),
+			'messages' => ($path . '/messages'),
+			'settings' => ($path . '/settings'),
+			'theme' => ($path . '/theme'),
+			'views' => ($path . '/views')
+		]);
 	}
 
 	/**
 	 * Gets a class path.
 	 *
 	 * @param string $className
-	 * 	The class name.
+	 *	The class name.
 	 *
 	 * @return string
-	 * 	The class path.
+	 *	The class path.
 	 */
 	public function getClassPath(string $className) : ?string
 	{
-		if (!isset($this->classPathMap[$className]) && !array_key_exists($className, $this->classPathMap))
+		$filePathSuffix = (strtr(('\\' . $className), [ '\\' => DIRECTORY_SEPARATOR ]) . '.php');
+
+		foreach ($this->libraryLookupPathList as $i => $libraryLookupPath)
 		{
-			if ($classPath = stream_resolve_include_path(strtr($className, [ '\\' => DIRECTORY_SEPARATOR ]) . '.php'))
+			$filePath = $libraryLookupPath . $filePathSuffix;
+
+			if (file_exists($filePath) && is_file($filePath))
 			{
-				$this->classPathMap[$className] = $classPath;
-			}
-			else
-			{
-				$this->classPathMap[$className] = null;
+				return $filePath;
 			}
 		}
 
-		return $this->classPathMap[$className];
+		return null;
 	}
 
 	/**
-	 * Gets the include path.
+	 * Include.
 	 *
-	 * @return string
-	 * 	The include path.
-	 */
-	public final function getIncludePath() : string
-	{
-		return get_include_path();
-	}
-
-	/**
-	 * Gets the include path.
-	 *
-	 * @return array
-	 * 	The include path.
-	 */
-	public final function getIncludePathAsArray() : array
-	{
-		return explode(PATH_SEPARATOR, $this->getIncludePath());
-	}
-
-	/**
-	 * Includes a file.
+	 * It includes a script file, safely, without exposing the callers
+	 * protected members while giving an option of declaring an explicit
+	 * set of variables.
 	 *
 	 * @param string $filePath
 	 *	The inclusion file path.
@@ -195,50 +179,10 @@ final class Lightbit
 	 *	The inclusion variables.
 	 *
 	 * @return mixed
-	 *	The result.
+	 *	The inclusion result.
 	 */
-	public final function include(string $filePath, array $variables = null)
+	public function include(string $filePath, array $variables = null) // : mixed
 	{
-		return ($this->inclusion)($filePath, $variables);
-	}
-
-	/**
-	 * Includes a file as an object.
-	 *
-	 * @param object $object
-	 *	The inclusion object.
-	 *
-	 * @param string $filePath
-	 *	The inclusion file path.
-	 *
-	 * @param array $variables
-	 *	The inclusion variables.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public final function includeAs(object $object, string $filePath, array $variables = null)
-	{
-		return (($this->inclusion)->bindTo($object, 'static'))($filePath, $variables);
-	}
-
-	/**
-	 * Restores relevant information from the persistent storage engines,
-	 * as available, allowing for optimization of this request.
-	 */
-	public final function restore() : void
-	{
-		if ($this->apcu)
-		{
-			if ($classPathMap = apcu_fetch('lightbit.class.path.map'))
-			{
-				$this->classPathMap = $classPathMap;
-			}
-		}
-
-		$this->hookManager = HookManager::getInstance();
-		$this->hookManager->import('application://hooks');
-		$this->hookManager->import('lightbit://hooks');
-		$this->hookManager->trigger('restore');
+		return ($this->inclusion->bindTo(null, 'static'))($filePath, $variables);
 	}
 }

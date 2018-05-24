@@ -33,15 +33,19 @@ use \Lightbit\Configuration\IConfiguration;
  * IConfigurationFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 interface IConfigurationFactory
 {
 	/**
-	 * Creates the configuration.
+	 * Creates a configuration.
 	 *
-	 * @return IConfiguration
-	 *	The configuration.
+	 * @throws IConfigurationFactoryException
+	 *	Thrown if the configuration fails to be created, regardless of the
+	 *	actual reason, which should be defined in the exception chain.
+	 *
+	 * @param string $configuration
+	 *	The configuration identifier.
 	 */
-	public function createConfiguration() : IConfiguration;
+	public function createConfiguration(string $configuration) : IConfiguration;
 }

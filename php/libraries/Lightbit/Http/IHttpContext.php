@@ -34,7 +34,7 @@ use \Lightbit\Http\IHttpResponse;
  * IHttpContext.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 1.0.0
+ * @since 2.0.0
  */
 interface IHttpContext
 {
@@ -49,7 +49,7 @@ interface IHttpContext
 	/**
 	 * Gets the response.
 	 *
-	 * @return IHttpRequest
+	 * @return IHttpResponse
 	 *	The response.
 	 */
 	public function getResponse() : IHttpResponse;
