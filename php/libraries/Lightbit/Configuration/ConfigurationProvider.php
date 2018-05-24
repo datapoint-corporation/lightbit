@@ -75,7 +75,7 @@ final class ConfigurationProvider
 	/**
 	 * Gets a configuration.
 	 *
-	 * @throws IConfigurationFactoryException
+	 * @throws ConfigurationFactoryException
 	 *	Thrown if the configuration fails to be created, regardless of the
 	 *	actual reason, which should be defined in the exception chain.
 	 *

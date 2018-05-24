@@ -28,7 +28,6 @@
 namespace Lightbit\Data\Collections;
 
 use \Lightbit\Data\Collections\IStringMap;
-use \Lightbit\Data\Collections\IStringMapException;
 use \Lightbit\Exception;
 
 /**
@@ -37,7 +36,7 @@ use \Lightbit\Exception;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class StringMapException extends Exception implements IStringMapException
+class StringMapException extends Exception
 {
 	/**
 	 * Constructor.

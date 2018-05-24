@@ -40,10 +40,6 @@ interface IConfigurationFactory
 	/**
 	 * Creates a configuration.
 	 *
-	 * @throws IConfigurationFactoryException
-	 *	Thrown if the configuration fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
 	 * @param string $configuration
 	 *	The configuration identifier.
 	 */

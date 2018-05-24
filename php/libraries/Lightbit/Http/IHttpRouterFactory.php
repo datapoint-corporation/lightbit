@@ -40,10 +40,6 @@ interface IHttpRouterFactory
 	/**
 	 * Creates the router.
 	 *
-	 * @throws IHttpRouterFactoryException
-	 *	Thrown if the router fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
 	 * @return IHttpRouter
 	 *	The router.
 	 */

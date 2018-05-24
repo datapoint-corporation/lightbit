@@ -44,13 +44,13 @@ final class HttpRouterFactory implements IHttpRouterFactory
 	 */
 	public function __construct()
 	{
-		
+
 	}
 
 	/**
 	 * Create the router.
 	 *
-	 * @throws IHttpRouterFactoryException
+	 * @throws HttpRouterFactoryException
 	 *	Thrown if the router fails to be created, regardless of the
 	 *	actual reason, which should be defined in the exception chain.
 	 *

@@ -30,14 +30,10 @@ namespace Lightbit\Configuration;
 use \Throwable;
 
 use \Lightbit\Data\Collections\StringMap;
-use \Lightbit\Data\Collections\IStringMapKeyNotSetException;
-use \Lightbit\Data\Collections\IStringMapKeyTypeException;
 use \Lightbit\Configuration\ConfigurationException;
 use \Lightbit\Configuration\ConfigurationKeyNotSetException;
 use \Lightbit\Configuration\ConfigurationKeyTypeException;
 use \Lightbit\Configuration\IConfiguration;
-use \Lightbit\Configuration\IConfigurationKeyNotSetException;
-use \Lightbit\Configuration\IConfigurationKeyTypeException;
 
 /**
  * Configuration.
@@ -98,11 +94,11 @@ class Configuration implements IConfiguration
 	/**
 	 * Gets a boolean.
 	 *
-	 * @throws IConfigurationKeyNotSetException
+	 * @throws ConfigurationKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IConfigurationKeyTypeException
+	 * @throws ConfigurationKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -121,11 +117,11 @@ class Configuration implements IConfiguration
 		{
 			return $this->configuration->getBool($key, $optional);
 		}
-		catch (IStringMapKeyNotSetException $e)
+		catch (StringMapKeyNotSetException $e)
 		{
 			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-		catch (IStringMapKeyTypeException $e)
+		catch (StringMapKeyTypeException $e)
 		{
 			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
 		}
@@ -134,11 +130,11 @@ class Configuration implements IConfiguration
 	/**
 	 * Gets a float.
 	 *
-	 * @throws IConfigurationKeyNotSetException
+	 * @throws ConfigurationKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IConfigurationKeyTypeException
+	 * @throws ConfigurationKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -157,11 +153,11 @@ class Configuration implements IConfiguration
 		{
 			return $this->configuration->getFloat($key, $optional);
 		}
-		catch (IStringMapKeyNotSetException $e)
+		catch (StringMapKeyNotSetException $e)
 		{
 			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-		catch (IStringMapKeyTypeException $e)
+		catch (StringMapKeyTypeException $e)
 		{
 			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
 		}
@@ -170,11 +166,11 @@ class Configuration implements IConfiguration
 	/**
 	 * Gets an integer.
 	 *
-	 * @throws IConfigurationKeyNotSetException
+	 * @throws ConfigurationKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IConfigurationKeyTypeException
+	 * @throws ConfigurationKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -193,11 +189,11 @@ class Configuration implements IConfiguration
 		{
 			return $this->configuration->getInt($key, $optional);
 		}
-		catch (IStringMapKeyNotSetException $e)
+		catch (StringMapKeyNotSetException $e)
 		{
 			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-		catch (IStringMapKeyTypeException $e)
+		catch (StringMapKeyTypeException $e)
 		{
 			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
 		}
@@ -206,11 +202,11 @@ class Configuration implements IConfiguration
 	/**
 	 * Gets a string.
 	 *
-	 * @throws IConfigurationKeyNotSetException
+	 * @throws ConfigurationKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IConfigurationKeyTypeException
+	 * @throws ConfigurationKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -229,11 +225,11 @@ class Configuration implements IConfiguration
 		{
 			return $this->configuration->getString($key, $optional);
 		}
-		catch (IStringMapKeyNotSetException $e)
+		catch (StringMapKeyNotSetException $e)
 		{
 			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
 		}
-		catch (IStringMapKeyTypeException $e)
+		catch (StringMapKeyTypeException $e)
 		{
 			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
 		}

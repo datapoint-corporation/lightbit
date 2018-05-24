@@ -28,7 +28,6 @@
 namespace Lightbit\Data\Collections;
 
 use \Lightbit\Data\Collections\IStringMap;
-use \Lightbit\Data\Collections\IStringMapKeyNotSetException;
 use \Lightbit\Data\Collections\StringMapException;
 
 /**
@@ -37,7 +36,7 @@ use \Lightbit\Data\Collections\StringMapException;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class StringMapKeyNotSetException extends StringMapException implements IStringMapKeyNotSetException
+class StringMapKeyNotSetException extends StringMapException
 {
 	/**
 	 * Constructor.

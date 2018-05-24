@@ -28,8 +28,6 @@
 namespace Lightbit\Configuration;
 
 use \Lightbit\Exception;
-use \Lightbit\Configuration\IConfigurationFactory;
-use \Lightbit\Configuration\IConfigurationFactoryException;
 
 /**
  * ConfigurationFactoryException.
@@ -37,7 +35,7 @@ use \Lightbit\Configuration\IConfigurationFactoryException;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class ConfigurationFactoryException extends Exception implements IConfigurationFactoryException
+class ConfigurationFactoryException extends Exception
 {
 	/**
 	 * Constructor.

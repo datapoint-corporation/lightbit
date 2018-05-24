@@ -67,11 +67,11 @@ class StringMap implements IStringMap
 	/**
 	 * Gets a boolean.
 	 *
-	 * @throws IStringMapKeyNotSetException
+	 * @throws StringMapKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IStringMapKeyTypeException
+	 * @throws StringMapKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -117,11 +117,11 @@ class StringMap implements IStringMap
 	/**
 	 * Gets a float.
 	 *
-	 * @throws IStringMapKeyNotSetException
+	 * @throws StringMapKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IStringMapKeyTypeException
+	 * @throws StringMapKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -167,11 +167,11 @@ class StringMap implements IStringMap
 	/**
 	 * Gets an integer.
 	 *
-	 * @throws IStringMapKeyNotSetException
+	 * @throws StringMapKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IStringMapKeyTypeException
+	 * @throws StringMapKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *
@@ -217,11 +217,11 @@ class StringMap implements IStringMap
 	/**
 	 * Gets a string.
 	 *
-	 * @throws IStringMapKeyNotSetException
+	 * @throws StringMapKeyNotSetException
 	 *	Thrown when a non optional value fails to be retrieved from this map
 	 *	because the given key is not set.
 	 *
-	 * @throws IStringMapKeyTypeException
+	 * @throws StringMapKeyTypeException
 	 *	Thrown when a value fails to be retrieved from this map because it
 	 *	does not match and can not be converted to the expected type.
 	 *

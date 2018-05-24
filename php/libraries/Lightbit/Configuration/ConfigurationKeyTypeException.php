@@ -31,7 +31,6 @@ use \Throwable;
 
 use \Lightbit\Configuration\ConfigurationException;
 use \Lightbit\Configuration\IConfiguration;
-use \Lightbit\Data\Collections\IStringMapException;
 
 /**
  * ConfigurationKeyTypeException.
@@ -39,7 +38,7 @@ use \Lightbit\Data\Collections\IStringMapException;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class ConfigurationKeyTypeException extends ConfigurationException implements IStringMapException
+class ConfigurationKeyTypeException extends ConfigurationException
 {
 	/**
 	 * Constructor.

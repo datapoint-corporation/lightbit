@@ -31,7 +31,6 @@ use \Throwable;
 
 use \Lightbit\Exception;
 use \Lightbit\Http\IHttpRouterFactory;
-use \Lightbit\Http\IHttpRouterFactoryException;
 
 /**
  * HttpRouter.
@@ -39,7 +38,7 @@ use \Lightbit\Http\IHttpRouterFactoryException;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpRouterFactoryException extends Exception implements IHttpRouterFactoryException
+class HttpRouterFactoryException extends Exception
 {
 	/**
 	 * Constructor.

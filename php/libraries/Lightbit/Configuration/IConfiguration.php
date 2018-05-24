@@ -27,8 +27,6 @@
 
 namespace Lightbit\Configuration;
 
-use \Lightbit\Configuration\IConfigurationKeyNotSetException;
-use \Lightbit\Configuration\IConfigurationKeyTypeException;
 use \Lightbit\Data\Collections\IStringMap;
 
 /**
@@ -54,14 +52,6 @@ interface IConfiguration extends IStringMap
 	/**
 	 * Gets a boolean.
 	 *
-	 * @throws IConfigurationKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws IConfigurationKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
 	 * @param string $key
 	 *	The value key.
 	 *
@@ -75,14 +65,6 @@ interface IConfiguration extends IStringMap
 
 	/**
 	 * Gets a float.
-	 *
-	 * @throws IConfigurationKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws IConfigurationKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
 	 *
 	 * @param string $key
 	 *	The value key.
@@ -98,14 +80,6 @@ interface IConfiguration extends IStringMap
 	/**
 	 * Gets an integer.
 	 *
-	 * @throws IConfigurationKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws IConfigurationKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
 	 * @param string $key
 	 *	The value key.
 	 *
@@ -119,14 +93,6 @@ interface IConfiguration extends IStringMap
 
 	/**
 	 * Gets a string.
-	 *
-	 * @throws IConfigurationKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws IConfigurationKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
 	 *
 	 * @param string $key
 	 *	The value key.

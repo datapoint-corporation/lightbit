@@ -30,7 +30,6 @@ namespace Lightbit\Configuration;
 use \Throwable;
 
 use \Lightbit\Configuration\IConfiguration;
-use \Lightbit\Data\Collections\IStringMapException;
 use \Lightbit\Exception;
 
 /**
@@ -39,7 +38,7 @@ use \Lightbit\Exception;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class ConfigurationException extends Exception implements IStringMapException
+class ConfigurationException extends Exception
 {
 	/**
 	 * Constructor.

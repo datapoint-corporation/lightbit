@@ -33,7 +33,6 @@ use \Lightbit\AssetManagement\AssetProvider;
 use \Lightbit\Configuration\Configuration;
 use \Lightbit\Configuration\ConfigurationFactoryException;
 use \Lightbit\Configuration\IConfigurationFactory;
-use \Lightbit\Configuration\IConfigurationFactoryException;
 
 /**
  * ConfigurationFactoryException.
@@ -54,7 +53,7 @@ class ConfigurationFactory implements IConfigurationFactory
 	/**
 	 * Creates a configuration.
 	 *
-	 * @throws IConfigurationFactoryException
+	 * @throws ConfigurationFactoryException
 	 *	Thrown if the configuration fails to be created, regardless of the
 	 *	actual reason, which should be defined in the exception chain.
 	 *
