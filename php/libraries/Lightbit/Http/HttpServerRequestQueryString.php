@@ -27,7 +27,6 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Data\Collections\IStringMap;
 use \Lightbit\Data\Parsing\ParserProvider;
 use \Lightbit\Http\IHttpQueryString;
 
@@ -37,7 +36,7 @@ use \Lightbit\Http\IHttpQueryString;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpServerRequestQueryString implements IHttpQueryString, IStringMap
+class HttpServerRequestQueryString implements IHttpQueryString
 {
 	/**
 	 * The singleton instance.
@@ -54,7 +53,7 @@ class HttpServerRequestQueryString implements IHttpQueryString, IStringMap
 	 */
 	public static final function getInstance() : HttpServerRequestQueryString
 	{
-		return (self::$instance ?? (self::$instance = new HttpServerRequestQueryString()));
+		return (self::$instance ?? (self::$instance = new HttpServerRequestQueryString($_GET ?? null)));
 	}
 
 	/**
@@ -66,10 +65,13 @@ class HttpServerRequestQueryString implements IHttpQueryString, IStringMap
 
 	/**
 	 * Constructor.
+	 *
+	 * @param array $parameters
+	 *	The query string parameters.
 	 */
-	private function __construct()
+	public function __construct(array $parameters = null)
 	{
-		$this->parameters = $_GET ?? [];
+		$this->parameters = ($parameters ?? []);
 	}
 
 	/**

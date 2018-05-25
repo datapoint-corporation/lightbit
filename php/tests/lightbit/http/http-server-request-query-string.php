@@ -25,8 +25,62 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$this->import(
-	'tests://lightbit/lightbit',
-	'tests://lightbit/lightbit-inclusion',
-	'tests://lightbit/http/http-server-request-query-string'
+use \Lightbit\Http\HttpServerRequestQueryString;
+
+$queryString = new HttpServerRequestQueryString([
+	'id' => '3109',
+	'offset' => '-31',
+	'latitude' => '31.319028',
+	'longitude' => '-31.31298',
+	'emulation' => 'true'
+]);
+
+$this->exactly(
+	3109,
+
+	'Getting integer parameter "id" should return 3109 (int)',
+	function() use ($queryString)
+	{
+		return $queryString->getInt('id');
+	}
+);
+
+$this->exactly(
+	-31,
+
+	'Getting integer parameter "offset" should return -31 (int)',
+	function() use ($queryString)
+	{
+		return $queryString->getInt('offset');
+	}
+);
+
+$this->exactly(
+	31.319028,
+
+	'Getting integer parameter "latitude" should return 31.319028 (float)',
+	function() use ($queryString)
+	{
+		return $queryString->getFloat('latitude');
+	}
+);
+
+$this->exactly(
+	-31.31298,
+
+	'Getting integer parameter "longitude" should return -31.31298 (float)',
+	function() use ($queryString)
+	{
+		return $queryString->getFloat('longitude');
+	}
+);
+
+$this->exactly(
+	true,
+
+	'Getting integer parameter "emulation" should return true (bool)',
+	function() use ($queryString)
+	{
+		return $queryString->getBool('emulation');
+	}
 );

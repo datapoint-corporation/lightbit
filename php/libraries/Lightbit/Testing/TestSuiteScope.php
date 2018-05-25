@@ -31,6 +31,7 @@ use \Closure;
 
 use \Lightbit\AssetManagement\Php\PhpAsset;
 use \Lightbit\Testing\ITestSuite;
+use \Lightbit\Testing\TestSuiteProvider;
 use \Lightbit\Testing\TestCases\EqualTestCase;
 use \Lightbit\Testing\TestCases\ExactlyTestCase;
 
@@ -92,5 +93,24 @@ class TestSuiteScope
 	public function exactly(string $description, $constraint, Closure $closure) : void
 	{
 		$this->suite->addCase(new ExactlyTestCase($description, $constraint, $closure));
+	}
+
+	/**
+	 * Import.
+	 *
+	 * It imports the test cases defined by an alternative test suite into
+	 * this test suite, for validation.
+	 *
+	 * @param string $testSuites
+	 *	The test suite script asset identifiers.
+	 */
+	public function import(string ...$testSuites) : void
+	{
+		$provider = TestSuiteProvider::getInstance();
+
+		foreach ($testSuites as $i => $testSuite)
+		{
+			$this->suite->addCases($provider->getSuite($testSuite)->getCases());
+		}
 	}
 }

@@ -75,6 +75,20 @@ class TestSuite implements ITestSuite
 	}
 
 	/**
+	 * Sets an additional set of cases.
+	 *
+	 * @param array $cases
+	 *	The cases.
+	 */
+	public function addCases(array $cases) : void
+	{
+		foreach ($cases as $i => $case)
+		{
+			$this->addCase($case);
+		}
+	}
+
+	/**
 	 * Gets the cases.
 	 *
 	 * @return array
