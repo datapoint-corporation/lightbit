@@ -134,9 +134,18 @@ final class Lightbit
 			'hooks' => ($path . '/hooks'),
 			'messages' => ($path . '/messages'),
 			'settings' => ($path . '/settings'),
+			'tests' => ($path . '/tests'),
 			'theme' => ($path . '/theme'),
 			'views' => ($path . '/views')
 		]);
+	}
+
+	public function addModulePaths(array $paths) : void
+	{
+		foreach ($paths as $i => $path)
+		{
+			$this->addModulePath($path);
+		}
 	}
 
 	/**
@@ -184,5 +193,29 @@ final class Lightbit
 	public function include(string $filePath, array $variables = null) // : mixed
 	{
 		return ($this->inclusion->bindTo(null, 'static'))($filePath, $variables);
+	}
+
+	/**
+	 * Include.
+	 *
+	 * It includes a script file, safely, without exposing the callers
+	 * protected members while giving an option of declaring an explicit
+	 * public scope object and a set of variables.
+	 *
+	 * @param object $scope
+	 *	The inclusion public scope object.
+	 *
+	 * @param string $filePath
+	 *	The inclusion file path.
+	 *
+	 * @param array $variables
+	 *	The inclusion variables.
+	 *
+	 * @return mixed
+	 *	The inclusion result.
+	 */
+	public function includeAs(object $scope, string $filePath, array $variables = null) // : mixed
+	{
+		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variables);
 	}
 }

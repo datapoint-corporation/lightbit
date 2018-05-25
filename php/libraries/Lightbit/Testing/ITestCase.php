@@ -25,111 +25,75 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
+namespace Lightbit\Testing;
 
-use \Lightbit\Reflection\IType;
+use \Closure;
 
 /**
- * IntegerType.
+ * ITestCase.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+interface ITestCase
 {
 	/**
-	 * Constructor.
+	 * Gets the closure.
+	 *
+	 * @return Closure
+	 *	The closure.
 	 */
-	public function __construct()
-	{
-
-	}
+	public function getClosure() : Closure;
 
 	/**
-	 * Gets the base name.
+	 * Gets the description.
 	 *
 	 * @return string
-	 *	The base name.
+	 *	The description.
 	 */
-	public final function getBaseName() : string
-	{
-		return 'int';
-	}
+	public function getDescription() : string;
 
 	/**
-	 * Gets the name.
+	 * Gets the error messages.
 	 *
-	 * @return string
-	 *	The name.
+	 * @return array
+	 *	The error messages.
 	 */
-	public final function getName() : string
-	{
-		return 'int';
-	}
+	public function getErrorMessages() : array;
 
 	/**
-	 * Gets the namespace.
+	 * Gets the messages.
 	 *
-	 * @return string
-	 *	The namespace.
+	 * @return array
+	 *	The messages.
 	 */
-	public final function getNamespace() : string
-	{
-		return '';
-	}
+	public function getMessages() : array;
 
 	/**
-	 * Checks if it equals another type.
+	 * Gets the warning messages.
 	 *
-	 * @return bool
-	 *	The result.
+	 * @return array
+	 *	The warning messages.
 	 */
-	public final function equals(IType $type) : bool
-	{
-		return ($this->getName() === $type->getName());
-	}
+	public function getWarningMessages() : array;
 
 	/**
-	 * Checks if it is a class.
+	 * Gets the throwables.
 	 *
-	 * @return bool
-	 *	The result.
+	 * @return array
+	 *	The throwables.
 	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
+	public function getThrowables() : array;
 
 	/**
-	 * Checks if it is an interface.
+	 * Validate.
+	 *
+	 * When called, it invokes the test case closure and performs the
+	 * applicable validation on its result, failing if it does not meet
+	 * expectation or if an uncaught throwable is detected.
 	 *
 	 * @return bool
-	 *	The result.
+	 *	The success status.
 	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
-	}
+	public function validate() : bool;
 }

@@ -49,6 +49,7 @@ const LB_PATH_LIGHTBIT = (__DIR__);
 		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
 		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
 		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
+		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/AssetManagement/AssetProvider.php');
 	}
 )();
 
@@ -80,11 +81,11 @@ const LB_PATH_LIGHTBIT = (__DIR__);
 		defined('LB_ENVIRONMENT') || define('LB_ENVIRONMENT', 'production');
 
 		//
-		// Library lookup paths
+		// Modules
 		//
-		$lightbit->addLibraryLookupPathList([
-			(__DIR__ . '/libraries'),
-			(LB_PATH_APPLICATION . '/libraries')
+		$lightbit->addModulePaths([
+			LB_PATH_LIGHTBIT,
+			LB_PATH_APPLICATION
 		]);
 
 		//
@@ -113,6 +114,13 @@ const LB_PATH_LIGHTBIT = (__DIR__);
 		//
 		// Error and exception handlers
 		//
+		set_error_handler
+		(
+			function(int $level, string $message, string $filePath = null, int $line = null)
+			{
+				throw new Lightbit\Exception(sprintf('%s at %s (: %d)', $message, $filePath, $line));
+			}
+		);
 	}
 )
 (Lightbit::getInstance());

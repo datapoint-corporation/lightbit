@@ -25,111 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
+namespace Lightbit\Testing;
 
-use \Lightbit\Reflection\IType;
+use \Lightbit\Testing\ITestSuite;
 
 /**
- * IntegerType.
+ * ITestSuiteFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+interface ITestSuiteFactory
 {
 	/**
-	 * Constructor.
-	 */
-	public function __construct()
-	{
-
-	}
-
-	/**
-	 * Gets the base name.
+	 * Creates a test suite.
 	 *
-	 * @return string
-	 *	The base name.
-	 */
-	public final function getBaseName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the name.
+	 * @param string $suite
+	 *	The test suite script asset identifier.
 	 *
-	 * @return string
-	 *	The name.
+	 * @return ITestSuite
+	 *	The test suite.
 	 */
-	public final function getName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the namespace.
-	 *
-	 * @return string
-	 *	The namespace.
-	 */
-	public final function getNamespace() : string
-	{
-		return '';
-	}
-
-	/**
-	 * Checks if it equals another type.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function equals(IType $type) : bool
-	{
-		return ($this->getName() === $type->getName());
-	}
-
-	/**
-	 * Checks if it is a class.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is an interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
-	}
+	public function createSuite(string $suite) : ITestSuite;
 }

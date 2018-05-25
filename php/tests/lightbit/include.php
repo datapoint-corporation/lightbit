@@ -25,30 +25,34 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit;
+//
+// Zzzzzzzzz Zzzzzzzzzzzzz
+//
+// I know this is nowhere near close to being a good way of iterating through
+// each file, but for now, consider this a promise that I'll get back to
+// it soon.
+//
 
-use \Exception as ExceptionBase;
-use \Throwable;
+$prefix = LB_PATH_LIGHTBIT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR;
+$suffix = '*.php';
 
-/**
- * Lightbit.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
-class Exception extends ExceptionBase
+for ($i = 0; strlen($prefix . $suffix) < 512; ++$i)
 {
-	/**
-	 * Construct.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
-	public function __construct(string $message, Throwable $previous = null)
+	if ($t = glob($prefix . $suffix, GLOB_NOESCAPE))
 	{
-		parent::__construct($message, 0, $previous);
+		foreach ($t as $i => $filePath)
+		{
+			$this->exactly(
+				sprintf('Include "%s"', $filePath),
+
+				true,
+				function() use ($filePath) {
+					include_once ($filePath);
+					return true;
+				}
+			);
+		}
 	}
+
+	$prefix .= '*' . DIRECTORY_SEPARATOR;
 }

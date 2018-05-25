@@ -25,111 +25,32 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
-
-use \Lightbit\Reflection\IType;
+namespace Lightbit\Testing;
 
 /**
- * IntegerType.
+ * TestSuite.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+interface ITestSuite
 {
 	/**
-	 * Constructor.
-	 */
-	public function __construct()
-	{
-
-	}
-
-	/**
-	 * Gets the base name.
+	 * Gets the cases.
 	 *
-	 * @return string
-	 *	The base name.
+	 * @return array
+	 *	The cases.
 	 */
-	public final function getBaseName() : string
-	{
-		return 'int';
-	}
+	public function getCases() : array;
 
 	/**
-	 * Gets the name.
+	 * Validate.
 	 *
-	 * @return string
-	 *	The name.
-	 */
-	public final function getName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the namespace.
-	 *
-	 * @return string
-	 *	The namespace.
-	 */
-	public final function getNamespace() : string
-	{
-		return '';
-	}
-
-	/**
-	 * Checks if it equals another type.
+	 * When invoked, it iterates through the test suite cases performing
+	 * validation on each one, failing if any of them fails.
 	 *
 	 * @return bool
-	 *	The result.
+	 *	The success status.
 	 */
-	public final function equals(IType $type) : bool
-	{
-		return ($this->getName() === $type->getName());
-	}
-
-	/**
-	 * Checks if it is a class.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is an interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
-	}
+	public function validate() : bool;
 }

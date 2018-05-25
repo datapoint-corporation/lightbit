@@ -25,111 +25,72 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
+namespace Lightbit\Testing;
 
-use \Lightbit\Reflection\IType;
+use \Closure;
+
+use \Lightbit\AssetManagement\Php\PhpAsset;
+use \Lightbit\Testing\ITestSuite;
+use \Lightbit\Testing\TestCases\EqualTestCase;
+use \Lightbit\Testing\TestCases\ExactlyTestCase;
 
 /**
- * IntegerType.
+ * TestSuiteScope.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+class TestSuiteScope
 {
 	/**
+	 * The suite.
+	 *
+	 * @var ITestSuite
+	 */
+	private $suite;
+
+	/**
 	 * Constructor.
+	 *
+	 * @param ITestSuite $suite
+	 *	The test suite.
 	 */
-	public function __construct()
+	public function __construct(ITestSuite $suite)
 	{
-
+		$this->suite = $suite;
 	}
 
 	/**
-	 * Gets the base name.
+	 * Creates an equality test case.
 	 *
-	 * @return string
-	 *	The base name.
+	 * @param string $description
+	 *	The test case description.
+	 *
+	 * @param mixed $constraint
+	 *	The test case constraint.
+	 *
+	 * @param Closure $closure
+	 *	The test case closure.
 	 */
-	public final function getBaseName() : string
+	public function equals(string $description, $constraint, Closure $closure) : void
 	{
-		return 'int';
+		$this->suite->addCase(new EqualTestCase($description, $constraint, $closure));
 	}
 
 	/**
-	 * Gets the name.
+	 * Creates an exact equality test case.
 	 *
-	 * @return string
-	 *	The name.
-	 */
-	public final function getName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the namespace.
+	 * @param string $description
+	 *	The test case description.
 	 *
-	 * @return string
-	 *	The namespace.
-	 */
-	public final function getNamespace() : string
-	{
-		return '';
-	}
-
-	/**
-	 * Checks if it equals another type.
+	 * @param mixed $constraint
+	 *	The test case constraint.
 	 *
-	 * @return bool
-	 *	The result.
+	 * @param Closure $closure
+	 *	The test case closure.
 	 */
-	public final function equals(IType $type) : bool
+	public function exactly(string $description, $constraint, Closure $closure) : void
 	{
-		return ($this->getName() === $type->getName());
-	}
-
-	/**
-	 * Checks if it is a class.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is an interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
+		$this->suite->addCase(new ExactlyTestCase($description, $constraint, $closure));
 	}
 }

@@ -67,7 +67,7 @@ class StringParser implements IParser
 		if (!is_string($subject))
 		{
 			$subject = ParserProvider::getInstance()->getParser(
-				Type::getInstanceOf($subject)->getName())->compose($subject)
+				(Type::getInstanceOf($subject)->getName())->compose($subject)
 			)
 
 			->compose($subject);

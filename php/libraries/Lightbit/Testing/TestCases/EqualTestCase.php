@@ -25,111 +25,60 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
+namespace Lightbit\Testing\TestCases;
 
-use \Lightbit\Reflection\IType;
+use \Closure;
+
+use \Lightbit\Testing\ITestCase;
+use \Lightbit\Testing\ITestSuite;
+use \Lightbit\Testing\TestCase;
 
 /**
- * IntegerType.
+ * EqualTestCase.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+class EqualTestCase extends TestCase implements ITestCase
 {
 	/**
+	 * The constraint.
+	 *
+	 * @var mixed
+	 */
+	private $constraint;
+
+	/**
 	 * Constructor.
-	 */
-	public function __construct()
-	{
-
-	}
-
-	/**
-	 * Gets the base name.
 	 *
-	 * @return string
-	 *	The base name.
-	 */
-	public final function getBaseName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the name.
+	 * @param string $description
+	 *	The test case description.
 	 *
-	 * @return string
-	 *	The name.
-	 */
-	public final function getName() : string
-	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the namespace.
+	 * @param mixed $constraint
+	 *	The test case constraint.
 	 *
-	 * @return string
-	 *	The namespace.
+	 * @param Closure $closure
+	 *	The test case closure.
 	 */
-	public final function getNamespace() : string
+	public function __construct(string $description, $constraint, Closure $closure)
 	{
-		return '';
+		parent::__construct($description, $closure);
+
+		$this->constraint = $constraint;
 	}
 
 	/**
-	 * Checks if it equals another type.
+	 * Validate.
+	 *
+	 * When called, it invokes the test case closure and performs the
+	 * applicable validation on its result, failing if it does not meet
+	 * expectation or if an uncaught throwable is detected.
 	 *
 	 * @return bool
-	 *	The result.
+	 *	The success status.
 	 */
-	public final function equals(IType $type) : bool
+	public function validate() : bool
 	{
-		return ($this->getName() === $type->getName());
-	}
-
-	/**
-	 * Checks if it is a class.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is an interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
+		return ($this->export($subject) && $subject == $this->constraint);
 	}
 }

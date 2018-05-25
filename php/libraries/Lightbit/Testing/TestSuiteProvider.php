@@ -25,111 +25,80 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Reflection;
+namespace Lightbit\Testing;
 
-use \Lightbit\Reflection\IType;
+use \Lightbit\Testing\ITestSuite;
+use \Lightbit\Testing\ITestSuiteFactory;
+use \Lightbit\Testing\TestSuiteFactory;
 
 /**
- * IntegerType.
+ * TestSuiteProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class IntegerType implements IType
+final class TestSuiteProvider
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var TestSuiteProvider
+	 */
+	private static $instance;
+
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return TestSuiteProvider
+	 *	The singleton instance.
+	 */
+	public static function getInstance() : TestSuiteProvider
+	{
+		return (self::$instance ?? (self::$instance = new TestSuiteProvider()));
+	}
+
+	/**
+	 * The suite factory.
+	 *
+	 * @var ITestSuiteFactory
+	 */
+	private $suiteFactory;
+
+	/**
+	 * The suites.
+	 */
+	private $suites;
+
 	/**
 	 * Constructor.
 	 */
-	public function __construct()
+	private function __construct()
 	{
-
+		$this->suites = [];
 	}
 
 	/**
-	 * Gets the base name.
+	 * Gets a suite.
 	 *
-	 * @return string
-	 *	The base name.
+	 * @param string $suite
+	 *	The suite asset identifier.
+	 *
+	 * @return ITestSuite
+	 *	The test suite.
 	 */
-	public final function getBaseName() : string
+	public final function getSuite(string $suite) : ITestSuite
 	{
-		return 'int';
+		return ($this->suites[$suite] ?? ($this->suites[$suite] = $this->getSuiteFactory()->createSuite($suite)));
 	}
 
 	/**
-	 * Gets the name.
+	 * Gets the suite factory.
 	 *
-	 * @return string
-	 *	The name.
+	 * @return ITestSuiteFactory
+	 *	The test suite factory.
 	 */
-	public final function getName() : string
+	public final function getSuiteFactory() : ITestSuiteFactory
 	{
-		return 'int';
-	}
-
-	/**
-	 * Gets the namespace.
-	 *
-	 * @return string
-	 *	The namespace.
-	 */
-	public final function getNamespace() : string
-	{
-		return '';
-	}
-
-	/**
-	 * Checks if it equals another type.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function equals(IType $type) : bool
-	{
-		return ($this->getName() === $type->getName());
-	}
-
-	/**
-	 * Checks if it is a class.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isClass() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is an interface.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isInterface() : bool
-	{
-		return false;
-	}
-
-	/**
-	 * Checks if it is native.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isNative() : bool
-	{
-		return true;
-	}
-
-	/**
-	 * Checks if it is scalar.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
-	public final function isScalar() : bool
-	{
-		return true;
+		return ($this->suiteFactory ?? ($this->suiteFactory = new TestSuiteFactory()));
 	}
 }
