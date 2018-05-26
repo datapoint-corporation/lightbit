@@ -53,6 +53,20 @@ class TestSuite implements ITestSuite
 	private $success;
 
 	/**
+	 * The suites.
+	 *
+	 * @var array
+	 */
+	private $suites;
+
+	/**
+	 * The title.
+	 *
+	 * @var string
+	 */
+	private $title;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param PhpAsset $asset
@@ -61,6 +75,7 @@ class TestSuite implements ITestSuite
 	public function __construct(PhpAsset $asset)
 	{
 		$this->asset = $asset;
+		$this->suites = [];
 	}
 
 	/**
@@ -89,6 +104,17 @@ class TestSuite implements ITestSuite
 	}
 
 	/**
+	 * Sets an additional suite.
+	 *
+	 * @param ITestSuite $suite
+	 *	The suite.
+	 */
+	public function addSuite(ITestSuite $suite) : void
+	{
+		$this->suites[] = $suite;
+	}
+
+	/**
 	 * Gets the cases.
 	 *
 	 * @return array
@@ -103,6 +129,33 @@ class TestSuite implements ITestSuite
 		}
 
 		return $this->cases;
+	}
+
+	public function getSuites() : array
+	{
+		return $this->suites;
+	}
+
+	/**
+	 * Gets the title.
+	 *
+	 * @return string
+	 *	The title.
+	 */
+	public function getTitle() : string
+	{
+		return ($this->title ?? ($this->title = $this->asset->getPath()));
+	}
+
+	/**
+	 * Sets the title.
+	 *
+	 * @param string $title
+	 *	The title.
+	 */
+	public function setTitle(string $title) : void
+	{
+		$this->title = $title;
 	}
 
 	/**
@@ -132,6 +185,78 @@ class TestSuite implements ITestSuite
 		return $this->success;
 	}
 
+	private function toStringEx(ITestSuite $suite, int $index = 0) : string
+	{
+		$suite->validate();
+
+		++$index;
+
+		$content = ($index) . '.' . PHP_EOL;
+		$content .= $suite->getTitle() . PHP_EOL;
+		$content .= '================================' . PHP_EOL;
+		$content .= PHP_EOL;
+
+		$tcCount = 0;
+		$tcCountSuccess = 0;
+		foreach ($suite->getCases() as $i => $case)
+		{
+			$success = $case->validate() && (++$tcCountSuccess);
+
+			$content .= ($index) . '.' . (++$tcCount) . '.' . PHP_EOL;
+			$content .= $case->getTitle() . PHP_EOL;
+			$content .= '--------------------------------' . PHP_EOL;
+			$content .= ($success ? 'SUCCESS' : 'FAILURE') . PHP_EOL;
+			$content .= PHP_EOL;
+
+			foreach ($case->getErrorMessages() as $i => $errorMessage)
+			{
+				$content .= 'WARNING' . PHP_EOL;
+				$content .= $errorMessage . PHP_EOL;
+				$content .= PHP_EOL;
+			}
+
+			foreach ($case->getWarningMessages() as $i => $warningMessage)
+			{
+				$content .= 'WARNING' . PHP_EOL;
+				$content .= $warningMessage . PHP_EOL;
+				$content .= PHP_EOL;
+			}
+
+			foreach ($case->getMessages() as $i => $message)
+			{
+				$content .= 'VERBOSE' . PHP_EOL;
+				$content .= $message . PHP_EOL;
+				$content .= PHP_EOL;
+			}
+
+			foreach ($case->getThrowables() as $i => $throwable)
+			{
+				do
+				{
+					$content .= 'THROWABLE' . PHP_EOL;
+					$content .= $throwable->getMessage() . PHP_EOL;
+					$content .= PHP_EOL;
+					$content .= get_class($throwable) . PHP_EOL;
+					$content .= $throwable->getFile() . '(' . $throwable->getLine() . ')' . PHP_EOL;
+					$content .= $throwable->getTraceAsString() . PHP_EOL;
+					$content .= PHP_EOL;
+				}
+				while ($throwable = $throwable->getPrevious());
+			}
+		}
+
+		$content .= '================================' . PHP_EOL;
+		$content .= $tcCountSuccess . ' out of ' . $tcCount . PHP_EOL;
+
+		foreach ($suite->getSuites() as $i => $suite)
+		{
+			$content .= PHP_EOL;
+			$content .= $this->toStringEx($suite, $index++);
+		}
+
+		return $content;
+	}
+
 	/**
 	 * Creates a string representation of this test suite.
 	 *
@@ -140,61 +265,6 @@ class TestSuite implements ITestSuite
 	 */
 	public function toString() : string
 	{
-		if (!isset($this->success))
-		{
-			$this->validate();
-		}
-
-		$id = 1;
-		$content = '';
-		$count = 0;
-		$countSuccess = 0;
-
-		foreach ($this->getCases() as $i => $case)
-		{
-			$content .= 'TS.' . (++$i) . PHP_EOL;
-			$content .= $case->getDescription() . PHP_EOL;
-			$content .= '--------------------------------' . PHP_EOL;
-
-			++$count;
-
-			if ($case->validate())
-			{
-				$content .= 'SUCCESS' . PHP_EOL . PHP_EOL;
-				++$countSuccess;
-			}
-			else
-			{
-				$content .= 'FAILURE' . PHP_EOL . PHP_EOL;
-			}
-
-			foreach ($case->getMessages() as $i => $message)
-			{
-				$content .= 'VERBOSE (' . $i . ')' . PHP_EOL . $message . PHP_EOL . PHP_EOL;
-			}
-
-			foreach ($case->getWarningMessages() as $i => $message)
-			{
-				$content .= 'WARNING (' . $i . ')' . PHP_EOL . $message . PHP_EOL . PHP_EOL;
-			}
-
-			foreach ($case->getErrorMessages() as $i => $message)
-			{
-				$content .= 'ERROR (' . $i . ')' . PHP_EOL . $message . PHP_EOL . PHP_EOL;
-			}
-
-			foreach ($case->getThrowables() as $i => $throwable)
-			{
-				$content .= 'THROWABLE (' . $i . ')' . PHP_EOL . $throwable->getMessage() . PHP_EOL;
-				$content .= $throwable->getFile() . ' (: ' . $throwable->getLine() . ')' . PHP_EOL;
-				$content .= $throwable->getTraceAsString() . PHP_EOL;
-				$content .= PHP_EOL;
-			}
-		}
-
-		$content .= '================================' . PHP_EOL;
-		$content .= $countSuccess . ' out of ' . $count;
-
-		return $content;
+		return $this->toStringEx($this, 0);
 	}
 }

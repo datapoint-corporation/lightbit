@@ -44,15 +44,6 @@ interface ITestCase
 	 *	The closure.
 	 */
 	public function getClosure() : Closure;
-
-	/**
-	 * Gets the description.
-	 *
-	 * @return string
-	 *	The description.
-	 */
-	public function getDescription() : string;
-
 	/**
 	 * Gets the error messages.
 	 *
@@ -84,6 +75,14 @@ interface ITestCase
 	 *	The throwables.
 	 */
 	public function getThrowables() : array;
+
+	/**
+	 * Gets the title.
+	 *
+	 * @return string
+	 *	The title.
+	 */
+	public function getTitle() : string;
 
 	/**
 	 * Validate.

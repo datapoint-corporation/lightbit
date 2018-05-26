@@ -32,8 +32,9 @@ use \Closure;
 use \Lightbit\AssetManagement\Php\PhpAsset;
 use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\TestSuiteProvider;
-use \Lightbit\Testing\TestCases\EqualTestCase;
-use \Lightbit\Testing\TestCases\ExactlyTestCase;
+use \Lightbit\Testing\TestCases\EqualityTestCase;
+use \Lightbit\Testing\TestCases\StrictEqualityTestCase;
+use \Lightbit\Testing\TestCases\ThrowTestCase;
 
 /**
  * TestSuiteScope.
@@ -64,35 +65,35 @@ class TestSuiteScope
 	/**
 	 * Creates an equality test case.
 	 *
-	 * @param string $description
-	 *	The test case description.
-	 *
 	 * @param mixed $constraint
 	 *	The test case constraint.
+	 *
+	 * @param string $description
+	 *	The test case description.
 	 *
 	 * @param Closure $closure
 	 *	The test case closure.
 	 */
-	public function equals(string $description, $constraint, Closure $closure) : void
+	public function equals($constraint, string $description, Closure $closure) : void
 	{
-		$this->suite->addCase(new EqualTestCase($description, $constraint, $closure));
+		$this->suite->addCase(new EqualityTestCase($description, $constraint, $closure));
 	}
 
 	/**
 	 * Creates an exact equality test case.
 	 *
-	 * @param string $description
-	 *	The test case description.
-	 *
 	 * @param mixed $constraint
 	 *	The test case constraint.
+	 *
+	 * @param string $description
+	 *	The test case description.
 	 *
 	 * @param Closure $closure
 	 *	The test case closure.
 	 */
-	public function exactly(string $description, $constraint, Closure $closure) : void
+	public function exactly($constraint, string $description, Closure $closure) : void
 	{
-		$this->suite->addCase(new ExactlyTestCase($description, $constraint, $closure));
+		$this->suite->addCase(new StrictEqualityTestCase($description, $closure, $constraint));
 	}
 
 	/**
@@ -110,7 +111,28 @@ class TestSuiteScope
 
 		foreach ($testSuites as $i => $testSuite)
 		{
-			$this->suite->addCases($provider->getSuite($testSuite)->getCases());
+			$this->suite->addSuite($provider->getSuite($testSuite));
 		}
+	}
+
+	/**
+	 * Creates a throwable test case.
+	 *
+	 * @param string $className
+	 */
+	public function throws(string $className, string $description, Closure $closure) : void
+	{
+		$this->suite->addCase(new ThrowTestCase($description, $closure, $className));
+	}
+
+	/**
+	 * Sets the title.
+	 *
+	 * @param string $title
+	 *	The title.
+	 */
+	public function setTitle(string $title) : void
+	{
+		$this->suite->setTitle($title);
 	}
 }

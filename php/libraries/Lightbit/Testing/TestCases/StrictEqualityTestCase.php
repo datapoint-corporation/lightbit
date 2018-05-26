@@ -34,12 +34,12 @@ use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\TestCase;
 
 /**
- * ExactlyTestCase.
+ * StrictEqualityTestCase.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class ExactlyTestCase extends TestCase implements ITestCase
+class StrictEqualityTestCase extends TestCase implements ITestCase
 {
 	/**
 	 * The constraint.
@@ -54,15 +54,15 @@ class ExactlyTestCase extends TestCase implements ITestCase
 	 * @param string $description
 	 *	The test case description.
 	 *
-	 * @param mixed $constraint
-	 *	The test case constraint.
-	 *
 	 * @param Closure $closure
 	 *	The test case closure.
+	 *
+	 * @param mixed $constraint
+	 *	The test case constraint.
 	 */
-	public function __construct(string $description, $constraint, Closure $closure)
+	public function __construct(string $description, Closure $closure, $constraint)
 	{
-		parent::__construct($description, $closure);
+		parent::__construct($description, $closure, $constraint);
 
 		$this->constraint = $constraint;
 	}

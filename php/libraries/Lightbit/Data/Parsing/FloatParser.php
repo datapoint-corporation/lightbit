@@ -85,14 +85,14 @@ class FloatParser implements IParser
 	 * @param string $subject
 	 *	The parsing subject.
 	 *
-	 * @return int
+	 * @return float
 	 *	The parsing result, on success.
 	 */
-	public final function parse(string $subject) : int
+	public final function parse(string $subject) : float
 	{
 		if (preg_match('%^(\\-|\\+)?((\\d+\\.\\d+)|(.\\d+))$%', $subject))
 		{
-			return intval($subject);
+			return floatval($subject);
 		}
 
 		throw new ParserException($this, sprintf('Can not parse integer, bad subject format: "%s"', $subject));

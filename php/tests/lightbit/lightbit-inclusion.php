@@ -43,9 +43,9 @@ for ($i = 0; strlen($prefix . $suffix) < 512; ++$i)
 		foreach ($t as $i => $filePath)
 		{
 			$this->exactly(
-				sprintf('Include "%s"', $filePath),
-
 				true,
+
+				sprintf('%s', $filePath),
 				function() use ($filePath) {
 					include_once ($filePath);
 					return true;

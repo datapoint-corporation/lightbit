@@ -25,33 +25,75 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Testing\TestCases;
 
-use \Lightbit\Http\HttpQueryStringException;
-use \Lightbit\Http\IHttpQueryString;
+use \Closure;
+use \Throwable;
+
+use \Lightbit\Testing\ITestCase;
+use \Lightbit\Testing\ITestSuite;
+use \Lightbit\Testing\TestCase;
 
 /**
- * HttpQueryStringParameterParseException.
+ * ThrowTestCase.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpQueryStringParameterParseException extends HttpQueryStringException
+class ThrowTestCase extends TestCase implements ITestCase
 {
+	/**
+	 * The constraint.
+	 *
+	 * @var mixed
+	 */
+	private $constraint;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param IHttpQueryString $queryString
-	 *	The exception queryString.
+	 * @param string $description
+	 *	The test case description.
 	 *
-	 * @param string $message
-	 *	The exception message.
+	 * @param Closure $closure
+	 *	The test case closure.
 	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
+	 * @param string $constraint
+	 *	The test case constraint.
 	 */
-	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
+	public function __construct(string $description, Closure $closure, string $constraint)
 	{
-		parent::__construct($queryString, $message, $previous);
+		parent::__construct($description, $closure, $constraint);
+
+		$this->constraint = $constraint;
+	}
+
+	/**
+	 * Validate.
+	 *
+	 * When called, it invokes the test case closure and performs the
+	 * applicable validation on its result, failing if it does not meet
+	 * expectation or if an uncaught throwable is detected.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
+	public function validate() : bool
+	{
+		try
+		{
+			($this->getClosure())();
+		}
+		catch (Throwable $e)
+		{
+			if ($e instanceof $this->constraint)
+			{
+				return true;
+			}
+
+			$this->addThrowable($e);
+		}
+
+		return false;
 	}
 }

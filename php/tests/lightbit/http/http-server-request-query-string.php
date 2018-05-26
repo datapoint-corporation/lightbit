@@ -27,6 +27,14 @@
 
 use \Lightbit\Http\HttpServerRequestQueryString;
 
+//
+// Suite
+//
+$this->setTitle(HttpServerRequestQueryString::class);
+
+//
+// Objects
+//
 $queryString = new HttpServerRequestQueryString([
 	'id' => '3109',
 	'offset' => '-31',
@@ -35,10 +43,13 @@ $queryString = new HttpServerRequestQueryString([
 	'emulation' => 'true'
 ]);
 
+//
+// Test cases
+//
 $this->exactly(
 	3109,
 
-	'Getting integer parameter "id" should return 3109 (int)',
+	'(HttpServerRequestQueryString)->getInt("id") must return an integer (3109)',
 	function() use ($queryString)
 	{
 		return $queryString->getInt('id');
@@ -48,7 +59,7 @@ $this->exactly(
 $this->exactly(
 	-31,
 
-	'Getting integer parameter "offset" should return -31 (int)',
+	'(HttpServerRequestQueryString)->getInt("offset") must return an integer (-31)',
 	function() use ($queryString)
 	{
 		return $queryString->getInt('offset');
@@ -58,7 +69,7 @@ $this->exactly(
 $this->exactly(
 	31.319028,
 
-	'Getting integer parameter "latitude" should return 31.319028 (float)',
+	'(HttpServerRequestQueryString)->getFloat("latitude") must return a float (31.319028)',
 	function() use ($queryString)
 	{
 		return $queryString->getFloat('latitude');
@@ -68,7 +79,7 @@ $this->exactly(
 $this->exactly(
 	-31.31298,
 
-	'Getting integer parameter "longitude" should return -31.31298 (float)',
+	'(HttpServerRequestQueryString)->getFloat("longitude") must return a float (-31.31298)',
 	function() use ($queryString)
 	{
 		return $queryString->getFloat('longitude');
@@ -78,9 +89,39 @@ $this->exactly(
 $this->exactly(
 	true,
 
-	'Getting integer parameter "emulation" should return true (bool)',
+	'(HttpServerRequestQueryString)->getBool("emulation") must return a boolean (true)',
 	function() use ($queryString)
 	{
 		return $queryString->getBool('emulation');
+	}
+);
+
+$this->exactly(
+	'true',
+
+	'(HttpServerRequestQueryString)->getString("emulation") must return a string (true)',
+	function() use ($queryString)
+	{
+		return $queryString->getString('emulation');
+	}
+);
+
+$this->throws(
+	Lightbit\Http\HttpQueryStringParameterNotSetException::class,
+
+	'(HttpServerRequestQueryString)->getString("not-set") should throw a not set exception',
+	function() use ($queryString)
+	{
+		return $queryString->getString('not-set');
+	}
+);
+
+$this->throws(
+	Lightbit\Http\HttpQueryStringParameterParseException::class,
+
+	'(HttpServerRequestQueryString)->getBool("longitude") should throw a parse exception',
+	function() use ($queryString)
+	{
+		return $queryString->getBool('longitude');
 	}
 );

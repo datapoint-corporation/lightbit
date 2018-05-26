@@ -28,6 +28,7 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Data\Parsing\ParserProvider;
+use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Http\IHttpQueryString;
 
 /**
@@ -166,7 +167,7 @@ class HttpServerRequestQueryString implements IHttpQueryString
 	 */
 	public final function getFloat(string $parameter, bool $optional = false) : ?float
 	{
-		return $this->get('bool', $parameter, $optional);
+		return $this->get('float', $parameter, $optional);
 	}
 
 	/**
@@ -191,7 +192,7 @@ class HttpServerRequestQueryString implements IHttpQueryString
 	 */
 	public final function getInt(string $parameter, bool $optional = false) : ?int
 	{
-		return $this->get('bool', $parameter, $optional);
+		return $this->get('int', $parameter, $optional);
 	}
 
 	/**
@@ -216,7 +217,7 @@ class HttpServerRequestQueryString implements IHttpQueryString
 	 */
 	public final function getString(string $parameter, bool $optional = false) : ?string
 	{
-		return $this->get('bool', $parameter, $optional);
+		return $this->get('string', $parameter, $optional);
 	}
 
 	/**

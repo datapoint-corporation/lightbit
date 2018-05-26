@@ -48,13 +48,6 @@ abstract class TestCase implements ITestCase
 	private $closure;
 
 	/**
-	 * The description.
-	 *
-	 * @var string
-	 */
-	private $description;
-
-	/**
 	 * The error messages.
 	 *
 	 * @var array
@@ -83,22 +76,29 @@ abstract class TestCase implements ITestCase
 	private $throwables;
 
 	/**
+	 * The title.
+	 *
+	 * @var string
+	 */
+	private $title;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param string $description
-	 *	The test case description.
+	 * @param string $title
+	 *	The test case title.
 	 *
 	 * @param Closure $closure
 	 *	The test case closure.
 	 */
-	public function __construct(string $description, Closure $closure)
+	public function __construct(string $title, Closure $closure)
 	{
-		$this->description = $description;
 		$this->closure = $closure;
 		$this->errorMessages = [];
 		$this->messages = [];
 		$this->warningMessages = [];
 		$this->throwables = [];
+		$this->title = $title;
 	}
 
 	/**
@@ -187,6 +187,17 @@ abstract class TestCase implements ITestCase
 	public final function getThrowables() : array
 	{
 		return $this->throwables;
+	}
+
+	/**
+	 * Gets the title.
+	 *
+	 * @return string
+	 *	The title.
+	 */
+	public final function getTitle() : string
+	{
+		return $this->title;
 	}
 
 	/**
