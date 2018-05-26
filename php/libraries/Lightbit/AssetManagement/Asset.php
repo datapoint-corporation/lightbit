@@ -29,47 +29,14 @@ namespace Lightbit\AssetManagement;
 
 use \Lightbit\AssetManagement\IAsset;
 
-/**
- * Asset.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class Asset implements IAsset
 {
-	/**
-	 * The identifier.
-	 *
-	 * @var string
-	 */
 	private $id;
 
-	/**
-	 * The path.
-	 *
-	 * @var string
-	 */
 	private $path;
 
-	/**
-	 * The type.
-	 *
-	 * @var string
-	 */
 	private $type;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $id
-	 *	The asset identifier.
-	 *
-	 * @param string $path
-	 *	The asset path.
-	 */
 	public function __construct(string $type, string $id, string $path)
 	{
 		$this->id = $id;
@@ -77,34 +44,16 @@ class Asset implements IAsset
 		$this->type = $type;
 	}
 
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
 	public final function getPath() : string
 	{
 		return $this->path;
 	}
 
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
 	public final function getID() : string
 	{
 		return $this->id;
 	}
 
-	/**
-	 * Gets the type.
-	 *
-	 * @return string
-	 *	The type.
-	 */
 	public final function getType() : string
 	{
 		return $this->type;

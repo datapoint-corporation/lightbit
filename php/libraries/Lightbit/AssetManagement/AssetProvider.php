@@ -33,63 +33,23 @@ use \Lightbit\AssetManagement\IAsset;
 use \Lightbit\AssetManagement\AssetConstructionException;
 use \Lightbit\AssetManagement\AssetNotFoundException;
 
-/**
- * AssetProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class AssetProvider
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var AssetProvider
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return AssetProvider
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : AssetProvider
 	{
 		return (self::$instance ?? (self::$instance = new AssetProvider()));
 	}
 
-	/**
-	 * The asset factory.
-	 *
-	 * @var IAssetFactory
-	 */
 	private $assetFactory;
 
-	/**
-	 * The asset lists.
-	 *
-	 * @var array
-	 */
 	private $assetLists;
 
-	/**
-	 * The asset prefix lookup path map.
-	 *
-	 * @var array
-	 */
 	private $assetPrefixLookupPathMap;
 
-	/**
-	 * The asset path suffix map.
-	 *
-	 * @var array
-	 */
 	private $assetPathSuffixMap;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 		$this->assetPathSuffixMap = [];
@@ -97,26 +57,11 @@ final class AssetProvider
 		$this->assets = [];
 	}
 
-	/**
-	 * Sets an additional asset prefix lookup path.
-	 *
-	 * @param string $prefix
-	 *	The asset prefix.
-	 *
-	 * @param string $path
-	 *	The asset prefix lookup path.
-	 */
 	public final function addAssetPrefixLookupPath(string $prefix, string $path) : void
 	{
 		$this->assetPrefixLookupPathMap[$prefix][] = rtrim(strtr($path, [ '/' => DIRECTORY_SEPARATOR ]), DIRECTORY_SEPARATOR);
 	}
 
-	/**
-	 * Sets an additional asset prefix lookup path map.
-	 *
-	 * @param array $assetPrefixLookupPathMap
-	 *	The asset prefix lookup path map.
-	 */
 	public final function addAssetPrefixLookupPathMap(array $assetPrefixLookupPathMap) : void
 	{
 		foreach ($assetPrefixLookupPathMap as $prefix => $path)
@@ -125,26 +70,6 @@ final class AssetProvider
 		}
 	}
 
-	/**
-	 * Gets an asset.
-	 *
-	 * @throws AssetConstructionException
-	 *	Thrown if the asset construction fails despite resolving to an
-	 *	existing and readable file.
-	 *
-	 * @throws AssetNotFoundException
-	 *	Thrown if the asset identifier does not resolve to an existing or
-	 *	readable file.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $identifier
-	 *	The asset identifier.
-	 *
-	 * @return IAsset
-	 *	The asset.
-	 */
 	public final function getAsset(string $type, string $identifier) : IAsset
 	{
 		if ($list = $this->getAssetList($type, $identifier))
@@ -155,33 +80,11 @@ final class AssetProvider
 		throw new AssetNotFoundException($this, sprintf('Can not get asset, not found: "%s", of type "%s"', $identifier, $type));
 	}
 
-	/**
-	 * Gets the asset factory.
-	 *
-	 * @return IAssetFactory
-	 *	The asset factory.
-	 */
 	public final function getAssetFactory() : IAssetFactory
 	{
 		return ($this->assetFactory ?? ($this->assetFactory = new AssetFactory()));
 	}
 
-	/**
-	 * Gets an asset list.
-	 *
-	 * @throws AssetConstructionException
-	 *	Thrown if the asset construction fails despite resolving to an
-	 *	existing and readable file.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $id
-	 *	The asset identifier.
-	 *
-	 * @return array
-	 *	The asset list.
-	 */
 	public final function getAssetList(string $type, string $id) : array
 	{
 		if (!isset($this->assetLists[$type]))
@@ -223,27 +126,12 @@ final class AssetProvider
 		return $this->assetLists[$type][$id];
 	}
 
-	/**
-	 * Sets the asset factory.
-	 *
-	 * @param IAssetFactory $assetFactory
-	 *	The asset factory.
-	 */
 	public final function setAssetFactory(IAssetFactory $assetFactory) : void
 	{
 		$this->assetFactory = $assetFactory;
 		$this->assets = [];
 	}
 
-	/**
-	 * Sets an asset path suffix.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $pathSuffix
-	 *	The asset file path suffix.
-	 */
 	public final function setAssetPathSuffix(string $type, string $suffix) : void
 	{
 		$this->assetPathSuffixMap[$type] = $suffix;

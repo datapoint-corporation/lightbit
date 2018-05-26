@@ -27,35 +27,11 @@
 
 namespace Lightbit\AssetManagement;
 
-/**
- * IAsset.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IAsset
 {
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
 	public function getPath() : string;
 
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return string
-	 *	The identifier.
-	 */
 	public function getID() : string;
 
-	/**
-	 * Gets the type.
-	 *
-	 * @return string
-	 *	The type.
-	 */
 	public function getType() : string;
 }

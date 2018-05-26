@@ -31,50 +31,14 @@ use \Lightbit\Exception;
 use \Lightbit\AssetManagement\IAssetFactory;
 use \Lightbit\AssetManagement\AssetFactoryException;
 
-/**
- * AssetConstructionException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class AssetConstructionException extends AssetFactoryException
 {
-	/**
-	 * The asset identifier.
-	 *
-	 * @var string
-	 */
 	private $assetID;
 
-	/**
-	 * The asset path.
-	 *
-	 * @var string
-	 */
 	private $assetPath;
 
-	/**
-	 * The asset type.
-	 *
-	 * @var string
-	 */
 	private $assetType;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param IAssetFactory $assetFactory
-	 *	The exception asset factory.
-	 *
-	 * @param string $assetID
-	 *	The exception asset identifier.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IAssetFactory $assetFactory, string $assetType, string $assetID, string $assetPath, string $message, Throwable $previous = null)
 	{
 		parent::__construct($assetFactory, $message, $previous);
@@ -84,34 +48,16 @@ class AssetConstructionException extends AssetFactoryException
 		$this->assetType = $assetType;
 	}
 
-	/**
-	 * Gets the asset identifier.
-	 *
-	 * @return string
-	 *	The asset identifier.
-	 */
 	public final function getAssetID() : string
 	{
 		return $this->assetID;
 	}
 
-	/**
-	 * Gets the asset path.
-	 *
-	 * @return string
-	 *	The asset path.
-	 */
 	public final function getAssetPath() : string
 	{
 		return $this->assetPath;
 	}
 
-	/**
-	 * Gets the asset type.
-	 *
-	 * @return string
-	 *	The asset type.
-	 */
 	public final function getAssetType() : string
 	{
 		return $this->assetType;

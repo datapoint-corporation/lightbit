@@ -30,33 +30,10 @@ namespace Lightbit\AssetManagement;
 use \Lightbit\Exception;
 use \Lightbit\AssetManagement\IAssetFactory;
 
-/**
- * AssetFactoryException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class AssetFactoryException extends Exception
 {
-	/**
-	 * The asset factory.
-	 *
-	 * @var IAssetFactory
-	 */
 	private $assetFactory;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param IAssetFactory $assetFactory
-	 *	The exception asset factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IAssetFactory $assetFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
@@ -64,12 +41,6 @@ class AssetFactoryException extends Exception
 		$this->assetFactory = $assetFactory;
 	}
 
-	/**
-	 * Gets the asset factory.
-	 *
-	 * @return IAssetFactory
-	 *	The asset factory.
-	 */
 	public final function getAssetFactory() : IAssetFactory
 	{
 		return $this->assetFactory;

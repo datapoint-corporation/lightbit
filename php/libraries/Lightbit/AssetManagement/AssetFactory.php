@@ -32,37 +32,13 @@ use \Lightbit\AssetManagement\IAsset;
 use \Lightbit\AssetManagement\IAssetFactory;
 use \Lightbit\AssetManagement\Php\PhpAsset;
 
-/**
- * AssetFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class AssetFactory implements IAssetFactory
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Creates an asset.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $id
-	 *	The asset identifier.
-	 *
-	 * @param string $path
-	 *	The asset path.
-	 *
-	 * @return IAsset
-	 *	The asset.
-	 */
 	public function createAsset(string $type, string $id, string $filePath) : IAsset
 	{
 		switch ($type)

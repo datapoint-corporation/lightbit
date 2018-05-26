@@ -30,12 +30,6 @@ namespace Lightbit\AssetManagement\Php;
 use \Lightbit;
 use \Lightbit\AssetManagement\Asset;
 
-/**
- * PhpAsset.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class PhpAsset extends Asset
 {
 	public function __construct(string $type, string $id, string $path)
@@ -43,43 +37,11 @@ class PhpAsset extends Asset
 		parent::__construct($type, $id, $path);
 	}
 
-	/**
-	 * Include.
-	 *
-	 * It includes the script file, safely, without exposing the callers
-	 * protected members while giving an option of declaring an explicit
-	 * set of variables.
-	 *
-	 * @param string $filePath
-	 *	The inclusion file path.
-	 *
-	 * @param array $variables
-	 *	The inclusion variables.
-	 *
-	 * @return mixed
-	 *	The inclusion result.
-	 */
 	public final function include(array $variables = null) // : mixed
 	{
 		return Lightbit::getInstance()->include($this->getPath(), $variables);
 	}
 
-	/**
-	 * Include.
-	 *
-	 * It includes the script file, safely, without exposing the callers
-	 * protected members while giving an option of declaring an explicit
-	 * public scope object and a set of variables.
-	 *
-	 * @param object $scope
-	 *	The inclusion public scope object.
-	 *
-	 * @param array $variables
-	 *	The inclusion variables.
-	 *
-	 * @return mixed
-	 *	The inclusion result.
-	 */
 	public final function includeAs(object $object, array $variables = null) // : mixed
 	{
 		return Lightbit::getInstance()->includeAs($object, $this->getPath(), $variables);

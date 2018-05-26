@@ -30,28 +30,7 @@ namespace Lightbit\AssetManagement;
 use \Lightbit\AssetManagement\AssetFactoryException;
 use \Lightbit\AssetManagement\IAsset;
 
-/**
- * IAssetFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IAssetFactory
 {
-	/**
-	 * Creates an asset.
-	 *
-	 * @param string $type
-	 *	The asset type.
-	 *
-	 * @param string $id
-	 *	The asset identifier.
-	 *
-	 * @param string $path
-	 *	The asset path.
-	 *
-	 * @return IAsset
-	 *	The asset.
-	 */
 	public function createAsset(string $type, string $id, string $filePath) : IAsset;
 }
