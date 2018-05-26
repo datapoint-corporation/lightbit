@@ -30,85 +30,24 @@ namespace Lightbit\Http;
 use \ReflectionClass;
 use \ReflectionMethod;
 
-/**
- * HttpRoute.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class HttpRoute implements IHttpRoute
 {
-	/**
-	 * The controller class.
-	 *
-	 * @var ReflectionClass
-	 */
 	private $controllerClass;
 
-	/**
-	 * The controller class name.
-	 *
-	 * @var string
-	 */
 	private $controllerClassName;
 
-	/**
-	 * The controller method.
-	 *
-	 * @var ReflectionClass
-	 */
 	private $controllerMethod;
 
-	/**
-	 * The controller method name.
-	 *
-	 * @var string
-	 */
 	private $controllerMethodName;
 
-	/**
-	 * The regular expression.
-	 *
-	 * @var string
-	 */
 	private $expression;
 
-	/**
-	 * The methods.
-	 *
-	 * @var array
-	 */
 	private $methods;
 
-	/**
-	 * The pattern.
-	 *
-	 * @var string
-	 */
 	private $pattern;
 
-	/**
-	 * The tokens.
-	 *
-	 * @var array
-	 */
 	private $tokens;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param array $method
-	 *	The route method.
-	 *
-	 * @param string $pattern
-	 *	The route path pattern.
-	 *
-	 * @param string $controllerClassName
-	 *	The route contrtoller class name.
-	 *
-	 * @param string $controllerMethodName
-	 *	The route controller method name.
-	 */
 	public function __construct(string $method, string $pattern, string $controllerClassName, string $controllerMethodName)
 	{
 		$this->controllerClassName = $controllerClassName;
@@ -165,46 +104,16 @@ class HttpRoute implements IHttpRoute
 		}
 	}
 
-	/**
-	 * Gets the controller class.
-	 *
-	 * @return ReflectionClass
-	 *	The controller class.
-	 */
 	public function getControllerClass() : ReflectionClass
 	{
 		return ($this->controllerClass ?? ($this->controllerClass = new ReflectionClass($this->controllerClassName)));
 	}
 
-	/**
-	 * Gets the controller method.
-	 *
-	 * @return ReflectionMethod
-	 *	The controller method.
-	 */
 	public function getControllerMethod() : ReflectionMethod
 	{
 		return ($this->controllerMethod ?? ($this->controllerMethod = $this->getControllerClass()->getMethod($this->controllerMethod)));
 	}
 
-	/**
-	 * Matches against a method and path.
-	 *
-	 * On success, the path tokens will be extracted into the third variable,
-	 * according to the route pattern.
-	 *
-	 * @param string $method
-	 *	The request method.
-	 *
-	 * @param string $path
-	 *	The request path.
-	 *
-	 * @param array $tokens
-	 *	The request path tokens.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
 	public final function match(string $method, string $path, array &$tokens = null) : bool
 	{
 		$tokens = [];

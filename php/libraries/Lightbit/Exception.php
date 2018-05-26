@@ -30,23 +30,8 @@ namespace Lightbit;
 use \Exception as ExceptionBase;
 use \Throwable;
 
-/**
- * Lightbit.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class Exception extends ExceptionBase
 {
-	/**
-	 * Construct.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, 0, $previous);

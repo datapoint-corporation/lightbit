@@ -32,56 +32,22 @@ use \Lightbit\Configuration\IConfigurationFactory;
 
 final class ConfigurationProvider
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var ConfigurationProvider
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return ConfigurationProvider
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : ConfigurationProvider
 	{
 		return (self::$instance ?? (self::$instance = new ConfigurationProvider()));
 	}
 
-	/**
-	 * The configuration factory.
-	 *
-	 * @var IConfigurationFactory
-	 */
 	private $configurationFactory;
 
-	/**
-	 * The configurations.
-	 *
-	 * @var array
-	 */
 	private $configurations;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 		$this->configurations = [];
 	}
 
-	/**
-	 * Gets a configuration.
-	 *
-	 * @throws ConfigurationFactoryException
-	 *	Thrown if the configuration fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
-	 * @param string $configuration
-	 *	The configuration identifier.
-	 */
 	public final function getConfiguration(string $configuration) : IConfiguration
 	{
 		return ($this->configurations[$configuration] ?? (
@@ -89,23 +55,11 @@ final class ConfigurationProvider
 		));
 	}
 
-	/**
-	 * Gets the configuration factory.
-	 *
-	 * @return IConfigurationFactory
-	 *	The configuration factory.
-	 */
 	public final function getConfigurationFactory() : IConfigurationFactory
 	{
 		return ($this->configurationFactory ?? ($this->configurationFactory = new ConfigurationFactory()));
 	}
 
-	/**
-	 * Sets the configuration factory.
-	 *
-	 * @param IConfigurationFactory $configurationFactory
-	 *	The configuration factory.
-	 */
 	public final function setConfigurationFactory(IConfigurationFactory $configurationFactory) : void
 	{
 		$this->configurationFactory = $configurationFactory;

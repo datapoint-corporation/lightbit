@@ -31,26 +31,8 @@ use \Lightbit\Exception;
 use \Lightbit\AssetManagement\AssetProviderException;
 use \Lightbit\AssetManagement\AssetProvider;
 
-/**
- * AssetNotFoundException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class AssetNotFoundException extends AssetProviderException
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IAssetProvider $provider
-	 *	The exception asset provider.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(AssetProvider $provider, string $message, Throwable $previous = null)
 	{
 		parent::__construct($provider, $message, $previous);

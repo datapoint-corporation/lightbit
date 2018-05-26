@@ -29,168 +29,66 @@ namespace Lightbit\Http;
 
 use \Lightbit\Data\Collections\StringMap;
 
-/**
- * HttpServer.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class HttpServer
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var IHttpServer
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpServer
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpServer
 	{
 		return (self::$instance ?? (self::$instance = new HttpServer()));
 	}
 
-	/**
-	 * Gets the document directory path.
-	 *
-	 * @var string
-	 */
 	private $documentDirectoryPath;
 
-	/**
-	 * Gets the document directory uniform resource location.
-	 *
-	 * @var string
-	 */
 	private $documentDirectoryUrl;
 
-	/**
-	 * Gets the document path.
-	 *
-	 * @var string
-	 */
 	private $documentPath;
 
-	/**
-	 * The document root path.
-	 *
-	 * @var string
-	 */
 	private $documentRootPath;
 
-	/**
-	 * The document uniform resource location.
-	 *
-	 * @var string
-	 */
 	private $documentUrl;
 
-	/**
-	 * The port.
-	 *
-	 * @var int
-	 */
 	private $port;
 
-	/**
-	 * The secure flag.
-	 *
-	 * @var bool
-	 */
 	private $secure;
 
-	/**
-	 * The variables.
-	 *
-	 * @var StringMap
-	 */
 	private $variables;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 		$this->variables = new StringMap($_SERVER ?? []);
 	}
 
-	/**
-	 * Gets the document directory path.
-	 *
-	 * @return string
-	 *	The document directory path.
-	 */
 	public final function getDocumentDirectoryPath() : string
 	{
 		return ($this->documentDirectoryPath ?? ($this->documentDirectoryPath = ltrim(dirname($this->getDocumentPath()), '/')));
 	}
 
-	/**
-	 * Gets the document directory uniform resource location.
-	 *
-	 * @return string
-	 *	The document directory uniform resource location.
-	 */
 	public final function getDocumentDirectoryUrl() : string
 	{
 		return ($this->documentDirectoryUrl ?? ($this->documentDirectoryUrl = (rtrim(dirname($this->getDocumentUrl()), '/') . '/')));
 	}
 
-	/**
-	 * Gets the document path.
-	 *
-	 * @return string
-	 *	The document path.
-	 */
 	public final function getDocumentPath() : string
 	{
 		return ($this->documentPath ?? ($this->documentPath = $this->variables->getString('SCRIPT_FILENAME')));
 	}
 
-	/**
-	 * Gets the document root path.
-	 *
-	 * @return string
-	 *	The document root path.
-	 */
 	public final function getDocumentRootPath() : string
 	{
 		return ($this->documentRootPath ?? ($this->documentRootPath = ltrim($this->variables->getString('DOCUMENT_ROOT'))));
 	}
 
-	/**
-	 * Gets the document uniform resource location.
-	 *
-	 * @return string
-	 *	The document uniform resource location.
-	 */
 	public final function getDocumentUrl() : string
 	{
 		return ($this->documentUrl ?? ($this->documentUrl = $this->variables->getString('SCRIPT_NAME')));
 	}
 
-	/**
-	 * Gets the port.
-	 *
-	 * @return int
-	 *	The port.
-	 */
 	public final function getPort() : int
 	{
 		return ($this->port ?? ($this->port = $this->variables->getInt('SERVER_PORT')));
 	}
 
-	/**
-	 * Checks if it is using a secure hypertext transmission protocol.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
 	public final function isSecure() : bool
 	{
 		return ($this->secure ?? ($this->secure = (($https = $this->variables->getString('HTTPS', true)) && strtolower($https) !== 'off')));

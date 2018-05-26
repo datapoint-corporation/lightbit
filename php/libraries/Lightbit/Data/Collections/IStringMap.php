@@ -37,59 +37,11 @@ use \Lightbit\Data\Collections\IMap;
  */
 interface IStringMap extends IMap
 {
-	/**
-	 * Gets a boolean.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return bool
-	 *	The value.
-	 */
 	public function getBool(string $key, bool $optional = false) : ?bool;
 
-	/**
-	 * Gets a float.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return float
-	 *	The value.
-	 */
 	public function getFloat(string $key, bool $optional = false) : ?float;
 
-	/**
-	 * Gets an integer.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return int
-	 *	The value.
-	 */
 	public function getInt(string $key, bool $optional = false) : ?int;
 
-	/**
-	 * Gets a string.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return string
-	 *	The value.
-	 */
 	public function getString(string $key, bool $optional = false) : ?string;
 }

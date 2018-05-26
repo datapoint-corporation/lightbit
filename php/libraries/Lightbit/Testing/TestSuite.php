@@ -30,71 +30,27 @@ namespace Lightbit\Testing;
 use \Lightbit\AssetManagement\Php\PhpAsset;
 use \Lightbit\Testing\ITestSuite;
 
-/**
- * TestSuite.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class TestSuite implements ITestSuite
 {
-	/**
-	 * The asset.
-	 *
-	 * @var PhpAsset
-	 */
 	private $asset;
 
-	/**
-	 * The success flag.
-	 *
-	 * @var bool
-	 */
 	private $success;
 
-	/**
-	 * The suites.
-	 *
-	 * @var array
-	 */
 	private $suites;
 
-	/**
-	 * The title.
-	 *
-	 * @var string
-	 */
 	private $title;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param PhpAsset $asset
-	 *	The test suite asset.
-	 */
 	public function __construct(PhpAsset $asset)
 	{
 		$this->asset = $asset;
 		$this->suites = [];
 	}
 
-	/**
-	 * Sets an additional case.
-	 *
-	 * @param ITestCase $case
-	 *	The case.
-	 */
 	public function addCase(ITestCase $case) : void
 	{
 		$this->cases[] = $case;
 	}
 
-	/**
-	 * Sets an additional set of cases.
-	 *
-	 * @param array $cases
-	 *	The cases.
-	 */
 	public function addCases(array $cases) : void
 	{
 		foreach ($cases as $i => $case)
@@ -103,23 +59,11 @@ class TestSuite implements ITestSuite
 		}
 	}
 
-	/**
-	 * Sets an additional suite.
-	 *
-	 * @param ITestSuite $suite
-	 *	The suite.
-	 */
 	public function addSuite(ITestSuite $suite) : void
 	{
 		$this->suites[] = $suite;
 	}
 
-	/**
-	 * Gets the cases.
-	 *
-	 * @return array
-	 *	The cases.
-	 */
 	public function getCases() : array
 	{
 		if (!isset($this->cases))
@@ -136,37 +80,16 @@ class TestSuite implements ITestSuite
 		return $this->suites;
 	}
 
-	/**
-	 * Gets the title.
-	 *
-	 * @return string
-	 *	The title.
-	 */
 	public function getTitle() : string
 	{
 		return ($this->title ?? ($this->title = $this->asset->getPath()));
 	}
 
-	/**
-	 * Sets the title.
-	 *
-	 * @param string $title
-	 *	The title.
-	 */
 	public function setTitle(string $title) : void
 	{
 		$this->title = $title;
 	}
 
-	/**
-	 * Validate.
-	 *
-	 * When invoked, it iterates through the test suite cases performing
-	 * validation on each one, failing if any of them fails.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
 	public function validate() : bool
 	{
 		if (!isset($this->success))
@@ -257,12 +180,6 @@ class TestSuite implements ITestSuite
 		return $content;
 	}
 
-	/**
-	 * Creates a string representation of this test suite.
-	 *
-	 * @return string
-	 *	The string representation of this test suite.
-	 */
 	public function toString() : string
 	{
 		return $this->toStringEx($this, 0);

@@ -27,49 +27,19 @@
 
 use \Lightbit\AssetManagement\AssetProvider;
 
-/**
- * Lightbit.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class Lightbit
 {
-	/**
-	 * The instance.
-	 *
-	 * @var Lightbit
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the instance.
-	 *
-	 * @return Lightbit
-	 *	The instance.
-	 */
 	public static function getInstance() : Lightbit
 	{
 		return (self::$instance ?? (self::$instance = new Lightbit()));
 	}
 
-	/**
-	 * The inclusion.
-	 *
-	 * @var Closure
-	 */
 	private $inclusion;
 
-	/**
-	 * The library lookup path list.
-	 *
-	 * @var array
-	 */
 	private $libraryLookupPathList;
 
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 		$this->libraryLookupPathList = [];
@@ -95,23 +65,11 @@ final class Lightbit
 		);
 	}
 
-	/**
-	 * Sets an additional library lookup path.
-	 *
-	 * @param string $path
-	 *	The library lookup path.
-	 */
 	public function addLibraryLookupPath(string $path) : void
 	{
 		$this->libraryLookupPathList[] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
 	}
 
-	/**
-	 * Sets an additional library lookup path list.
-	 *
-	 * @param string[] $pathList
-	 *	The library lookup path list.
-	 */
 	public function addLibraryLookupPathList(array $pathList) : void
 	{
 		foreach ($pathList as $i => $path)
@@ -120,12 +78,6 @@ final class Lightbit
 		}
 	}
 
-	/**
-	 * Sets an additional module path.
-	 *
-	 * @param string $path
-	 *	The module path.
-	 */
 	public function addModulePath(string $path) : void
 	{
 		$this->addLibraryLookupPath($path . '/libraries');
@@ -140,23 +92,14 @@ final class Lightbit
 		]);
 	}
 
-	public function addModulePaths(array $paths) : void
+	public function addModulePathList(array $pathList) : void
 	{
-		foreach ($paths as $i => $path)
+		foreach ($pathList as $i => $path)
 		{
 			$this->addModulePath($path);
 		}
 	}
 
-	/**
-	 * Gets a class path.
-	 *
-	 * @param string $className
-	 *	The class name.
-	 *
-	 * @return string
-	 *	The class path.
-	 */
 	public function getClassPath(string $className) : ?string
 	{
 		$filePathSuffix = (strtr(('\\' . $className), [ '\\' => DIRECTORY_SEPARATOR ]) . '.php');
@@ -174,46 +117,11 @@ final class Lightbit
 		return null;
 	}
 
-	/**
-	 * Include.
-	 *
-	 * It includes a script file, safely, without exposing the callers
-	 * protected members while giving an option of declaring an explicit
-	 * set of variables.
-	 *
-	 * @param string $filePath
-	 *	The inclusion file path.
-	 *
-	 * @param array $variables
-	 *	The inclusion variables.
-	 *
-	 * @return mixed
-	 *	The inclusion result.
-	 */
 	public function include(string $filePath, array $variables = null) // : mixed
 	{
 		return ($this->inclusion->bindTo(null, 'static'))($filePath, $variables);
 	}
 
-	/**
-	 * Include.
-	 *
-	 * It includes a script file, safely, without exposing the callers
-	 * protected members while giving an option of declaring an explicit
-	 * public scope object and a set of variables.
-	 *
-	 * @param object $scope
-	 *	The inclusion public scope object.
-	 *
-	 * @param string $filePath
-	 *	The inclusion file path.
-	 *
-	 * @param array $variables
-	 *	The inclusion variables.
-	 *
-	 * @return mixed
-	 *	The inclusion result.
-	 */
 	public function includeAs(object $scope, string $filePath, array $variables = null) // : mixed
 	{
 		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variables);

@@ -33,57 +33,25 @@ use \Lightbit\Http\IHttpContext;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 
-/**
- * HttpServerContext.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class HttpServerContext implements IHttpContext
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var HttpServerContext
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpServerContext
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpServerContext
 	{
 		return (self::$instance ?? (self::$instance = new HttpServerContext()));
 	}
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 
 	}
 
-	/**
-	 * Gets the request.
-	 *
-	 * @return IHttpRequest
-	 *	The request.
-	 */
 	public final function getRequest() : IHttpRequest
 	{
 		return HttpServerRequest::getInstance();
 	}
 
-	/**
-	 * Gets the response.
-	 *
-	 * @return IHttpResponse
-	 *	The response.
-	 */
 	public final function getResponse() : IHttpResponse
 	{
 		return HttpServerResponse::getInstance();

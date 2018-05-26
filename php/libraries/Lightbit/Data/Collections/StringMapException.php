@@ -30,26 +30,8 @@ namespace Lightbit\Data\Collections;
 use \Lightbit\Data\Collections\IStringMap;
 use \Lightbit\Exception;
 
-/**
- * StringMapException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class StringMapException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IStringMap $map
-	 *	The exception string map.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $throwable
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IStringMap $map, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

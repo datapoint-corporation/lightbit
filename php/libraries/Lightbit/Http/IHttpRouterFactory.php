@@ -29,12 +29,6 @@ namespace Lightbit\Http;
 
 use \Lightbit\Http\IHttpRouter;
 
-/**
- * IHttpRouterFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IHttpRouterFactory
 {
 	/**

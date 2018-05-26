@@ -30,26 +30,7 @@ namespace Lightbit\Data\Parsing;
 use \Lightbit\Data\Parsing\IParser;
 use \Lightbit\Data\Parsing\ParserFactoryException;
 
-/**
- * IParserFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IParserFactory
 {
-	/**
-	 * Creates a parser.
-	 *
-	 * @throws ParserFactoryException
-	 *	Thrown if a parser does not exist for the given type and fails to be
-	 *	dynamically created, if even possible.
-	 *
-	 * @param string $type
-	 *	The parser type.
-	 *
-	 * @return IParser
-	 *	The parser.
-	 */
 	public function createParser(string $type) : IParser;
 }

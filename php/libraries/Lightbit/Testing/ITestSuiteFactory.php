@@ -29,22 +29,7 @@ namespace Lightbit\Testing;
 
 use \Lightbit\Testing\ITestSuite;
 
-/**
- * ITestSuiteFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface ITestSuiteFactory
 {
-	/**
-	 * Creates a test suite.
-	 *
-	 * @param string $suite
-	 *	The test suite script asset identifier.
-	 *
-	 * @return ITestSuite
-	 *	The test suite.
-	 */
 	public function createSuite(string $suite) : ITestSuite;
 }

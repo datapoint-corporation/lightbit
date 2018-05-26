@@ -30,26 +30,8 @@ namespace Lightbit\Data\Parsing;
 use \Lightbit\Data\Parsing\IParserFactory;
 use \Lightbit\Exception;
 
-/**
- * ParserFactoryException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class ParserFactoryException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IParserFactory $parserFactory
-	 *	The exception parser factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $throwable
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IParserFactory $parserFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

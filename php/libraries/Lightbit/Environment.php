@@ -29,109 +29,55 @@ namespace Lightbit;
 
 use \Lightbit\Data\Collections\StringMap;
 
-/**
- * Environment.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class Environment
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var Environment
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return Environment
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : Environment
 	{
 		return (self::$instance ?? (self::$instance = new Environment()));
 	}
 
-	/**
-	 * The name.
-	 *
-	 * @var string
-	 */
 	private $name;
 
-	/**
-	 * The linux flag.
-	 *
-	 * @var bool
-	 */
 	private $linux;
 
-	/**
-	 * The production flag.
-	 *
-	 * @var bool
-	 */
 	private $production;
 
-	/**
-	 * The windows flag.
-	 *
-	 * @var bool
-	 */
+	private $web;
+
 	private $windows;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 		$this->variables = new StringMap(getenv());
 	}
 
-	/**
-	 * Gets the name.
-	 *
-	 * @return string
-	 *	The name.
-	 */
+	public final function isCli() : bool
+	{
+		return !$this->isWeb();
+	}
+
 	public final function getName() : string
 	{
 		return ($this->name ?? ($this->name = strtolower($this->variables->getString('LB_ENVIRONMENT', true) ?? LB_ENVIRONMENT)));
 	}
 
-	/**
-	 * Checks if the environment is being run by a Linux family
-	 * operating system.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
 	public final function isLinux() : bool
 	{
 		return ($this->linux ?? ($this->linux = (PHP_OS_FAMILY === 'Linux')));
 	}
 
-	/**
-	 * Checks if it's a production environment.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
 	public final function isProduction() : bool
 	{
 		return ($this->production ??  ($this->production = ($this->getName() === 'production')));
 	}
 
-	/**
-	 * Checks if the environment is being run by a Windows family
-	 * operating system.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
+	public final function isWeb() : bool
+	{
+		return ($this->web ?? ($this->web = (isset($_SERVER['HTTP_HOST']))));
+	}
+
 	public final function isWindows() : bool
 	{
 		return ($this->windows ?? ($this->windows = (PHP_OS_FAMILY === 'Windows')));

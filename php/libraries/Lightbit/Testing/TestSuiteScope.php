@@ -36,75 +36,25 @@ use \Lightbit\Testing\TestCases\EqualityTestCase;
 use \Lightbit\Testing\TestCases\StrictEqualityTestCase;
 use \Lightbit\Testing\TestCases\ThrowTestCase;
 
-/**
- * TestSuiteScope.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class TestSuiteScope
 {
-	/**
-	 * The suite.
-	 *
-	 * @var ITestSuite
-	 */
 	private $suite;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param ITestSuite $suite
-	 *	The test suite.
-	 */
 	public function __construct(ITestSuite $suite)
 	{
 		$this->suite = $suite;
 	}
 
-	/**
-	 * Creates an equality test case.
-	 *
-	 * @param mixed $constraint
-	 *	The test case constraint.
-	 *
-	 * @param string $description
-	 *	The test case description.
-	 *
-	 * @param Closure $closure
-	 *	The test case closure.
-	 */
 	public function equals($constraint, string $description, Closure $closure) : void
 	{
 		$this->suite->addCase(new EqualityTestCase($description, $constraint, $closure));
 	}
 
-	/**
-	 * Creates an exact equality test case.
-	 *
-	 * @param mixed $constraint
-	 *	The test case constraint.
-	 *
-	 * @param string $description
-	 *	The test case description.
-	 *
-	 * @param Closure $closure
-	 *	The test case closure.
-	 */
 	public function exactly($constraint, string $description, Closure $closure) : void
 	{
 		$this->suite->addCase(new StrictEqualityTestCase($description, $closure, $constraint));
 	}
 
-	/**
-	 * Import.
-	 *
-	 * It imports the test cases defined by an alternative test suite into
-	 * this test suite, for validation.
-	 *
-	 * @param string $testSuites
-	 *	The test suite script asset identifiers.
-	 */
 	public function import(string ...$testSuites) : void
 	{
 		$provider = TestSuiteProvider::getInstance();
@@ -115,22 +65,11 @@ class TestSuiteScope
 		}
 	}
 
-	/**
-	 * Creates a throwable test case.
-	 *
-	 * @param string $className
-	 */
 	public function throws(string $className, string $description, Closure $closure) : void
 	{
 		$this->suite->addCase(new ThrowTestCase($description, $closure, $className));
 	}
 
-	/**
-	 * Sets the title.
-	 *
-	 * @param string $title
-	 *	The title.
-	 */
 	public function setTitle(string $title) : void
 	{
 		$this->suite->setTitle($title);

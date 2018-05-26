@@ -28,70 +28,31 @@
 namespace Lightbit\Http;
 
 use \Lightbit;
+use \Throwable;
 use \Lightbit\Application;
+use \Lightbit\Environment;
+use \Lightbit\RuntimeException;
 use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Html\HtmlViewProvider;
 use \Lightbit\Http\HttpServer;
+use \Lightbit\Http\HttpServerResponse;
 
-/**
- * HttpApplication.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class HttpApplication
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var HttpApplication
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpApplication
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpApplication
 	{
 		return (self::$instance ?? (self::$instance = new HttpApplication()));
 	}
 
-	/**
-	 * The document root path.
-	 *
-	 * @var string
-	 */
 	private $documentRootPath;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param IEnvironment $environment
-	 *	The application environment.
-	 *
-	 * @param IHttpServer $server
-	 *	The application server.
-	 */
 	private function __construct()
 	{
-		ConfigurationProvider::getInstance()->getConfiguration(
-			'lightbit.http.application'
-		)
 
-		->accept($this, [
-			'debug' => 'setDebug',
-			'document_root_path' => 'setDocumentRootPath'
-		]);
 	}
 
-	/**
-	 * Gets the document root path.
-	 *
-	 * @return string
-	 *	The document root path.
-	 */
 	public final function getDocumentRootPath() : string
 	{
 		return ($this->documentRootPath ?? (
@@ -99,68 +60,75 @@ class HttpApplication
 		));
 	}
 
-	/**
-	 * Gets the environment.
-	 *
-	 * @return Environment
-	 *	The environment.
-	 */
 	public final function getEnvironment() : Environment
 	{
 		return Environment::getInstance();
 	}
 
-	/**
-	 * Gets the path.
-	 *
-	 * @return string
-	 *	The path.
-	 */
 	public final function getPath() : string
 	{
 		return LB_PATH_APPLICATION;
 	}
 
-	/**
-	 * Gets the server.
-	 *
-	 * @return HttpServer
-	 *	The server.
-	 */
 	public final function getServer() : HttpServer
 	{
 		return HttpServer::getInstance();
 	}
 
-	/**
-	 * Checks the debug flag.
-	 *
-	 * @return bool
-	 *	The result.
-	 */
 	public final function isDebug() : bool
 	{
 		return ($this->debug ?? ($this->debug = !Environment::getInstance()->isProduction()));
 	}
-	/**
-	 * Sets the debug flag.
-	 *
-	 * @param bool $debug
-	 *	The debug flag.
-	 */
+
 	public final function setDebug(bool $debug) : void
 	{
 		$this->debug = $debug;
 	}
 
-	/**
-	 * Sets the document root path.
-	 *
-	 * @param string $documentRootPath
-	 *	The document root path.
-	 */
 	public final function setDocumentRootPath(string $documentRootPath) : void
 	{
 		$this->documentRootPath = rtrim($documentRootPath, '/');
+	}
+
+	private function throwable(Throwable $throwable) : void
+	{
+		$statusCode = 500;
+
+		$statusDocument = HtmlViewProvider::getInstance()->getViewByPreference(
+			('views://error-documents/' . $statusCode),
+			('views://error-documents/default')
+		);
+
+		$response = HttpServerResponse::getInstance();
+		$response->reset();
+		$response->render($statusDocument, [
+			'application' => $this,
+			'statusCode' => 500,
+			'statusMessage' => HttpStatusCodeMessageStaticProvider::getMessage(500),
+			'throwable' => $throwable
+		]);
+	}
+
+	public final function run() : int
+	{
+		try
+		{
+			// Accept the application configuration from all registered
+			// lightbit modules.
+			ConfigurationProvider::getInstance()->getConfiguration(
+				'lightbit.http.application'
+			)
+
+			->accept($this, [
+				'debug' => 'setDebug'
+			]);
+		}
+		catch (Throwable $e)
+		{
+			$this->throwable($e);
+			return 1;
+		}
+
+		return 0;
 	}
 }

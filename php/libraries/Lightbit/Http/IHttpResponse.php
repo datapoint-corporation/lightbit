@@ -29,12 +29,6 @@ namespace Lightbit\Http;
 
 use \Lightbit\Http\IHttpMessage;
 
-/**
- * IHttpResponse.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IHttpResponse extends IHttpMessage
 {
 

@@ -30,74 +30,28 @@ namespace Lightbit\Http;
 use \Lightbit\Http\HttpServerRequestQueryString;
 use \Lightbit\Http\IHttpRequest;
 
-/**
- * HttpServerRequest.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class HttpServerRequest implements IHttpRequest
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var HttpServerRequest
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpServerRequest
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpServerRequest
 	{
 		return (self::$instance ?? (self::$instance = new HttpServerRequest()));
 	}
 
-	/**
-	 * The headers.
-	 *
-	 * @var string
-	 */
 	private $headers;
 
-	/**
-	 * The host.
-	 *
-	 * @var string
-	 */
 	private $host;
 
-	/**
-	 * The method.
-	 *
-	 * @var string
-	 */
 	private $method;
 
-	/**
-	 * The query string.
-	 *
-	 * @var IHttpQueryString
-	 */
 	private $queryString;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 
 	}
 
-	/**
-	 * Gets the method.
-	 *
-	 * @return string
-	 *	The method.
-	 */
 	public final function getMethod() : string
 	{
 		if (!isset($this->method))
@@ -115,12 +69,6 @@ final class HttpServerRequest implements IHttpRequest
 		return $this->method;
 	}
 
-	/**
-	 * Gets the query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The query string.
-	 */
 	public final function getQueryString() : IHttpQueryString
 	{
 		return HttpServerRequestQueryString::getInstance();

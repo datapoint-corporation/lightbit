@@ -38,6 +38,13 @@ use \Lightbit\AssetManagement\IAsset;
 class Asset implements IAsset
 {
 	/**
+	 * The identifier.
+	 *
+	 * @var string
+	 */
+	private $id;
+
+	/**
 	 * The path.
 	 *
 	 * @var string
@@ -45,14 +52,29 @@ class Asset implements IAsset
 	private $path;
 
 	/**
+	 * The type.
+	 *
+	 * @var string
+	 */
+	private $type;
+
+	/**
 	 * Constructor.
 	 *
+	 * @param string $type
+	 *	The asset type.
+	 *
+	 * @param string $id
+	 *	The asset identifier.
+	 *
 	 * @param string $path
-	 *	The path.
+	 *	The asset path.
 	 */
-	public function __construct(string $path)
+	public function __construct(string $type, string $id, string $path)
 	{
+		$this->id = $id;
 		$this->path = $path;
+		$this->type = $type;
 	}
 
 	/**
@@ -64,5 +86,27 @@ class Asset implements IAsset
 	public final function getPath() : string
 	{
 		return $this->path;
+	}
+
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public final function getID() : string
+	{
+		return $this->id;
+	}
+
+	/**
+	 * Gets the type.
+	 *
+	 * @return string
+	 *	The type.
+	 */
+	public final function getType() : string
+	{
+		return $this->type;
 	}
 }

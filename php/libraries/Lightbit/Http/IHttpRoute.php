@@ -27,12 +27,6 @@
 
 namespace Lightbit\Http;
 
-/**
- * IHttpRoute.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IHttpRoute
 {
 	/**

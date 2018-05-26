@@ -27,39 +27,70 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Base\IView;
+use \Lightbit\Html\IHtmlView;
 use \Lightbit\Http\IHttpRequest;
 
-/**
- * HttpServerResponse.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class HttpServerResponse implements IHttpResponse
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var HttpServerResponse
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpServerResponse
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpServerResponse
 	{
 		return (self::$instance ?? (self::$instance = new HttpServerResponse()));
 	}
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 
+	}
+
+	public final function reset() : void
+	{
+		for ($i = ob_get_level(); $i > 1; --$i)
+		{
+			ob_end_clean();
+		}
+
+		ob_clean();
+		header_remove();
+	}
+
+	public final function render(IView $view, array $variables = null) : void
+	{
+		$content = $view->render($variables);
+
+		if ($view instanceof IHtmlView)
+		{
+			$this->setHeaderMap([
+				'Content-Length' => strlen($content),
+				'Content-Type' => 'text/html; charset=utf-8'
+			]);
+		}
+
+		echo $content;
+	}
+
+	public final function setContentLength(int $contentLength) : void
+	{
+		$this->setHeader('Content-Length', $contentLength);
+	}
+
+	public final function setContentType(string $contentType) : void
+	{
+		$this->setHeader('Content-Type', $contentType);
+	}
+
+	public final function setHeader(string $name, string $content) : void
+	{
+		header(strtr(trim($name), [ ':' => '' ]) . ': ' . trim($content), true);
+	}
+
+	public final function setHeaderMap(array $headerMap) : void
+	{
+		foreach ($headerMap as $name => $content)
+		{
+			$this->setHeader($name, $content);
+		}
 	}
 }

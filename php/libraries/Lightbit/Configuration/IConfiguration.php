@@ -29,79 +29,15 @@ namespace Lightbit\Configuration;
 
 use \Lightbit\Data\Collections\IStringMap;
 
-/**
- * IConfiguration.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IConfiguration extends IStringMap
 {
-	/**
-	 * Accepts a configuration by invoking the setter methods for the
-	 * available properties, according to a given configuration map.
-	 *
-	 * @param object $subject
-	 *	The configuration subject.
-	 *
-	 * @param array $configuration
-	 *	The configuration map.
-	 */
 	public function accept(object $subject, array $configuration) : void;
 
-	/**
-	 * Gets a boolean.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return bool
-	 *	The value.
-	 */
 	public function getBool(string $key, bool $optional = false) : ?bool;
 
-	/**
-	 * Gets a float.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return float
-	 *	The value.
-	 */
 	public function getFloat(string $key, bool $optional = false) : ?float;
 
-	/**
-	 * Gets an integer.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return int
-	 *	The value.
-	 */
 	public function getInt(string $key, bool $optional = false) : ?int;
 
-	/**
-	 * Gets a string.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return string
-	 *	The value.
-	 */
 	public function getString(string $key, bool $optional = false) : ?string;
 }

@@ -29,12 +29,6 @@ namespace Lightbit\Http;
 
 use \Lightbit\Data\Collections\IStringMap;
 
-/**
- * IHttpQueryString.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IHttpQueryString extends IStringMap
 {
 

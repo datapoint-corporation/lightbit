@@ -41,18 +41,17 @@ interface IAssetFactory
 	/**
 	 * Creates an asset.
 	 *
-	 * @throws AssetFactoryException
-	 *	Thrown if the asset fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
 	 * @param string $type
 	 *	The asset type.
 	 *
-	 * @param string $filePath
-	 *	The asset file path.
+	 * @param string $id
+	 *	The asset identifier.
+	 *
+	 * @param string $path
+	 *	The asset path.
 	 *
 	 * @return IAsset
 	 *	The asset.
 	 */
-	public function createAsset(string $type, string $filePath) : IAsset;
+	public function createAsset(string $type, string $id, string $filePath) : IAsset;
 }

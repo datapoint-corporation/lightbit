@@ -29,12 +29,6 @@ namespace Lightbit\Reflection;
 
 use \Lightbit\Reflection\IType;
 
-/**
- * UnknownType.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class UnknownType implements IType
 {
 	/**

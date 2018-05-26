@@ -31,26 +31,8 @@ use \Lightbit\Data\Parsing\IParser;
 use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Exception;
 
-/**
- * ParseException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class ParserCompositionException extends ParserException
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IParser $parser
-	 *	The exception parser.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $throwable
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IParser $parser, string $message, Throwable $previous = null)
 	{
 		parent::__construct($parser, $message, $previous);

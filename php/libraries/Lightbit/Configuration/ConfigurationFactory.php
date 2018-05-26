@@ -34,32 +34,13 @@ use \Lightbit\Configuration\Configuration;
 use \Lightbit\Configuration\ConfigurationFactoryException;
 use \Lightbit\Configuration\IConfigurationFactory;
 
-/**
- * ConfigurationFactoryException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class ConfigurationFactory implements IConfigurationFactory
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Creates a configuration.
-	 *
-	 * @throws ConfigurationFactoryException
-	 *	Thrown if the configuration fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
-	 * @param string $configuration
-	 *	The configuration identifier.
-	 */
 	public final function createConfiguration(string $configuration) : IConfiguration
 	{
 		$properties = [];

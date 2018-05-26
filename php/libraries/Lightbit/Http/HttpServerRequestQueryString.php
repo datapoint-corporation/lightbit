@@ -31,73 +31,22 @@ use \Lightbit\Data\Parsing\ParserProvider;
 use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Http\IHttpQueryString;
 
-/**
- * HttpServerRequestQueryString.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class HttpServerRequestQueryString implements IHttpQueryString
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var HttpServerRequestQueryString
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HttpServerRequestQueryString
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : HttpServerRequestQueryString
 	{
 		return (self::$instance ?? (self::$instance = new HttpServerRequestQueryString($_GET ?? null)));
 	}
 
-	/**
-	 * The parameters.
-	 *
-	 * @var array
-	 */
 	private $parameters;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param array $parameters
-	 *	The query string parameters.
-	 */
 	public function __construct(array $parameters = null)
 	{
 		$this->parameters = ($parameters ?? []);
 	}
 
-	/**
-	 * Gets a parameter.
-	 *
-	 * @throws HttpQueryStringParameterNotSetException
-	 *	Thrown when the parameter fails to be retrieved because it is
-	 *	not set in this query string.
-	 *
-	 * @throws HttpQueryStringParameterParseException
-	 *	Thrown when the parameter fails to be retrieved because it failed
-	 *	parsing according to the applicable type.
-	 *
-	 * @param string $type
-	 *	The parameter type.
-	 *
-	 * @param string $parameter
-	 *	The parameter name.
-	 *
-	 * @param bool $optional
-	 *	The parameter optional flag.
-	 *
-	 * @return mixed
-	 *	The parameter value.
-	 */
 	public final function get(string $type, string $parameter, bool $optional = false)
 	{
 		try
@@ -120,112 +69,26 @@ class HttpServerRequestQueryString implements IHttpQueryString
 		throw new HttpQueryStringParameterNotSetException($this, sprintf('Can not get query string parameter, not set: "%s"', $parameter));
 	}
 
-	/**
-	 * Gets a boolean parameter.
-	 *
-	 * @throws HttpQueryStringParameterNotSetException
-	 *	Thrown when the parameter fails to be retrieved because it is
-	 *	not set in this query string.
-	 *
-	 * @throws HttpQueryStringParameterParseException
-	 *	Thrown when the parameter fails to be retrieved because it failed
-	 *	parsing according to the applicable type.
-	 *
-	 * @param string $parameter
-	 *	The parameter name.
-	 *
-	 * @param bool $optional
-	 *	The parameter optional flag.
-	 *
-	 * @return bool
-	 *	The parameter value.
-	 */
 	public final function getBool(string $parameter, bool $optional = false) : ?bool
 	{
 		return $this->get('bool', $parameter, $optional);
 	}
 
-	/**
-	 * Gets a float parameter.
-	 *
-	 * @throws HttpQueryStringParameterNotSetException
-	 *	Thrown when the parameter fails to be retrieved because it is
-	 *	not set in this query string.
-	 *
-	 * @throws HttpQueryStringParameterParseException
-	 *	Thrown when the parameter fails to be retrieved because it failed
-	 *	parsing according to the applicable type.
-	 *
-	 * @param string $parameter
-	 *	The parameter name.
-	 *
-	 * @param bool $optional
-	 *	The parameter optional flag.
-	 *
-	 * @return float
-	 *	The parameter value.
-	 */
 	public final function getFloat(string $parameter, bool $optional = false) : ?float
 	{
 		return $this->get('float', $parameter, $optional);
 	}
 
-	/**
-	 * Gets an integer parameter.
-	 *
-	 * @throws HttpQueryStringParameterNotSetException
-	 *	Thrown when the parameter fails to be retrieved because it is
-	 *	not set in this query string.
-	 *
-	 * @throws HttpQueryStringParameterParseException
-	 *	Thrown when the parameter fails to be retrieved because it failed
-	 *	parsing according to the applicable type.
-	 *
-	 * @param string $parameter
-	 *	The parameter name.
-	 *
-	 * @param bool $optional
-	 *	The parameter optional flag.
-	 *
-	 * @return int
-	 *	The parameter value.
-	 */
 	public final function getInt(string $parameter, bool $optional = false) : ?int
 	{
 		return $this->get('int', $parameter, $optional);
 	}
 
-	/**
-	 * Gets a string parameter.
-	 *
-	 * @throws HttpQueryStringParameterNotSetException
-	 *	Thrown when the parameter fails to be retrieved because it is
-	 *	not set in this query string.
-	 *
-	 * @throws HttpQueryStringParameterParseException
-	 *	Thrown when the parameter fails to be retrieved because it failed
-	 *	parsing according to the applicable type.
-	 *
-	 * @param string $parameter
-	 *	The parameter name.
-	 *
-	 * @param bool $optional
-	 *	The parameter optional flag.
-	 *
-	 * @return string
-	 *	The parameter value.
-	 */
 	public final function getString(string $parameter, bool $optional = false) : ?string
 	{
 		return $this->get('string', $parameter, $optional);
 	}
 
-	/**
-	 * Gets an array representation of this query string.
-	 *
-	 * @return array
-	 *	The array representation of this query string.
-	 */
 	public final function toArray() : array
 	{
 		return $this->parameters;

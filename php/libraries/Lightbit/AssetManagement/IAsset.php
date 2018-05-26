@@ -42,4 +42,20 @@ interface IAsset
 	 *	The path.
 	 */
 	public function getPath() : string;
+
+	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public function getID() : string;
+
+	/**
+	 * Gets the type.
+	 *
+	 * @return string
+	 *	The type.
+	 */
+	public function getType() : string;
 }

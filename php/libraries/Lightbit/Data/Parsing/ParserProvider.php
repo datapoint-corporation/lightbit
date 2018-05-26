@@ -29,74 +29,29 @@ namespace Lightbit\Data\Parsing;
 
 use \Lightbit\Data\Parsing\IParser;
 
-/**
- * ParserProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class ParserProvider
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var ParserProvider
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return ParserProvider
-	 *	The singleton instance.
-	 */
 	public static final function getInstance() : ParserProvider
 	{
 		return (self::$instance ?? (self::$instance = new ParserProvider()));
 	}
 
-	/**
-	 * The parser factory.
-	 *
-	 * @var IParserFactory
-	 */
 	private $parserFactory;
 
-	/**
-	 * The parsers.
-	 *
-	 * @var array
-	 */
 	private $parsers;
 
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 		$this->parsers = [];
 	}
 
-	/**
-	 * Gets a parser.
-	 *
-	 * @param string $type
-	 *	The parser type.
-	 *
-	 * @return IParser
-	 *	The parser.
-	 */
 	public final function getParser(string $type) : IParser
 	{
 		return ($this->parsers[$type] ?? ($this->parsers[$type] = $this->getParserFactory()->createParser($type)));
 	}
 
-	/**
-	 * Gets the parser factory.
-	 *
-	 * @return IParserFactory
-	 *	The parser factory.
-	 */
 	public final function getParserFactory() : IParserFactory
 	{
 		return ($this->parserFactory ?? ($this->parserFactory = new ParserFactory()));

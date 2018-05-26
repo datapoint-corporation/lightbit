@@ -31,72 +31,29 @@ use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\ITestSuiteFactory;
 use \Lightbit\Testing\TestSuiteFactory;
 
-/**
- * TestSuiteProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class TestSuiteProvider
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var TestSuiteProvider
-	 */
 	private static $instance;
 
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return TestSuiteProvider
-	 *	The singleton instance.
-	 */
 	public static function getInstance() : TestSuiteProvider
 	{
 		return (self::$instance ?? (self::$instance = new TestSuiteProvider()));
 	}
 
-	/**
-	 * The suite factory.
-	 *
-	 * @var ITestSuiteFactory
-	 */
 	private $suiteFactory;
 
-	/**
-	 * The suites.
-	 */
 	private $suites;
 
-	/**
-	 * Constructor.
-	 */
 	private function __construct()
 	{
 		$this->suites = [];
 	}
 
-	/**
-	 * Gets a suite.
-	 *
-	 * @param string $suite
-	 *	The suite asset identifier.
-	 *
-	 * @return ITestSuite
-	 *	The test suite.
-	 */
 	public final function getSuite(string $suite) : ITestSuite
 	{
 		return ($this->suites[$suite] ?? ($this->suites[$suite] = $this->getSuiteFactory()->createSuite($suite)));
 	}
 
-	/**
-	 * Gets the suite factory.
-	 *
-	 * @return ITestSuiteFactory
-	 *	The test suite factory.
-	 */
 	public final function getSuiteFactory() : ITestSuiteFactory
 	{
 		return ($this->suiteFactory ?? ($this->suiteFactory = new TestSuiteFactory()));

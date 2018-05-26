@@ -28,7 +28,6 @@
 namespace Lightbit\AssetManagement;
 
 use \Lightbit\AssetManagement\Asset;
-use \Lightbit\AssetManagement\AssetFactoryException;
 use \Lightbit\AssetManagement\IAsset;
 use \Lightbit\AssetManagement\IAssetFactory;
 use \Lightbit\AssetManagement\Php\PhpAsset;
@@ -52,27 +51,26 @@ class AssetFactory implements IAssetFactory
 	/**
 	 * Creates an asset.
 	 *
-	 * @throws AssetFactoryException
-	 *	Thrown if the asset fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
 	 * @param string $type
 	 *	The asset type.
 	 *
-	 * @param string $filePath
-	 *	The asset file path.
+	 * @param string $id
+	 *	The asset identifier.
+	 *
+	 * @param string $path
+	 *	The asset path.
 	 *
 	 * @return IAsset
 	 *	The asset.
 	 */
-	public function createAsset(string $type, string $filePath) : IAsset
+	public function createAsset(string $type, string $id, string $filePath) : IAsset
 	{
 		switch ($type)
 		{
 			case 'php':
-				return new PhpAsset($filePath);
+				return new PhpAsset($type, $id, $filePath);
 		}
 
-		return new Asset($filePath);
+		return new Asset($type, $id, $filePath);
 	}
 }

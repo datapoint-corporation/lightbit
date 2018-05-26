@@ -31,12 +31,6 @@ use \ReflectionClass;
 
 use \Lightbit\Reflection\IType;
 
-/**
- * ClassType.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class ClassType implements IType
 {
 	/**

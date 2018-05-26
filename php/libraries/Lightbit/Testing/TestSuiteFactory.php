@@ -32,31 +32,13 @@ use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\ITestSuiteFactory;
 use \Lightbit\Testing\TestSuite;
 
-/**
- * TestSuiteProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class TestSuiteFactory implements ITestSuiteFactory
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Creates a test suite.
-	 *
-	 * @param string $suite
-	 *	The test suite script asset identifier.
-	 *
-	 * @return ITestSuite
-	 *	The test suite.
-	 */
 	public function createSuite(string $suite) : ITestSuite
 	{
 		return new TestSuite(

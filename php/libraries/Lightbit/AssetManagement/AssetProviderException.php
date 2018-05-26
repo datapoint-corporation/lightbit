@@ -30,26 +30,8 @@ namespace Lightbit\AssetManagement;
 use \Lightbit\Exception;
 use \Lightbit\AssetManagement\AssetProvider;
 
-/**
- * AssetProviderException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class AssetProviderException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param AssetProvider $provider
-	 *	The exception asset provider.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(AssetProvider $provider, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

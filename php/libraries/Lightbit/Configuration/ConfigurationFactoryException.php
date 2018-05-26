@@ -29,26 +29,8 @@ namespace Lightbit\Configuration;
 
 use \Lightbit\Exception;
 
-/**
- * ConfigurationFactoryException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class ConfigurationFactoryException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IConfigurationFactory $configurationFactory
-	 *	The exception configuration factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IConfigurationFactory $configurationFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

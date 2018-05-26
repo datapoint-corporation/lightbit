@@ -38,15 +38,9 @@ use \Lightbit\AssetManagement\Asset;
  */
 class PhpAsset extends Asset
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param string $path
-	 *	The path.
-	 */
-	public function __construct(string $path)
+	public function __construct(string $type, string $id, string $path)
 	{
-		parent::__construct($path);
+		parent::__construct($type, $id, $path);
 	}
 
 	/**

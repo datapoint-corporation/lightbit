@@ -33,35 +33,13 @@ use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Data\Parsing\ParserProvider;
 use \Lightbit\Reflection\Type;
 
-/**
- * StringParser.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class StringParser implements IParser
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Composes a subject.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The composition result.
-	 */
 	public final function compose($subject) : string
 	{
 		if (!is_string($subject))
@@ -76,23 +54,6 @@ class StringParser implements IParser
 		return $subject;
 	}
 
-	/**
-	 * Parses a subject.
-	 *
-	 * @throws ParserException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return string
-	 *	The parsing result, on success.
-	 */
 	public final function parse(string $subject) : string
 	{
 		return $subject;

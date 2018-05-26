@@ -39,51 +39,15 @@ use \Lightbit\Data\Parsing\ParserProvider;
  */
 class StringMap implements IStringMap
 {
-	/**
-	 * The parser provider.
-	 *
-	 * @var IParserProvider
-	 */
 	private $parserProvider;
 
-	/**
-	 * The values.
-	 *
-	 * @var array
-	 */
 	private $values;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param array $values
-	 *	The string map values.
-	 */
 	public function __construct(array $values = null)
 	{
 		$this->values = $values ?? [];
 	}
 
-	/**
-	 * Gets a boolean.
-	 *
-	 * @throws StringMapKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws StringMapKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return bool
-	 *	The value.
-	 */
 	public final function getBool(string $key, bool $optional = false) : ?bool
 	{
 		if (isset($this->values[$key]))
@@ -114,26 +78,6 @@ class StringMap implements IStringMap
 		throw new StringMapKeyNotSetException($this, sprintf('Can not get string map key value, it is not set: "%s"', $key));
 	}
 
-	/**
-	 * Gets a float.
-	 *
-	 * @throws StringMapKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws StringMapKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return float
-	 *	The value.
-	 */
 	public final function getFloat(string $key, bool $optional = false) : ?float
 	{
 		if (isset($this->values[$key]))
@@ -164,26 +108,6 @@ class StringMap implements IStringMap
 		throw new StringMapKeyNotSetException($this, sprintf('Can not get string map key value, it is not set: "%s"', $key));
 	}
 
-	/**
-	 * Gets an integer.
-	 *
-	 * @throws StringMapKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws StringMapKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return int
-	 *	The value.
-	 */
 	public final function getInt(string $key, bool $optional = false) : ?int
 	{
 		if (isset($this->values[$key]))
@@ -214,26 +138,6 @@ class StringMap implements IStringMap
 		throw new StringMapKeyNotSetException($this, sprintf('Can not get string map key value, it is not set: "%s"', $key));
 	}
 
-	/**
-	 * Gets a string.
-	 *
-	 * @throws StringMapKeyNotSetException
-	 *	Thrown when a non optional value fails to be retrieved from this map
-	 *	because the given key is not set.
-	 *
-	 * @throws StringMapKeyTypeException
-	 *	Thrown when a value fails to be retrieved from this map because it
-	 *	does not match and can not be converted to the expected type.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param bool $optional
-	 *	The value optional flag.
-	 *
-	 * @return string
-	 *	The value.
-	 */
 	public final function getString(string $key, bool $optional = false) : ?string
 	{
 		if (isset($this->values[$key]))
@@ -254,12 +158,6 @@ class StringMap implements IStringMap
 		throw new StringMapKeyNotSetException($this, sprintf('Can not get string map key value, it is not set: "%s"', $key));
 	}
 
-	/**
-	 * Converts to an associative array.
-	 *
-	 * @return array
-	 *	The associative array.
-	 */
 	public final function toArray() : array
 	{
 		return $this->values;

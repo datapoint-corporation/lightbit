@@ -30,26 +30,8 @@ namespace Lightbit\Http;
 use \Lightbit\Exception;
 use \Lightbit\Http\IHttpRequest;
 
-/**
- * HttpRequestException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class HttpRequestException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IHttpRequest $request
-	 *	The exception request.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IHttpRequest $request, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

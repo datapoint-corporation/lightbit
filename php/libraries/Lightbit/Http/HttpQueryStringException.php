@@ -30,26 +30,8 @@ namespace Lightbit\Http;
 use \Lightbit\Exception;
 use \Lightbit\Http\IHttpQueryString;
 
-/**
- * HttpQueryStringException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class HttpQueryStringException extends Exception
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IHttpQueryString $queryString
-	 *	The exception queryString.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

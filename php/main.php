@@ -25,54 +25,58 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-// Core constants
-// -----------------------------------------------------------------------------
+use \Lightbit\BootstrapException;
+use \Lightbit\ErrorException;
+use \Lightbit\Environment;
+use \Lightbit\Cli\CliApplication;
+use \Lightbit\Http\HttpApplication;
+
 /**
- * The framework path.
+ * The lightbit path.
  *
  * @var string
  */
-const LB_PATH_LIGHTBIT = (__DIR__);
+const LB_PATH_LIGHTBIT = __DIR__;
 
-// Core inclusions
-// -----------------------------------------------------------------------------
 (
 	/**
 	 * Core inclusions.
-	 *
-	 * Requires the files defining the classes required to bootstrap and
-	 * sustain the framework, from a safe context, without exposing
-	 * members of the current inclusion scope.
 	 */
 	function()
 	{
-		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
-		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
-		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
-		require (LB_PATH_LIGHTBIT . '/libraries/Lightbit/AssetManagement/AssetProvider.php');
+		$__require = (function($__FILE__) {
+			require ($__FILE__);
+		})
+
+		->bindTo(null, 'static');
+
+		$__require(LB_PATH_LIGHTBIT . '/functions.php');
+
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/ErrorException.php');
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/AssetManagement/AssetProvider.php');
 	}
 )();
 
-// Core bootstrap
-// -----------------------------------------------------------------------------
+return
 (
 	/**
 	 * Bootstrap.
 	 *
-	 * Checks for the necessary constants, defining them to default, as
-	 * possible; adds the relevant directories to the library paths; registers
-	 * the class autoloaders; registers the error and exception handlers;
+	 * Checks the current environment type, registers and/or verifies the
+	 * applicable constants, sets the error and exception handlers and runs
+	 * the application according to the detected environment type.
+	 *
+	 * @param Lightbit $lightbit
+	 *	The lightbit instance.
+	 *
+	 * @return int
+	 *	The application exit status code.
 	 */
-	function (Lightbit $lightbit)
+	function (Lightbit $lightbit) : int
 	{
-		//
-		// Constants
-		//
-		if (!defined('LB_PATH_APPLICATION'))
-		{
-			throw new BootstrapException(sprintf('Can not bootstrap Lightbit, constant is not defined: "%s"', 'LB_PATH_APPLICATION'));
-		}
-
 		/**
 		 * The environment name.
 		 *
@@ -80,24 +84,32 @@ const LB_PATH_LIGHTBIT = (__DIR__);
 		 */
 		defined('LB_ENVIRONMENT') || define('LB_ENVIRONMENT', 'production');
 
-		//
-		// Modules
-		//
-		$lightbit->addModulePaths([
-			LB_PATH_LIGHTBIT,
-			LB_PATH_APPLICATION
-		]);
+		/**
+		 * The error report filter.
+		 *
+		 * @see http://php.net/manual/en/errorfunc.constants.php
+		 * @var int
+		 */
+		defined('LB_ERROR_REPORT_FILTER') || define('LB_ERROR_REPORT_FILTER', E_ALL);
 
-		//
-		// Class autoloaders
-		//
-		spl_autoload_register
-		(
+		/**
+		 * The application path.
+		 *
+		 * @var string
+		 */
+		defined('LB_PATH_APPLICATION') || define('LB_PATH_APPLICATION', realpath(dirname($_SERVER['SCRIPT_FILENAME'])));
+
+		spl_autoload_register(
+
 			/**
-			 * Lightbit autoloader.
+			 * Class autoloader.
 			 *
-			 * Tries to locate the class file through the framework library
-			 * lookup path and, if found, includes it.
+			 * Gets the class path from lightbit and, if found, includes it
+			 * in attempt to find the class definition.
+			 *
+			 * Please note no check is made against the class before or after
+			 * the file inclusion and, as such, no exception is thrown if
+			 * the class is not defined.
 			 *
 			 * @param string $className
 			 *	The class name.
@@ -111,84 +123,65 @@ const LB_PATH_LIGHTBIT = (__DIR__);
 			}
 		);
 
-		//
-		// Error and exception handlers
-		//
-		set_error_handler
-		(
-			function(int $level, string $message, string $filePath = null, int $line = null)
+		set_error_handler(
+
+			/**
+			 * Error handler.
+			 *
+			 * @param int $level
+			 *	The error level.
+			 *
+			 * @param string $message
+			 *	The error message.
+			 *
+			 * @param string $filePath
+			 *	The error file path.
+			 *
+			 * @param int $lineNumber
+			 *	The error line number.
+			 */
+			function(int $level, string $message, string $filePath = null, int $lineNumber = null) : void
 			{
-				throw new Lightbit\Exception(sprintf('%s at %s (: %d)', $message, $filePath, $line));
-			}
+				if (isset($filePath, $lineNumber))
+				{
+					$message = sprintf("%s in %s(%d)", $message, $filePath, $lineNumber);
+				}
+
+				throw new Lightbit\ErrorException($level, $filePath, $lineNumber, $message);
+			},
+
+			LB_ERROR_REPORT_FILTER
 		);
+
+		// Set the lightbit and the application paths as module paths,
+		// effectively enabling class autoloading for both.
+		$lightbit->addModulePathList([
+			LB_PATH_LIGHTBIT,
+			LB_PATH_APPLICATION
+		]);
+
+		// We need to ensure output buffering is turned on as we don't
+		// want errors and exception stack traces ending on the client
+		// screen and exposing information that might compromise the
+		// application security.
+		if (ob_get_level() < 1)
+		{
+			ob_start() || (exit (1));
+		}
+
+		// Get the environment type, get the singleton instance of the matching
+		// application type and run it.
+		$environment = Environment::getInstance();
+
+		if ($environment->isWeb())
+		{
+			return HttpApplication::getInstance()->run();
+		}
+
+		if ($environment->isCli())
+		{
+			return CliApplication::getInstance()->run();
+		}
 	}
 )
 (Lightbit::getInstance());
-
-// Core functions
-// -----------------------------------------------------------------------------
-function lbcompose($subject) // : mixed
-{
-	static $provider;
-
-	if (!isset($provider))
-	{
-		$provider = Lightbit\Data\Parsing\ParserProvider::getInstance();
-	}
-
-	return $provider->getParser(lbstypeof($subject))->compose($subject);
-}
-
-function lbparse(string $type, string $subject) // : mixed
-{
-	static $provider;
-
-	if (!isset($provider))
-	{
-		$provider = Lightbit\Data\Parsing\ParserProvider::getInstance();
-	}
-
-	return $provider->getParser($type)->parse($subject);
-}
-
-/**
- * Gets a type.
- *
- * @param string $type
- *	The type name.
- *
- * @return Type
- *	The type.
- */
-function lbtype(string $type) : Lightbit\Reflection\Type
-{
-	return new Lightbit\Reflection\Type($type);
-}
-
-/**
- * Gets the type of a variable.
- *
- * @param array $variable
- *	The variable to get the type of.
- *
- * @return Type
- *	The variable type.
- */
-function lbtypeof($variable) : Lightbit\Reflection\Type
-{
-	return Lightbit\Reflection\Type::getInstanceOf($variable);
-}
-
-/**
- * Gets the type of a variable.
- *
- * @param array $variable
- *	The variable to get the type of.
- *
- * @return string
- *	The variable type name.
- */
-function lbstypeof($variable) : string
-{
-	return Lightbit\Reflection\Type::getInstanceOf($variable)->getName();
-}

@@ -31,32 +31,13 @@ use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\IHttpRouterFactory;
 
-/**
- * HttpRouterProvider.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 final class HttpRouterFactory implements IHttpRouterFactory
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Create the router.
-	 *
-	 * @throws HttpRouterFactoryException
-	 *	Thrown if the router fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
-	 *
-	 * @return IHttpRouter
-	 *	The router.
-	 */
 	public function createRouter() : IHttpRouter
 	{
 		return new HttpRouter();

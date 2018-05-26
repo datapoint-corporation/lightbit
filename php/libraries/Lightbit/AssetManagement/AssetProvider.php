@@ -27,6 +27,12 @@
 
 namespace Lightbit\AssetManagement;
 
+use \Throwable;
+
+use \Lightbit\AssetManagement\IAsset;
+use \Lightbit\AssetManagement\AssetConstructionException;
+use \Lightbit\AssetManagement\AssetNotFoundException;
+
 /**
  * AssetProvider.
  *
@@ -122,13 +128,13 @@ final class AssetProvider
 	/**
 	 * Gets an asset.
 	 *
-	 * @throws AssetNotFoundException
-	 *	Thrown if the asset fails to be located due to its file not existing
-	 *	within the available lookup paths.
+	 * @throws AssetConstructionException
+	 *	Thrown if the asset construction fails despite resolving to an
+	 *	existing and readable file.
 	 *
-	 * @throws AssetFactoryException
-	 *	Thrown if the asset fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
+	 * @throws AssetNotFoundException
+	 *	Thrown if the asset identifier does not resolve to an existing or
+	 *	readable file.
 	 *
 	 * @param string $type
 	 *	The asset type.
@@ -163,58 +169,58 @@ final class AssetProvider
 	/**
 	 * Gets an asset list.
 	 *
-	 * @throws AssetFactoryException
-	 *	Thrown if the asset fails to be created, regardless of the
-	 *	actual reason, which should be defined in the exception chain.
+	 * @throws AssetConstructionException
+	 *	Thrown if the asset construction fails despite resolving to an
+	 *	existing and readable file.
 	 *
 	 * @param string $type
 	 *	The asset type.
 	 *
-	 * @param string $identifier
+	 * @param string $id
 	 *	The asset identifier.
 	 *
 	 * @return array
 	 *	The asset list.
 	 */
-	public final function getAssetList(string $type, string $identifier) : array
+	public final function getAssetList(string $type, string $id) : array
 	{
 		if (!isset($this->assetLists[$type]))
 		{
 			$this->assetLists[$type] = [];
 		}
 
-		if (!isset($this->assetLists[$type][$identifier]))
+		if (!isset($this->assetLists[$type][$id]))
 		{
 			$match = null;
 			$factory = $this->getAssetFactory();
 
 			// Starts empty, by default
-			$this->assetLists[$type][$identifier] = [];
+			$this->assetLists[$type][$id] = [];
 
 			// Split the prefix from the subject, from the asset identifier,
 			// in order to assemble the file path suffix.
-			list($prefix, $subject) = explode('://', $identifier);
+			list($prefix, $subject) = explode('://', $id);
 
-			$filePathSuffix = DIRECTORY_SEPARATOR . strtr($subject, [ '/' => DIRECTORY_SEPARATOR ])
+			$pathSuffix = DIRECTORY_SEPARATOR . strtr($subject, [ '/' => DIRECTORY_SEPARATOR ])
 				. ($this->assetPathSuffixMap[$type] ?? ($this->assetPathSuffixMap[$type] = ('.' . strtolower($type))));
 
 			if (isset($this->assetPrefixLookupPathMap[$prefix]))
 			{
 				// Go through each asset prefix lookup path and attempty to find
 				// the first matching asset.
-				foreach ($this->assetPrefixLookupPathMap[$prefix] as $i => $basePath)
+				foreach ($this->assetPrefixLookupPathMap[$prefix] as $i => $path)
 				{
-					$filePath = $basePath . $filePathSuffix;
+					$path .= $pathSuffix;
 
-					if (file_exists($filePath))
+					if (file_exists($path))
 					{
-						$this->assetLists[$type][$identifier][] = ($match = $factory->createAsset($type, $filePath));
+						$this->assetLists[$type][$id][] = ($match = $factory->createAsset($type, $id, $path));
 					}
 				}
 			}
 		}
 
-		return $this->assetLists[$type][$identifier];
+		return $this->assetLists[$type][$id];
 	}
 
 	/**
@@ -235,7 +241,7 @@ final class AssetProvider
 	 * @param string $type
 	 *	The asset type.
 	 *
-	 * @param string $filePathSuffix
+	 * @param string $pathSuffix
 	 *	The asset file path suffix.
 	 */
 	public final function setAssetPathSuffix(string $type, string $suffix) : void

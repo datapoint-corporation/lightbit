@@ -32,35 +32,13 @@ use \Lightbit\Data\Parsing\ParserCompositionException;
 use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Data\Parsing\ParserProvider;
 
-/**
- * IntegerParser.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class IntegerParser implements IParser
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Composes a subject.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The composition result.
-	 */
 	public final function compose($subject) : string
 	{
 		if (!is_int($subject))
@@ -71,23 +49,6 @@ class IntegerParser implements IParser
 		return number_format($subject, 0, '', '');
 	}
 
-	/**
-	 * Parses a subject.
-	 *
-	 * @throws ParserException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return int
-	 *	The parsing result, on success.
-	 */
 	public final function parse(string $subject) : int
 	{
 		if (preg_match('%^(\\-|\\+)?(\\d+)$%', $subject))

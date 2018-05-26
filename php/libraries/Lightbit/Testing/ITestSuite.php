@@ -27,30 +27,9 @@
 
 namespace Lightbit\Testing;
 
-/**
- * TestSuite.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface ITestSuite
 {
-	/**
-	 * Gets the cases.
-	 *
-	 * @return array
-	 *	The cases.
-	 */
 	public function getCases() : array;
 
-	/**
-	 * Validate.
-	 *
-	 * When invoked, it iterates through the test suite cases performing
-	 * validation on each one, failing if any of them fails.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
 	public function validate() : bool;
 }

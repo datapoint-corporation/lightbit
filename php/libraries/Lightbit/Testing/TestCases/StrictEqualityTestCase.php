@@ -33,33 +33,10 @@ use \Lightbit\Testing\ITestCase;
 use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\TestCase;
 
-/**
- * StrictEqualityTestCase.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class StrictEqualityTestCase extends TestCase implements ITestCase
 {
-	/**
-	 * The constraint.
-	 *
-	 * @var mixed
-	 */
 	private $constraint;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $description
-	 *	The test case description.
-	 *
-	 * @param Closure $closure
-	 *	The test case closure.
-	 *
-	 * @param mixed $constraint
-	 *	The test case constraint.
-	 */
 	public function __construct(string $description, Closure $closure, $constraint)
 	{
 		parent::__construct($description, $closure, $constraint);
@@ -67,16 +44,6 @@ class StrictEqualityTestCase extends TestCase implements ITestCase
 		$this->constraint = $constraint;
 	}
 
-	/**
-	 * Validate.
-	 *
-	 * When called, it invokes the test case closure and performs the
-	 * applicable validation on its result, failing if it does not meet
-	 * expectation or if an uncaught throwable is detected.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
 	public function validate() : bool
 	{
 		return ($this->export($subject) && $subject === $this->constraint);

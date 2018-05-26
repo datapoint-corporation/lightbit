@@ -31,23 +31,8 @@ use \Throwable;
 
 use \Lightbit\Exception;
 
-/**
- * BootstrapException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class BootstrapException extends Exception
 {
-	/**
-	 * Construct.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
 	public function __construct(string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

@@ -32,35 +32,13 @@ use \Lightbit\Data\Parsing\ParserCompositionException;
 use \Lightbit\Data\Parsing\ParserException;
 use \Lightbit\Data\Parsing\ParserProvider;
 
-/**
- * BooleanParser.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class BooleanParser implements IParser
 {
-	/**
-	 * Constructor.
-	 */
 	public function __construct()
 	{
 
 	}
 
-	/**
-	 * Composes a subject.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The composition result.
-	 */
 	public final function compose($subject) : string
 	{
 		if (!is_bool($subject))
@@ -71,23 +49,6 @@ class BooleanParser implements IParser
 		return ($subject ? 'true' : 'false');
 	}
 
-	/**
-	 * Parses a subject.
-	 *
-	 * @throws ParserException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return bool
-	 *	The parsing result, on success.
-	 */
 	public final function parse(string $subject) : bool
 	{
 		if (preg_match('%^(true|false)$%', $subject))

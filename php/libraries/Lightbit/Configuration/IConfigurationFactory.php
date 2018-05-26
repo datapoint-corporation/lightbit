@@ -29,19 +29,7 @@ namespace Lightbit\Configuration;
 
 use \Lightbit\Configuration\IConfiguration;
 
-/**
- * IConfigurationFactory.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IConfigurationFactory
 {
-	/**
-	 * Creates a configuration.
-	 *
-	 * @param string $configuration
-	 *	The configuration identifier.
-	 */
 	public function createConfiguration(string $configuration) : IConfiguration;
 }

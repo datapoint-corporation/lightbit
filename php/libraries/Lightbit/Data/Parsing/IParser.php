@@ -30,45 +30,9 @@ namespace Lightbit\Data\Parsing;
 use \Lightbit\Data\Parsing\ParserCompositionException;
 use \Lightbit\Data\Parsing\ParserException;
 
-/**
- * IParser.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 interface IParser
 {
-	/**
-	 * Composes a subject.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The composition result.
-	 */
 	public function compose($subject) : string;
 
-	/**
-	 * Parses a subject.
-	 *
-	 * @throws ParserException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @throws ParserCompositionException
-	 *	Thrown when the subject composition fails, containing the reason as
-	 *	a previous throwable, if applicable.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return mixed
-	 *	The parsing result, on success.
-	 */
 	public function parse(string $subject);
 }

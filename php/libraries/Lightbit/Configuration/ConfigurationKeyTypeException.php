@@ -32,26 +32,8 @@ use \Throwable;
 use \Lightbit\Configuration\ConfigurationException;
 use \Lightbit\Configuration\IConfiguration;
 
-/**
- * ConfigurationKeyTypeException.
- *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
- * @since 2.0.0
- */
 class ConfigurationKeyTypeException extends ConfigurationException
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param IConfiguration $map
-	 *	The exception configuration.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $throwable
-	 *	The exception previous throwable.
-	 */
 	public function __construct(IConfiguration $map, string $message, Throwable $previous = null)
 	{
 		parent::__construct($map, $message, $previous);
