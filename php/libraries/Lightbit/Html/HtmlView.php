@@ -28,7 +28,8 @@
 namespace Lightbit\Html;
 
 use \Throwable;
-use \Lightbit\AssetManagement\Php\PhpAsset;
+
+use \Lightbit;
 use \Lightbit\BufferException;
 use \Lightbit\Html\HtmlViewRenderException;
 
@@ -36,13 +37,16 @@ use \Lightbit\Html\IHtmlView;
 
 class HtmlView implements IHtmlView
 {
-	private $asset;
+	private $id;
+
+	private $path;
 
 	private $scope;
 
-	public function __construct(PhpAsset $asset)
+	public function __construct(string $id, string $path)
 	{
-		$this->asset = $asset;
+		$this->id = $id;
+		$this->path = $path;
 		$this->scope = new HtmlViewScope($this);
 	}
 
@@ -52,7 +56,7 @@ class HtmlView implements IHtmlView
 		{
 			throw new BufferException(sprintf(
 				'Can not start view output buffer: "%s"',
-				$this->asset->getID()
+				$this->id
 			));
 		}
 
@@ -60,7 +64,11 @@ class HtmlView implements IHtmlView
 
 		try
 		{
-			$this->asset->includeAs($this->scope, $variables);
+			Lightbit::getInstance()->includeAs(
+				$this->scope,
+				$this->path,
+				$variables
+			);
 		}
 		catch (Throwable $e)
 		{
@@ -73,7 +81,7 @@ class HtmlView implements IHtmlView
 
 			throw new HtmlViewRenderException(
 				$this,
-				sprintf('Can not render view, uncaught throwable: "%s"', $this->asset->getID()),
+				sprintf('Can not render view, uncaught throwable: "%s"', $this->id),
 				$e
 			);
 		}

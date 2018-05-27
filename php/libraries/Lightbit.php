@@ -25,8 +25,6 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\AssetManagement\AssetProvider;
-
 final class Lightbit
 {
 	private static $instance;
@@ -40,9 +38,15 @@ final class Lightbit
 
 	private $libraryLookupPathList;
 
+	private $resourceBundleLookupPathListMap;
+
+	private $resourcePathListMap;
+
 	public function __construct()
 	{
 		$this->libraryLookupPathList = [];
+		$this->resourceBundleLookupPathListMap = [];
+		$this->resourcePathListMap = [];
 
 		$this->inclusion =
 		(
@@ -82,7 +86,7 @@ final class Lightbit
 	{
 		$this->addLibraryLookupPath($path . '/libraries');
 
-		AssetProvider::getInstance()->addAssetPrefixLookupPathMap([
+		$this->addResourceBundleLookupPathMap([
 			'hooks' => ($path . '/hooks'),
 			'messages' => ($path . '/messages'),
 			'settings' => ($path . '/settings'),
@@ -97,6 +101,19 @@ final class Lightbit
 		foreach ($pathList as $i => $path)
 		{
 			$this->addModulePath($path);
+		}
+	}
+
+	public function addResourceBundleLookupPath(string $bundle, string $path) : void
+	{
+		$this->resourceBundleLookupPathListMap[$bundle][] = $path;
+	}
+
+	public function addResourceBundleLookupPathMap(array $resourceBundleLookupPathMap) : void
+	{
+		foreach ($resourceBundleLookupPathMap as $bundle => $path)
+		{
+			$this->addResourceBundleLookupPath($bundle, $path);
 		}
 	}
 
@@ -115,6 +132,43 @@ final class Lightbit
 		}
 
 		return null;
+	}
+
+	public function getResourcePath(?string $extension, string $resource) : ?string
+	{
+		return ($this->getResourcePathList($extension, $resource)[0] ?? null);
+	}
+
+	public function getResourcePathList(?string $extension, string $resource) : array
+	{
+		$id = ($resource . ($extension ? ('.' . $extension) : ''));
+
+		if (!isset($this->resourcePathListMap[$id]))
+		{
+			$this->resourcePathListMap[$id] = [];
+
+			if (strpos($id, '://'))
+			{
+				list($prefix, $suffix) = explode(':/', $id);
+
+				if (isset($this->resourceBundleLookupPathListMap[$prefix]))
+				{
+					$suffix = strtr($suffix, [ '/' => DIRECTORY_SEPARATOR ]);
+
+					foreach ($this->resourceBundleLookupPathListMap[$prefix] as $i => $path)
+					{
+						$path .= $suffix;
+
+						if (file_exists($path))
+						{
+							$this->resourcePathListMap[$id][] = $path;
+						}
+					}
+				}
+			}
+		}
+
+		return $this->resourcePathListMap[$id];
 	}
 
 	public function include(string $filePath, array $variables = null) // : mixed

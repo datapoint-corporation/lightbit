@@ -27,8 +27,7 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\AssetManagement\AssetNotFoundException;
-use \Lightbit\AssetManagement\AssetProvider;
+use \Lightbit;
 use \Lightbit\Html\HtmlView;
 
 use \Lightbit\Html\IHtmlView;
@@ -38,13 +37,16 @@ class HtmlViewFactory implements IHtmlViewFactory
 {
 	public function createView(string $view) : IHtmlView
 	{
-		try
+		strpos($view, '://') || ($view = 'views://' . $view);
+
+		if ($path = Lightbit::getInstance()->getResourcePath('php', $view))
 		{
-			return new HtmlView(AssetProvider::getInstance()->getAsset('php', $view));
+			return new HtmlView($view, $path);
 		}
-		catch (AssetNotFoundException $e)
-		{
-			throw new HtmlViewNotFoundException($view, sprintf('Can not get html view, asset not found: "%s"', $view), $e);
-		}
+
+		throw new HtmlViewNotFoundException($view, sprintf(
+			'Can not get html view, not found: "%s"',
+			$view
+		));
 	}
 }

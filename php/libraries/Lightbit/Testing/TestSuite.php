@@ -27,12 +27,14 @@
 
 namespace Lightbit\Testing;
 
-use \Lightbit\AssetManagement\Php\PhpAsset;
+use \Lightbit;
 use \Lightbit\Testing\ITestSuite;
 
 class TestSuite implements ITestSuite
 {
-	private $asset;
+	private $filePath;
+
+	private $fileScope;
 
 	private $success;
 
@@ -40,9 +42,10 @@ class TestSuite implements ITestSuite
 
 	private $title;
 
-	public function __construct(PhpAsset $asset)
+	public function __construct(string $filePath)
 	{
-		$this->asset = $asset;
+		$this->filePath = $filePath;
+		$this->fileScope = new TestSuiteScope($this);
 		$this->suites = [];
 	}
 
@@ -69,7 +72,7 @@ class TestSuite implements ITestSuite
 		if (!isset($this->cases))
 		{
 			$this->cases = [];
-			$this->asset->includeAs(new TestSuiteScope($this));
+			Lightbit::getInstance()->includeAs($this->fileScope, $this->filePath);
 		}
 
 		return $this->cases;
@@ -82,7 +85,7 @@ class TestSuite implements ITestSuite
 
 	public function getTitle() : string
 	{
-		return ($this->title ?? ($this->title = $this->asset->getPath()));
+		return ($this->title ?? ($this->title = $this->filePath));
 	}
 
 	public function setTitle(string $title) : void

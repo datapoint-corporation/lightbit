@@ -122,6 +122,8 @@ class HttpApplication
 			->accept($this, [
 				'debug' => 'setDebug'
 			]);
+
+			echo 'OK';
 		}
 		catch (Throwable $e)
 		{

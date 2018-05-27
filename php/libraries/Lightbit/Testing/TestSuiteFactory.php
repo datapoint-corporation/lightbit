@@ -27,10 +27,11 @@
 
 namespace Lightbit\Testing;
 
-use \Lightbit\AssetManagement\AssetProvider;
+use \Lightbit;
+use \Lightbit\Testing\TestSuite;
+
 use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\ITestSuiteFactory;
-use \Lightbit\Testing\TestSuite;
 
 class TestSuiteFactory implements ITestSuiteFactory
 {
@@ -41,8 +42,14 @@ class TestSuiteFactory implements ITestSuiteFactory
 
 	public function createSuite(string $suite) : ITestSuite
 	{
-		return new TestSuite(
-			AssetProvider::getInstance()->getAsset('php', $suite)
-		);
+		if ($filePath = Lightbit::getInstance()->getResourcePath('php', $suite))
+		{
+			return new TestSuite($filePath);
+		}
+
+		throw new TestSuiteNotFoundException($suite, sprintf(
+			'Can not get test suite, not found: "%s"',
+			$suite
+		));
 	}
 }

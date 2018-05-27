@@ -27,9 +27,9 @@
 
 namespace Lightbit\Configuration;
 
+use \Lightbit;
 use \Lightbit\Environment;
 use \Lightbit\Exception;
-use \Lightbit\AssetManagement\AssetProvider;
 use \Lightbit\Configuration\Configuration;
 use \Lightbit\Configuration\ConfigurationFactoryException;
 use \Lightbit\Configuration\IConfigurationFactory;
@@ -43,14 +43,15 @@ class ConfigurationFactory implements IConfigurationFactory
 
 	public final function createConfiguration(string $configuration) : IConfiguration
 	{
-		$properties = [];
 		$environment = Environment::getInstance();
-		$provider = AssetProvider::getInstance();
+		$lightbit = Lightbit::getInstance();
+
+		$properties = [];
 
 		// Base
-		foreach ($provider->getAssetList('php', ('settings://' . $configuration)) as $i => $asset)
+		foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
 		{
-			$subject = $asset->include([ 'environment' => $environment ]);
+			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
 
 			if (is_array($subject))
 			{
@@ -59,9 +60,9 @@ class ConfigurationFactory implements IConfigurationFactory
 		}
 
 		// Environment
-		foreach ($provider->getAssetList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $asset)
+		foreach ($lightbit->getResourcePathList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $filePath)
 		{
-			$subject = $asset->include([ 'environment' => $environment ]);
+			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
 
 			if (is_array($subject))
 			{

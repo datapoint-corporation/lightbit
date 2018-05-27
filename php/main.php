@@ -56,7 +56,6 @@ const LB_PATH_LIGHTBIT = __DIR__;
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/ErrorException.php');
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
-		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/AssetManagement/AssetProvider.php');
 	}
 )();
 

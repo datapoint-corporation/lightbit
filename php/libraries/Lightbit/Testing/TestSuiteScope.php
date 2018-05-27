@@ -29,7 +29,6 @@ namespace Lightbit\Testing;
 
 use \Closure;
 
-use \Lightbit\AssetManagement\Php\PhpAsset;
 use \Lightbit\Testing\ITestSuite;
 use \Lightbit\Testing\TestSuiteProvider;
 use \Lightbit\Testing\TestCases\EqualityTestCase;

@@ -27,12 +27,13 @@
 
 namespace Lightbit\Html;
 
+// Classes
+use \Lightbit\Html\HtmlViewFactory;
+use \Lightbit\Html\HtmlViewNotFoundException;
+
 // Interfaces
 use \Lightbit\Html\IHtmlView;
 use \Lightbit\Html\IHtmlViewFactory;
-
-// Classes
-use \Lightbit\Html\HtmlViewFactory;
 
 final class HtmlViewProvider
 {
