@@ -31,8 +31,23 @@ use \Throwable;
 
 use \Lightbit\Exception;
 
+/**
+ * ArgumentException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class ArgumentException extends Exception
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

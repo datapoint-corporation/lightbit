@@ -30,24 +30,87 @@ namespace Lightbit\Http;
 use \ReflectionClass;
 use \ReflectionMethod;
 
+use \Lightbit\Http\IHttpRoute;
+
+/**
+ * IHttpRoute.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HttpRoute implements IHttpRoute
 {
+	/**
+	 * The controller class.
+	 *
+	 * @var ReflectionClass
+	 */
 	private $controllerClass;
 
+	/**
+	 * The controller class name.
+	 *
+	 * @var string
+	 */
 	private $controllerClassName;
 
+	/**
+	 * The controller method.
+	 *
+	 * @var ReflectionMethod
+	 */
 	private $controllerMethod;
 
+	/**
+	 * The controller method name.
+	 *
+	 * @var string
+	 */
 	private $controllerMethodName;
 
+	/**
+	 * The pattern regular expression.
+	 *
+	 * @var string
+	 */
 	private $expression;
 
-	private $methods;
+	/**
+	 * The method list.
+	 *
+	 * @var array
+	 */
+	private $methodsMap;
 
+	/**
+	 * The pattern.
+	 *
+	 * @var string
+	 */
 	private $pattern;
 
-	private $tokens;
+	/**
+	 * The token map.
+	 *
+	 * @var array
+	 */
+	private $tokenMap;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param string $method
+	 *	The route method.
+	 *
+	 * @param string $pattern
+	 *	The route pattern.
+	 *
+	 * @param string $controllerClassName
+	 *	The route controller class name.
+	 *
+	 * @param string $controllerMethodName
+	 *	The route controller method name.
+	 */
 	public function __construct(string $method, string $pattern, string $controllerClassName, string $controllerMethodName)
 	{
 		$this->controllerClassName = $controllerClassName;
@@ -57,7 +120,7 @@ class HttpRoute implements IHttpRoute
 
 		foreach (preg_split('%\\s*\\,\\s*%', $method, -1, PREG_SPLIT_NO_EMPTY) as $i => $method)
 		{
-			$this->methods[$method] = true;
+			$this->methodMap[[$method] = true;
 		}
 
 		if (preg_match_all('%\\{((bool|int|float|string)\\:)?([^\\}]+)\\}%', $this->pattern, $tokens, PREG_SET_ORDER))
@@ -104,21 +167,49 @@ class HttpRoute implements IHttpRoute
 		}
 	}
 
-	public function getControllerClass() : ReflectionClass
+	/**
+	 * Gets the controller class.
+	 *
+	 * @return ReflectionClass
+	 *	The controller class.
+	 */
+	public final function getControllerClass() : ReflectionClass
 	{
 		return ($this->controllerClass ?? ($this->controllerClass = new ReflectionClass($this->controllerClassName)));
 	}
 
-	public function getControllerMethod() : ReflectionMethod
+	/**
+	 * Gets the controller method.
+	 *
+	 * @return ReflectionMethod
+	 *	The controller method.
+	 */
+	public final function getControllerMethod() : ReflectionMethod
 	{
 		return ($this->controllerMethod ?? ($this->controllerMethod = $this->getControllerClass()->getMethod($this->controllerMethod)));
 	}
 
+	/**
+	 * Matches the method an path against this routes method list and pattern,
+	 * extracting any path tokens in the process.
+	 *
+	 * @param string $method
+	 *	The method to match against.
+	 *
+	 * @param string $path
+	 *	The path to match against.
+	 *
+	 * @param array $tokens
+	 *	The path tokens output variable.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
 	public final function match(string $method, string $path, array &$tokens = null) : bool
 	{
 		$tokens = [];
 
-		if (isset($this->methods[$method]))
+		if (isset($this->methodMap[[$method]))
 		{
 			if (isset($this->expression))
 			{

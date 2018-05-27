@@ -27,39 +27,91 @@
 
 namespace Lightbit\Html;
 
-// Classes
 use \Lightbit\Html\HtmlViewFactory;
 use \Lightbit\Html\HtmlViewNotFoundException;
 
-// Interfaces
 use \Lightbit\Html\IHtmlView;
 use \Lightbit\Html\IHtmlViewFactory;
 
+/**
+ * HtmlViewProvider.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class HtmlViewProvider
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var HtmlViewProvider
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HtmlViewProvider
+	 *	The singleton instance.
+	 */
 	public final static function getInstance() : HtmlViewProvider
 	{
 		return (self::$instance ?? (self::$instance = new HtmlViewProvider()));
 	}
 
+	/**
+	 * The view factory.
+	 *
+	 * @var IHtmlViewFactory
+	 */
 	private $viewFactory;
 
-	private $views;
+	/**
+	 * The view map.
+	 *
+	 * @var array
+	 */
+	private $viewMap;
 
+	/**
+	 * Constructor.
+	 */
 	private function __construct()
 	{
-		$this->views = [];
+		$this->viewMap = [];
 	}
 
+	/**
+	 * Gets a view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
 	public final function getView(string $view) : IHtmlView
 	{
 		strpos($view, '://') || $view = ('views://' . $view);
 
-		return ($this->views[$view] ?? ($this->views[$view] = $this->getViewFactory()->createView($view)));
+		return ($this->viewMap[$view] ?? ($this->viewMap[$view] = $this->getViewFactory()->createView($view)));
 	}
 
+	/**
+	 * Gets a view by preference.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param string $views
+	 *	The view resource identifiers.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
 	public final function getViewByPreference(string ...$views) : IHtmlView
 	{
 		if (!$views)
@@ -89,12 +141,24 @@ final class HtmlViewProvider
 		throw $htmlViewNotFoundException;
 	}
 
+	/**
+	 * Gets the view factory.
+	 *
+	 * @return IHtmlViewFactory
+	 *	The view factory.
+	 */
 	public final function getViewFactory() : IHtmlViewFactory
 	{
 		return ($this->viewFactory ?? ($this->viewFactory = new HtmlViewFactory()));
 	}
 
-	public final function setViewFactory(IViewFactory $viewFactory) : void
+	/**
+	 * Sets the view factory.
+	 *
+	 * @param IHtmlViewFactory $viewFactory
+	 *	The view factory.
+	 */
+	public final function setViewFactory(IHtmlViewFactory $viewFactory) : void
 	{
 		$this->viewFactory = $viewFactory;
 	}

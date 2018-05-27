@@ -25,14 +25,35 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParser;
+use \Throwable;
+
 use \Lightbit\Exception;
 
-class ParserException extends Exception
+use \Lightbit\Data\Filtering\IFilterFactory;
+
+/**
+ * FilterFactoryException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FilterFactoryException extends Exception
 {
-	public function __construct(IParser $parser, string $message, Throwable $previous = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param IFilterFactory $filterFactory
+	 *	The exception filter factory.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IFilterFactory $filterFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 	}

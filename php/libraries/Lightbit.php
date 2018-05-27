@@ -25,27 +25,67 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
+/**
+ * Lightbit.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class Lightbit
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var Lightbit
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return Lightbit
+	 *	The singleton instance.
+	 */
 	public static function getInstance() : Lightbit
 	{
 		return (self::$instance ?? (self::$instance = new Lightbit()));
 	}
 
+	/**
+	 * The resource bundle lookup path list map.
+	 *
+	 * @var array
+	 */
+	private $bundlePathListMap;
+
+	/**
+	 * The inclusion.
+	 *
+	 * @var Closure
+	 */
 	private $inclusion;
 
+	/**
+	 * The library lookup path list.
+	 *
+	 * @var array
+	 */
 	private $libraryLookupPathList;
 
-	private $resourceBundleLookupPathListMap;
-
+	/**
+	 * The resource path list map.
+	 *
+	 * @var array
+	 */
 	private $resourcePathListMap;
 
-	public function __construct()
+	/**
+	 * Constructor.
+	 */
+	private function __construct()
 	{
+		$this->bundlePathListMap = [];
 		$this->libraryLookupPathList = [];
-		$this->resourceBundleLookupPathListMap = [];
 		$this->resourcePathListMap = [];
 
 		$this->inclusion =
@@ -69,55 +109,103 @@ final class Lightbit
 		);
 	}
 
-	public function addLibraryLookupPath(string $path) : void
+	/**
+	 * Sets an additional resource bundle path.
+	 *
+	 * @param string $bundle
+	 *	The resource bundle identifier.
+	 *
+	 * @param string $bundlePath
+	 *	The resource bundle path.
+	 */
+	public final function addBundlePath(string $bundle, string $bundlePath) : void
 	{
-		$this->libraryLookupPathList[] = strtr($path, [ '/' => DIRECTORY_SEPARATOR ]);
+		$this->bundlePathListMap[$bundle][] = $bundlePath;
 	}
 
-	public function addLibraryLookupPathList(array $pathList) : void
+	/**
+	 * Sets an additional resource bundle path map.
+	 *
+	 * @param array $bundlePathMap
+	 *	The resource bundle path map.
+	 */
+	public final function addBundlePathMap(array $bundlePathMap) : void
 	{
-		foreach ($pathList as $i => $path)
+		foreach ($bundlePathMap as $bundle => $bundlePath)
 		{
-			$this->addLibraryLookupPath($path);
+			$this->addBundlePath($bundle, $bundlePath);
 		}
 	}
 
-	public function addModulePath(string $path) : void
+	/**
+	 * Sets an additional library lookup path.
+	 *
+	 * @param string $lookupPath
+	 *	The lookup path.
+	 */
+	public final function addLibraryLookupPath(string $lookupPath) : void
 	{
-		$this->addLibraryLookupPath($path . '/libraries');
+		$this->libraryLookupPathList[] = strtr($lookupPath, [ '/' => DIRECTORY_SEPARATOR ]);
+	}
 
-		$this->addResourceBundleLookupPathMap([
-			'hooks' => ($path . '/hooks'),
-			'messages' => ($path . '/messages'),
-			'settings' => ($path . '/settings'),
-			'tests' => ($path . '/tests'),
-			'theme' => ($path . '/theme'),
-			'views' => ($path . '/views')
+	/**
+	 * Sets an additional library lookup path list.
+	 *
+	 * @param array $lookupPathList
+	 *	The additional library lookup path list.
+	 */
+	public final function addLibraryLookupPathList(array $lookupPathList) : void
+	{
+		foreach ($lookupPathList as $i => $lookupPath)
+		{
+			$this->addLibraryLookupPath($lookupPath);
+		}
+	}
+
+	/**
+	 * Sets an additional module path.
+	 *
+	 * @param string $modulePath
+	 *	The module path.
+	 */
+	public final function addModulePath(string $modulePath) : void
+	{
+		$this->addLibraryLookupPath($modulePath . '/libraries');
+
+		$this->addBundlePathMap([
+			'hooks' => ($modulePath . '/hooks'),
+			'messages' => ($modulePath . '/messages'),
+			'settings' => ($modulePath . '/settings'),
+			'tests' => ($modulePath . '/tests'),
+			'theme' => ($modulePath . '/theme'),
+			'views' => ($modulePath . '/views')
 		]);
 	}
 
-	public function addModulePathList(array $pathList) : void
+	/**
+	 * Sets an additional module path list.
+	 *
+	 * @param string $modulePathList
+	 *	The module path list.
+	 */
+	public final function addModulePathList(array $modulePathList) : void
 	{
-		foreach ($pathList as $i => $path)
+		foreach ($modulePathList as $i => $modulePath)
 		{
-			$this->addModulePath($path);
+			$this->addModulePath($modulePath);
 		}
 	}
 
-	public function addResourceBundleLookupPath(string $bundle, string $path) : void
-	{
-		$this->resourceBundleLookupPathListMap[$bundle][] = $path;
-	}
-
-	public function addResourceBundleLookupPathMap(array $resourceBundleLookupPathMap) : void
-	{
-		foreach ($resourceBundleLookupPathMap as $bundle => $path)
-		{
-			$this->addResourceBundleLookupPath($bundle, $path);
-		}
-	}
-
-	public function getClassPath(string $className) : ?string
+	/**
+	 * Gets a class path.
+	 *
+	 * @param string $className
+	 *	The class name.
+	 *
+	 * @return string
+	 *	The class path.
+	 */
+	public final function getClassPath(string $className) : ?string
 	{
 		$filePathSuffix = (strtr(('\\' . $className), [ '\\' => DIRECTORY_SEPARATOR ]) . '.php');
 
@@ -134,12 +222,36 @@ final class Lightbit
 		return null;
 	}
 
-	public function getResourcePath(?string $extension, string $resource) : ?string
+	/**
+	 * Gets a resource path.
+	 *
+	 * @param string $extension
+	 *	The resource extension.
+	 *
+	 * @param string $resource
+	 *	The resource identifier.
+	 *
+	 * @return string
+	 *	The resource path.
+	 */
+	public final function getResourcePath(?string $extension, string $resource) : ?string
 	{
 		return ($this->getResourcePathList($extension, $resource)[0] ?? null);
 	}
 
-	public function getResourcePathList(?string $extension, string $resource) : array
+	/**
+	 * Gets a resource path list.
+	 *
+	 * @param string $extension
+	 *	The resource extension.
+	 *
+	 * @param string $resource
+	 *	The resource identifier.
+	 *
+	 * @return string
+	 *	The resource path list.
+	 */
+	public final function getResourcePathList(?string $extension, string $resource) : array
 	{
 		$id = ($resource . ($extension ? ('.' . $extension) : ''));
 
@@ -151,11 +263,11 @@ final class Lightbit
 			{
 				list($prefix, $suffix) = explode(':/', $id);
 
-				if (isset($this->resourceBundleLookupPathListMap[$prefix]))
+				if (isset($this->bundlePathListMap[$prefix]))
 				{
 					$suffix = strtr($suffix, [ '/' => DIRECTORY_SEPARATOR ]);
 
-					foreach ($this->resourceBundleLookupPathListMap[$prefix] as $i => $path)
+					foreach ($this->bundlePathListMap[$prefix] as $i => $path)
 					{
 						$path .= $suffix;
 
@@ -171,13 +283,40 @@ final class Lightbit
 		return $this->resourcePathListMap[$id];
 	}
 
-	public function include(string $filePath, array $variables = null) // : mixed
+	/**
+	 * Includes a file.
+	 *
+	 * @param string $filePath
+	 *	The inclusion file path.
+	 *
+	 * @param array $variableMap
+	 *	The inclusion variable map.
+	 *
+	 * @return mixed
+	 *	The inclusion result.
+	 */
+	public final function include(string $filePath, array $variableMap = null) // : mixed
 	{
-		return ($this->inclusion->bindTo(null, 'static'))($filePath, $variables);
+		return ($this->inclusion->bindTo(null, 'static'))($filePath, $variableMap);
 	}
 
-	public function includeAs(object $scope, string $filePath, array $variables = null) // : mixed
+	/**
+	 * Includes a file.
+	 *
+	 * @param object $scope
+	 *	The inclusion scope.
+	 *
+	 * @param string $filePath
+	 *	The inclusion file path.
+	 *
+	 * @param array $variableMap
+	 *	The inclusion variable map.
+	 *
+	 * @return mixed
+	 *	The inclusion result.
+	 */
+	public final function includeAs(object $scope, string $filePath, array $variableMap = null) // : mixed
 	{
-		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variables);
+		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variableMap);
 	}
 }

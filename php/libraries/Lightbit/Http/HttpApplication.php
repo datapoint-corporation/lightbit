@@ -29,30 +29,62 @@ namespace Lightbit\Http;
 
 use \Lightbit;
 use \Throwable;
+
 use \Lightbit\Application;
-use \Lightbit\Environment;
-use \Lightbit\RuntimeException;
 use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Environment;
 use \Lightbit\Html\HtmlViewProvider;
 use \Lightbit\Http\HttpServer;
 use \Lightbit\Http\HttpServerResponse;
+use \Lightbit\RuntimeException;
 
-class HttpApplication
+/**
+ * HttpApplication.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+final class HttpApplication
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var HttpApplication
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HttpApplication
+	 *	The singleton instance.
+	 */
 	public static final function getInstance() : HttpApplication
 	{
 		return (self::$instance ?? (self::$instance = new HttpApplication()));
 	}
 
+	/**
+	 * The document root path.
+	 *
+	 * @var string
+	 */
 	private $documentRootPath;
 
+	/**
+	 * Constructor.
+	 */
 	private function __construct()
 	{
 
 	}
 
+	/**
+	 * Gets the document root path.
+	 *
+	 * @return string
+	 *	The document root path.
+	 */
 	public final function getDocumentRootPath() : string
 	{
 		return ($this->documentRootPath ?? (
@@ -60,36 +92,82 @@ class HttpApplication
 		));
 	}
 
+	/**
+	 * Gets the environment.
+	 *
+	 * @return Environment
+	 *	The environment.
+	 */
 	public final function getEnvironment() : Environment
 	{
 		return Environment::getInstance();
 	}
 
+	/**
+	 * Gets the path.
+	 *
+	 * @return string
+	 *	The path.
+	 */
 	public final function getPath() : string
 	{
 		return LB_PATH_APPLICATION;
 	}
 
+	/**
+	 * Gets the server.
+	 *
+	 * @return HttpServer
+	 *	The server.
+	 */
 	public final function getServer() : HttpServer
 	{
 		return HttpServer::getInstance();
 	}
 
+	/**
+	 * Checks the debug flag.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
 	public final function isDebug() : bool
 	{
 		return ($this->debug ?? ($this->debug = !Environment::getInstance()->isProduction()));
 	}
 
+	/**
+	 * Sets the debug flag.
+	 *
+	 * @param bool $debug
+	 *	The debug flag.
+	 */
 	public final function setDebug(bool $debug) : void
 	{
 		$this->debug = $debug;
 	}
 
+	/**
+	 * Sets the document root path path.
+	 *
+	 * @param string $documentRootPath
+	 *	The document root path.
+	 */
 	public final function setDocumentRootPath(string $documentRootPath) : void
 	{
 		$this->documentRootPath = rtrim($documentRootPath, '/');
 	}
 
+	/**
+	 * Throwable.
+	 *
+	 * It is invoked if an uncaught throwable is detected during the
+	 * application run procedure and should reset the response and
+	 * generate the appropriate error document instead.
+	 *
+	 * @param Throwable $throwable
+	 *	The throwable.
+	 */
 	private function throwable(Throwable $throwable) : void
 	{
 		$statusCode = 500;
@@ -109,6 +187,12 @@ class HttpApplication
 		]);
 	}
 
+	/**
+	 * Run.
+	 *
+	 * @return int
+	 *	The exit status code.
+	 */
 	public final function run() : int
 	{
 		try

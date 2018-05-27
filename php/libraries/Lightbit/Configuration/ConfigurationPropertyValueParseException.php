@@ -25,37 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Configuration;
 
-use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\ParserCompositionException;
-use \Lightbit\Data\Parsing\ParserException;
-use \Lightbit\Data\Parsing\ParserProvider;
+use \Throwable;
 
-class IntegerParser implements IParser
+use \Lightbit\Data\Collections\StringMapKeyValueParseException;
+
+use \Lightbit\Configuration\IConfiguration;
+
+/**
+ * ConfigurationPropertyValueParseException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class ConfigurationPropertyValueParseException extends StringMapKeyValueParseException
 {
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The exception configuration.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IConfiguration $configuration, string $message, Throwable $previous = null)
 	{
-
-	}
-
-	public final function compose($subject) : string
-	{
-		if (!is_int($subject))
-		{
-			throw new ParserCompositionException($this, sprintf('Can not compose integer, bad subject type: "%s"', lbstypeof($subject)));
-		}
-
-		return number_format($subject, 0, '', '');
-	}
-
-	public final function parse(string $subject) : int
-	{
-		if (preg_match('%^(\\-|\\+)?(\\d+)$%', $subject))
-		{
-			return intval($subject);
-		}
-
-		throw new ParserException($this, sprintf('Can not parse integer, bad subject format: "%s"', $subject));
+		parent::__construct($configuration, $message, $previous);
 	}
 }

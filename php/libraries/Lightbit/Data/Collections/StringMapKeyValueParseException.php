@@ -25,11 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing;
+namespace Lightbit\Data\Collections;
 
-use \Lightbit\Testing\ITestSuite;
+use \Throwable;
 
-interface ITestSuiteFactory
+use \Lightbit\Data\Collections\StringMapException;
+
+use \Lightbit\Data\Collections\IStringMap;
+
+/**
+ * StringMapKeyValueParseException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class StringMapKeyValueParseException extends StringMapException
 {
-	public function createSuite(string $suite) : ITestSuite;
+	/**
+	 * Constructor.
+	 *
+	 * @param IStringMap $stringMap
+	 *	The exception string map.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IStringMap $stringMap, string $message, Throwable $previous = null)
+	{
+		parent::__construct($stringMap, $message, $previous);
+	}
 }

@@ -30,39 +30,93 @@ namespace Lightbit\Configuration;
 use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Configuration\IConfigurationFactory;
 
+/**
+ * ConfigurationProvider.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class ConfigurationProvider
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var ConfigurationProvider
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return ConfigurationProvider
+	 *	The singleton instance.
+	 */
 	public static final function getInstance() : ConfigurationProvider
 	{
 		return (self::$instance ?? (self::$instance = new ConfigurationProvider()));
 	}
 
+	/**
+	 * The configuration factory.
+	 *
+	 * @var IConfigurationFactory
+	 */
 	private $configurationFactory;
 
-	private $configurations;
+	/**
+	 * The configuration map.
+	 *
+	 * @var array
+	 */
+	private $configurationMap;
 
+	/**
+	 * Constructor.
+	 */
 	private function __construct()
 	{
-		$this->configurations = [];
+		$this->configurationMap = [];
 	}
 
+	/**
+	 * Gets a configuration.
+	 *
+	 * @throws ConfigurationFactoryException
+	 *	Thrown if the configuration creation fails.
+	 *
+	 * @param string $configuration
+	 *	The configuration resource identifier.
+	 *
+	 * @return IConfiguration
+	 *	The configuration.
+	 */
 	public final function getConfiguration(string $configuration) : IConfiguration
 	{
-		return ($this->configurations[$configuration] ?? (
-			$this->configurations[$configuration] = $this->getConfigurationFactory()->createConfiguration($configuration)
+		return ($this->configurationMap[$configuration] ?? (
+			$this->configurationMap[$configuration] = $this->getConfigurationFactory()->createConfiguration($configuration)
 		));
 	}
 
+	/**
+	 * Gets the configuration factory.
+	 *
+	 * @return IConfigurationFactory
+	 *	The configuration factory.
+	 */
 	public final function getConfigurationFactory() : IConfigurationFactory
 	{
 		return ($this->configurationFactory ?? ($this->configurationFactory = new ConfigurationFactory()));
 	}
 
+	/**
+	 * Sets the configuration factory.
+	 *
+	 * @param IConfigurationFactory $configurationFactory
+	 *	The configuration factory.
+	 */
 	public final function setConfigurationFactory(IConfigurationFactory $configurationFactory) : void
 	{
 		$this->configurationFactory = $configurationFactory;
-		$this->configurations = [];
+		$this->configurationMap = [];
 	}
 }

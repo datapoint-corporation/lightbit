@@ -25,8 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-$this->import(
-	'tests://lightbit/lightbit',
-	'tests://lightbit/lightbit-inclusion',
-	'tests://lightbit/http/http-server-request-query-string'
-);
+namespace Lightbit\Http;
+
+use \Throwable;
+
+use \Lightbit\Data\Collections\StringMapKeyNotSetException;
+
+use \Lightbit\Http\IHttpQueryString;
+
+/**
+ * HttpQueryStringParameterValueTypeMismatchException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class HttpQueryStringParameterValueTypeMismatchException extends StringMapKeyNotSetException
+{
+	/**
+	 * Constructor.
+	 *
+	 * @param IHttpQueryString $queryString
+	 *	The exception query string.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
+	{
+		parent::__construct($queryString, $message, $previous);
+	}
+}

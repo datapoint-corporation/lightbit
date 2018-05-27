@@ -30,10 +30,29 @@ namespace Lightbit\Http;
 use \Throwable;
 
 use \Lightbit\Exception;
+
 use \Lightbit\Http\IHttpRouterFactory;
 
+/**
+ * HttpRouterFactoryException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HttpRouterFactoryException extends Exception
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param IHttpRouterFactory $routerFactory
+	 *	The exception router factory.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(IHttpRouterFactory $routerFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);

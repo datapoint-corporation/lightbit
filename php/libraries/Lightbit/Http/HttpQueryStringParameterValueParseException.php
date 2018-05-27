@@ -25,52 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing;
+namespace Lightbit\Http;
 
-use \Closure;
+use \Throwable;
 
-use \Lightbit\Testing\ITestSuite;
-use \Lightbit\Testing\TestSuiteProvider;
-use \Lightbit\Testing\TestCases\EqualityTestCase;
-use \Lightbit\Testing\TestCases\StrictEqualityTestCase;
-use \Lightbit\Testing\TestCases\ThrowTestCase;
+use \Lightbit\Data\Collections\StringMapKeyNotSetException;
 
-class TestSuiteScope
+use \Lightbit\Http\IHttpQueryString;
+
+/**
+ * HttpQueryStringParameterValueParseException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class HttpQueryStringParameterValueParseException extends StringMapKeyNotSetException
 {
-	private $suite;
-
-	public function __construct(ITestSuite $suite)
+	/**
+	 * Constructor.
+	 *
+	 * @param IHttpQueryString $queryString
+	 *	The exception query string.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
 	{
-		$this->suite = $suite;
-	}
-
-	public function equals($constraint, string $description, Closure $closure) : void
-	{
-		$this->suite->addCase(new EqualityTestCase($description, $constraint, $closure));
-	}
-
-	public function exactly($constraint, string $description, Closure $closure) : void
-	{
-		$this->suite->addCase(new StrictEqualityTestCase($description, $closure, $constraint));
-	}
-
-	public function import(string ...$testSuites) : void
-	{
-		$provider = TestSuiteProvider::getInstance();
-
-		foreach ($testSuites as $i => $testSuite)
-		{
-			$this->suite->addSuite($provider->getSuite($testSuite));
-		}
-	}
-
-	public function throws(string $className, string $description, Closure $closure) : void
-	{
-		$this->suite->addCase(new ThrowTestCase($description, $closure, $className));
-	}
-
-	public function setTitle(string $title) : void
-	{
-		$this->suite->setTitle($title);
+		parent::__construct($queryString, $message, $previous);
 	}
 }

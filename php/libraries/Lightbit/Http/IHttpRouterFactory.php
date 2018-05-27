@@ -29,10 +29,19 @@ namespace Lightbit\Http;
 
 use \Lightbit\Http\IHttpRouter;
 
+/**
+ * IHttpRouterFactory
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IHttpRouterFactory
 {
 	/**
 	 * Creates the router.
+	 *
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the router creation fails.
 	 *
 	 * @return IHttpRouter
 	 *	The router.

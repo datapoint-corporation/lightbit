@@ -35,44 +35,86 @@ use \Lightbit\Html\HtmlViewRenderException;
 
 use \Lightbit\Html\IHtmlView;
 
+/**
+ * HtmlView.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HtmlView implements IHtmlView
 {
+	/**
+	 * The file path.
+	 *
+	 * @var string
+	 */
+	private $filePath;
+
+	/**
+	 * The identifier.
+	 *
+	 * @var string
+	 */
 	private $id;
 
-	private $path;
-
+	/**
+	 * The scope.
+	 *
+	 * @var HtmlViewScope
+	 */
 	private $scope;
 
-	public function __construct(string $id, string $path)
+	/**
+	 * Constructor.
+	 *
+	 * @param string $id
+	 *	The view identifier.
+	 *
+	 * @param string $filePath
+	 *	The view file path.
+	 */
+	public function __construct(string $resource, string $path)
 	{
+		$this->filePath = $filePath;
 		$this->id = $id;
-		$this->path = $path;
 		$this->scope = new HtmlViewScope($this);
 	}
 
+	/**
+	 * Renders the view.
+	 *
+	 * @throws HtmlViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param array $variableMap
+	 *	The view variable map.
+	 *
+	 * @return string
+	 *	The view content.
+	 */
 	public function render(array $variables = null) : string
 	{
 		if (!ob_start())
 		{
-			throw new BufferException(sprintf(
+			throw new HtmlViewRenderException($this, sprintf(
 				'Can not start view output buffer: "%s"',
 				$this->id
 			));
 		}
 
-		$buffer = ob_get_level();
+		$bufferLevel = ob_get_level();
 
 		try
 		{
 			Lightbit::getInstance()->includeAs(
 				$this->scope,
-				$this->path,
+				$this->filePath,
 				$variables
 			);
 		}
 		catch (Throwable $e)
 		{
-			for ($i = ob_get_level(); $i > $buffer; --$i)
+			for ($i = ob_get_level(); $i > $bufferLevel; --$i)
 			{
 				ob_end_flush();
 			}
@@ -81,7 +123,10 @@ class HtmlView implements IHtmlView
 
 			throw new HtmlViewRenderException(
 				$this,
-				sprintf('Can not render view, uncaught throwable: "%s"', $this->id),
+				sprintf(
+					'Can not render view, uncaught throwable: "%s"',
+					$this->id
+				),
 				$e
 			);
 		}

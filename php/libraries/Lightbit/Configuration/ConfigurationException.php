@@ -29,12 +29,31 @@ namespace Lightbit\Configuration;
 
 use \Throwable;
 
-use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Exception;
 
+use \Lightbit\Configuration\IConfiguration;
+
+/**
+ * ConfigurationException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class ConfigurationException extends Exception
 {
-	public function __construct(IConfiguration $map, string $message, Throwable $previous = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The exception configuration.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IConfiguration $configuration, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 	}

@@ -27,24 +27,50 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Rendering\ViewRenderException;
+
 use \Lightbit\Base\IView;
 use \Lightbit\Html\IHtmlView;
-use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpResponse;
 
+/**
+ * HttpServerResponse.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class HttpServerResponse implements IHttpResponse
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var HttpServerResponse
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HttpServerResponse
+	 *	The singleton instance.
+	 */
 	public static final function getInstance() : HttpServerResponse
 	{
 		return (self::$instance ?? (self::$instance = new HttpServerResponse()));
 	}
 
+	/**
+	 * Constructor.
+	 */
 	private function __construct()
 	{
 
 	}
 
+	/**
+	 * Clears the output buffer and removes any previously set headers,
+	 * reverting the response to its initial state.
+	 */
 	public final function reset() : void
 	{
 		for ($i = ob_get_level(); $i > 1; --$i)
@@ -56,9 +82,22 @@ final class HttpServerResponse implements IHttpResponse
 		header_remove();
 	}
 
-	public final function render(IView $view, array $variables = null) : void
+	/**
+	 * Render a view, setting the response headers according to the view type
+	 * and its content.
+	 *
+	 * @throws ViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param IView $view
+	 *	The view.
+	 *
+	 * @param array $variableMap
+	 *	The view variable map.
+	 */
+	public final function render(IView $view, array $variableMap = null) : void
 	{
-		$content = $view->render($variables);
+		$content = $view->render($variableMap);
 
 		if ($view instanceof IHtmlView)
 		{
@@ -71,21 +110,51 @@ final class HttpServerResponse implements IHttpResponse
 		echo $content;
 	}
 
+	/**
+	 * Sets the content length.
+	 *
+	 * @param int $contentLength
+	 *	The content length.
+	 */
 	public final function setContentLength(int $contentLength) : void
 	{
-		$this->setHeader('Content-Length', $contentLength);
+		if (-1 < $contentLength)
+		{
+			$this->setHeader('Content-Length', $contentLength);
+		}
 	}
 
+	/**
+	 * Sets the content type.
+	 *
+	 * @param string $contentType
+	 *	The content type.
+	 */
 	public final function setContentType(string $contentType) : void
 	{
 		$this->setHeader('Content-Type', $contentType);
 	}
 
+	/**
+	 * Sets a header.
+	 *
+	 * @param string $name
+	 *	The header name.
+	 *
+	 * @param string $content
+	 *	The header content.
+	 */
 	public final function setHeader(string $name, string $content) : void
 	{
 		header(strtr(trim($name), [ ':' => '' ]) . ': ' . trim($content), true);
 	}
 
+	/**
+	 * Sets multiple headers.
+	 *
+	 * @param array $headerMap
+	 *	The header map.
+	 */
 	public final function setHeaderMap(array $headerMap) : void
 	{
 		foreach ($headerMap as $name => $content)

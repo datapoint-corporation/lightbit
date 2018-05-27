@@ -25,37 +25,78 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\ParserCompositionException;
-use \Lightbit\Data\Parsing\ParserException;
-use \Lightbit\Data\Parsing\ParserProvider;
+use \Lightbit\Data\Filtering\FilterComposeException;
+use \Lightbit\Data\Filtering\FilterParseException;
 
-class BooleanParser implements IParser
+use \Lightbit\Data\Filtering\IFilter;
+
+/**
+ * FloatFilter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FloatFilter implements IFilter
 {
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 
 	}
 
+	/**
+	 * Compose.
+	 *
+	 * @throws FilterComposeException
+	 *	Thrown when the subject is of an incompatible type or can not be
+	 *	composed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
 	public final function compose($subject) : string
 	{
-		if (!is_bool($subject))
+		if (is_float($subject) || is_int($subject))
 		{
-			throw new ParserCompositionException($this, sprintf('Can not compose integer, bad subject type: "%s"', lbstypeof($subject)));
+			return rtrim(rtrim(number_format($subject, 16, '.', ''), '0'), '.');
 		}
 
-		return ($subject ? 'true' : 'false');
+		throw new FilterComposeException($this, sprintf(
+			'Can not compose float, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
 	}
 
-	public final function parse(string $subject) : bool
+	/**
+	 * Parse.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject has an incompatible format or can not be
+	 *	parsed by this filter.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return float
+	 *	The result.
+	 */
+	public final function parse(string $subject) : float
 	{
-		if (preg_match('%^(true|false)$%', $subject))
+		if (preg_match('%^(\\-|\\+)?((\\d+(\\.\\d+))|(\\.\\d+))$%', $subject))
 		{
-			return ($subject === 'true');
+			return floatval($subject);
 		}
 
-		throw new ParserException($this, sprintf('Can not parse boolean, bad subject format: "%s"', $subject));
+		throw new FilterParseException($this, sprintf(
+			'Can not parse float, bad subject format: "%s"',
+			$subject
+		));
 	}
 }

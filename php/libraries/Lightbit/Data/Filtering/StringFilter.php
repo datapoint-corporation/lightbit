@@ -25,42 +25,70 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing\TestCases;
+namespace Lightbit\Data\Filtering;
 
-use \Closure;
-use \Throwable;
+use \Lightbit\Data\Filtering\FilterComposeException;
+use \Lightbit\Data\Filtering\FilterParseException;
 
-use \Lightbit\Testing\ITestCase;
-use \Lightbit\Testing\ITestSuite;
-use \Lightbit\Testing\TestCase;
+use \Lightbit\Data\Filtering\IFilter;
 
-class ThrowTestCase extends TestCase implements ITestCase
+/**
+ * StringFilter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class StringFilter implements IFilter
 {
-	private $constraint;
-
-	public function __construct(string $description, Closure $closure, string $constraint)
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
 	{
-		parent::__construct($description, $closure, $constraint);
 
-		$this->constraint = $constraint;
 	}
 
-	public function validate() : bool
+	/**
+	 * Compose.
+	 *
+	 * @throws FilterComposeException
+	 *	Thrown when the subject is of an incompatible type or can not be
+	 *	composed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public final function compose($subject) : string
 	{
-		try
+		if (is_string($subject))
 		{
-			($this->getClosure())();
-		}
-		catch (Throwable $e)
-		{
-			if ($e instanceof $this->constraint)
-			{
-				return true;
-			}
-
-			$this->addThrowable($e);
+			return $subject;
 		}
 
-		return false;
+		throw new FilterComposeException($this, sprintf(
+			'Can not compose boolean, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
+	}
+
+	/**
+	 * Parse.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject has an incompatible format or can not be
+	 *	parsed by this filter.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public final function parse(string $subject) : string
+	{
+		return $subject;
 	}
 }

@@ -29,15 +29,126 @@ namespace Lightbit\Configuration;
 
 use \Lightbit\Data\Collections\IStringMap;
 
+/**
+ * IConfiguration.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IConfiguration extends IStringMap
 {
+	/**
+	 * Accepts a configuration into a subject object, by invoking the
+	 * matching setter method for each existing property.
+	 *
+	 * @throws ConfigurationException
+	 *	Thrown when a property fails to be set.
+	 *
+	 * @param object $subject
+	 *	The configuration subject.
+	 *
+	 * @param array $propertyMethodMap
+	 *	The configuration property method map.
+	 */
 	public function accept(object $subject, array $configuration) : void;
 
-	public function getBool(string $key, bool $optional = false) : ?bool;
+	/**
+	 * Gets a boolean.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as a boolean.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return bool
+	 *	The property value.
+	 */
+	public function getBool(string $property, bool $optional = false) : ?bool;
 
-	public function getFloat(string $key, bool $optional = false) : ?float;
+	/**
+	 * Gets a float.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as a float.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return float
+	 *	The property value.
+	 */
+	public function getFloat(string $property, bool $optional = false) : ?float;
 
-	public function getInt(string $key, bool $optional = false) : ?int;
+	/**
+	 * Gets an integer.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as an integer.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return int
+	 *	The property value.
+	 */
+	public function getInt(string $property, bool $optional = false) : ?int;
 
-	public function getString(string $key, bool $optional = false) : ?string;
+	/**
+	 * Gets a string.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return string
+	 *	The property value.
+	 */
+	public function getString(string $property, bool $optional = false) : ?string;
 }

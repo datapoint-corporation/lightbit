@@ -25,37 +25,83 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Testing\ITestSuite;
-use \Lightbit\Testing\ITestSuiteFactory;
-use \Lightbit\Testing\TestSuiteFactory;
+use \Lightbit\Data\Filtering\IFilter;
 
-final class TestSuiteProvider
+/**
+ * FilterProvider.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+final class FilterProvider
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var FilterProvider
+	 */
 	private static $instance;
 
-	public static function getInstance() : TestSuiteProvider
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return FilterProvider
+	 *	The singleton instance.
+	 */
+	public static final function getInstance() : FilterProvider
 	{
-		return (self::$instance ?? (self::$instance = new TestSuiteProvider()));
+		return (self::$instance ?? (self::$instance = new FilterProvider()));
 	}
 
-	private $suiteFactory;
+	/**
+	 * The filter factory.
+	 *
+	 * @var IFilterFactory
+	 */
+	private $filterFactory;
 
-	private $suites;
+	/**
+	 * The filters map.
+	 *
+	 * @var array
+	 */
+	private $filtersMap;
 
-	private function __construct()
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
 	{
-		$this->suites = [];
+		$this->filtersMap = [];
 	}
 
-	public final function getSuite(string $suite) : ITestSuite
+	/**
+	 * Gets a filter.
+	 *
+	 * @throws FilterFactoryException
+	 *	Thrown when the filter creation fails.
+	 *
+	 * @param string $type
+	 *	The filter type.
+	 *
+	 * @return IFilter
+	 *	The filter.
+	 */
+	public final function getFilter(string $type) : IFilter
 	{
-		return ($this->suites[$suite] ?? ($this->suites[$suite] = $this->getSuiteFactory()->createSuite($suite)));
+		return ($this->filtersMap[$type] ?? ($this->filtersMap[$type] = $this->getFilterFactory()->createFilter($type)));
 	}
 
-	public final function getSuiteFactory() : ITestSuiteFactory
+	/**
+	 * Gets the filter factory.
+	 *
+	 * @return IFilterFactory
+	 *	The filter factory.
+	 */
+	public final function getFilterFactory() : IFilterFactory
 	{
-		return ($this->suiteFactory ?? ($this->suiteFactory = new TestSuiteFactory()));
+		return ($this->filterFactory ?? ($this->filterFactory = new FilterFactory()));
 	}
 }

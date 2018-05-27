@@ -29,13 +29,32 @@ namespace Lightbit\Configuration;
 
 use \Throwable;
 
-use \Lightbit\Configuration\ConfigurationException;
+use \Lightbit\Data\Collections\StringMapKeyValueTypeMismatchException;
+
 use \Lightbit\Configuration\IConfiguration;
 
-class ConfigurationKeyNotSetException extends ConfigurationException
+/**
+ * ConfigurationKeyValueTypeMismatchException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class ConfigurationKeyValueTypeMismatchException extends StringMapKeyValueTypeMismatchException
 {
-	public function __construct(IConfiguration $map, string $message, Throwable $previous = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The exception configuration.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IConfiguration $configuration, string $message, Throwable $previous = null)
 	{
-		parent::__construct($map, $message, $previous);
+		parent::__construct($configuration, $message, $previous);
 	}
 }

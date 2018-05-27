@@ -25,24 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Data\Filtering;
 
 use \Throwable;
+
 use \Lightbit\Exception;
 
-class HtmlViewNotFoundException extends Exception
-{
-	private $viewID;
+use \Lightbit\Data\Filtering\IFilter;
 
-	public function __construct(string $viewID, string $message, Throwable $previous = null)
+/**
+ * FilterException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FilterException extends Exception
+{
+	/**
+	 * Constructor.
+	 *
+	 * @param IFilter $filter
+	 *	The exception filter.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IFilter $filter, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
-
-		$this->viewID = $viewID;
-	}
-
-	public final function getViewID() : string
-	{
-		return $this->viewID;
 	}
 }

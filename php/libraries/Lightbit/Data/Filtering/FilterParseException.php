@@ -25,37 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\ParserCompositionException;
-use \Lightbit\Data\Parsing\ParserException;
-use \Lightbit\Data\Parsing\ParserProvider;
-use \Lightbit\Reflection\Type;
+use \Throwable;
 
-class StringParser implements IParser
+use \Lightbit\Data\Filtering\FilterException;
+
+use \Lightbit\Data\Filtering\IFilter;
+
+/**
+ * FilterParseException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FilterParseException extends FilterException
 {
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param IFilter $filter
+	 *	The exception filter.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IFilter $filter, string $message, Throwable $previous = null)
 	{
-
-	}
-
-	public final function compose($subject) : string
-	{
-		if (!is_string($subject))
-		{
-			$subject = ParserProvider::getInstance()->getParser(
-				(Type::getInstanceOf($subject)->getName())->compose($subject)
-			)
-
-			->compose($subject);
-		}
-
-		return $subject;
-	}
-
-	public final function parse(string $subject) : string
-	{
-		return $subject;
+		parent::__construct($parser, $message, $previous);
 	}
 }

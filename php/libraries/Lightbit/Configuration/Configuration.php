@@ -35,101 +35,288 @@ use \Lightbit\Configuration\ConfigurationKeyNotSetException;
 use \Lightbit\Configuration\ConfigurationKeyTypeException;
 use \Lightbit\Configuration\IConfiguration;
 
+/**
+ * IConfiguration.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class Configuration implements IConfiguration
 {
+	/**
+	 * The map.
+	 *
+	 * @var StringMap
+	 */
 	private $configuration;
 
-	public function __construct(array $configuration = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param array $propertyMap
+	 *	The configuration property map.
+	 */
+	public function __construct(array $propertyMap = null)
 	{
-		$this->configuration = new StringMap($configuration);
+		$this->map = new StringMap($propertyMap);
 	}
 
-	public function accept(object $subject, array $configuration) : void
+	/**
+	 * Accepts a configuration into a subject object, by invoking the
+	 * matching setter method for each existing property.
+	 *
+	 * @throws ConfigurationException
+	 *	Thrown when a property fails to be set.
+	 *
+	 * @param object $subject
+	 *	The configuration subject.
+	 *
+	 * @param array $propertyMethodMap
+	 *	The configuration property method map.
+	 */
+	public function accept(object $subject, array $propertyMethodMap) : void
 	{
-		$values = $this->configuration->toArray();
+		$propertyMap = $this->map->toArray();
 
-		foreach ($configuration as $property => $method)
+		foreach ($propertyMethodMap as $property => $method)
 		{
 			try
 			{
-				if (isset($values[$property]))
+				if (isset($propertyMap[$property]))
 				{
-					$subject->{$method}($values[$property]);
+					$subject->{$method}($propertyMap[$property]);
 				}
 			}
 			catch (Throwable $e)
 			{
-				throw new ConfigurationException($this, sprintf('Can not set configurable property, uncaught throwable: "%s"', $property), $e);
+				throw new ConfigurationException(
+					$this,
+					sprintf(
+						'Can not set configurable property, uncaught throwable: "%s"',
+						$property
+					),
+					$e
+				);
 			}
 		}
 	}
 
-	public function getBool(string $key, bool $optional = false) : ?bool
+	/**
+	 * Gets a boolean.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as a boolean.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return bool
+	 *	The property value.
+	 */
+	public final function getBool(string $property, bool $optional = false) : ?bool
 	{
 		try
 		{
-			return $this->configuration->getBool($key, $optional);
+			return $this->map->getBool($property, $optional);
 		}
 		catch (StringMapKeyNotSetException $e)
 		{
-			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
+			throw new ConfigurationPropertyNotSetException($this, sprintf(
+				'Can not get configuration property, not set: "%s"',
+				$property
+			));
 		}
-		catch (StringMapKeyTypeException $e)
+		catch (StringMapKeyValueParseException $e)
 		{
-			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+			throw new ConfigurationPropertyValueParseException($this, sprintf(
+				'Can not get configuration property, parsing failure: "%s"',
+				$property
+			));
+		}
+		catch (StringMapKeyValueTypeMismatchException $e)
+		{
+			throw new ConfigurationPropertyValueTypeMismatchException($this, sprintf(
+				'Can not get configuration property, value type mismatch: "%s"',
+				$property
+			));
 		}
 	}
 
-	public function getFloat(string $key, bool $optional = false) : ?float
+	/**
+	 * Gets a float.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as a float.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return float
+	 *	The property value.
+	 */
+	public final function getFloat(string $property, bool $optional = false) : ?float
 	{
 		try
 		{
-			return $this->configuration->getFloat($key, $optional);
+			return $this->map->getFloat($property, $optional);
 		}
 		catch (StringMapKeyNotSetException $e)
 		{
-			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
+			throw new ConfigurationPropertyNotSetException($this, sprintf(
+				'Can not get configuration property, not set: "%s"',
+				$property
+			));
 		}
-		catch (StringMapKeyTypeException $e)
+		catch (StringMapKeyValueParseException $e)
 		{
-			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+			throw new ConfigurationPropertyValueParseException($this, sprintf(
+				'Can not get configuration property, parsing failure: "%s"',
+				$property
+			));
+		}
+		catch (StringMapKeyValueTypeMismatchException $e)
+		{
+			throw new ConfigurationPropertyValueTypeMismatchException($this, sprintf(
+				'Can not get configuration property, value type mismatch: "%s"',
+				$property
+			));
 		}
 	}
 
-	public function getInt(string $key, bool $optional = false) : ?int
+	/**
+	 * Gets an integer.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueParseException
+	 *	Thrown when the value can not be retrieved because it set as a string
+	 *	and can not parsed as an integer.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return int
+	 *	The property value.
+	 */
+	public final function getInt(string $property, bool $optional = false) : ?int
 	{
 		try
 		{
-			return $this->configuration->getInt($key, $optional);
+			return $this->map->getInt($property, $optional);
 		}
 		catch (StringMapKeyNotSetException $e)
 		{
-			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
+			throw new ConfigurationPropertyNotSetException($this, sprintf(
+				'Can not get configuration property, not set: "%s"',
+				$property
+			));
 		}
-		catch (StringMapKeyTypeException $e)
+		catch (StringMapKeyValueParseException $e)
 		{
-			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+			throw new ConfigurationPropertyValueParseException($this, sprintf(
+				'Can not get configuration property, parsing failure: "%s"',
+				$property
+			));
+		}
+		catch (StringMapKeyValueTypeMismatchException $e)
+		{
+			throw new ConfigurationPropertyValueTypeMismatchException($this, sprintf(
+				'Can not get configuration property, value type mismatch: "%s"',
+				$property
+			));
 		}
 	}
 
-	public function getString(string $key, bool $optional = false) : ?string
+	/**
+	 * Gets a string.
+	 *
+	 * @throws ConfigurationPropertyNotSetException
+	 *	Thrown when the key is not optional and it's value can not be retrieved
+	 *  because it is not set.
+	 *
+	 * @throws ConfigurationPropertyValueTypeMismatchException
+	 *	Thrown when the value can not be retrieved because it is set as an
+	 *	incompatible and inconvertible type.
+	 *
+	 * @param string $property
+	 *	The property name.
+	 *
+	 * @param bool $optional
+	 *	The property optional flag.
+	 *
+	 * @return string
+	 *	The property value.
+	 */
+	public final function getString(string $property, bool $optional = false) : ?string
 	{
 		try
 		{
-			return $this->configuration->getString($key, $optional);
+			return $this->map->getString($property, $optional);
 		}
 		catch (StringMapKeyNotSetException $e)
 		{
-			throw new ConfigurationKeyNotSetException($this, sprintf('Can not get configuration property, it is not set: "%s"', $key), $e);
+			throw new ConfigurationPropertyNotSetException($this, sprintf(
+				'Can not get configuration property, not set: "%s"',
+				$property
+			));
 		}
-		catch (StringMapKeyTypeException $e)
+		catch (StringMapKeyValueParseException $e)
 		{
-			throw new ConfigurationKeyTypeException($this, sprintf('Can not get configuration property, type mismatch: "%s"', $key), $e);
+			throw new ConfigurationPropertyValueParseException($this, sprintf(
+				'Can not get configuration property, parsing failure: "%s"',
+				$property
+			));
+		}
+		catch (StringMapKeyValueTypeMismatchException $e)
+		{
+			throw new ConfigurationPropertyValueTypeMismatchException($this, sprintf(
+				'Can not get configuration property, value type mismatch: "%s"',
+				$property
+			));
 		}
 	}
 
+	/**
+	 * Converts to an array.
+	 *
+	 * @return array
+	 *	The result.
+	 */
 	public final function toArray() : array
 	{
-		return $this->configuration->toArray();
+		return $this->map->toArray();
 	}
 }

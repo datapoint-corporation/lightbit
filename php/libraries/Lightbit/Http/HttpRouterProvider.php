@@ -28,21 +28,52 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Configuration\ConfigurationProvider;
+
 use \Lightbit\Http\IHttpRouter;
 
+/**
+ * HttpRouterProvider.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class HttpRouterProvider
 {
+	/**
+	 * The singleton instance.
+	 *
+	 * @var HttpRouterProvider
+	 */
 	private static $instance;
 
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HttpRouterProvider
+	 *	The singleton instance.
+	 */
 	public static final function getInstance() : HttpRouterProvider
 	{
 		return (self::$instance ?? (self::$instance = new HttpRouterProvider()));
 	}
 
+	/**
+	 * The router.
+	 *
+	 * @var IHttpRouter
+	 */
 	private $router;
 
+	/**
+	 * The router factory.
+	 *
+	 * @var IHttpRouterFactory
+	 */
 	private $routerFactory;
 
+	/**
+	 * Constructor.
+	 */
 	private function __construct()
 	{
 		ConfigurationProvider::getInstance()->getConfiguration(
@@ -54,16 +85,37 @@ final class HttpRouterProvider
 		]);
 	}
 
+	/**
+	 * Gets the router.
+	 *
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the router creation fails.
+	 *
+	 * @return IHttpRouter
+	 *	The router.
+	 */
 	public final function getRouter() : IHttpRouter
 	{
 		return ($this->router ?? ($this->router = $this->getRouterFactory()->createRouter()));
 	}
 
+	/**
+	 * Gets the router factory.
+	 *
+	 * @return IHttpRouterFactory
+	 *	The router factory.
+	 */
 	public final function getRouterFactory() : IHttpRouterFactory
 	{
 		return ($this->routerFactory ?? ($this->routerFactory = new HttpRouterFactory()));
 	}
 
+	/**
+	 * Sets the router factory.
+	 *
+	 * @param IHttpRouterFactory $routerFactory
+	 *	The router factory.
+	 */
 	public final function setRouterFactory(IHttpRouterFactory $routerFactory) : void
 	{
 		$this->router = null;

@@ -31,8 +31,19 @@ use \Throwable;
 
 use \Lightbit\Exception;
 
+/**
+ * ErrorException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class ErrorException extends Exception
 {
+	/**
+	 * The level string map.
+	 *
+	 * @var array
+	 */
 	private static $levelStringMap = [
 		E_ERROR => 'E_ERROR',
 		E_WARNING => 'E_WARNING',
@@ -52,12 +63,45 @@ class ErrorException extends Exception
 		E_ALL => 'E_ALL'
 	];
 
+	/**
+	 * The file path.
+	 *
+	 * @var string
+	 */
 	private $filePath;
 
+	/**
+	 * The level.
+	 *
+	 * @var int
+	 */
 	private $level;
 
+	/**
+	 * The line number.
+	 *
+	 * @var int
+	 */
 	private $lineNumber;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param int $level
+	 *	The exception level.
+	 *
+	 * @param string $filePath
+	 *	The exception file path.
+	 *
+	 * @param int $lineNumber
+	 *	The exception line number.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(int $level, ?string $filePath, ?int $lineNumber, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
@@ -67,21 +111,45 @@ class ErrorException extends Exception
 		$this->lineNumber = $lineNumber;
 	}
 
+	/**
+	 * Gets the file path.
+	 *
+	 * @return string
+	 *	The file path.
+	 */
 	public final function getFilePath() : ?string
 	{
 		return $this->filePath;
 	}
 
+	/**
+	 * Gets the level.
+	 *
+	 * @return int
+	 *	The level.
+	 */
 	public final function getLevel() : int
 	{
 		return $this->level;
 	}
 
+	/**
+	 * Gets the level as a string.
+	 *
+	 * @return string
+	 *	The level as a string.
+	 */
 	public final function getLevelAsString() : string
 	{
 		return (self::$levelStringMap[$this->level] ?? 'E_UNKNOWN');
 	}
 
+	/**
+	 * Gets the line number.
+	 *
+	 * @return int
+	 *	The line number.
+	 */
 	public final function getLineNumber() : ?int
 	{
 		return $this->lineNumber;

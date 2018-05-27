@@ -27,9 +27,29 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\Base\IView;
+use \Lightbit\Html\HtmlViewRenderException;
 
+use \Lightbit\Rendering\IView;
+
+/**
+ * IHtmlView.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IHtmlView extends IView
 {
-	public function render(array $variables = null) : string;
+	/**
+	 * Renders the view.
+	 *
+	 * @throws HtmlViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param array $variableMap
+	 *	The view variable map.
+	 *
+	 * @return string
+	 *	The view content.
+	 */
+	public function render(array $variableMap = null) : string;
 }

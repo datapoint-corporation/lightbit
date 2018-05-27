@@ -25,37 +25,78 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\ParserCompositionException;
-use \Lightbit\Data\Parsing\ParserException;
-use \Lightbit\Data\Parsing\ParserProvider;
+use \Lightbit\Data\Filtering\FilterComposeException;
+use \Lightbit\Data\Filtering\FilterParseException;
 
-class FloatParser implements IParser
+use \Lightbit\Data\Filtering\IFilter;
+
+/**
+ * IntegerFilter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class IntegerFilter implements IFilter
 {
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 
 	}
 
+	/**
+	 * Compose.
+	 *
+	 * @throws FilterComposeException
+	 *	Thrown when the subject is of an incompatible type or can not be
+	 *	composed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
 	public final function compose($subject) : string
 	{
-		if (!is_float($subject) && !is_int($subject))
+		if (is_int($subject) || is_float($subject))
 		{
-			throw new ParserCompositionException($this, sprintf('Can not compose integer, bad subject type: "%s"', lbstypeof($subject)));
+			return number_format($subject, 0, '', '');
 		}
 
-		return rtrim(rtrim(number_format($subject, 16, '.', ''), '0'), '.');
+		throw new FilterComposeException($this, sprintf(
+			'Can not compose integer, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
 	}
 
-	public final function parse(string $subject) : float
+	/**
+	 * Parse.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject has an incompatible format or can not be
+	 *	parsed by this filter.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return int
+	 *	The result.
+	 */
+	public final function parse(string $subject) : int
 	{
-		if (preg_match('%^(\\-|\\+)?((\\d+\\.\\d+)|(.\\d+))$%', $subject))
+		if (preg_match('%^(\\-|\\+)?\\d+$%', $subject))
 		{
-			return floatval($subject);
+			return intval($subject);
 		}
 
-		throw new ParserException($this, sprintf('Can not parse integer, bad subject format: "%s"', $subject));
+		throw new FilterParseException($this, sprintf(
+			'Can not parse integer, bad subject format: "%s"',
+			$subject
+		));
 	}
 }

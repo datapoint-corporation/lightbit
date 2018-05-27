@@ -27,8 +27,19 @@
 
 namespace Lightbit\Http;
 
+/**
+ * HttpStatusCodeMessageStaticProvider.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 final class HttpStatusCodeMessageStaticProvider
 {
+	/**
+	 * The status code message map.
+	 *
+	 * @var array
+	 */
 	private static $statusCodeMessageMap = [
 		100 => 'Continue',
 		101 => 'Switching Protocols',
@@ -93,6 +104,15 @@ final class HttpStatusCodeMessageStaticProvider
 		511 => 'Network Authentication Required'
 	];
 
+	/**
+	 * Gets a message.
+	 *
+	 * @param int $code
+	 *	The code.
+	 *
+	 * @return string
+	 *	The message.
+	 */
 	public static final function getMessage(int $code) : string
 	{
 		return (self::$statusCodeMessageMap[$code] ?? 'Custom');

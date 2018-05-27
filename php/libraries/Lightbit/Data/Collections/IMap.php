@@ -27,7 +27,19 @@
 
 namespace Lightbit\Data\Collections;
 
+/**
+ * IMap.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IMap
 {
+	/**
+	 * Converts to an array.
+	 *
+	 * @return array
+	 *	The result.
+	 */
 	public function toArray() : array;
 }

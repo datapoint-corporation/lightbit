@@ -29,7 +29,25 @@ namespace Lightbit\Html;
 
 use \Lightbit\Html\IHtmlView;
 
+/**
+ * IHtmlViewFactory.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IHtmlViewFactory
 {
+	/**
+	 * Creates a view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
 	public function createView(string $view) : IHtmlView;
 }

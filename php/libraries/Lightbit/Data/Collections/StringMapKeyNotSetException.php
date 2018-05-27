@@ -27,13 +27,34 @@
 
 namespace Lightbit\Data\Collections;
 
-use \Lightbit\Data\Collections\IStringMap;
+use \Throwable;
+
 use \Lightbit\Data\Collections\StringMapException;
 
+use \Lightbit\Data\Collections\IStringMap;
+
+/**
+ * StringMapKeyNotSetException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class StringMapKeyNotSetException extends StringMapException
 {
-	public function __construct(IStringMap $map, string $message, Throwable $previous = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param IStringMap $stringMap
+	 *	The exception string map.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IStringMap $stringMap, string $message, Throwable $previous = null)
 	{
-		parent::__construct($map, $message, $previous);
+		parent::__construct($stringMap, $message, $previous);
 	}
 }

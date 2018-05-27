@@ -29,11 +29,30 @@ namespace Lightbit\Html;
 
 use \Throwable;
 
-use Lightbit\Html\HtmlViewException;
-use Lightbit\Html\IHtmlView;
+use \Lightbit\Html\HtmlViewException;
 
+use \Lightbit\Html\IHtmlView;
+
+/**
+ * HtmlViewRenderException.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HtmlViewRenderException extends HtmlViewException
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param IHtmlView $view
+	 *	The exception view.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(IHtmlView $view, string $message, Throwable $previous = null)
 	{
 		parent::__construct($view, $message, $previous);

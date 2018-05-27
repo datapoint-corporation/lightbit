@@ -25,15 +25,46 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParserFactory;
-use \Lightbit\Exception;
+use \Lightbit\Data\Filtering\FilterComposeException;
+use \Lightbit\Data\Filtering\FilterParseException;
 
-class ParserFactoryException extends Exception
+/**
+ * IFilter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+interface IFilter
 {
-	public function __construct(IParserFactory $parserFactory, string $message, Throwable $previous = null)
-	{
-		parent::__construct($message, $previous);
-	}
+	/**
+	 * Compose.
+	 *
+	 * @throws FilterComposeException
+	 *	Thrown when the subject is of an incompatible type or can not be
+	 *	composed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public function compose($subject) : string;
+
+	/**
+	 * Parse.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject has an incompatible format or can not be
+	 *	parsed by this filter.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public function parse(string $subject);
 }

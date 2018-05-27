@@ -29,13 +29,40 @@ namespace Lightbit\Html;
 
 use \Lightbit;
 use \Lightbit\Html\HtmlView;
+use \Lightbit\Html\HtmlViewFactoryException;
 
 use \Lightbit\Html\IHtmlView;
 use \Lightbit\Html\IHtmlViewFactory;
 
+/**
+ * HtmlViewFactory.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HtmlViewFactory implements IHtmlViewFactory
 {
-	public function createView(string $view) : IHtmlView
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+
+	}
+
+	/**
+	 * Creates a view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
+	public final function createView(string $view) : IHtmlView
 	{
 		strpos($view, '://') || ($view = 'views://' . $view);
 
@@ -44,7 +71,7 @@ class HtmlViewFactory implements IHtmlViewFactory
 			return new HtmlView($view, $path);
 		}
 
-		throw new HtmlViewNotFoundException($view, sprintf(
+		throw new HtmlViewFactoryException($this, sprintf(
 			'Can not get html view, not found: "%s"',
 			$view
 		));

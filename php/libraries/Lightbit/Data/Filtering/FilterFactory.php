@@ -25,31 +25,63 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit;
-use \Lightbit\Testing\TestSuite;
+use \Lightbit\Data\Filtering\FilterFactoryException;
 
-use \Lightbit\Testing\ITestSuite;
-use \Lightbit\Testing\ITestSuiteFactory;
+use \Lightbit\Data\Filtering\IFilter;
 
-class TestSuiteFactory implements ITestSuiteFactory
+/**
+ * FilterFactory.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FilterFactory implements IFilterFactory
 {
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 
 	}
 
-	public function createSuite(string $suite) : ITestSuite
+	/**
+	 * Creates a filter.
+	 *
+	 * @throws FilterFactoryException
+	 *	Thrown when the filter creation fails.
+	 *
+	 * @param string $type
+	 *	The filter type.
+	 *
+	 * @return IFilter
+	 *	The filter.
+	 */
+	public function createFilter(string $type) : IFilter
 	{
-		if ($filePath = Lightbit::getInstance()->getResourcePath('php', $suite))
+		switch ($type)
 		{
-			return new TestSuite($filePath);
+			case 'bool':
+			case 'boolean':
+				return new BooleanFilter();
+
+			case 'double':
+			case 'float':
+				return new FloatFilter();
+
+			case 'int':
+			case 'integer':
+				return new IntegerFilter();
+
+			case 'string':
+				return new StringFilter();
 		}
 
-		throw new TestSuiteNotFoundException($suite, sprintf(
-			'Can not get test suite, not found: "%s"',
-			$suite
+		throw new FilterFactoryException($this, sprintf(
+			'Can not create filter, it does not exist: "%s"'
+			$type
 		));
 	}
 }

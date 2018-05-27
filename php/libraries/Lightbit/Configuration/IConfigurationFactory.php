@@ -27,9 +27,29 @@
 
 namespace Lightbit\Configuration;
 
+use \Lightbit\Configuration\ConfigurationFactoryException;
+
 use \Lightbit\Configuration\IConfiguration;
 
+/**
+ * IConfigurationFactory.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IConfigurationFactory
 {
+	/**
+	 * Creates a configuration.
+	 *
+	 * @throws ConfigurationFactoryException
+	 *	Thrown if the configuration creation fails.
+	 *
+	 * @param string $configuration
+	 *	The configuration resource identifier.
+	 *
+	 * @return IConfiguration
+	 *	The configuration.
+	 */
 	public function createConfiguration(string $configuration) : IConfiguration;
 }

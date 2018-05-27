@@ -25,34 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-//
-// Zzzzzzzzz Zzzzzzzzzzzzz
-//
-// I know this is nowhere near close to being a good way of iterating through
-// each file, but for now, consider this a promise that I'll get back to
-// it soon.
-//
+namespace Lightbit\Rendering;
 
-$prefix = LB_PATH_LIGHTBIT . DIRECTORY_SEPARATOR . 'libraries' . DIRECTORY_SEPARATOR;
-$suffix = '*.php';
-
-for ($i = 0; strlen($prefix . $suffix) < 512; ++$i)
+/**
+ * IView.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+interface IView
 {
-	if ($t = glob($prefix . $suffix, GLOB_NOESCAPE))
-	{
-		foreach ($t as $i => $filePath)
-		{
-			$this->exactly(
-				true,
-
-				sprintf('%s', $filePath),
-				function() use ($filePath) {
-					include_once ($filePath);
-					return true;
-				}
-			);
-		}
-	}
-
-	$prefix .= '*' . DIRECTORY_SEPARATOR;
+	/**
+	 * Render.
+	 *
+	 * @throws ViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param array $variables
+	 *	The view variables.
+	 *
+	 * @return string
+	 *	The view content.
+	 */
+	public function render(array $variables = null) : string;
 }

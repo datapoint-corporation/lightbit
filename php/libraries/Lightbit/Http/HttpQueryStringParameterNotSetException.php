@@ -27,11 +27,32 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Http\HttpQueryStringException;
+use \Throwable;
+
+use \Lightbit\Data\Collections\StringMapKeyNotSetException;
+
 use \Lightbit\Http\IHttpQueryString;
 
-class HttpQueryStringParameterNotSetException extends HttpQueryStringException
+/**
+ * HttpQueryStringParameterNotSetException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class HttpQueryStringParameterNotSetException extends StringMapKeyNotSetException
 {
+	/**
+	 * Constructor.
+	 *
+	 * @param IHttpQueryString $queryString
+	 *	The exception query string.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
 	{
 		parent::__construct($queryString, $message, $previous);

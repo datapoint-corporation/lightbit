@@ -25,14 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Configuration;
 
-use \Lightbit\Data\Parsing\ParserCompositionException;
-use \Lightbit\Data\Parsing\ParserException;
+use \Throwable;
 
-interface IParser
+use \Lightbit\Data\Collections\StringMapKeyNotSetException;
+
+use \Lightbit\Configuration\IConfiguration;
+
+/**
+ * ConfigurationPropertyNotSetException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class ConfigurationPropertyNotSetException extends StringMapKeyNotSetException
 {
-	public function compose($subject) : string;
-
-	public function parse(string $subject);
+	/**
+	 * Constructor.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The exception configuration.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IConfiguration $configuration, string $message, Throwable $previous = null)
+	{
+		parent::__construct($configuration, $message, $previous);
+	}
 }

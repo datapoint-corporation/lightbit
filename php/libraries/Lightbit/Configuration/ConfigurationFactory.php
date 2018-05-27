@@ -28,25 +28,46 @@
 namespace Lightbit\Configuration;
 
 use \Lightbit;
-use \Lightbit\Environment;
-use \Lightbit\Exception;
 use \Lightbit\Configuration\Configuration;
 use \Lightbit\Configuration\ConfigurationFactoryException;
+use \Lightbit\Environment;
+
 use \Lightbit\Configuration\IConfigurationFactory;
 
+/**
+ * ConfigurationFactory.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class ConfigurationFactory implements IConfigurationFactory
 {
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 
 	}
 
+	/**
+	 * Creates a configuration.
+	 *
+	 * @throws ConfigurationFactoryException
+	 *	Thrown if the configuration creation fails.
+	 *
+	 * @param string $configuration
+	 *	The configuration resource identifier.
+	 *
+	 * @return IConfiguration
+	 *	The configuration.
+	 */
 	public final function createConfiguration(string $configuration) : IConfiguration
 	{
 		$environment = Environment::getInstance();
 		$lightbit = Lightbit::getInstance();
 
-		$properties = [];
+		$propertiesMap = [];
 
 		// Base
 		foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
@@ -55,7 +76,7 @@ class ConfigurationFactory implements IConfigurationFactory
 
 			if (is_array($subject))
 			{
-				$properties = $subject + $properties;
+				$propertiesMap = $subject + $propertiesMap;
 			}
 		}
 
@@ -66,10 +87,10 @@ class ConfigurationFactory implements IConfigurationFactory
 
 			if (is_array($subject))
 			{
-				$properties = $subject + $properties;
+				$propertiesMap = $subject + $propertiesMap;
 			}
 		}
 
-		return new Configuration($properties);
+		return new Configuration($propertiesMap);
 	}
 }

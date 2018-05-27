@@ -25,38 +25,78 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Parsing;
+namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Parsing\IParser;
-use \Lightbit\Data\Parsing\ParserFactoryException;
+use \Lightbit\Data\Filtering\FilterComposeException;
+use \Lightbit\Data\Filtering\FilterParseException;
 
-class ParserFactory implements IParserFactory
+use \Lightbit\Data\Filtering\IFilter;
+
+/**
+ * BooleanFilter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class BooleanFilter implements IFilter
 {
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 
 	}
 
-	public function createParser(string $type) : IParser
+	/**
+	 * Compose.
+	 *
+	 * @throws FilterComposeException
+	 *	Thrown when the subject is of an incompatible type or can not be
+	 *	composed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The composition subject.
+	 *
+	 * @return string
+	 *	The result.
+	 */
+	public final function compose($subject) : string
 	{
-		switch ($type)
+		if (is_bool($subject))
 		{
-			case 'bool':
-			case 'boolean':
-				return new BooleanParser();
-
-			case 'double':
-			case 'float':
-				return new FloatParser();
-
-			case 'int':
-			case 'integer':
-				return new IntegerParser();
-
-			case 'string':
-				return new StringParser();
+			return ($subject ? 'true' : 'false');
 		}
 
-		throw new ParserFactoryException($this, sprintf('Can not create type parser, out of options: "%s"', $type));
+		throw new FilterComposeException($this, sprintf(
+			'Can not compose boolean, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
+	}
+
+	/**
+	 * Parse.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject has an incompatible format or can not be
+	 *	parsed by this filter.
+	 *
+	 * @param string $subject
+	 *	The parsing subject.
+	 *
+	 * @return mixed
+	 *	The result.
+	 */
+	public final function parse(string $subject) : bool
+	{
+		if (preg_match('%^(true|false)$%', $subject))
+		{
+			return ($subject === 'true');
+		}
+
+		throw new FilterParseException($this, sprintf(
+			'Can not parse boolean, bad subject format: "%s"',
+			$subject
+		));
 	}
 }

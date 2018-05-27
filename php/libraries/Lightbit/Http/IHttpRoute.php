@@ -27,25 +27,29 @@
 
 namespace Lightbit\Http;
 
+/**
+ * IHttpRoute.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IHttpRoute
 {
 	/**
-	 * Matches against a method and path.
-	 *
-	 * On success, the path tokens will be extracted into the third variable,
-	 * according to the route pattern.
+	 * Matches the method an path against this routes method list and pattern,
+	 * extracting any path tokens in the process.
 	 *
 	 * @param string $method
-	 *	The request method.
+	 *	The method to match against.
 	 *
 	 * @param string $path
-	 *	The request path.
+	 *	The path to match against.
 	 *
 	 * @param array $tokens
-	 *	The request path tokens.
+	 *	The path tokens output variable.
 	 *
 	 * @return bool
-	 *	The result.
+	 *	The success status.
 	 */
 	public function match(string $method, string $path, array &$tokens = null) : bool;
 }

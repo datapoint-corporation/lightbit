@@ -30,9 +30,27 @@ namespace Lightbit\Http;
 use \Lightbit\Http\IHttpRequest;
 use \Lightbit\Http\IHttpResponse;
 
+/**
+ * IHttpContext.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 interface IHttpContext
 {
+	/**
+	 * Gets the request.
+	 *
+	 * @return IHttpRequest
+	 *	The request.
+	 */
 	public function getRequest() : IHttpRequest;
 
+	/**
+	 * Gets the response.
+	 *
+	 * @return IHttpResponse
+	 *	The response.
+	 */
 	public function getResponse() : IHttpResponse;
 }

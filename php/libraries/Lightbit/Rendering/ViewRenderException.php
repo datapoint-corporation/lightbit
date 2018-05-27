@@ -25,15 +25,49 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Rendering;
 
-use \Lightbit\Http\HttpQueryStringException;
-use \Lightbit\Http\IHttpQueryString;
+use \Throwable;
 
-class HttpQueryStringParameterParseException extends HttpQueryStringException
+use \Lightbit\Exception;
+
+use \Lightbit\Rendering\IView;
+
+/**
+ * ViewRenderException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class ViewRenderException extends Exception
 {
-	public function __construct(IHttpQueryString $queryString, string $message, Throwable $previous = null)
+	/**
+	 * Constructor.
+	 *
+	 * @param IView $view
+	 *	The exception view.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IView $view, string $message, Throwable $previous = null)
 	{
-		parent::__construct($queryString, $message, $previous);
+		parent::__construct($message, $previous);
+
+		$this->view = $view;
+	}
+
+	/**
+	 * Gets the view.
+	 *
+	 * @return IView
+	 *	The view.
+	 */
+	public final function getView() : IView
+	{
+		return $this->view;
 	}
 }

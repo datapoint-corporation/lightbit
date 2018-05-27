@@ -28,13 +28,28 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Http\IHttpRouter;
 use \Lightbit\Http\HttpServer;
 
+use \Lightbit\Http\IHttpRouter;
+
+/**
+ * HttpRouter.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HttpRouter implements IHttpRouter
 {
+	/**
+	 * The base uniform resource location.
+	 *
+	 * @var string
+	 */
 	private $baseUrl;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 		ConfigurationProvider::getInstance()->getConfiguration(
@@ -46,11 +61,23 @@ class HttpRouter implements IHttpRouter
 		]);
 	}
 
+	/**
+	 * Gets the base uniform resource location.
+	 *
+	 * @return string
+	 *	The base uniform resource location.
+	 */
 	public final function getBaseUrl() : string
 	{
 		return ($this->baseUrl ?? ($this->baseUrl = HttpServer::getInstance()->getDocumentDirectoryUrl()));
 	}
 
+	/**
+	 * Sets the base uniform resource location.
+	 *
+	 * @param string $baseUrl
+	 *	The base uniform resource location.
+	 */
 	public final function setBaseUrl(string $baseUrl) : void
 	{
 		if ($baseUrl = trim($baseUrl, '/'))

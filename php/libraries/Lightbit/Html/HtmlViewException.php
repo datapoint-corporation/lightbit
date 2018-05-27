@@ -32,10 +32,33 @@ use \Lightbit\Exception;
 
 use \Lightbit\Html\IHtmlView;
 
+/**
+ * HtmlViewException.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HtmlViewException extends Exception
 {
+	/**
+	 * The view.
+	 *
+	 * @var IHtmlView
+	 */
 	private $view;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param IHtmlView $view
+	 *	The exception view.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
 	public function __construct(IHtmlView $view, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
@@ -43,6 +66,12 @@ class HtmlViewException extends Exception
 		$this->view = $view;
 	}
 
+	/**
+	 * Gets the view.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
 	public final function getView() : IHtmlView
 	{
 		return $this->view;

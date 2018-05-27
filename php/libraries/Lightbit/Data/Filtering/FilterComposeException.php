@@ -25,27 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Testing\TestCases;
+namespace Lightbit\Data\Filtering;
 
-use \Closure;
+use \Throwable;
 
-use \Lightbit\Testing\ITestCase;
-use \Lightbit\Testing\ITestSuite;
-use \Lightbit\Testing\TestCase;
+use \Lightbit\Data\Filtering\FilterException;
 
-class EqualityTestCase extends TestCase implements ITestCase
+use \Lightbit\Data\Filtering\IFilter;
+
+/**
+ * FilterComposeException.
+ *
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
+class FilterComposeException extends FilterException
 {
-	private $constraint;
-
-	public function __construct(string $description, Closure $closure, $constraint)
+	/**
+	 * Constructor.
+	 *
+	 * @param IFilter $filter
+	 *	The exception filter.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IFilter $filter, string $message, Throwable $previous = null)
 	{
-		parent::__construct($description, $closure, $constraint);
-
-		$this->constraint = $constraint;
-	}
-
-	public function validate() : bool
-	{
-		return ($this->export($subject) && $subject == $this->constraint);
+		parent::__construct($parser, $message, $previous);
 	}
 }

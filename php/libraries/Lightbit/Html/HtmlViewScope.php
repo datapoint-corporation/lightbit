@@ -27,12 +27,29 @@
 
 namespace Lightbit\Html;
 
-use \Lightbit\Html\HtmlView;
+use \Lightbit\Html\IHtmlView;
 
+/**
+ * HtmlViewScope.
+ *
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @since 2.0.0
+ */
 class HtmlViewScope
 {
+	/**
+	 * The view.
+	 *
+	 * @var IHtmlView
+	 */
 	private $view;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param IHtmlView $view
+	 *	The scope view.
+	 */
 	public function __construct(IHtmlView $view)
 	{
 		$this->view = $view;
