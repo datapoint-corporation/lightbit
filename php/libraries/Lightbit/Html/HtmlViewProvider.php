@@ -28,7 +28,7 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Html\HtmlViewFactory;
-use \Lightbit\Html\HtmlViewNotFoundException;
+use \Lightbit\Html\HtmlViewFactoryException;
 
 use \Lightbit\Html\IHtmlView;
 use \Lightbit\Html\IHtmlViewFactory;
@@ -132,7 +132,7 @@ final class HtmlViewProvider
 			{
 				return $this->getView($view);
 			}
-			catch (HtmlViewNotFoundException $e)
+			catch (HtmlViewFactoryException $e)
 			{
 				$htmlViewNotFoundException ?? ($htmlViewNotFoundException = $e);
 			}

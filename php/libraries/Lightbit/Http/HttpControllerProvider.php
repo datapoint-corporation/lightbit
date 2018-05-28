@@ -27,49 +27,43 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Http\HttpServerRequestQueryString;
+use \Lightbit\Http\HttpControllerFactory;
 
-use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\IHttpControllerFactory;
 
 /**
- * HttpServerRequest.
+ * HttpControllerProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class HttpServerRequest implements IHttpRequest
+final class HttpControllerProvider
 {
 	/**
 	 * The singleton instance.
 	 *
-	 * @var HttpServerRequest
+	 * @var HttpControllerProvider
 	 */
 	private static $instance;
 
 	/**
 	 * Gets the singleton instance.
 	 *
-	 * @return HttpServerRequest
+	 * @return HttpControllerProvider
 	 *	The singleton instance.
 	 */
-	public static final function getInstance() : HttpServerRequest
+	public static final function getInstance() : HttpControllerProvider
 	{
-		return (self::$instance ?? (self::$instance = new HttpServerRequest()));
+		return (self::$instance ?? (self::$instance = new HttpControllerProvider()));
 	}
 
 	/**
-	 * The path.
+	 * The controller factory.
 	 *
-	 * @var string
+	 * @var IHttpControllerFactory
 	 */
-	private $path;
-
-	/**
-	 * The uniform resource location.
-	 *
-	 * @var string
-	 */
-	private $url;
+	private $controllerFactory;
 
 	/**
 	 * Constructor.
@@ -80,65 +74,41 @@ final class HttpServerRequest implements IHttpRequest
 	}
 
 	/**
-	 * Gets the method.
+	 * Gets a controller.
 	 *
-	 * @return string
-	 *	The method.
+	 * @throws HttpControllerFactoryException
+	 *	Thrown if the controller creation fails.
+	 *
+	 * @param IHttpAction $action
+	 *	The controller action.
+	 *
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public final function getMethod() : string
+	public final function getController(IHttpAction $action) : IHttpController
 	{
-		return $_SERVER['REQUEST_METHOD'];
+		return $this->getControllerFactory()->createController($action);
 	}
 
 	/**
-	 * Gets the path.
+	 * Gets the controller factory.
 	 *
-	 * @return string
-	 *	The path.
+	 * @return IHttpControllerFactory
+	 *	The controller factory.
 	 */
-	public final function getPath() : string
+	public final function getControllerFactory() : IHttpControllerFactory
 	{
-		if (!isset($this->path))
-		{
-			$this->path = $this->getUrl();
-
-			if ($i = strpos($this->path, '?'))
-			{
-				$this->path = substr($this->path, 0, $i);
-			}
-
-			if ($this->path = trim($this->path, '/'))
-			{
-				$this->path = '/' . $this->path . '/';
-			}
-			else
-			{
-				$this->path = '/';
-			}
-		}
-
-		return $this->path;
+		return ($this->controllerFactory ?? ($this->controllerFactory = new HttpControllerFactory()));
 	}
 
 	/**
-	 * Gets the uniform resource location.
+	 * Sets the controller factory.
 	 *
-	 * @return string
-	 *	The uniform resource location.
+	 * @param IHttpControllerFactory $controllerFactory
+	 *	The controller factory.
 	 */
-	public final function getUrl() : string
+	public final function setControllerFactory(IHttpControllerFactory $controllerFactory) : void
 	{
-		return ($this->url ?? ($this->url = $_SERVER['REQUEST_URI']));
-	}
-
-	/**
-	 * Gets the query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The query string.
-	 */
-	public final function getQueryString() : IHttpQueryString
-	{
-		return HttpServerRequestQueryString::getInstance();
+		$this->controllerFactory = $controllerFactory;
 	}
 }

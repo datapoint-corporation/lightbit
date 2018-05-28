@@ -27,118 +27,109 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Http\HttpServerRequestQueryString;
+use \Lightbit\Data\Collections\StringMap;
 
-use \Lightbit\Http\IHttpRequest;
+use \Lightbit\Data\Collections\IStringMap;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\IHttpRoute;
 
 /**
- * HttpServerRequest.
+ * HttpAction.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class HttpServerRequest implements IHttpRequest
+class HttpAction implements IHttpAction
 {
 	/**
-	 * The singleton instance.
+	 * The argument list.
 	 *
-	 * @var HttpServerRequest
+	 * @var array
 	 */
-	private static $instance;
+	private $argumentList;
 
 	/**
-	 * Gets the singleton instance.
+	 * The argument map.
 	 *
-	 * @return HttpServerRequest
-	 *	The singleton instance.
+	 * @var array
 	 */
-	public static final function getInstance() : HttpServerRequest
-	{
-		return (self::$instance ?? (self::$instance = new HttpServerRequest()));
-	}
+	private $argumentMap;
 
 	/**
-	 * The path.
+	 * The controller.
 	 *
-	 * @var string
+	 * @var IHttpController
 	 */
-	private $path;
+	private $controller;
 
 	/**
-	 * The uniform resource location.
+	 * The context.
 	 *
-	 * @var string
+	 * @var IHttpContext
 	 */
-	private $url;
+	private $context;
+
+	/**
+	 * The route.
+	 *
+	 * @var IHttpRoute
+	 */
+	private $route;
 
 	/**
 	 * Constructor.
+	 *
+	 * @param IHttpContext $context
+	 *	The action context.
+	 *
+	 * @param IHttpContext $context
+	 *	The action route.
+	 *
+	 * @param array $tokenMap
+	 *	The action
 	 */
-	private function __construct()
+	public function __construct(IHttpContext $context, IHttpRoute $route, array $argumentMap)
 	{
-
+		$this->argumentMap = ($argumentMap ?? []);
+		$this->context = $context;
+		$this->route = $route;
 	}
 
 	/**
-	 * Gets the method.
+	 * Gets the context.
 	 *
-	 * @return string
-	 *	The method.
+	 * @return IHttpContext
+	 *	The context.
 	 */
-	public final function getMethod() : string
+	public function getContext() : IHttpContext
 	{
-		return $_SERVER['REQUEST_METHOD'];
+		return $this->context;
 	}
 
 	/**
-	 * Gets the path.
+	 * Gets the controller.
 	 *
-	 * @return string
-	 *	The path.
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public final function getPath() : string
+	public function getController() : IHttpController
 	{
-		if (!isset($this->path))
-		{
-			$this->path = $this->getUrl();
-
-			if ($i = strpos($this->path, '?'))
-			{
-				$this->path = substr($this->path, 0, $i);
-			}
-
-			if ($this->path = trim($this->path, '/'))
-			{
-				$this->path = '/' . $this->path . '/';
-			}
-			else
-			{
-				$this->path = '/';
-			}
-		}
-
-		return $this->path;
+		return ($this->controller ?? ($this->controller = HttpControllerProvider::getInstance()->getController($this)));
 	}
 
 	/**
-	 * Gets the uniform resource location.
+	 * Gets the route.
 	 *
-	 * @return string
-	 *	The uniform resource location.
+	 * @return IHttpRoute
+	 *	The route.
 	 */
-	public final function getUrl() : string
+	public function getRoute() : IHttpRoute
 	{
-		return ($this->url ?? ($this->url = $_SERVER['REQUEST_URI']));
+		return $this->route;
 	}
 
-	/**
-	 * Gets the query string.
-	 *
-	 * @return IHttpQueryString
-	 *	The query string.
-	 */
-	public final function getQueryString() : IHttpQueryString
+	public function run() : void
 	{
-		return HttpServerRequestQueryString::getInstance();
+		$this->getController()->{$this->route->getControllerMethodName()}(...array_values($this->argumentMap));
 	}
 }

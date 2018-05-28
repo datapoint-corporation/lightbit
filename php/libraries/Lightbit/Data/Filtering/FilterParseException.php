@@ -55,6 +55,6 @@ class FilterParseException extends FilterException
 	 */
 	public function __construct(IFilter $filter, string $message, Throwable $previous = null)
 	{
-		parent::__construct($parser, $message, $previous);
+		parent::__construct($filter, $message, $previous);
 	}
 }

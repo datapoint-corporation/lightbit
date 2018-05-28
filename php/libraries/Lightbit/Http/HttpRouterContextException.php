@@ -25,65 +25,39 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+namespace Lightbit\Http;
 
-use \Lightbit\Data\Filtering\FilterComposeException;
-use \Lightbit\Data\Filtering\FilterParseException;
+use \Throwable;
+
+use \Lightbit\Http\HttpRouterException;
+
+use \Lightbit\Http\IHttpRouter;
 
 /**
- * IFilter.
+ * HttpRouterContextException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IFilter
+class HttpRouterContextException extends HttpRouterException
 {
 	/**
-	 * Compose.
+	 * Constructor.
 	 *
-	 * @throws FilterComposeException
-	 *	Thrown when the subject is of an incompatible type or can not be
-	 *	composed by this filter.
+	 * @param IHttpRouter $router
+	 *	The exception router.
 	 *
-	 * @param mixed $subject
-	 *	The composition subject.
+	 * @param IHttpContext $context
+	 *	The exception context.
 	 *
-	 * @return string
-	 *	The result.
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function compose($subject) : string;
-
-	/**
-	 * Parse.
-	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject has an incompatible format or can not be
-	 *	parsed by this filter.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function parse(string $subject);
-
-	/**
-	 * Transform.
-	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject is a string with an incompatible format which
-	 *	can not be parsed by this filter.
-	 *
-	 * @throws FilterTransformException
-	 *	Thrown when the subject is of an incompatible type which can not
-	 *	be transformed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The transformation subject.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function transform($subject);
+	public function __construct(IHttpRouter $router, IHttpContext $context, string $message, Throwable $previous = null)
+	{
+		parent::__construct($router, $message, $previous);
+	}
 }

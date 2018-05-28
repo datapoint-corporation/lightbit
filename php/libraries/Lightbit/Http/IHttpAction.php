@@ -25,65 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+namespace Lightbit\Http;
 
-use \Lightbit\Data\Filtering\FilterComposeException;
-use \Lightbit\Data\Filtering\FilterParseException;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\IHttpRoute;
 
 /**
- * IFilter.
+ * IHttpAction.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IFilter
+interface IHttpAction
 {
 	/**
-	 * Compose.
+	 * Gets the context.
 	 *
-	 * @throws FilterComposeException
-	 *	Thrown when the subject is of an incompatible type or can not be
-	 *	composed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The result.
+	 * @return IHttpContext
+	 *	The context.
 	 */
-	public function compose($subject) : string;
+	public function getContext() : IHttpContext;
 
 	/**
-	 * Parse.
+	 * Gets the controller.
 	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject has an incompatible format or can not be
-	 *	parsed by this filter.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return mixed
-	 *	The result.
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public function parse(string $subject);
+	public function getController() : IHttpController;
 
 	/**
-	 * Transform.
+	 * Gets the route.
 	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject is a string with an incompatible format which
-	 *	can not be parsed by this filter.
-	 *
-	 * @throws FilterTransformException
-	 *	Thrown when the subject is of an incompatible type which can not
-	 *	be transformed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The transformation subject.
-	 *
-	 * @return mixed
-	 *	The result.
+	 * @return IHttpRoute
+	 *	The route.
 	 */
-	public function transform($subject);
+	public function getRoute() : IHttpRoute;
 }

@@ -99,4 +99,44 @@ class FloatFilter implements IFilter
 			$subject
 		));
 	}
+
+	/**
+	 * Transform.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject is a string with an incompatible format which
+	 *	can not be parsed by this filter.
+	 *
+	 * @throws FilterTransformException
+	 *	Thrown when the subject is of an incompatible type which can not
+	 *	be transformed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The transformation subject.
+	 *
+	 * @return float
+	 *	The result.
+	 */
+	public final function transform($subject) : float
+	{
+		if (is_float($subject))
+		{
+			return $subject;
+		}
+
+		if (is_int($subject))
+		{
+			return floatval($subject);
+		}
+
+		if (is_string($subject))
+		{
+			return $this->parse($subject);
+		}
+
+		throw new FilterTransformException($this, sprintf(
+			'Can not transform float, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
+	}
 }

@@ -25,65 +25,41 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+namespace Lightbit\Http;
 
-use \Lightbit\Data\Filtering\FilterComposeException;
-use \Lightbit\Data\Filtering\FilterParseException;
+use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\IHttpControllerFactory;
 
 /**
- * IFilter.
+ * HttpControllerProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IFilter
+class HttpControllerFactory implements IHttpControllerFactory
 {
 	/**
-	 * Compose.
-	 *
-	 * @throws FilterComposeException
-	 *	Thrown when the subject is of an incompatible type or can not be
-	 *	composed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The result.
+	 * Constructor.
 	 */
-	public function compose($subject) : string;
+	public function __construct()
+	{
+
+	}
 
 	/**
-	 * Parse.
+	 * Creates a controller.
 	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject has an incompatible format or can not be
-	 *	parsed by this filter.
+	 * @throws HttpControllerFactoryException
+	 *	Thrown if the controller creation fails.
 	 *
-	 * @param string $subject
-	 *	The parsing subject.
+	 * @param IHttpAction $action
+	 *	The controller action.
 	 *
-	 * @return mixed
-	 *	The result.
+	 * @return IHttpController
+	 *	The controller.
 	 */
-	public function parse(string $subject);
-
-	/**
-	 * Transform.
-	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject is a string with an incompatible format which
-	 *	can not be parsed by this filter.
-	 *
-	 * @throws FilterTransformException
-	 *	Thrown when the subject is of an incompatible type which can not
-	 *	be transformed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The transformation subject.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function transform($subject);
+	public function createController(IHttpAction $action) : IHttpController
+	{
+		return $action->getRoute()->getControllerClass()->newInstance($action);
+	}
 }

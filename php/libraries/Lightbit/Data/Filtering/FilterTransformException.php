@@ -27,63 +27,34 @@
 
 namespace Lightbit\Data\Filtering;
 
-use \Lightbit\Data\Filtering\FilterComposeException;
-use \Lightbit\Data\Filtering\FilterParseException;
+use \Throwable;
+
+use \Lightbit\Data\Filtering\FilterException;
+
+use \Lightbit\Data\Filtering\IFilter;
 
 /**
- * IFilter.
+ * FilterTransformException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IFilter
+class FilterTransformException extends FilterException
 {
 	/**
-	 * Compose.
+	 * Constructor.
 	 *
-	 * @throws FilterComposeException
-	 *	Thrown when the subject is of an incompatible type or can not be
-	 *	composed by this filter.
+	 * @param IFilter $filter
+	 *	The exception filter.
 	 *
-	 * @param mixed $subject
-	 *	The composition subject.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @return string
-	 *	The result.
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function compose($subject) : string;
-
-	/**
-	 * Parse.
-	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject has an incompatible format or can not be
-	 *	parsed by this filter.
-	 *
-	 * @param string $subject
-	 *	The parsing subject.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function parse(string $subject);
-
-	/**
-	 * Transform.
-	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject is a string with an incompatible format which
-	 *	can not be parsed by this filter.
-	 *
-	 * @throws FilterTransformException
-	 *	Thrown when the subject is of an incompatible type which can not
-	 *	be transformed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The transformation subject.
-	 *
-	 * @return mixed
-	 *	The result.
-	 */
-	public function transform($subject);
+	public function __construct(IFilter $filter, string $message, Throwable $previous = null)
+	{
+		parent::__construct($filter, $message, $previous);
+	}
 }

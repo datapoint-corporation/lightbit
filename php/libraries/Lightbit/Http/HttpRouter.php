@@ -28,6 +28,12 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Data\Filtering\FilterParseException;
+use \Lightbit\Data\Filtering\FilterProvider;
+use \Lightbit\Http\HttpRouterContextPathException;
+use \Lightbit\Http\HttpRouterContextPathTokenParseException;
+use \Lightbit\Http\HttpRouterContextQueryStringParameterNotSetException;
+use \Lightbit\Http\HttpRouterContextQueryStringParameterParseException;
 use \Lightbit\Http\HttpServer;
 
 use \Lightbit\Http\IHttpRouter;
@@ -48,17 +54,40 @@ class HttpRouter implements IHttpRouter
 	private $baseUrl;
 
 	/**
+	 * The route list.
+	 *
+	 * @var array
+	 */
+	private $routeList;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct()
 	{
+		$this->routeList = [];
+
 		ConfigurationProvider::getInstance()->getConfiguration(
 			'lightbit.http.router'
 		)
 
 		->accept($this, [
 			'base_url' => 'setBaseUrl',
+			'route_list' => 'addRouteList'
 		]);
+	}
+
+	public final function addRoute(IHttpRoute $route) : void
+	{
+		$this->routeList[] = $route;
+	}
+
+	public final function addRouteList(array $routeList) : void
+	{
+		foreach ($routeList as $i => $route)
+		{
+			$this->addRoute($route);
+		}
 	}
 
 	/**
@@ -88,5 +117,127 @@ class HttpRouter implements IHttpRouter
 		{
 			$this->baseUrl = '/';
 		}
+	}
+
+	public final function getRoute(string $controllerClassName, string $controllerMethodName) : ?IHttpRoute
+	{
+		foreach ($this->routeList as $i => $route)
+		{
+			if ($controllerClassName === $route->getControllerClassName()
+				&& $controllerMethodName === $route->getControllerMethodName())
+			{
+				return $route;
+			}
+		}
+
+		throw new HttpRouterRouteNotSetException($this, sprintf(
+			'Can not get route, not set: for controller "%s", for method "%s"',
+			$controllerClassName,
+			$controllerMethodName
+		));
+	}
+
+	public final function resolve(IHttpContext $context) : IHttpAction
+	{
+		$request = $context->getRequest();
+		$method = $request->getMethod();
+		$path = $request->getPath();
+
+		// We have to ensure the base url is present in the given request path
+		// and, if not, this context is not applicable to this application.
+		$base = $this->getBaseUrl();
+		$baseLength = strlen($base);
+		$pathLength = strlen($path);
+
+		if ($pathLength < $baseLength || !(strtolower($base) === strtolower(substr($path, 0, $baseLength))))
+		{
+			throw new HttpRouterContextPathException($this, $context, sprintf(
+				'Can not resolve context, base path mismatch: "%s"',
+				$path
+			));
+		}
+
+		$path = substr($path, $baseLength - 1);
+
+		// Go through the existing routes, matching each one against the
+		// request path and build the action based on the first match.
+		foreach ($this->routeList as $i => $route)
+		{
+			if ($route->match($method, $path, $tokenMap))
+			{
+				$argumentMap = [];
+				$queryStringParameterMap = $request->getQueryString()->toArray();
+
+				// Since we have the route, we have to filter or create the
+				// token and argument maps.
+				foreach ($route->getControllerMethod()->getParameters() as $i => $parameter)
+				{
+					$name = $parameter->getName();
+
+					if ($argument = ($tokenMap[$name] ?? $queryStringParameterMap[$name] ?? null))
+					{
+						if ($constraint = $parameter->getType())
+						{
+							try
+							{
+								$argumentMap[$name] = FilterProvider::getInstance()->getFilter($constraint->__toString())->transform($argument);
+							}
+							catch (FilterParseException $e)
+							{
+								if (isset($tokenMap[$name]))
+								{
+									throw new HttpRouterContextPathTokenParseException(
+										$this,
+										$context,
+										sprintf(
+											'Can not resolve path token, parsing failure: "%s"',
+											$name
+										),
+										$e
+									);
+								}
+
+								throw new HttpRouterContextQueryStringParameterParseException(
+									$this,
+									$context,
+									sprintf(
+										'Can not resolve query string parameter, parsing failure: "%s"',
+										$name
+									),
+									$e
+								);
+							}
+						}
+					}
+					else if ($parameter->isOptional())
+					{
+						$argumentMap[$name] = $parameter->getDefaultValue();
+					}
+					else if ($parameter->allowsNull())
+					{
+						$argumentMap[$name] = null;
+					}
+					else
+					{
+						throw new HttpRouterContextQueryStringParameterNotSetException($this, $context, sprintf(
+							'Can not resolve query string parameter, parsing failure: "%s"',
+							$name
+						));
+					}
+				}
+
+				return new HttpAction(
+					$context,
+					$route,
+					$argumentMap
+				);
+			}
+		}
+
+		throw new HttpRouterContextRouteNotSet($this, $context, sprintf(
+			'Can resolve context route, not set: "%s %s"',
+			$context->getRequest()->getMethod(),
+			rtrim($context->getRequest()->getPath(), '/')
+		));
 	}
 }

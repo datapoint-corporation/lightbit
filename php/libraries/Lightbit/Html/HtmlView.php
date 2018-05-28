@@ -73,7 +73,7 @@ class HtmlView implements IHtmlView
 	 * @param string $filePath
 	 *	The view file path.
 	 */
-	public function __construct(string $resource, string $path)
+	public function __construct(string $id, string $filePath)
 	{
 		$this->filePath = $filePath;
 		$this->id = $id;
@@ -131,7 +131,7 @@ class HtmlView implements IHtmlView
 			);
 		}
 
-		for ($i = ob_get_level(); $i > $buffer; --$i)
+		for ($i = ob_get_level(); $i > $bufferLevel; --$i)
 		{
 			ob_end_flush();
 		}

@@ -80,7 +80,7 @@ class FilterFactory implements IFilterFactory
 		}
 
 		throw new FilterFactoryException($this, sprintf(
-			'Can not create filter, it does not exist: "%s"'
+			'Can not create filter, it does not exist: "%s"',
 			$type
 		));
 	}

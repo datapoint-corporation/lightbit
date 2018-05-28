@@ -99,4 +99,44 @@ class BooleanFilter implements IFilter
 			$subject
 		));
 	}
+
+	/**
+	 * Transform.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject is a string with an incompatible format which
+	 *	can not be parsed by this filter.
+	 *
+	 * @throws FilterTransformException
+	 *	Thrown when the subject is of an incompatible type which can not
+	 *	be transformed by this filter.
+	 *
+	 * @param mixed $subject
+	 *	The transformation subject.
+	 *
+	 * @return bool
+	 *	The result.
+	 */
+	public final function transform($subject) : bool
+	{
+		if (is_bool($subject))
+		{
+			return $subject;
+		}
+
+		if (is_int($subject) && ($subject === 0 || $subject === 1))
+		{
+			return ($subject === 1);
+		}
+
+		if (is_string($subject))
+		{
+			return $this->parse($subject);
+		}
+
+		throw new FilterTransformException($this, sprintf(
+			'Can not transform boolean, incompatible subject type: "%s"',
+			lbstypeof($subject)
+		));
+	}
 }

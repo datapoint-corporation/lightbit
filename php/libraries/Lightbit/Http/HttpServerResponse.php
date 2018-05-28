@@ -29,9 +29,9 @@ namespace Lightbit\Http;
 
 use \Lightbit\Rendering\ViewRenderException;
 
-use \Lightbit\Base\IView;
 use \Lightbit\Html\IHtmlView;
 use \Lightbit\Http\IHttpResponse;
+use \Lightbit\Rendering\IView;
 
 /**
  * HttpServerResponse.

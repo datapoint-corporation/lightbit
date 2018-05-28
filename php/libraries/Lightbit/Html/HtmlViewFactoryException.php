@@ -25,65 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
+namespace Lightbit\Html;
 
-use \Lightbit\Data\Filtering\FilterComposeException;
-use \Lightbit\Data\Filtering\FilterParseException;
+use \Throwable;
+use \Lightbit\Exception;
+
+use \Lightbit\Html\IHtmlViewFactory;
 
 /**
- * IFilter.
+ * HtmlViewFactoryException.
  *
- * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IFilter
+class HtmlViewFactoryException extends Exception
 {
 	/**
-	 * Compose.
+	 * The view factory.
 	 *
-	 * @throws FilterComposeException
-	 *	Thrown when the subject is of an incompatible type or can not be
-	 *	composed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The composition subject.
-	 *
-	 * @return string
-	 *	The result.
+	 * @var IHtmlViewFactory
 	 */
-	public function compose($subject) : string;
+	private $viewFactory;
 
 	/**
-	 * Parse.
+	 * Constructor.
 	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject has an incompatible format or can not be
-	 *	parsed by this filter.
+	 * @param IHtmlViewFactory $viewFactory
+	 *	The exception view factory.
 	 *
-	 * @param string $subject
-	 *	The parsing subject.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @return mixed
-	 *	The result.
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function parse(string $subject);
+	public function __construct(IHtmlViewFactory $viewFactory, string $message, Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+
+		$this->viewFactory = $viewFactory;
+	}
 
 	/**
-	 * Transform.
+	 * Gets the view factory.
 	 *
-	 * @throws FilterParseException
-	 *	Thrown when the subject is a string with an incompatible format which
-	 *	can not be parsed by this filter.
-	 *
-	 * @throws FilterTransformException
-	 *	Thrown when the subject is of an incompatible type which can not
-	 *	be transformed by this filter.
-	 *
-	 * @param mixed $subject
-	 *	The transformation subject.
-	 *
-	 * @return mixed
-	 *	The result.
+	 * @return IHtmlViewFactory
+	 *	The view factory.
 	 */
-	public function transform($subject);
+	public final function getViewFactory() : IHtmlViewFactory
+	{
+		return $this->viewFactory;
+	}
 }

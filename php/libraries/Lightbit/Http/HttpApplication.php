@@ -207,7 +207,12 @@ final class HttpApplication
 				'debug' => 'setDebug'
 			]);
 
-			echo 'OK';
+			// Get the action.
+			$action = HttpRouterProvider::getInstance()->getRouter()->resolve(
+				HttpServerContext::getInstance()
+			);
+
+			$action->run();
 		}
 		catch (Throwable $e)
 		{

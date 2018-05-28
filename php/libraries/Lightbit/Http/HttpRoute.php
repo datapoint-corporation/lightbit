@@ -120,19 +120,19 @@ class HttpRoute implements IHttpRoute
 
 		foreach (preg_split('%\\s*\\,\\s*%', $method, -1, PREG_SPLIT_NO_EMPTY) as $i => $method)
 		{
-			$this->methodMap[[$method] = true;
+			$this->methodMap[$method] = true;
 		}
 
 		if (preg_match_all('%\\{((bool|int|float|string)\\:)?([^\\}]+)\\}%', $this->pattern, $tokens, PREG_SET_ORDER))
 		{
 			$offset = 1;
 			$keywords = [];
-			$this->tokens = [];
+			$this->tokenMap = [];
 
 			foreach ($tokens as $i => $token)
 			{
 				$keyword = preg_quote($token[0], '%');
-				$this->tokens[$token[3]] = $offset;
+				$this->tokenMap[$token[3]] = $offset;
 
 				switch ($token[2])
 				{
@@ -179,6 +179,17 @@ class HttpRoute implements IHttpRoute
 	}
 
 	/**
+	 * Gets the controller class name.
+	 *
+	 * @return string
+	 *	The controller class name.
+	 */
+	public final function getControllerClassName() : string
+	{
+		return $this->controllerClassName;
+	}
+
+	/**
 	 * Gets the controller method.
 	 *
 	 * @return ReflectionMethod
@@ -186,7 +197,34 @@ class HttpRoute implements IHttpRoute
 	 */
 	public final function getControllerMethod() : ReflectionMethod
 	{
-		return ($this->controllerMethod ?? ($this->controllerMethod = $this->getControllerClass()->getMethod($this->controllerMethod)));
+		return ($this->controllerMethod ?? ($this->controllerMethod = $this->getControllerClass()->getMethod($this->controllerMethodName)));
+	}
+
+	/**
+	 * Gets the controller method name.
+	 *
+	 * @return string
+	 *	The controller method name.
+	 */
+	public final function getControllerMethodName() : string
+	{
+		return $this->controllerMethodName;
+	}
+
+	/**
+	 * Gets the token list.
+	 *
+	 * @return array
+	 *	The token list.
+	 */
+	public final function getTokenList() : array
+	{
+		if (isset($this->tokenMap))
+		{
+			return array_keys($this->tokenMap);
+		}
+
+		return [];
 	}
 
 	/**
@@ -199,25 +237,25 @@ class HttpRoute implements IHttpRoute
 	 * @param string $path
 	 *	The path to match against.
 	 *
-	 * @param array $tokens
-	 *	The path tokens output variable.
+	 * @param array $tokenMap
+	 *	The path token map output variable.
 	 *
 	 * @return bool
 	 *	The success status.
 	 */
-	public final function match(string $method, string $path, array &$tokens = null) : bool
+	public final function match(string $method, string $path, array &$tokenMap = null) : bool
 	{
-		$tokens = [];
+		$tokenMap = [];
 
-		if (isset($this->methodMap[[$method]))
+		if (isset($this->methodMap[$method]))
 		{
 			if (isset($this->expression))
 			{
 				if (preg_match($this->expression, $path, $match))
 				{
-					foreach ($this->tokens as $token => $offset)
+					foreach ($this->tokenMap as $token => $offset)
 					{
-						$tokens[$token] = $match[$offset];
+						$tokenMap[$token] = $match[$offset];
 					}
 
 					return true;
