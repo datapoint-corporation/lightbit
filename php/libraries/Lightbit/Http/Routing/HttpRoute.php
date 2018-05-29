@@ -30,6 +30,7 @@ namespace Lightbit\Http\Routing;
 use \ReflectionClass;
 use \ReflectionMethod;
 
+use \Lightbit\Data\Filtering\FilterProvider;
 use \Lightbit\Http\Routing\IHttpRoute;
 
 /**
@@ -146,7 +147,8 @@ class HttpRoute implements IHttpRoute
 					'token_expression' => $pathTokenExpression,
 					'token_expression_offset' => $pathTokenExpressionOffset,
 					'token_name' => $token[3],
-					'token_tag' => $token[0]
+					'token_tag' => $token[0],
+					'token_filter' => $token[2]
 				];
 
 				switch ($token[2])
@@ -182,6 +184,15 @@ class HttpRoute implements IHttpRoute
 		}
 	}
 
+	/**
+	 * Formats a path.
+	 *
+	 * @param array $pathTokenMap
+	 *	The path token map.
+	 *
+	 * @return string
+	 *	The path.
+	 */
 	public final function formatPath(array $pathTokenMap = null) : string
 	{
 		if (isset($this->expression))
@@ -214,7 +225,13 @@ class HttpRoute implements IHttpRoute
 
 			foreach ($this->pathTokenMap as $i => $pathToken)
 			{
-				$pathTokenTagReplacementMap[$pathToken['token_tag']] = $pathTokenValueMap[$pathToken['token_name']];
+				$pathTokenTagReplacementMap[$pathToken['token_tag']] = FilterProvider::getInstance()->getFilter(
+					lbstypeof($pathTokenValueMap[$pathToken['token_name']])
+				)
+
+				->compose(
+					$pathTokenValueMap[$pathToken['token_name']]
+				);
 			}
 
 			return strtr($this->pattern, $pathTokenTagReplacementMap);
