@@ -25,81 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Lightbit\Http\Routing\HttpRouterProvider;
+use \Throwable;
 
-use \Lightbit\Http\Routing\IHttpAction;
-use \Lightbit\Http\Routing\IHttpRouter;
-use \Lightbit\Http\IHttpController;
+use \Lightbit\Exception;
+
+use \Lightbit\Http\Routing\IHttpRoute;
 
 /**
- * HttpController.
+ * HttpRouteException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-abstract class HttpController implements IHttpController
+class HttpRouteException extends Exception
 {
-	/**
-	 * The action.
-	 *
-	 * @var IHttpAction
-	 */
-	private $action;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IHttpAction $action
-	 *	The action.
+	 * @param IHttpRoute $route
+	 *	The exception route.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function __construct(IHttpAction $action)
+	public function __construct(IHttpRoute $route, string $message, Throwable $previous = null)
 	{
-		$this->action = $action;
-	}
-
-	public final function getContext() : IHttpContext
-	{
-		return $this->action->getContext();
-	}
-
-	protected final function getResponse() : IHttpResponse
-	{
-		return $this->action->getContext()->getResponse();
-	}
-
-	protected final function getRouter() : IHttpRouter
-	{
-		return HttpRouterProvider::getInstance()->getRouter();
-	}
-
-	/**
-	 * Creates a redirect response.
-	 *
-	 * @param string $controllerClassName
-	 *	The route controller class name.
-	 *
-	 * @param string $controllerMethodName
-	 *	The route controller method name.
-	 *
-	 * @param array $argumentMap
-	 *	The route argument map.
-	 */
-	protected final function redirect(string $controllerClassName, string $controllerMethodName, array $argumentMap = null) : void
-	{
-		$response = $this->getResponse();
-		$router = $this->getRouter();
-
-		$response->setStatusCode(303);
-		$response->setHeader(
-			'Location',
-			$router->createUrl(
-				'GET',
-				$controllerClassName,
-				$controllerMethodName,
-				$argumentMap
-			)
-		);
+		parent::__construct($message, $previous);
 	}
 }

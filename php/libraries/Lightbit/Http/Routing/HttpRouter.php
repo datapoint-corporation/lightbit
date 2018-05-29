@@ -80,17 +80,77 @@ class HttpRouter implements IHttpRouter
 		]);
 	}
 
+	/**
+	 * Sets an additional route.
+	 *
+	 * @param IHttpRoute $route
+	 *	The route.
+	 */
 	public final function addRoute(IHttpRoute $route) : void
 	{
 		$this->routeList[] = $route;
 	}
 
+	/**
+	 * Sets an additional route list.
+	 *
+	 * @param array $routeList
+	 *	The route list.
+	 */
 	public final function addRouteList(array $routeList) : void
 	{
 		foreach ($routeList as $i => $route)
 		{
 			$this->addRoute($route);
 		}
+	}
+
+	public final function createUrl(string $method, string $controllerClassName, string $controllerMethodName, array $argumentMap = null)
+	{
+		return $this->createUrlByRoute(
+			$this->getRoute(
+				$method,
+				$controllerClassName,
+				$controllerMethodName
+			),
+
+			$argumentMap
+		);
+	}
+
+	public function createUrlByRoute(IHttpRoute $route, array $argumentMap = null) : string
+	{
+		$queryStringParameterMap = ($argumentMap ?? []);
+		$pathTokenMap = [];
+
+		// We first go through each path token and move it out from the
+		// query string parameter map.
+		foreach ($route->getPathTokenList() as $i => $pathToken)
+		{
+			if (isset($queryStringParameterMap[$pathToken]))
+			{
+				$pathTokenMap[$pathToken] = $queryStringParameterMap[$pathToken];
+				unset($queryStringParameterMap[$pathToken]);
+				continue;
+			}
+
+			throw new HttpRouterException($this, sprintf(
+				'Can not create route url, missing path token in argument map: "%s"',
+				$pathToken
+			));
+		}
+
+		// Format the route according to the path pattern and the existing
+		// path tokens.
+		$url = $this->getBaseUrl();
+		$url .= substr($route->formatPath($pathTokenMap), 1);
+
+		if ($queryStringParameterMap)
+		{
+			$url .= '?' . http_build_query($queryStringParameterMap, '_', '&', PHP_QUERY_RFC1738);
+		}
+
+		return $url;
 	}
 
 	/**
@@ -122,19 +182,39 @@ class HttpRouter implements IHttpRouter
 		}
 	}
 
-	public final function getRoute(string $controllerClassName, string $controllerMethodName) : ?IHttpRoute
+	/**
+	 * Gets a route.
+	 *
+	 * @throws HttpRouterRouteNotSetException
+	 *	Thrown if no route exists matching the given constraints.
+	 *
+	 * @param string $method
+	 *	The route method.
+	 *
+	 * @param string $controllerClassName
+	 *	The route controller class name.
+	 *
+	 * @param string $controllerMethodName
+	 *	The route controller method name.
+	 *
+	 * @return IHttpRoute
+	 *	The route.
+	 */
+	public final function getRoute(string $method, string $controllerClassName, string $controllerMethodName) : IHttpRoute
 	{
 		foreach ($this->routeList as $i => $route)
 		{
 			if ($controllerClassName === $route->getControllerClassName()
-				&& $controllerMethodName === $route->getControllerMethodName())
+				&& $controllerMethodName === $route->getControllerMethodName()
+				&& $route->hasMethod($method))
 			{
 				return $route;
 			}
 		}
 
 		throw new HttpRouterRouteNotSetException($this, sprintf(
-			'Can not get route, not set: for controller "%s", for method "%s"',
+			'Can not get route, not set: method "%s", controller "%s", method "%s"',
+			$method,
 			$controllerClassName,
 			$controllerMethodName
 		));

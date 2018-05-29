@@ -47,16 +47,13 @@ class HttpRouterRouteNotSetException extends HttpRouterException
 	 * @param IHttpRouter $router
 	 *	The exception router.
 	 *
-	 * @param IHttpContext $context
-	 *	The exception context.
-	 *
 	 * @param string $message
 	 *	The exception message.
 	 *
 	 * @param Throwable $previous
 	 *	The exception previous throwable.
 	 */
-	public function __construct(IHttpRouter $router, IHttpContext $context, string $message, Throwable $previous = null)
+	public function __construct(IHttpRouter $router, string $message, Throwable $previous = null)
 	{
 		parent::__construct($router, $message, $previous);
 	}

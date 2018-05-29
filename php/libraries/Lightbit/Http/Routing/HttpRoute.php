@@ -83,18 +83,18 @@ class HttpRoute implements IHttpRoute
 	private $methodsMap;
 
 	/**
+	 * The token map.
+	 *
+	 * @var array
+	 */
+	private $pathTokenMap;
+
+	/**
 	 * The pattern.
 	 *
 	 * @var string
 	 */
 	private $pattern;
-
-	/**
-	 * The token map.
-	 *
-	 * @var array
-	 */
-	private $tokenMap;
 
 	/**
 	 * Constructor.
@@ -116,7 +116,15 @@ class HttpRoute implements IHttpRoute
 		$this->controllerClassName = $controllerClassName;
 		$this->controllerMethodName = $controllerMethodName;
 		$this->generic = ($method === '*' && $method = 'DELETE,GET,POST,PUT');
-		$this->pattern = $pattern;
+
+		if ($this->pattern = trim($pattern, '/'))
+		{
+			$this->pattern = '/' . $this->pattern . '/';
+		}
+		else
+		{
+			$this->pattern = '/';
+		}
 
 		foreach (preg_split('%\\s*\\,\\s*%', $method, -1, PREG_SPLIT_NO_EMPTY) as $i => $method)
 		{
@@ -125,46 +133,102 @@ class HttpRoute implements IHttpRoute
 
 		if (preg_match_all('%\\{((bool|int|float|string)\\:)?([^\\}]+)\\}%', $this->pattern, $tokens, PREG_SET_ORDER))
 		{
-			$offset = 1;
-			$keywords = [];
-			$this->tokenMap = [];
+			$this->pathTokenMap = [];
+
+			$pathTokenExpressionOffset = 1;
+			$pathTokenExpressionMap = [];
 
 			foreach ($tokens as $i => $token)
 			{
-				$keyword = preg_quote($token[0], '%');
-				$this->tokenMap[$token[3]] = $offset;
+				$pathTokenExpression = preg_quote($token[0], '%');
+
+				$this->pathTokenMap[$token[3]] = [
+					'token_expression' => $pathTokenExpression,
+					'token_expression_offset' => $pathTokenExpressionOffset,
+					'token_name' => $token[3],
+					'token_tag' => $token[0]
+				];
 
 				switch ($token[2])
 				{
 					case 'bool':
-						$offset += 1;
-						$keywords[$keyword] = '(true|false)';
+						$pathTokenExpressionOffset += 1;
+						$pathTokenExpressionMap[$pathTokenExpression] = '(true|false)';
 						break;
 
 					case 'int':
-						$offset += 3;
-						$keywords[$keyword] = '((\\+|\\-)?(\\d+))';
+						$pathTokenExpressionOffset += 3;
+						$pathTokenExpressionMap[$pathTokenExpression] = '((\\+|\\-)?(\\d+))';
 						break;
 
 					case 'float':
-						$offset += 6;
-						$keywords[$keyword] = '((\\+|\\-)?((\\d+(\\.\\d+)?)|(\\.\\d+)))';
+						$pathTokenExpressionOffset += 6;
+						$pathTokenExpressionMap[$pathTokenExpression] = '((\\+|\\-)?((\\d+(\\.\\d+)?)|(\\.\\d+)))';
 						break;
 
 					case 'slug':
-						$offset += 2;
-						$keywords[$keyword] = '([a-z][a-z0-9]*(\\-[a-z][a-z0-9]*)*)';
+						$pathTokenExpressionOffset += 2;
+						$pathTokenExpressionMap[$pathTokenExpression] = '([a-z][a-z0-9]*(\\-[a-z][a-z0-9]*)*)';
 						break;
 
 					default:
-						$offset += 1;
-						$keywords[$keyword] = '([^\\/]+)';
+						$pathTokenExpressionOffset += 1;
+						$pathTokenExpressionMap[$pathTokenExpression] = '([^\\/]+)';
 						break;
 				}
 			}
 
-			$this->expression = '%^' . strtr(preg_quote($this->pattern, '%'), $keywords) . '$%';
+			$this->expression = '%^' . strtr(preg_quote($this->pattern, '%'), $pathTokenExpressionMap) . '$%';
 		}
+	}
+
+	public final function formatPath(array $pathTokenMap = null) : string
+	{
+		if (isset($this->expression))
+		{
+			$pathTokenValueMap = ($pathTokenMap ?? []);
+
+			foreach ($this->getPathTokenList() as $i => $pathToken)
+			{
+				if (!isset($pathTokenValueMap[$pathToken]))
+				{
+					throw new HttpRoutePathFormatException(sprintf(
+						'Can not format route path, token map mismatch: "%s"',
+						$pathToken
+					));
+				}
+			}
+
+			foreach ($pathTokenValueMap as $pathToken => $pathTokenValue)
+			{
+				if (!isset($this->pathTokenMap[$pathToken]))
+				{
+					throw new HttpRoutePathFormatException(sprintf(
+						'Can not format route path, token map mismatch: "%s"',
+						$pathToken
+					));
+				}
+			}
+
+			$pathTokenTagReplacementMap = [];
+
+			foreach ($this->pathTokenMap as $i => $pathToken)
+			{
+				$pathTokenTagReplacementMap[$pathToken['token_tag']] = $pathTokenValueMap[$pathToken['token_name']];
+			}
+
+			return strtr($this->pattern, $pathTokenTagReplacementMap);
+		}
+
+		if ($pathTokenMap)
+		{
+			throw new HttpRoutePathFormatException($this, sprintf(
+				'Can not format route path, token map mismatch: "%s"',
+				$this->pattern
+			));
+		}
+
+		return $this->pattern;
 	}
 
 	/**
@@ -212,19 +276,33 @@ class HttpRoute implements IHttpRoute
 	}
 
 	/**
-	 * Gets the token list.
+	 * Gets the path token list.
 	 *
 	 * @return array
-	 *	The token list.
+	 *	The path token list.
 	 */
-	public final function getTokenList() : array
+	public final function getPathTokenList() : array
 	{
-		if (isset($this->tokenMap))
+		if (isset($this->pathTokenMap))
 		{
-			return array_keys($this->tokenMap);
+			return array_keys($this->pathTokenMap);
 		}
 
 		return [];
+	}
+
+	/**
+	 * Checks if a method is set.
+	 *
+	 * @param string $method
+	 *	The method.
+	 *
+	 * @return bool
+	 *	The status.
+	 */
+	public final function hasMethod(string $method) : bool
+	{
+		return isset($this->methodMap[$method]);
 	}
 
 	/**
@@ -248,15 +326,20 @@ class HttpRoute implements IHttpRoute
 		$tokenMap = [];
 		$path = '/' . trim($path, '/');
 
+		if (isset($path[1]))
+		{
+			$path .= '/';
+		}
+
 		if (isset($this->methodMap[$method]))
 		{
 			if (isset($this->expression))
 			{
 				if (preg_match($this->expression, $path, $match))
 				{
-					foreach ($this->tokenMap as $token => $offset)
+					foreach ($this->pathTokenMap as $i => $pathToken)
 					{
-						$tokenMap[$token] = $match[$offset];
+						$tokenMap[$pathToken['token_name']] = $match[$pathToken['token_expression_offset']];
 					}
 
 					return true;

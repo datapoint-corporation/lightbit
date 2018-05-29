@@ -136,6 +136,17 @@ final class HttpServerResponse implements IHttpResponse
 	}
 
 	/**
+	 * Sets the status code.
+	 *
+	 * @param int $status
+	 *	The status code.
+	 */
+	public final function setStatusCode(int $status) : void
+	{
+		http_response_code($status);
+	}
+
+	/**
 	 * Sets a header.
 	 *
 	 * @param string $name
