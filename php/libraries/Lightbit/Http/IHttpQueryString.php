@@ -28,6 +28,9 @@
 namespace Lightbit\Http;
 
 use \Lightbit\Data\Collections\IStringMap;
+use \Lightbit\Http\HttpQueryStringParameterNotSetException;
+use \Lightbit\Http\HttpQueryStringParameterValueParseException;
+use \Lightbit\Http\HttpQueryStringParameterValueTypeMismatchParseException;
 
 /**
  * IHttpQueryString.

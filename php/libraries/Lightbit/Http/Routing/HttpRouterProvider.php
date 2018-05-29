@@ -25,11 +25,11 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \Lightbit\Configuration\ConfigurationProvider;
 
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
  * HttpRouterProvider.

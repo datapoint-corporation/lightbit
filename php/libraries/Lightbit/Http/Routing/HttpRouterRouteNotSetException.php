@@ -25,13 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \Throwable;
 
-use \Lightbit\Http\HttpRouterException;
+use \Lightbit\Http\Routing\HttpRouterException;
 
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
  * HttpRouterRouteNotSetException.

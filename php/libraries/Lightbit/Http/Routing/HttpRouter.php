@@ -25,18 +25,21 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Data\Filtering\FilterParseException;
 use \Lightbit\Data\Filtering\FilterProvider;
-use \Lightbit\Http\HttpRouterContextPathException;
-use \Lightbit\Http\HttpRouterContextPathTokenParseException;
-use \Lightbit\Http\HttpRouterContextQueryStringParameterNotSetException;
-use \Lightbit\Http\HttpRouterContextQueryStringParameterParseException;
+use \Lightbit\Http\Routing\HttpAction;
+use \Lightbit\Http\Routing\HttpRouterContextPathException;
+use \Lightbit\Http\Routing\HttpRouterContextPathTokenParseException;
+use \Lightbit\Http\Routing\HttpRouterContextQueryStringParameterNotSetException;
+use \Lightbit\Http\Routing\HttpRouterContextQueryStringParameterParseException;
 use \Lightbit\Http\HttpServer;
 
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\Routing\IHttpRoute;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
  * HttpRouter.

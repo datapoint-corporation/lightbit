@@ -25,13 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \Throwable;
 
-use \Lightbit\Http\HttpRouterContextPathException;
+use \Lightbit\Http\Routing\HttpRouterContextPathException;
 
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
  * HttpRouterContextPathTokenParseException.

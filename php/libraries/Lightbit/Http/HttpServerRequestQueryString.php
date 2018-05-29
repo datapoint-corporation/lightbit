@@ -27,8 +27,11 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Data\Filtering\FilterProvider;
 use \Lightbit\Data\Filtering\FilterException;
+use \Lightbit\Data\Filtering\FilterProvider;
+use \Lightbit\Http\HttpQueryStringParameterNotSetException;
+use \Lightbit\Http\HttpQueryStringParameterValueParseException;
+use \Lightbit\Http\HttpQueryStringParameterValueTypeMismatchParseException;
 
 use \Lightbit\Http\IHttpQueryString;
 

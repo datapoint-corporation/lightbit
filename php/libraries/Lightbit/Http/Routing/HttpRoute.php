@@ -25,12 +25,12 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \ReflectionClass;
 use \ReflectionMethod;
 
-use \Lightbit\Http\IHttpRoute;
+use \Lightbit\Http\Routing\IHttpRoute;
 
 /**
  * IHttpRoute.

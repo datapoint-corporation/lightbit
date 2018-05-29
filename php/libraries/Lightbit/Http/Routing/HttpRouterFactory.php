@@ -25,36 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Throwable;
+use \Lightbit\Http\Routing\HttpRouterFactoryException;
 
-use \Lightbit\Exception;
-
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\Routing\IHttpRouter;
+use \Lightbit\Http\Routing\IHttpRouterFactory;
 
 /**
- * HttpRouterException.
+ * HttpRouterFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpRouterException extends Exception
+final class HttpRouterFactory implements IHttpRouterFactory
 {
 	/**
 	 * Constructor.
-	 *
-	 * @param IHttpRouter $router
-	 *	The exception router.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
 	 */
-	public function __construct(IHttpRouter $router, string $message, Throwable $previous = null)
+	public function __construct()
 	{
-		parent::__construct($message, $previous);
+
+	}
+
+	/**
+	 * Creates the router.
+	 *
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the router creation fails.
+	 *
+	 * @return IHttpRouter
+	 *	The router.
+	 */
+	public function createRouter() : IHttpRouter
+	{
+		return new HttpRouter();
 	}
 }

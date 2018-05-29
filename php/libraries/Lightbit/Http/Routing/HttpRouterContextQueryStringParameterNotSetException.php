@@ -25,21 +25,22 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
 use \Throwable;
 
-use \Lightbit\Http\HttpRouterContextException;
+use \Lightbit\Http\Routing\HttpRouterContextException;
 
-use \Lightbit\Http\IHttpRouter;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
- * HttpRouterContextRouteNotSet.
+ * HttpRouterContextQueryStringParameterNotSetException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpRouterContextRouteNotSet extends HttpRouterContextException
+class HttpRouterContextQueryStringParameterNotSetException extends HttpRouterContextException
 {
 	/**
 	 * Constructor.

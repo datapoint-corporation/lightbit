@@ -25,40 +25,31 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
-
-use \Lightbit\Http\HttpRouterFactoryException;
-
-use \Lightbit\Http\IHttpRouter;
-use \Lightbit\Http\IHttpRouterFactory;
+namespace Lightbit\Http\Routing;
 
 /**
- * HttpRouterFactory.
+ * IHttpRoute.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class HttpRouterFactory implements IHttpRouterFactory
+interface IHttpRoute
 {
 	/**
-	 * Constructor.
-	 */
-	public function __construct()
-	{
-
-	}
-
-	/**
-	 * Creates the router.
+	 * Matches the method an path against this routes method list and pattern,
+	 * extracting any path tokens in the process.
 	 *
-	 * @throws HttpRouterFactoryException
-	 *	Thrown if the router creation fails.
+	 * @param string $method
+	 *	The method to match against.
 	 *
-	 * @return IHttpRouter
-	 *	The router.
+	 * @param string $path
+	 *	The path to match against.
+	 *
+	 * @param array $tokens
+	 *	The path tokens output variable.
+	 *
+	 * @return bool
+	 *	The success status.
 	 */
-	public function createRouter() : IHttpRouter
-	{
-		return new HttpRouter();
-	}
+	public function match(string $method, string $path, array &$tokens = null) : bool;
 }

@@ -25,111 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Lightbit\Data\Collections\StringMap;
+use \Throwable;
 
-use \Lightbit\Data\Collections\IStringMap;
+use \Lightbit\Http\Routing\HttpRouterContextException;
+
 use \Lightbit\Http\IHttpContext;
-use \Lightbit\Http\IHttpRoute;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
- * HttpAction.
+ * HttpRouterContextRouteNotSet.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpAction implements IHttpAction
+class HttpRouterContextRouteNotSet extends HttpRouterContextException
 {
-	/**
-	 * The argument list.
-	 *
-	 * @var array
-	 */
-	private $argumentList;
-
-	/**
-	 * The argument map.
-	 *
-	 * @var array
-	 */
-	private $argumentMap;
-
-	/**
-	 * The controller.
-	 *
-	 * @var IHttpController
-	 */
-	private $controller;
-
-	/**
-	 * The context.
-	 *
-	 * @var IHttpContext
-	 */
-	private $context;
-
-	/**
-	 * The route.
-	 *
-	 * @var IHttpRoute
-	 */
-	private $route;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IHttpContext $context
-	 *	The action context.
+	 * @param IHttpRouter $router
+	 *	The exception router.
 	 *
 	 * @param IHttpContext $context
-	 *	The action route.
+	 *	The exception context.
 	 *
-	 * @param array $tokenMap
-	 *	The action
-	 */
-	public function __construct(IHttpContext $context, IHttpRoute $route, array $argumentMap)
-	{
-		$this->argumentMap = ($argumentMap ?? []);
-		$this->context = $context;
-		$this->route = $route;
-	}
-
-	/**
-	 * Gets the context.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @return IHttpContext
-	 *	The context.
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function getContext() : IHttpContext
+	public function __construct(IHttpRouter $router, IHttpContext $context, string $message, Throwable $previous = null)
 	{
-		return $this->context;
-	}
-
-	/**
-	 * Gets the controller.
-	 *
-	 * @return IHttpController
-	 *	The controller.
-	 */
-	public function getController() : IHttpController
-	{
-		return ($this->controller ?? ($this->controller = HttpControllerProvider::getInstance()->getController($this)));
-	}
-
-	/**
-	 * Gets the route.
-	 *
-	 * @return IHttpRoute
-	 *	The route.
-	 */
-	public function getRoute() : IHttpRoute
-	{
-		return $this->route;
-	}
-
-	public function run() : void
-	{
-		$this->getController()->{$this->route->getControllerMethodName()}(...array_values($this->argumentMap));
+		parent::__construct($router, $context, $message, $previous);
 	}
 }

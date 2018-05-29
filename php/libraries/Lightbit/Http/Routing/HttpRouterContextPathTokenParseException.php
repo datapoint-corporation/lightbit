@@ -25,26 +25,40 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Lightbit\Http\IHttpRouter;
+use \Throwable;
+
+use \Lightbit\Http\Routing\HttpRouterContextPathException;
+
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
- * IHttpRouterFactory
+ * HttpRouterContextPathTokenParseException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IHttpRouterFactory
+class HttpRouterContextPathTokenParseException extends HttpRouterContextPathException
 {
 	/**
-	 * Creates the router.
+	 * Constructor.
 	 *
-	 * @throws HttpRouterFactoryException
-	 *	Thrown if the router creation fails.
+	 * @param IHttpRouter $router
+	 *	The exception router.
 	 *
-	 * @return IHttpRouter
-	 *	The router.
+	 * @param IHttpContext $context
+	 *	The exception context.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public function createRouter() : IHttpRouter;
+	public function __construct(IHttpRouter $router, IHttpContext $context, string $message, Throwable $previous = null)
+	{
+		parent::__construct($router, $context, $message, $previous);
+	}
 }

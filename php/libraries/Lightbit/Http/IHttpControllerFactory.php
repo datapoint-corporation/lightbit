@@ -27,8 +27,8 @@
 
 namespace Lightbit\Http;
 
-use \Lightbit\Http\IHttpAction;
 use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\Routing\IHttpAction;
 
 /**
  * IHttpControllerFactory.

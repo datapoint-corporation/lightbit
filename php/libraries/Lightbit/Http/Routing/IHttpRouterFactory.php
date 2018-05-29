@@ -25,31 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
+
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
- * IHttpRoute.
+ * IHttpRouterFactory
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IHttpRoute
+interface IHttpRouterFactory
 {
 	/**
-	 * Matches the method an path against this routes method list and pattern,
-	 * extracting any path tokens in the process.
+	 * Creates the router.
 	 *
-	 * @param string $method
-	 *	The method to match against.
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the router creation fails.
 	 *
-	 * @param string $path
-	 *	The path to match against.
-	 *
-	 * @param array $tokens
-	 *	The path tokens output variable.
-	 *
-	 * @return bool
-	 *	The success status.
+	 * @return IHttpRouter
+	 *	The router.
 	 */
-	public function match(string $method, string $path, array &$tokens = null) : bool;
+	public function createRouter() : IHttpRouter;
 }

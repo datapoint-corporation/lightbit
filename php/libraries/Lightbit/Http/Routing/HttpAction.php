@@ -25,91 +25,114 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Lightbit\Http\HttpControllerFactory;
+use \Lightbit\Data\Collections\StringMap;
+use \Lightbit\Http\HttpControllerProvider;
 
+use \Lightbit\Data\Collections\IStringMap;
+use \Lightbit\Http\IHttpContext;
 use \Lightbit\Http\IHttpController;
-use \Lightbit\Http\IHttpControllerFactory;
 use \Lightbit\Http\Routing\IHttpAction;
+use \Lightbit\Http\Routing\IHttpRoute;
 
 /**
- * HttpControllerProvider.
+ * HttpAction.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class HttpControllerProvider
+final class HttpAction implements IHttpAction
 {
 	/**
-	 * The singleton instance.
+	 * The argument list.
 	 *
-	 * @var HttpControllerProvider
+	 * @var array
 	 */
-	private static $instance;
+	private $argumentList;
 
 	/**
-	 * Gets the singleton instance.
+	 * The argument map.
 	 *
-	 * @return HttpControllerProvider
-	 *	The singleton instance.
+	 * @var array
 	 */
-	public static final function getInstance() : HttpControllerProvider
-	{
-		return (self::$instance ?? (self::$instance = new HttpControllerProvider()));
-	}
+	private $argumentMap;
 
 	/**
-	 * The controller factory.
+	 * The controller.
 	 *
-	 * @var IHttpControllerFactory
+	 * @var IHttpController
 	 */
-	private $controllerFactory;
+	private $controller;
+
+	/**
+	 * The context.
+	 *
+	 * @var IHttpContext
+	 */
+	private $context;
+
+	/**
+	 * The route.
+	 *
+	 * @var IHttpRoute
+	 */
+	private $route;
 
 	/**
 	 * Constructor.
+	 *
+	 * @param IHttpContext $context
+	 *	The action context.
+	 *
+	 * @param IHttpContext $context
+	 *	The action route.
+	 *
+	 * @param array $tokenMap
+	 *	The action
 	 */
-	private function __construct()
+	public function __construct(IHttpContext $context, IHttpRoute $route, array $argumentMap)
 	{
-
+		$this->argumentMap = ($argumentMap ?? []);
+		$this->context = $context;
+		$this->route = $route;
 	}
 
 	/**
-	 * Gets a controller.
+	 * Gets the context.
 	 *
-	 * @throws HttpControllerFactoryException
-	 *	Thrown if the controller creation fails.
-	 *
-	 * @param IHttpAction $action
-	 *	The controller action.
+	 * @return IHttpContext
+	 *	The context.
+	 */
+	public function getContext() : IHttpContext
+	{
+		return $this->context;
+	}
+
+	/**
+	 * Gets the controller.
 	 *
 	 * @return IHttpController
 	 *	The controller.
 	 */
-	public final function getController(IHttpAction $action) : IHttpController
+	public function getController() : IHttpController
 	{
-		return $this->getControllerFactory()->createController($action);
+		return ($this->controller ?? ($this->controller = HttpControllerProvider::getInstance()->getController($this)));
 	}
 
 	/**
-	 * Gets the controller factory.
+	 * Gets the route.
 	 *
-	 * @return IHttpControllerFactory
-	 *	The controller factory.
+	 * @return IHttpRoute
+	 *	The route.
 	 */
-	public final function getControllerFactory() : IHttpControllerFactory
+	public function getRoute() : IHttpRoute
 	{
-		return ($this->controllerFactory ?? ($this->controllerFactory = new HttpControllerFactory()));
+		return $this->route;
 	}
 
-	/**
-	 * Sets the controller factory.
-	 *
-	 * @param IHttpControllerFactory $controllerFactory
-	 *	The controller factory.
-	 */
-	public final function setControllerFactory(IHttpControllerFactory $controllerFactory) : void
+	public function run() : void
 	{
-		$this->controllerFactory = $controllerFactory;
+		$this->getController()->{$this->route->getControllerMethodName()}(...array_values($this->argumentMap));
 	}
 }

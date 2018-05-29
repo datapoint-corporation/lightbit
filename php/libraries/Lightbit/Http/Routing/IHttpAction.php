@@ -25,36 +25,41 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Http;
+namespace Lightbit\Http\Routing;
 
-use \Throwable;
-
-use \Lightbit\Exception;
-
-use \Lightbit\Http\IHttpRouterFactory;
+use \Lightbit\Http\IHttpContext;
+use \Lightbit\Http\IHttpController;
+use \Lightbit\Http\Routing\IHttpRoute;
 
 /**
- * HttpRouterFactoryException.
+ * IHttpAction.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HttpRouterFactoryException extends Exception
+interface IHttpAction
 {
 	/**
-	 * Constructor.
+	 * Gets the context.
 	 *
-	 * @param IHttpRouterFactory $routerFactory
-	 *	The exception router factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
+	 * @return IHttpContext
+	 *	The context.
 	 */
-	public function __construct(IHttpRouterFactory $routerFactory, string $message, Throwable $previous = null)
-	{
-		parent::__construct($message, $previous);
-	}
+	public function getContext() : IHttpContext;
+
+	/**
+	 * Gets the controller.
+	 *
+	 * @return IHttpController
+	 *	The controller.
+	 */
+	public function getController() : IHttpController;
+
+	/**
+	 * Gets the route.
+	 *
+	 * @return IHttpRoute
+	 *	The route.
+	 */
+	public function getRoute() : IHttpRoute;
 }
