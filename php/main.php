@@ -84,12 +84,40 @@ return
 		defined('LB_ENVIRONMENT') || define('LB_ENVIRONMENT', 'production');
 
 		/**
+		 * The environment production flag.
+		 *
+		 * @var string
+		 */
+		defined('LB_ENVIRONMENT_PRODUCTION') || define('LB_ENVIRONMENT_PRODUCTION', (strtolower(LB_ENVIRONMENT) === 'production'));
+
+		/**
 		 * The error report filter.
 		 *
 		 * @see http://php.net/manual/en/errorfunc.constants.php
 		 * @var int
 		 */
 		defined('LB_ERROR_REPORT_FILTER') || define('LB_ERROR_REPORT_FILTER', E_ALL);
+
+		/**
+		 * The internal caching flag.
+		 *
+		 * @var bool
+		 */
+		defined('LB_INTERNAL_CACHE') || define('LB_INTERNAL_CACHE', LB_ENVIRONMENT_PRODUCTION);
+
+		/**
+		 * The internal class path caching flag.
+		 *
+		 * @var bool
+		 */
+		defined('LB_INTERNAL_CACHE_CLASS_PATH') || define('LB_INTERNAL_CACHE_CLASS_PATH', LB_INTERNAL_CACHE);
+
+		/**
+		 * The internal resource path caching flag.
+		 *
+		 * @var bool
+		 */
+		defined('LB_INTERNAL_CACHE_RESOURCE_PATH') || define('LB_INTERNAL_CACHE_RESOURCE_PATH', LB_INTERNAL_CACHE);
 
 		/**
 		 * The application path.
@@ -168,19 +196,26 @@ return
 			ob_start() || (exit (1));
 		}
 
+		// Restore lightbit, which, if available, will cause all in-memory
+		// class and resource paths to apply.
+		$lightbit->restore();
+
 		// Get the environment type, get the singleton instance of the matching
 		// application type and run it.
+		$status;
 		$environment = Environment::getInstance();
 
 		if ($environment->isWeb())
 		{
-			return HttpApplication::getInstance()->run();
+			$status = HttpApplication::getInstance()->run();
+		}
+		else
+		{
+			$status = CliApplication::getInstance()->run();
 		}
 
-		if ($environment->isCli())
-		{
-			return CliApplication::getInstance()->run();
-		}
+		$lightbit->commit();
+		return $status;
 	}
 )
 (Lightbit::getInstance());

@@ -59,6 +59,13 @@ final class Lightbit
 	private $bundlePathListMap;
 
 	/**
+	 * The class path map.
+	 *
+	 * @var array
+	 */
+	private $classPathMap;
+
+	/**
 	 * The inclusion.
 	 *
 	 * @var Closure
@@ -85,6 +92,7 @@ final class Lightbit
 	private function __construct()
 	{
 		$this->bundlePathListMap = [];
+		$this->classPathMap = [];
 		$this->libraryLookupPathList = [];
 		$this->resourcePathListMap = [];
 
@@ -196,6 +204,22 @@ final class Lightbit
 		}
 	}
 
+	public final function commit() : void
+	{
+		if (LB_INTERNAL_CACHE && function_exists('apcu_store'))
+		{
+			if (LB_INTERNAL_CACHE_CLASS_PATH)
+			{
+				apcu_store('lightbit.internal.class.path', $this->classPathMap);
+			}
+
+			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+			{
+				apcu_store('lightbit.internal.resource.path', $this->resourcePathListMap);
+			}
+		}
+	}
+
 	/**
 	 * Gets a class path.
 	 *
@@ -207,19 +231,25 @@ final class Lightbit
 	 */
 	public final function getClassPath(string $className) : ?string
 	{
-		$filePathSuffix = (strtr(('\\' . $className), [ '\\' => DIRECTORY_SEPARATOR ]) . '.php');
-
-		foreach ($this->libraryLookupPathList as $i => $libraryLookupPath)
+		if (!isset($this->classPathMap[$className]) && !array_key_exists($className, $this->classPathMap))
 		{
-			$filePath = $libraryLookupPath . $filePathSuffix;
+			$this->classPathMap[$className] = null;
 
-			if (file_exists($filePath) && is_file($filePath))
+			$filePathSuffix = (strtr(('\\' . $className), [ '\\' => DIRECTORY_SEPARATOR ]) . '.php');
+
+			foreach ($this->libraryLookupPathList as $i => $libraryLookupPath)
 			{
-				return $filePath;
+				$filePath = $libraryLookupPath . $filePathSuffix;
+
+				if (file_exists($filePath) && is_file($filePath))
+				{
+					$this->classPathMap[$className] = $filePath;
+					break;
+				}
 			}
 		}
 
-		return null;
+		return $this->classPathMap[$className];
 	}
 
 	/**
@@ -318,5 +348,27 @@ final class Lightbit
 	public final function includeAs(object $scope, string $filePath, array $variableMap = null) // : mixed
 	{
 		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variableMap);
+	}
+
+	public final function restore() : void
+	{
+		if (LB_INTERNAL_CACHE && function_exists('apcu_store'))
+		{
+			if (LB_INTERNAL_CACHE_CLASS_PATH)
+			{
+				if ($classPathMap = apcu_fetch('lightbit.internal.class.path'))
+				{
+					$this->classPathMap = $classPathMap;
+				}
+			}
+
+			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+			{
+				if ($resourcePathListMap = apcu_fetch('lightbit.internal.resource.path'))
+				{
+					$this->resourcePathListMap = $resourcePathListMap;
+				}
+			}
+		}
 	}
 }
