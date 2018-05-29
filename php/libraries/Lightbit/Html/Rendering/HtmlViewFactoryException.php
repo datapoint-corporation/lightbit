@@ -25,55 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Lightbit;
-use \Lightbit\Html\HtmlView;
-use \Lightbit\Html\HtmlViewFactoryException;
+use \Throwable;
+use \Lightbit\Exception;
 
-use \Lightbit\Html\IHtmlView;
-use \Lightbit\Html\IHtmlViewFactory;
+use \Lightbit\Html\Rendering\IHtmlViewFactory;
 
 /**
- * HtmlViewFactory.
+ * HtmlViewFactoryException.
  *
  * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewFactory implements IHtmlViewFactory
+class HtmlViewFactoryException extends Exception
 {
 	/**
-	 * Constructor.
+	 * The view factory.
+	 *
+	 * @var IHtmlViewFactory
 	 */
-	public function __construct()
-	{
+	private $viewFactory;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param IHtmlViewFactory $viewFactory
+	 *	The exception view factory.
+	 *
+	 * @param string $message
+	 *	The exception message.
+	 *
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
+	 */
+	public function __construct(IHtmlViewFactory $viewFactory, string $message, Throwable $previous = null)
+	{
+		parent::__construct($message, $previous);
+
+		$this->viewFactory = $viewFactory;
 	}
 
 	/**
-	 * Creates a view.
+	 * Gets the view factory.
 	 *
-	 * @throws HtmlViewFactoryException
-	 *	Thrown when the view creation fails.
-	 *
-	 * @param string $view
-	 *	The view resource identifier.
-	 *
-	 * @return IHtmlView
-	 *	The view.
+	 * @return IHtmlViewFactory
+	 *	The view factory.
 	 */
-	public final function createView(string $view) : IHtmlView
+	public final function getViewFactory() : IHtmlViewFactory
 	{
-		strpos($view, '://') || ($view = 'views://' . $view);
-
-		if ($path = Lightbit::getInstance()->getResourcePath('php', $view))
-		{
-			return new HtmlView($view, $path);
-		}
-
-		throw new HtmlViewFactoryException($this, sprintf(
-			'Can not get html view, not found: "%s"',
-			$view
-		));
+		return $this->viewFactory;
 	}
 }

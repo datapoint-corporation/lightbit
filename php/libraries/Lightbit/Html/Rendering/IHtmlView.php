@@ -25,55 +25,31 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Throwable;
-use \Lightbit\Exception;
+use \Lightbit\Html\Rendering\HtmlViewRenderException;
 
-use \Lightbit\Html\IHtmlViewFactory;
+use \Lightbit\Rendering\IView;
 
 /**
- * HtmlViewFactoryException.
+ * IHtmlView.
  *
  * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewFactoryException extends Exception
+interface IHtmlView extends IView
 {
 	/**
-	 * The view factory.
+	 * Renders the view.
 	 *
-	 * @var IHtmlViewFactory
+	 * @throws HtmlViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param array $variableMap
+	 *	The view variable map.
+	 *
+	 * @return string
+	 *	The view content.
 	 */
-	private $viewFactory;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IHtmlViewFactory $viewFactory
-	 *	The exception view factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
-	 */
-	public function __construct(IHtmlViewFactory $viewFactory, string $message, Throwable $previous = null)
-	{
-		parent::__construct($message, $previous);
-
-		$this->viewFactory = $viewFactory;
-	}
-
-	/**
-	 * Gets the view factory.
-	 *
-	 * @return IHtmlViewFactory
-	 *	The view factory.
-	 */
-	public final function getViewFactory() : IHtmlViewFactory
-	{
-		return $this->viewFactory;
-	}
+	public function render(array $variableMap = null) : string;
 }

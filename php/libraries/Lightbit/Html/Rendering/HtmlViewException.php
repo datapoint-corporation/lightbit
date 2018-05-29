@@ -25,12 +25,12 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
 use \Throwable;
 use \Lightbit\Exception;
 
-use \Lightbit\Html\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlView;
 
 /**
  * HtmlViewException.

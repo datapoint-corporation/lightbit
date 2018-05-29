@@ -246,6 +246,7 @@ class HttpRoute implements IHttpRoute
 	public final function match(string $method, string $path, array &$tokenMap = null) : bool
 	{
 		$tokenMap = [];
+		$path = '/' . trim($path, '/');
 
 		if (isset($this->methodMap[$method]))
 		{

@@ -33,9 +33,9 @@ use \Throwable;
 use \Lightbit\Application;
 use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Environment;
-use \Lightbit\Html\HtmlViewProvider;
 use \Lightbit\Http\HttpServer;
 use \Lightbit\Http\HttpServerResponse;
+use \Lightbit\Html\Rendering\HtmlViewProvider;
 use \Lightbit\RuntimeException;
 
 /**

@@ -25,31 +25,55 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Lightbit\Html\HtmlViewRenderException;
+use \Lightbit;
+use \Lightbit\Html\Rendering\HtmlView;
+use \Lightbit\Html\Rendering\HtmlViewFactoryException;
 
-use \Lightbit\Rendering\IView;
+use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlViewFactory;
 
 /**
- * IHtmlView.
+ * HtmlViewFactory.
  *
  * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IHtmlView extends IView
+class HtmlViewFactory implements IHtmlViewFactory
 {
 	/**
-	 * Renders the view.
-	 *
-	 * @throws HtmlViewRenderException
-	 *	Thrown when the view rendering fails.
-	 *
-	 * @param array $variableMap
-	 *	The view variable map.
-	 *
-	 * @return string
-	 *	The view content.
+	 * Constructor.
 	 */
-	public function render(array $variableMap = null) : string;
+	public function __construct()
+	{
+
+	}
+
+	/**
+	 * Creates a view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @return IHtmlView
+	 *	The view.
+	 */
+	public final function createView(string $view) : IHtmlView
+	{
+		strpos($view, '://') || ($view = 'views://' . $view);
+
+		if ($path = Lightbit::getInstance()->getResourcePath('php', $view))
+		{
+			return new HtmlView($view, $path);
+		}
+
+		throw new HtmlViewFactoryException($this, sprintf(
+			'Can not get html view, not found: "%s"',
+			$view
+		));
+	}
 }

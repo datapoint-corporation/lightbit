@@ -29,7 +29,7 @@ namespace Lightbit\Http;
 
 use \Lightbit\Rendering\ViewRenderException;
 
-use \Lightbit\Html\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlView;
 use \Lightbit\Http\IHttpResponse;
 use \Lightbit\Rendering\IView;
 

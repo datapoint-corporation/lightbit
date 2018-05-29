@@ -25,13 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Lightbit\Html\HtmlViewFactory;
-use \Lightbit\Html\HtmlViewFactoryException;
+use \Lightbit\Html\Rendering\HtmlViewFactory;
+use \Lightbit\Html\Rendering\HtmlViewFactoryException;
 
-use \Lightbit\Html\IHtmlView;
-use \Lightbit\Html\IHtmlViewFactory;
+use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlViewFactory;
 
 /**
  * HtmlViewProvider.

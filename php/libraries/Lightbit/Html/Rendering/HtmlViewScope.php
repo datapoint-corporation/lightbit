@@ -25,36 +25,33 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Throwable;
-
-use \Lightbit\Html\HtmlViewException;
-
-use \Lightbit\Html\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlView;
 
 /**
- * HtmlViewRenderException.
+ * HtmlViewScope.
  *
  * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewRenderException extends HtmlViewException
+class HtmlViewScope
 {
+	/**
+	 * The view.
+	 *
+	 * @var IHtmlView
+	 */
+	private $view;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param IHtmlView $view
-	 *	The exception view.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
+	 *	The scope view.
 	 */
-	public function __construct(IHtmlView $view, string $message, Throwable $previous = null)
+	public function __construct(IHtmlView $view)
 	{
-		parent::__construct($view, $message, $previous);
+		$this->view = $view;
 	}
 }

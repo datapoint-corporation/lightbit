@@ -25,33 +25,29 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Rendering;
 
-use \Lightbit\Html\IHtmlView;
+use \Lightbit\Html\Rendering\IHtmlView;
 
 /**
- * HtmlViewScope.
+ * IHtmlViewFactory.
  *
  * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+interface IHtmlViewFactory
 {
 	/**
-	 * The view.
+	 * Creates a view.
 	 *
-	 * @var IHtmlView
-	 */
-	private $view;
-
-	/**
-	 * Constructor.
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
 	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @return IHtmlView
+	 *	The view.
 	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
+	public function createView(string $view) : IHtmlView;
 }
