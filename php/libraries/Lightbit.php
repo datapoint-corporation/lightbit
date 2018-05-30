@@ -65,6 +65,11 @@ final class Lightbit
 	 */
 	private $classPathMap;
 
+	/**
+	 * The class path map update flag.
+	 *
+	 * @var array
+	 */
 	private $classPathMapUpdate;
 
 	/**
@@ -88,6 +93,11 @@ final class Lightbit
 	 */
 	private $resourcePathListMap;
 
+	/**
+	 * The resource path list map update flag.
+	 *
+	 * @var bool
+	 */
 	private $resourcePathListMapUpdate;
 
 	/**
@@ -208,6 +218,9 @@ final class Lightbit
 		}
 	}
 
+	/**
+	 * Commits from internal cache.
+	 */
 	public final function commit() : void
 	{
 		if (LB_INTERNAL_CACHE_CLASS_PATH)
@@ -365,6 +378,18 @@ final class Lightbit
 		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variableMap);
 	}
 
+	/**
+	 * Reads a value from internal cache.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @param mixed $value
+	 *	The value output variable.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
 	private function read(string $key, &$value) : bool
 	{
 		if (LB_INTERNAL_CACHE)
@@ -380,21 +405,9 @@ final class Lightbit
 		return false;
 	}
 
-	private function write(string $key, $value) : bool
-	{
-		if (LB_INTERNAL_CACHE)
-		{
-			file_put_contents(
-				(LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php'),
-				'<?php return (' . var_export($value, true) . ');'
-			);
-
-			return true;
-		}
-
-		return false;
-	}
-
+	/**
+	 * Restores from internal cache.
+	 */
 	public final function restore() : void
 	{
 		if (LB_INTERNAL_CACHE_CLASS_PATH)
@@ -412,5 +425,32 @@ final class Lightbit
 				$this->resourcePathListMap += $resourcePathListMap;
 			}
 		}
+	}
+
+	/**
+	 * Writes a value to internal cache.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @param mixed $value
+	 *	The value.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
+	private function write(string $key, $value) : bool
+	{
+		if (LB_INTERNAL_CACHE)
+		{
+			file_put_contents(
+				(LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php'),
+				'<?php return (' . var_export($value, true) . ');'
+			);
+
+			return true;
+		}
+
+		return false;
 	}
 }
