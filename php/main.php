@@ -126,6 +126,13 @@ return
 		 */
 		defined('LB_PATH_APPLICATION') || define('LB_PATH_APPLICATION', realpath(dirname($_SERVER['SCRIPT_FILENAME'])));
 
+		/**
+		 * The application temporary path.
+		 *
+		 * @var string
+		 */
+		defined('LB_PATH_APPLICATION_TEMPORARY') || define('LB_PATH_APPLICATION_TEMPORARY', LB_PATH_APPLICATION . DIRECTORY_SEPARATOR . 'objects');
+
 		spl_autoload_register(
 
 			/**

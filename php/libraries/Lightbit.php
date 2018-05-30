@@ -65,6 +65,8 @@ final class Lightbit
 	 */
 	private $classPathMap;
 
+	private $classPathMapUpdate;
+
 	/**
 	 * The inclusion.
 	 *
@@ -85,6 +87,8 @@ final class Lightbit
 	 * @var array
 	 */
 	private $resourcePathListMap;
+
+	private $resourcePathListMapUpdate;
 
 	/**
 	 * Constructor.
@@ -206,16 +210,25 @@ final class Lightbit
 
 	public final function commit() : void
 	{
-		if (LB_INTERNAL_CACHE && function_exists('apcu_store'))
+		if (LB_INTERNAL_CACHE_CLASS_PATH)
 		{
-			if (LB_INTERNAL_CACHE_CLASS_PATH)
+			if ($this->classPathMapUpdate)
 			{
-				apcu_store('lightbit.internal.class.path', $this->classPathMap);
+				file_put_contents(
+					LB_PATH_APPLICATION_TEMPORARY . '/lightbit.internal.class.path.php',
+					'<?php return (' . var_export($this->classPathMap, true) . ');'
+				);
 			}
+		}
 
-			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+		if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+		{
+			if ($this->resourcePathListMapUpdate)
 			{
-				apcu_store('lightbit.internal.resource.path', $this->resourcePathListMap);
+				file_put_contents(
+					LB_PATH_APPLICATION_TEMPORARY . '/lightbit.internal.resource.path.php',
+					'<?php return (' . var_export($this->resourcePathListMap, true) . ');'
+				);
 			}
 		}
 	}
@@ -244,6 +257,7 @@ final class Lightbit
 				if (file_exists($filePath) && is_file($filePath))
 				{
 					$this->classPathMap[$className] = $filePath;
+					$this->classPathMapUpdate = true;
 					break;
 				}
 			}
@@ -304,6 +318,7 @@ final class Lightbit
 						if (file_exists($path))
 						{
 							$this->resourcePathListMap[$id][] = $path;
+							$this->resourcePathListMapUpdate = true;
 						}
 					}
 				}
@@ -350,24 +365,51 @@ final class Lightbit
 		return ($this->inclusion->bindTo($scope, 'static'))($filePath, $variableMap);
 	}
 
+	private function read(string $key, &$value) : bool
+	{
+		if (LB_INTERNAL_CACHE)
+		{
+			if (file_exists($filePath = (LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php')))
+			{
+				$value = require($filePath);
+				return true;
+			}
+		}
+
+		$value = null;
+		return false;
+	}
+
+	private function write(string $key, $value) : bool
+	{
+		if (LB_INTERNAL_CACHE)
+		{
+			file_put_contents(
+				(LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php'),
+				'<?php return (' . var_export($value, true) . ');'
+			);
+
+			return true;
+		}
+
+		return false;
+	}
+
 	public final function restore() : void
 	{
-		if (LB_INTERNAL_CACHE && function_exists('apcu_store'))
+		if (LB_INTERNAL_CACHE_CLASS_PATH)
 		{
-			if (LB_INTERNAL_CACHE_CLASS_PATH)
+			if ($this->read('class.path', $classPathMap))
 			{
-				if ($classPathMap = apcu_fetch('lightbit.internal.class.path'))
-				{
-					$this->classPathMap = $classPathMap;
-				}
+				$this->classPathMap += $classPathMap;
 			}
+		}
 
-			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+		if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+		{
+			if ($this->read('resource.path', $resourcePathListMap))
 			{
-				if ($resourcePathListMap = apcu_fetch('lightbit.internal.resource.path'))
-				{
-					$this->resourcePathListMap = $resourcePathListMap;
-				}
+				$this->resourcePathListMap += $resourcePathListMap;
 			}
 		}
 	}
