@@ -105,7 +105,25 @@ class HttpRouter implements IHttpRouter
 		}
 	}
 
-	public final function createUrl(string $method, string $controllerClassName, string $controllerMethodName, array $argumentMap = null)
+	/**
+	 * Creates a uniform resource location.
+	 *
+	 * @param string $method
+	 *	The method.
+	 *
+	 * @param string $controllerClassName
+	 *	The controller class name.
+	 *
+	 * @param string $controllerMethodName
+	 *	The controller method name.
+	 *
+	 * @param array $argumentMap
+	 *	The argument map.
+	 *
+	 * @return string
+	 *	The url.
+	 */
+	public final function createUrl(string $method, string $controllerClassName, string $controllerMethodName, array $argumentMap = null) : string
 	{
 		return $this->createUrlByRoute(
 			$this->getRoute(
@@ -118,6 +136,18 @@ class HttpRouter implements IHttpRouter
 		);
 	}
 
+	/**
+	 * Creates a uniform resource location.
+	 *
+	 * @param IHttpRoute $route
+	 *	The route.
+	 *
+	 * @param array $argumentMap
+	 *	The argument map.
+	 *
+	 * @return string
+	 *	The url.
+	 */
 	public function createUrlByRoute(IHttpRoute $route, array $argumentMap = null) : string
 	{
 		$queryStringParameterMap = ($argumentMap ?? []);
@@ -231,6 +261,15 @@ class HttpRouter implements IHttpRouter
 		return $this->routeList;
 	}
 
+	/**
+	 * Resolves to an action.
+	 *
+	 * @param IHttpContext $context
+	 *	The resolution context.
+	 *
+	 * @return IHttpAction
+	 *	The action.
+	 */
 	public final function resolve(IHttpContext $context) : IHttpAction
 	{
 		$request = $context->getRequest();
