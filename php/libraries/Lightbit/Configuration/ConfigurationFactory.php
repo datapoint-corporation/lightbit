@@ -30,6 +30,7 @@ namespace Lightbit\Configuration;
 use \Lightbit;
 use \Lightbit\Configuration\Configuration;
 use \Lightbit\Configuration\ConfigurationFactoryException;
+use \Lightbit\Data\Caching\CacheProvider;
 use \Lightbit\Environment;
 
 use \Lightbit\Configuration\IConfigurationFactory;
@@ -65,31 +66,39 @@ class ConfigurationFactory implements IConfigurationFactory
 	public final function createConfiguration(string $configuration) : IConfiguration
 	{
 		$environment = Environment::getInstance();
-		$lightbit = Lightbit::getInstance();
 
-		$propertiesMap = [];
-
-		// Base
-		foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
-		{
-			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
-
-			if (is_array($subject))
+		$propertiesMap = CacheProvider::getInstance()->getOpCache()->invoke(
+			(implode('.', [ 'application', $environment->getName(), $configuration ])),
+			function() use ($environment, $configuration)
 			{
-				$propertiesMap = $subject + $propertiesMap;
-			}
-		}
+				$propertiesMap = [];
+				$lightbit = Lightbit::getInstance();
 
-		// Environment
-		foreach ($lightbit->getResourcePathList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $filePath)
-		{
-			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
+				// Base
+				foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
+				{
+					$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
 
-			if (is_array($subject))
-			{
-				$propertiesMap = $subject + $propertiesMap;
+					if (is_array($subject))
+					{
+						$propertiesMap = $subject + $propertiesMap;
+					}
+				}
+
+				// Environment
+				foreach ($lightbit->getResourcePathList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $filePath)
+				{
+					$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
+
+					if (is_array($subject))
+					{
+						$propertiesMap = $subject + $propertiesMap;
+					}
+				}
+
+				return $propertiesMap;
 			}
-		}
+		);
 
 		return new Configuration($propertiesMap);
 	}

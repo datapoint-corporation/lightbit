@@ -81,6 +81,13 @@ final class CacheProvider
 	private $networkCache;
 
 	/**
+	 * The opcache cache.
+	 *
+	 * @var OpCache
+	 */
+	private $opCache;
+
+	/**
 	 * Constructor.
 	 */
 	private function __construct()
@@ -97,6 +104,17 @@ final class CacheProvider
 	public final function getCacheFactory() : ICacheFactory
 	{
 		return ($this->cacheFactory ?? ($this->cacheFactory = new CacheFactory()));
+	}
+
+	/**
+	 * Gets the opcode cache.
+	 *
+	 * @return OpCache
+	 *	The opcode cache.
+	 */
+	public final function getOpCache() : OpCache
+	{
+		return ($this->opCache ?? ($this->opCache = new OpCache()));
 	}
 
 	/**
