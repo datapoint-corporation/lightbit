@@ -220,6 +220,17 @@ class HttpRouter implements IHttpRouter
 		));
 	}
 
+	/**
+	 * Gets the route list.
+	 *
+	 * @return array
+	 *	The route list.
+	 */
+	public final function getRouteList() : array
+	{
+		return $this->routeList;
+	}
+
 	public final function resolve(IHttpContext $context) : IHttpAction
 	{
 		$request = $context->getRequest();
