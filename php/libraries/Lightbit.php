@@ -87,6 +87,13 @@ final class Lightbit
 	private $libraryLookupPathList;
 
 	/**
+	 * The key value file path map.
+	 *
+	 * @var array
+	 */
+	private $keyValueFilePathMap;
+
+	/**
 	 * The resource path list map.
 	 *
 	 * @var array
@@ -107,6 +114,7 @@ final class Lightbit
 	{
 		$this->bundlePathListMap = [];
 		$this->classPathMap = [];
+		$this->keyValueFilePathMap = [];
 		$this->libraryLookupPathList = [];
 		$this->resourcePathListMap = [];
 
@@ -223,27 +231,37 @@ final class Lightbit
 	 */
 	public final function commit() : void
 	{
-		if (LB_INTERNAL_CACHE_CLASS_PATH)
+		if (LB_INTERNAL_CACHE)
 		{
-			if ($this->classPathMapUpdate)
+			if ($this->classPathMapUpdate && LB_INTERNAL_CACHE_CLASS_PATH)
 			{
-				file_put_contents(
-					LB_PATH_APPLICATION_TEMPORARY . '/lightbit.internal.class.path.php',
-					'<?php return (' . var_export($this->classPathMap, true) . ');'
-				);
+				$this->write('lightbit.class.path', $this->classPathMap);
 			}
-		}
 
-		if (LB_INTERNAL_CACHE_RESOURCE_PATH)
-		{
-			if ($this->resourcePathListMapUpdate)
+			if ($this->resourcePathListMapUpdate && LB_INTERNAL_CACHE_RESOURCE_PATH)
 			{
-				file_put_contents(
-					LB_PATH_APPLICATION_TEMPORARY . '/lightbit.internal.resource.path.php',
-					'<?php return (' . var_export($this->resourcePathListMap, true) . ');'
-				);
+				$this->write('lightbit.resource.path', $this->resourcePathListMap);
 			}
 		}
+	}
+
+	/**
+	 * Gets a key value file path.
+	 *
+	 * @param string $key
+	 *	The key.
+	 *
+	 * @return string
+	 *	The key value file path.
+	 */
+	private function getKeyValueFilePath(string $key) : string
+	{
+		return ($this->keyValueFilePathMap[$key] ?? (
+			$this->keyValueFilePathMap[$key] = (
+				LB_PATH_APPLICATION_TEMPORARY .
+				DIRECTORY_SEPARATOR .
+				md5($key) . '.lightbit.php'
+		)));
 	}
 
 	/**
@@ -379,30 +397,22 @@ final class Lightbit
 	}
 
 	/**
-	 * Reads a value from internal cache.
+	 * Fetches from internal cache.
 	 *
 	 * @param string $key
-	 *	The value key.
+	 *	The key.
 	 *
-	 * @param mixed $value
-	 *	The value output variable.
-	 *
-	 * @return bool
-	 *	The success status.
+	 * @return mixed
+	 *	The value.
 	 */
-	private function read(string $key, &$value) : bool
+	private function fetch(string $key)
 	{
-		if (LB_INTERNAL_CACHE)
+		if (file_exists($filePath = $this->getKeyValueFilePath($key)))
 		{
-			if (file_exists($filePath = (LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php')))
-			{
-				$value = require($filePath);
-				return true;
-			}
+			return (require ($filePath));
 		}
 
-		$value = null;
-		return false;
+		return null;
 	}
 
 	/**
@@ -410,47 +420,38 @@ final class Lightbit
 	 */
 	public final function restore() : void
 	{
-		if (LB_INTERNAL_CACHE_CLASS_PATH)
+		if (LB_INTERNAL_CACHE)
 		{
-			if ($this->read('class.path', $classPathMap))
+			if (LB_INTERNAL_CACHE_CLASS_PATH)
 			{
-				$this->classPathMap += $classPathMap;
+				$this->classPathMap += ($this->fetch('lightbit.class.path') ?? []);
 			}
-		}
 
-		if (LB_INTERNAL_CACHE_RESOURCE_PATH)
-		{
-			if ($this->read('resource.path', $resourcePathListMap))
+			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
 			{
-				$this->resourcePathListMap += $resourcePathListMap;
+				$this->resourcePathListMap += ($this->fetch('lightbit.resource.path') ?? []);
 			}
 		}
 	}
 
 	/**
-	 * Writes a value to internal cache.
+	 * Writes to internal cache.
 	 *
 	 * @param string $key
-	 *	The value key.
+	 *	The key.
 	 *
 	 * @param mixed $value
-	 *	The value.
+	 *	The key value.
 	 *
 	 * @return bool
 	 *	The success status.
 	 */
 	private function write(string $key, $value) : bool
 	{
-		if (LB_INTERNAL_CACHE)
-		{
-			file_put_contents(
-				(LB_PATH_APPLICATION_TEMPORARY . DIRECTORY_SEPARATOR . 'lightbit.internal.' . $key . '.php'),
-				'<?php return (' . var_export($value, true) . ');'
-			);
-
-			return true;
-		}
-
-		return false;
+		return !!file_put_contents(
+			$this->getKeyValueFilePath($key),
+			('<?php return (' . var_export($value, true) . '); // Lightbit/2.0.0'),
+			LOCK_EX
+		);
 	}
 }

@@ -27,80 +27,33 @@
 
 namespace Lightbit\Data\Caching;
 
+use \Lightbit\Data\Caching\Apcu\ApcuCache;
 use \Lightbit\Data\Caching\Op\OpCache;
+use \Lightbit\Data\Caching\Simulation\SimulationCache;
 
 use \Lightbit\Data\Caching\ICacheFactory;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 
 /**
- * CacheProvider.
+ * CacheFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class CacheProvider
+class CacheFactory implements ICacheFactory
 {
-	/**
-	 * The singleton instance.
-	 *
-	 * @var CacheProvider
-	 */
-	private static $instance;
-
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return CacheProvider
-	 *	The singleton instance.
-	 */
-	public static final function getInstance() : CacheProvider
-	{
-		return (self::$instance ?? (self::$instance = new CacheProvider()));
-	}
-
-	/**
-	 * The file cache.
-	 *
-	 * @var IFileCache
-	 */
-	private $fileCache;
-
-	/**
-	 * The memory cache.
-	 *
-	 * @var IMemoryCache
-	 */
-	private $memoryCache;
-
-	/**
-	 * The network cache.
-	 *
-	 * @var INetworkCache
-	 */
-	private $networkCache;
-
 	/**
 	 * Constructor.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 
 	}
 
 	/**
-	 * Gets the cache factory.
-	 *
-	 * @return ICacheFactory
-	 *	The cache factory.
-	 */
-	public final function getCacheFactory() : ICacheFactory
-	{
-		return ($this->cacheFactory ?? ($this->cacheFactory = new CacheFactory()));
-	}
-
-	/**
-	 * Gets the file cache.
+	 * Creates the file cache.
 	 *
 	 * @throws CacheFactoryException
 	 *	Thrown if the cache fails to be created.
@@ -108,13 +61,13 @@ final class CacheProvider
 	 * @return IFileCache
 	 *	The file cache.
 	 */
-	public final function getFileCache() : IFileCache
+	public function createFileCache() : IFileCache
 	{
-		return ($this->fileCache ?? ($this->fileCache = $this->getCacheFactory()->createFileCache()));
+		return new OpCache();
 	}
 
 	/**
-	 * Gets the memory cache.
+	 * Creates the memory cache.
 	 *
 	 * @throws CacheFactoryException
 	 *	Thrown if the cache fails to be created.
@@ -122,13 +75,18 @@ final class CacheProvider
 	 * @return IMemoryCache
 	 *	The memory cache.
 	 */
-	public final function getMemoryCache() : IMemoryCache
+	public function createMemoryCache() : IMemoryCache
 	{
-		return ($this->memoryCache ?? ($this->memoryCache = $this->getCacheFactory()->createMemoryCache()));
+		if (function_exists('apcu_store'))
+		{
+			return new ApcuCache();
+		}
+
+		return new SimulationCache();
 	}
 
 	/**
-	 * Gets the network cache.
+	 * Creates the network cache.
 	 *
 	 * @throws CacheFactoryException
 	 *	Thrown if the cache fails to be created.
@@ -136,19 +94,8 @@ final class CacheProvider
 	 * @return INetworkCache
 	 *	The network cache.
 	 */
-	public final function getNetworkCache() : INetworkCache
+	public function createNetworkCache() : INetworkCache
 	{
-		return ($this->networkCache ?? ($this->networkCache = $this->getCacheFactory()->createNetworkCache()));
-	}
-
-	/**
-	 * Sets the cache factory.
-	 *
-	 * @param ICacheFactory $cacheFactory
-	 *	The cache factory.
-	 */
-	public final function setCacheFactory(ICacheFactory $cacheFactory) : void
-	{
-		$this->cacheFactory = $cacheFactory;
+		return new SimulationCache();
 	}
 }

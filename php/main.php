@@ -50,12 +50,14 @@ const LB_PATH_LIGHTBIT = __DIR__;
 
 		->bindTo(null, 'static');
 
+		// Functions
 		$__require(LB_PATH_LIGHTBIT . '/functions.php');
 
+		// Classes
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
-		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/ErrorException.php');
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
+		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/ErrorException.php');
 	}
 )();
 
@@ -68,13 +70,10 @@ return
 	 * applicable constants, sets the error and exception handlers and runs
 	 * the application according to the detected environment type.
 	 *
-	 * @param Lightbit $lightbit
-	 *	The lightbit instance.
-	 *
 	 * @return int
 	 *	The application exit status code.
 	 */
-	function (Lightbit $lightbit) : int
+	function () : int
 	{
 		/**
 		 * The environment name.
@@ -132,6 +131,10 @@ return
 		 * @var string
 		 */
 		defined('LB_PATH_APPLICATION_TEMPORARY') || define('LB_PATH_APPLICATION_TEMPORARY', LB_PATH_APPLICATION . DIRECTORY_SEPARATOR . 'objects');
+
+		// Since all the necessary constants are defined, we can finally
+		// get and start using lightbit.
+		$lightbit = Lightbit::getInstance();
 
 		spl_autoload_register(
 
@@ -225,4 +228,4 @@ return
 		return $status;
 	}
 )
-(Lightbit::getInstance());
+();

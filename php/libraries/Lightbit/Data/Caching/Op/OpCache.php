@@ -27,11 +27,12 @@
 
 namespace Lightbit\Data\Caching\Op;
 
-use \Lightbit;
-use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Configuration\ConfigurationException;
+use \Lightbit\Data\Caching\Cache;
 
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 
 /**
  * OpCache.
@@ -39,14 +40,21 @@ use \Lightbit\Data\Caching\IMemoryCache;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class OpCache implements IFileCache, IMemoryCache
+class OpCache extends Cache implements IFileCache, IMemoryCache
 {
 	/**
-	 * The key file path map.
+	 * The key hash map.
 	 *
 	 * @var array
 	 */
-	private $keyValueFilePathMap;
+	private $keyHashMap;
+
+	/**
+	 * The key meta map.
+	 *
+	 * @var array
+	 */
+	private $keyMetaMap;
 
 	/**
 	 * The key value map.
@@ -56,27 +64,22 @@ class OpCache implements IFileCache, IMemoryCache
 	private $keyValueMap;
 
 	/**
-	 * The key value status file path map.
+	 * The output directory path.
 	 *
-	 * @var array
+	 * @var string
 	 */
-	private $keyValueStatusFilePathMap;
+	private $outputDirectoryPath;
 
 	/**
-	 * Construct.
+	 * Constructor.
 	 */
 	public function __construct()
 	{
-		$this->keyValueFilePathMap = [];
+		parent::__construct();
+
+		$this->keyHashMap = [];
+		$this->keyMetaMap = [];
 		$this->keyValueMap = [];
-		$this->keyValueStatusFilePathMap = [];
-		$this->keyValueStatusMap = [];
-
-		ConfigurationProvider::getInstance()->getConfiguration(
-			'lightbit.data.caching.file'
-		)
-
-		->accept($this, []);
 	}
 
 	/**
@@ -90,41 +93,82 @@ class OpCache implements IFileCache, IMemoryCache
 	 */
 	public final function contains(string $key) : bool
 	{
-		if (!isset($this->keyValueMap[$key]))
+		return $this->getKeyMeta($key)['key_value_available'];
+	}
+
+	/**
+	 * Gets the output directory path.
+	 *
+	 * @return string
+	 *	The output directory path.
+	 */
+	public final function getOutputDirectoryPath() : string
+	{
+		return ($this->outputDirectoryPath ?? ($this->outputDirectoryPath = LB_PATH_APPLICATION_TEMPORARY));
+	}
+
+	/**
+	 * Gets a key hash.
+	 *
+	 * @return string
+	 *	The key hash.
+	 */
+	private function getKeyHash(string $key) : string
+	{
+		return ($this->keyHashMap[$key] ?? ($this->keyHashMap[$key] = md5($key)));
+	}
+
+	/**
+	 * Gets the key meta.
+	 *
+	 * @return array
+	 *	The key meta.
+	 */
+	private function getKeyMeta(string $key) : ?array
+	{
+		if (!isset($this->keyMetaMap[$key]))
 		{
-			$filePath = $this->getKeyValueStatusFilePath($key);
+			$filePath = $this->getKeyMetaFilePath($key);
 
 			if (file_exists($filePath))
 			{
-				$this->keyValueMap[$key] = (require($filePath)) + [
-					'status_available' => ((!isset($this->keyValueStatusMap[$key]['expiration'])) || (microtime(true) > $this->keyValueStatusMap[$key]['expiration'])),
-					'status_include' => false
+				$this->keyMetaMap[$key] = (require ($filePath));
+				$this->keyMetaMap[$key] += [
+					'key_value_available' => ((!isset($this->keyMetaMap[$key]['key_expire_on'])) || ($this->keyMetaMap[$key]['key_expire_on'] > (microtime(true)))),
+					'key_value_fetch' => false
 				];
 			}
 			else
 			{
-				$this->keyValueMap[$key] = [
-					'status_available' => false,
-					'status_include' => false
+				$this->keyMetaMap[$key] = [
+					'key' => $key,
+					'key_expire_on' => null,
+					'key_value_available' => false,
+					'key_value_fetch' => false
 				];
 			}
 		}
 
-		return $this->keyValueMap[$key]['status_available'];
+		return $this->keyMetaMap[$key];
 	}
 
 	/**
-	 * Gets the key expiry file path.
+	 * Gets the key meta file path.
 	 *
 	 * @param string $key
 	 *	The key.
 	 *
 	 * @return string
-	 *	The key expiry file path.
+	 *	The key meta file path.
 	 */
-	private final function getKeyValueStatusFilePath(string $key) : string
+	private function getKeyMetaFilePath(string $key) : string
 	{
-		return ($this->keyValueStatusFilePathMap[$key] ?? ($this->keyValueStatusFilePathMap[$key] = ($this->getDirectoryPath() . DIRECTORY_SEPARATOR . $key . '.status.php')));
+		return ($this->keyMetaFilePathMap[$key] ?? (
+			$this->keyMetaFilePathMap[$key] = $this->getOutputDirectoryPath()
+				. DIRECTORY_SEPARATOR
+				. $this->getKeyHash($key)
+				. '.meta.php'
+		));
 	}
 
 	/**
@@ -136,24 +180,22 @@ class OpCache implements IFileCache, IMemoryCache
 	 * @return string
 	 *	The key value file path.
 	 */
-	private final function getKeyValueFilePath(string $key) : string
+	private function getKeyValueFilePath(string $key) : string
 	{
-		return ($this->keyValueFilePathMap[$key] ?? ($this->keyExpiryFilePathMap[$key] = ($this->getDirectoryPath() . DIRECTORY_SEPARATOR . $key . '.php')));
-	}
-
-	/**
-	 * Gets the directory path.
-	 *
-	 * @return string
-	 *	The directory path.
-	 */
-	public final function getDirectoryPath() : string
-	{
-		return LB_PATH_APPLICATION_TEMPORARY;
+		return ($this->keyValueFilePathMap[$key] ?? (
+			$this->keyValueFilePathMap[$key] = $this->getOutputDirectoryPath()
+				. DIRECTORY_SEPARATOR
+				. $this->getKeyHash($key)
+				. '.php'
+		));
 	}
 
 	/**
 	 * Reads a value.
+	 *
+	 * @throws CacheReadException
+	 *	Thrown if the key value is set but fails to be read because it can not
+	 *	be unserialized from persistent storage.
 	 *
 	 * @param string $key
 	 *	The value key.
@@ -168,13 +210,13 @@ class OpCache implements IFileCache, IMemoryCache
 	{
 		if ($this->contains($key))
 		{
-			if (!$this->keyValueMap[$key]['status_include'])
+			if (!$this->keyMetaMap[$key]['key_value_fetch'])
 			{
-				$this->keyValueMap[$key]['value'] = require($this->getKeyValueFilePath($key));
-				$this->keyValueMap[$key]['status_include'] = true;
+				$this->keyValueMap[$key] = (require ($this->getKeyValueFilePath($key)));
+				$this->keyMetaMap[$key]['key_value_fetch'] = true;
 			}
 
-			$value = $this->keyValueMap[$key]['value'];
+			$value = $this->keyValueMap[$key];
 			return true;
 		}
 
@@ -183,7 +225,66 @@ class OpCache implements IFileCache, IMemoryCache
 	}
 
 	/**
+	 * Compiles a value for storage.
+	 *
+	 * @param mixed $subject
+	 *	The compilation subject.
+	 *
+	 * @return string
+	 *	The compilation result.
+	 */
+	private function compile($subject) : string
+	{
+		$php = '<?php return (';
+
+		if ($this->validate($subject))
+		{
+			$php .= var_export($subject, true);
+		}
+		else
+		{
+			$php .= 'unserialize(base64_decode(\'' . base64_encode(serialize($subject)) . '\'))';
+		}
+
+		return ($php . '); // Lightbit/2.0.0');
+	}
+
+	/**
+	 * Validates a subject.
+	 *
+	 * @param mixed $subject
+	 *	The validation subject.
+	 *
+	 * @return bool
+	 *	The validation result.
+	 */
+	private function validate($subject) : bool
+	{
+		if (isset($subject) && !is_scalar($subject))
+		{
+			if (!is_array($subject))
+			{
+				return false;
+			}
+
+			foreach ($subject as $k => $v)
+			{
+				if (!$this->validate($v))
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Writes a value.
+	 *
+	 * @throws CacheWriteException
+	 *	Thrown if the key value write fails because it can not be serialized
+	 *	to persistent storage.
 	 *
 	 * @param string $key
 	 *	The value key.
@@ -192,7 +293,7 @@ class OpCache implements IFileCache, IMemoryCache
 	 *	The value.
 	 *
 	 * @param int $timeToLive
-	 *	The value time to live, in milliseconds.
+	 *	The value time to live.
 	 *
 	 * @return bool
 	 *	The success status.
@@ -201,31 +302,38 @@ class OpCache implements IFileCache, IMemoryCache
 	{
 		if (isset($timeToLive))
 		{
-			$timeToLive = (microtime(true) + ($timeToLive / 1000));
+			$timeToLive += intval(microtime(true) * 1000);
 		}
 
-		$this->keyValueMap[$key] = [
-			'status_available' => true,
-			'status_include' => true,
-			'expiration' => $timeToLive,
-			'value' => $value
+		// Create the key meta and write it to disk along with the
+		// value, after compilation.
+		$keyMeta = [
+			'key' => $key,
+			'key_expire_on' => $timeToLive,
 		];
 
-		if (!(($content = var_export($value, true)) === null))
-		{
+		$success = (
+			file_put_contents(
+				$this->getKeyMetaFilePath($key),
+				$this->compile($keyMeta),
+				LOCK_EX
+			)
+
+			&&
+
 			file_put_contents(
 				$this->getKeyValueFilePath($key),
-				'<?php return (' . var_export($value, true) . ');'
-			);
+				$this->compile($value),
+				LOCK_EX
+			)
+		);
 
-			file_put_contents(
-				$this->getKeyValueStatusFilePath($key),
-				'<?php return (' . var_export(([ 'expiration' => $timeToLive ]), true) . ');'
-			);
+		$this->keyMetaMap[$key] = $keyMeta + [
+			'key_value_available' => true,
+			'key_value_fetch' => true,
+			'key_value' => $value
+		];
 
-			return true;
-		}
-
-		return false;
+		return $success;
 	}
 }

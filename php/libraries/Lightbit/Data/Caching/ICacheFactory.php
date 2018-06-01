@@ -25,18 +25,50 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Caching\Op;
+namespace Lightbit\Data\Caching;
 
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\INetworkCache;
 
 /**
- * IOpCache.
+ * ICacheFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface IOpCache extends IFileCache, IMemoryCache
+interface ICacheFactory
 {
+	/**
+	 * Creates the file cache.
+	 *
+	 * @throws CacheFactoryException
+	 *	Thrown if the cache fails to be created.
+	 *
+	 * @return IFileCache
+	 *	The file cache.
+	 */
+	public function createFileCache() : IFileCache;
 
+	/**
+	 * Creates the memory cache.
+	 *
+	 * @throws CacheFactoryException
+	 *	Thrown if the cache fails to be created.
+	 *
+	 * @return IMemoryCache
+	 *	The memory cache.
+	 */
+	public function createMemoryCache() : IMemoryCache;
+
+	/**
+	 * Creates the network cache.
+	 *
+	 * @throws CacheFactoryException
+	 *	Thrown if the cache fails to be created.
+	 *
+	 * @return INetworkCache
+	 *	The network cache.
+	 */
+	public function createNetworkCache() : INetworkCache;
 }

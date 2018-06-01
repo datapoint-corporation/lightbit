@@ -25,33 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Caching;
+namespace Lightbit\Data\Caching\Apcu;
 
-use \Closure;
+use \Lightbit\Data\Caching\Cache;
 
-use \Lightbit\Configuration\ConfigurationException;
-
-use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Data\Caching\IMemoryCache;
 
 /**
- * ICache.
+ * ApcuCache.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface ICache
+class ApcuCache extends Cache implements IMemoryCache
 {
 	/**
-	 * Configures this object by accepting any relevant properties from
-	 * the given configuration.
-	 *
-	 * @throws ConfigurationException
-	 *	Thrown if a configurable property fails to be set.
-	 *
-	 * @param IConfiguration $configuration
-	 *	The configuration to accept from.
+	 * Constructor.
 	 */
-	public function configure(IConfiguration $configuration) : void;
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
 	/**
 	 * Checks if a key is set.
@@ -62,32 +56,10 @@ interface ICache
 	 * @return bool
 	 *	The key status.
 	 */
-	public function contains(string $key) : bool;
-
-	/**
-	 * Gets a value.
-	 *
-	 * @throws CacheReadException
-	 *	Thrown if the key value is set but fails to be read because it can not
-	 *	be unserialized from persistent storage.
-	 *
-	 * @throws CacheWriteException
-	 *	Thrown if the key value write fails because it can not be serialized
-	 *	to persistent storage.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param Closure $closure
-	 *	The value closure.
-	 *
-	 * @param int $timeToLive
-	 *	The value time to live.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	public function invoke(string $key, Closure $closure, int $timeToLive = null);
+	public final function contains(string $key) : bool
+	{
+		return apcu_exists($key);
+	}
 
 	/**
 	 * Reads a value.
@@ -105,7 +77,19 @@ interface ICache
 	 * @return bool
 	 *	The success status.
 	 */
-	public function read(string $key, &$value) : bool;
+	public final function read(string $key, &$value) : bool
+	{
+		$success;
+		$value = apcu_fetch($key, $success);
+
+		if ($success)
+		{
+			return true;
+		}
+
+		$value = null;
+		return false;
+	}
 
 	/**
 	 * Writes a value.
@@ -126,5 +110,8 @@ interface ICache
 	 * @return bool
 	 *	The success status.
 	 */
-	public function write(string $key, $value, int $timeToLive = null) : bool;
+	public final function write(string $key, $value, int $timeToLive = null) : bool
+	{
+		return apcu_store($key, $value, ($timeToLive ?? 0));
+	}
 }

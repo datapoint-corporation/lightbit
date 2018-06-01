@@ -28,19 +28,79 @@
 namespace Lightbit\Data\Caching;
 
 use \Closure;
+use \Throwable;
 
 use \Lightbit\Configuration\ConfigurationException;
 
 use \Lightbit\Configuration\IConfiguration;
+use \Lightbit\Data\Caching\ICache;
 
 /**
- * ICache.
+ * CacheException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-interface ICache
+abstract class Cache implements ICache
 {
+	/**
+	 * Checks if a key is set.
+	 *
+	 * @param string $key
+	 *	The key.
+	 *
+	 * @return bool
+	 *	The key status.
+	 */
+	abstract public function contains(string $key) : bool;
+
+	/**
+	 * Reads a value.
+	 *
+	 * @throws CacheReadException
+	 *	Thrown if the key value is set but fails to be read because it can not
+	 *	be unserialized from persistent storage.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @param mixed $value
+	 *	The value output variable.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
+	abstract public function read(string $key, &$value) : bool;
+
+	/**
+	 * Writes a value.
+	 *
+	 * @throws CacheWriteException
+	 *	Thrown if the key value write fails because it can not be serialized
+	 *	to persistent storage.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @param mixed $value
+	 *	The value.
+	 *
+	 * @param int $timeToLive
+	 *	The value time to live.
+	 *
+	 * @return bool
+	 *	The success status.
+	 */
+	abstract public function write(string $key, $value, int $timeToLive = null) : bool;
+
+	/**
+	 * Constructor.
+	 */
+	protected function __construct()
+	{
+
+	}
+
 	/**
 	 * Configures this object by accepting any relevant properties from
 	 * the given configuration.
@@ -51,18 +111,10 @@ interface ICache
 	 * @param IConfiguration $configuration
 	 *	The configuration to accept from.
 	 */
-	public function configure(IConfiguration $configuration) : void;
+	public function configure(IConfiguration $configuration) : void
+	{
 
-	/**
-	 * Checks if a key is set.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @return bool
-	 *	The key status.
-	 */
-	public function contains(string $key) : bool;
+	}
 
 	/**
 	 * Gets a value.
@@ -87,44 +139,13 @@ interface ICache
 	 * @return mixed
 	 *	The value.
 	 */
-	public function invoke(string $key, Closure $closure, int $timeToLive = null);
+	public final function invoke(string $key, Closure $closure, int $timeToLive = null)
+	{
+		if (!$this->read($key, $value))
+		{
+			$this->write($key, ($value = $closure()), $timeToLive);
+		}
 
-	/**
-	 * Reads a value.
-	 *
-	 * @throws CacheReadException
-	 *	Thrown if the key value is set but fails to be read because it can not
-	 *	be unserialized from persistent storage.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param mixed $value
-	 *	The value output variable.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
-	public function read(string $key, &$value) : bool;
-
-	/**
-	 * Writes a value.
-	 *
-	 * @throws CacheWriteException
-	 *	Thrown if the key value write fails because it can not be serialized
-	 *	to persistent storage.
-	 *
-	 * @param string $key
-	 *	The value key.
-	 *
-	 * @param mixed $value
-	 *	The value.
-	 *
-	 * @param int $timeToLive
-	 *	The value time to live.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
-	public function write(string $key, $value, int $timeToLive = null) : bool;
+		return $value;
+	}
 }
