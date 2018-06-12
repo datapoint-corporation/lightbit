@@ -44,6 +44,13 @@ use \Lightbit\Html\Rendering\IHtmlView;
 class HtmlView implements IHtmlView
 {
 	/**
+	 * The base view.
+	 *
+	 * @var IHtmlView
+	 */
+	private $baseView;
+
+	/**
 	 * The file path.
 	 *
 	 * @var string
@@ -81,6 +88,17 @@ class HtmlView implements IHtmlView
 	}
 
 	/**
+	 * Gets the identifier.
+	 *
+	 * @return string
+	 *	The identifier.
+	 */
+	public final function getID() : string
+	{
+		return $this->id;
+	}
+
+	/**
 	 * Renders the view.
 	 *
 	 * @throws HtmlViewRenderException
@@ -92,7 +110,7 @@ class HtmlView implements IHtmlView
 	 * @return string
 	 *	The view content.
 	 */
-	public function render(array $variables = null) : string
+	public final function render(array $variables = null) : string
 	{
 		if (!ob_start())
 		{
@@ -136,6 +154,44 @@ class HtmlView implements IHtmlView
 			ob_end_flush();
 		}
 
-		return ob_get_clean();
+		$content = ob_get_clean();
+
+		if ($this->baseView)
+		{
+			try
+			{
+				$content = $this->baseView->render([
+					'content' => $content
+				]);
+			}
+			catch (Throwable $e)
+			{
+				throw new HtmlViewRenderException(
+					$this,
+					sprintf(
+						'Can not render base view, uncaught throwable: "%s"',
+						$this->baseView->getID()
+					),
+					$e
+				);
+			}
+
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Sets the base view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @param IHtmlView $view
+	 *	The base view.
+	 */
+	public final function setBaseView(?IHtmlView $baseView) : void
+	{
+		$this->baseView = $baseView;
 	}
 }

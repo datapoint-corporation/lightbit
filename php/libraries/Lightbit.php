@@ -207,7 +207,6 @@ final class Lightbit
 			'messages' => ($modulePath . '/messages'),
 			'settings' => ($modulePath . '/settings'),
 			'tests' => ($modulePath . '/tests'),
-			'theme' => ($modulePath . '/theme'),
 			'views' => ($modulePath . '/views')
 		]);
 	}

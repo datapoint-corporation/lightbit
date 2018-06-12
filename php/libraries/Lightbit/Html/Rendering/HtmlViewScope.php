@@ -54,4 +54,17 @@ class HtmlViewScope
 	{
 		$this->view = $view;
 	}
+
+	/**
+	 * Sets the base view.
+	 *
+	 * @param string $view
+	 *	The base view resource identifier.
+	 */
+	public final function inherit(string $view) : void
+	{
+		$this->view->setBaseView(
+			HtmlViewProvider::getInstance()->getView($view)
+		);
+	}
 }
