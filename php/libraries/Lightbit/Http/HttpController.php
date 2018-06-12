@@ -134,14 +134,14 @@ abstract class HttpController implements IHttpController
 	 * @param string $view
 	 *	The view resource identifier.
 	 *
-	 * @param array $variables
-	 *	The view variables.
+	 * @param array $variableMap
+	 *	The view variable map.
 	 */
-	protected final function html(string $view, array $variables = null) : void
+	protected final function html(string $view, array $variableMap = null) : void
 	{
 		$this->getResponse()->render(
 			HtmlViewProvider::getInstance()->getView($view),
-			$variables
+			$variableMap
 		);
 	}
 }
