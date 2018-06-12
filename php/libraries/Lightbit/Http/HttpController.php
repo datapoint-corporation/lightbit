@@ -27,6 +27,7 @@
 
 namespace Lightbit\Http;
 
+use \Lightbit\Html\Rendering\HtmlViewProvider;
 use \Lightbit\Http\Routing\HttpRouterProvider;
 
 use \Lightbit\Http\Routing\IHttpAction;
@@ -59,16 +60,34 @@ abstract class HttpController implements IHttpController
 		$this->action = $action;
 	}
 
+	/**
+	 * Gets the context.
+	 *
+	 * @return IHttpContext
+	 *	The context.
+	 */
 	public final function getContext() : IHttpContext
 	{
 		return $this->action->getContext();
 	}
 
+	/**
+	 * Gets the response.
+	 *
+	 * @return IHttpResponse
+	 *	The response.
+	 */
 	protected final function getResponse() : IHttpResponse
 	{
 		return $this->action->getContext()->getResponse();
 	}
 
+	/**
+	 * Gets the router.
+	 *
+	 * @return IHttpRouter
+	 *	The router.
+	 */
 	protected final function getRouter() : IHttpRouter
 	{
 		return HttpRouterProvider::getInstance()->getRouter();
@@ -100,6 +119,29 @@ abstract class HttpController implements IHttpController
 				$controllerMethodName,
 				$argumentMap
 			)
+		);
+	}
+
+	/**
+	 * Renders an html view.
+	 *
+	 * @throws HtmlViewFactoryException
+	 *	Thrown when the view creation fails.
+	 *
+	 * @throws HtmlViewRenderException
+	 *	Thrown when the view rendering fails.
+	 *
+	 * @param string $view
+	 *	The view resource identifier.
+	 *
+	 * @param array $variables
+	 *	The view variables.
+	 */
+	protected final function html(string $view, array $variables = null) : void
+	{
+		$this->getResponse()->render(
+			HtmlViewProvider::getInstance()->getView($view),
+			$variables
 		);
 	}
 }
