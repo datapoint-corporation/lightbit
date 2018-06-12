@@ -35,6 +35,7 @@ use \Lightbit\Data\Caching\ICacheFactory;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Data\Caching\IOpCache;
 
 /**
  * CacheFactory.
@@ -63,7 +64,12 @@ class CacheFactory implements ICacheFactory
 	 */
 	public function createFileCache() : IFileCache
 	{
-		return new OpCache();
+		if (LB_CACHE)
+		{
+			return new OpCache();
+		}
+
+		return new SimulationCache();
 	}
 
 	/**
@@ -77,9 +83,14 @@ class CacheFactory implements ICacheFactory
 	 */
 	public function createMemoryCache() : IMemoryCache
 	{
-		if (function_exists('apcu_store'))
+		if (LB_CACHE)
 		{
-			return new ApcuCache();
+			if (function_exists('apcu_store'))
+			{
+				return new ApcuCache();
+			}
+
+			return new OpCache();
 		}
 
 		return new SimulationCache();
@@ -96,6 +107,25 @@ class CacheFactory implements ICacheFactory
 	 */
 	public function createNetworkCache() : INetworkCache
 	{
+		return new SimulationCache();
+	}
+
+	/**
+	 * Creates the opcode cache.
+	 *
+	 * @throws CacheFactoryException
+	 *	Thrown if the cache fails to be created.
+	 *
+	 * @return IOpCache
+	 *	The opcode cache.
+	 */
+	public function createOpCache() : IOpCache
+	{
+		if (LB_CACHE)
+		{
+			return new OpCache();
+		}
+
 		return new SimulationCache();
 	}
 }

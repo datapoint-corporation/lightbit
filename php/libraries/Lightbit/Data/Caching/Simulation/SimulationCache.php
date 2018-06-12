@@ -32,6 +32,7 @@ use \Lightbit\Data\Caching\Cache;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Data\Caching\IOpCache;
 
 /**
  * SimulationCache.
@@ -39,7 +40,7 @@ use \Lightbit\Data\Caching\INetworkCache;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-abstract class SimulationCache extends Cache implements IFileCache, IMemoryCache, INetworkCache
+final class SimulationCache extends Cache implements IFileCache, IMemoryCache, INetworkCache, IOpCache
 {
 	/**
 	 * Constructor.

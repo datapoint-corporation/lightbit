@@ -27,11 +27,10 @@
 
 namespace Lightbit\Data\Caching;
 
-use \Lightbit\Data\Caching\Op\OpCache;
-
 use \Lightbit\Data\Caching\ICacheFactory;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
+use \Lightbit\Data\Caching\IOpCache;
 
 /**
  * CacheProvider.
@@ -109,12 +108,15 @@ final class CacheProvider
 	/**
 	 * Gets the opcode cache.
 	 *
-	 * @return OpCache
+	 * @throws CacheFactoryException
+	 *	Thrown if the cache fails to be created.
+	 *
+	 * @return IOpCache
 	 *	The opcode cache.
 	 */
-	public final function getOpCache() : OpCache
+	public final function getOpCache() : IOpCache
 	{
-		return ($this->opCache ?? ($this->opCache = new OpCache()));
+		return ($this->opCache ?? ($this->opCache = $this->getCacheFactory()->createOpCache()));
 	}
 
 	/**

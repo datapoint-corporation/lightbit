@@ -102,21 +102,21 @@ return
 		 *
 		 * @var bool
 		 */
-		defined('LB_INTERNAL_CACHE') || define('LB_INTERNAL_CACHE', LB_ENVIRONMENT_PRODUCTION);
+		defined('LB_CACHE') || define('LB_CACHE', LB_ENVIRONMENT_PRODUCTION);
 
 		/**
 		 * The internal class path caching flag.
 		 *
 		 * @var bool
 		 */
-		defined('LB_INTERNAL_CACHE_CLASS_PATH') || define('LB_INTERNAL_CACHE_CLASS_PATH', LB_INTERNAL_CACHE);
+		defined('LB_CACHE_CLASS_PATH') || define('LB_CACHE_CLASS_PATH', LB_CACHE);
 
 		/**
 		 * The internal resource path caching flag.
 		 *
 		 * @var bool
 		 */
-		defined('LB_INTERNAL_CACHE_RESOURCE_PATH') || define('LB_INTERNAL_CACHE_RESOURCE_PATH', LB_INTERNAL_CACHE);
+		defined('LB_CACHE_RESOURCE_PATH') || define('LB_CACHE_RESOURCE_PATH', LB_CACHE);
 
 		/**
 		 * The application path.

@@ -231,14 +231,14 @@ final class Lightbit
 	 */
 	public final function commit() : void
 	{
-		if (LB_INTERNAL_CACHE)
+		if (LB_CACHE)
 		{
-			if ($this->classPathMapUpdate && LB_INTERNAL_CACHE_CLASS_PATH)
+			if ($this->classPathMapUpdate && LB_CACHE_CLASS_PATH)
 			{
 				$this->write('lightbit.class.path', $this->classPathMap);
 			}
 
-			if ($this->resourcePathListMapUpdate && LB_INTERNAL_CACHE_RESOURCE_PATH)
+			if ($this->resourcePathListMapUpdate && LB_CACHE_RESOURCE_PATH)
 			{
 				$this->write('lightbit.resource.path', $this->resourcePathListMap);
 			}
@@ -420,14 +420,14 @@ final class Lightbit
 	 */
 	public final function restore() : void
 	{
-		if (LB_INTERNAL_CACHE)
+		if (LB_CACHE)
 		{
-			if (LB_INTERNAL_CACHE_CLASS_PATH)
+			if (LB_CACHE_CLASS_PATH)
 			{
 				$this->classPathMap += ($this->fetch('lightbit.class.path') ?? []);
 			}
 
-			if (LB_INTERNAL_CACHE_RESOURCE_PATH)
+			if (LB_CACHE_RESOURCE_PATH)
 			{
 				$this->resourcePathListMap += ($this->fetch('lightbit.resource.path') ?? []);
 			}
