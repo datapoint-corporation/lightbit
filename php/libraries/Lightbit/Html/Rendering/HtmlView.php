@@ -51,6 +51,13 @@ class HtmlView implements IHtmlView
 	private $baseView;
 
 	/**
+	 * The base view variable map.
+	 *
+	 * @var array
+	 */
+	private $baseViewVariableMap;
+
+	/**
 	 * The file path.
 	 *
 	 * @var string
@@ -160,9 +167,10 @@ class HtmlView implements IHtmlView
 		{
 			try
 			{
-				$content = $this->baseView->render([
-					'content' => $content
-				]);
+				$content = $this->baseView->render(
+					[ 'content' => $content ] +
+					($this->baseViewVariableMap ?? [])
+				);
 			}
 			catch (Throwable $e)
 			{
@@ -187,11 +195,15 @@ class HtmlView implements IHtmlView
 	 * @throws HtmlViewFactoryException
 	 *	Thrown when the view creation fails.
 	 *
-	 * @param IHtmlView $view
+	 * @param IHtmlView $baseView
 	 *	The base view.
+	 *
+	 * @param array $baseViewVariableMap
+	 *	The base view variable map.
 	 */
-	public final function setBaseView(?IHtmlView $baseView) : void
+	public final function setBaseView(?IHtmlView $baseView, ?array $baseViewVariableMap) : void
 	{
 		$this->baseView = $baseView;
+		$this->baseViewVariableMap = ($baseView ? $baseViewVariableMap : null);
 	}
 }
