@@ -72,6 +72,17 @@ abstract class HttpController implements IHttpController
 	}
 
 	/**
+	 * Gets the request.
+	 *
+	 * @return IHttpRequest
+	 *	The request.
+	 */
+	protected final function getRequest() : IHttpRequest
+	{
+		return $this->action->getContext()->getRequest();
+	}
+
+	/**
 	 * Gets the response.
 	 *
 	 * @return IHttpResponse

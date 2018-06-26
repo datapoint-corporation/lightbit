@@ -58,6 +58,20 @@ final class HttpServerRequest implements IHttpRequest
 	}
 
 	/**
+	 * The header list.
+	 *
+	 * @var array
+	 */
+	private $headerList;
+
+	/**
+	 * The header map.
+	 *
+	 * @var array
+	 */
+	private $headerMap;
+
+	/**
 	 * The path.
 	 *
 	 * @var string
@@ -77,6 +91,95 @@ final class HttpServerRequest implements IHttpRequest
 	private function __construct()
 	{
 
+	}
+
+	/**
+	 * Gets the header list.
+	 *
+	 * @return array
+	 *	The header list.
+	 */
+	public final function getHeaderList() : array
+	{
+		if (!isset($this->headerList))
+		{
+			foreach ($this->getHeaderMap() as $i => $headerList)
+			{
+				foreach ($headerList as $i => $header)
+				{
+					$this->headerList[] = $header;
+				}
+			}
+		}
+
+		return $this->headerList;
+	}
+
+	/**
+	 * Gets the header map.
+	 *
+	 * @return array
+	 *	The header map.
+	 */
+	public final function getHeaderMap() : array
+	{
+		if (!isset($this->headerMap))
+		{
+			foreach ($_SERVER as $property => $value)
+			{
+				if (strpos($property, 'HTTP_') === 0)
+				{
+					$name = strtr(ucwords(strtolower(strtr(substr($property, 5), [ '_' => ' ' ]))), [ ' ' => '-' ]);
+
+					if (is_string($value))
+					{
+						$this->headerMap[$name][] = new HttpHeader($name, $value);
+					}
+
+					else if (is_array($value))
+					{
+						foreach ($value as $i => $valueListItem)
+						{
+							$this->headerMap[$name][] = new HttpHeader($name, $valueListItem);
+						}
+					}
+				}
+			}
+		}
+
+		return $this->headerMap;
+	}
+
+	/**
+	 * Gets a header.
+	 *
+	 * @param string $header
+	 *	The header name.
+	 *
+	 * @return string
+	 *	The header content.
+	 */
+	public final function getHeader(string $name) : ?IHttpHeader
+	{
+		return ($this->getHeaderMap()[$name][0] ?? null);
+	}
+
+	/**
+	 * Gets a header content.
+	 *
+	 * @return string
+	 *	The header content.
+	 */
+	public final function getHeaderContent(string $name) : ?string
+	{
+		$headerMap = $this->getHeaderMap();
+
+		if (isset($headerMap[$name][0]))
+		{
+			return ($headerMap[$name][0])->getContent();
+		}
+
+		return null;
 	}
 
 	/**
