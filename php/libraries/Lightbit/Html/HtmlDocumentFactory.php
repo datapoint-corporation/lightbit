@@ -25,61 +25,51 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html;
 
-use \Lightbit\Html\HtmlDocumentProvider;
+use \Throwable;
+
+use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Html\HtmlDocument;
+use \Lightbit\Html\HtmlDocumentFactoryException;
 
 use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Html\IHtmlDocumentFactory;
 
 /**
- * HtmlViewScope.
+ * HtmlDocumentFactory.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+class HtmlDocumentFactory implements IHtmlDocumentFactory
 {
 	/**
-	 * The view.
+	 * Creates a document.
 	 *
-	 * @var IHtmlView
-	 */
-	private $view;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
-	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Gets the document.
+	 * @throws HtmlDocumentFactoryException
+	 *	Thrown if the document creation fails.
 	 *
 	 * @return IHtmlDocument
 	 *	The document.
 	 */
-	public final function getDocument() : IHtmlDocument
+	public function createDocument() : IHtmlDocument
 	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
-	}
-
-	/**
-	 * Sets the base view.
-	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
-	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
-	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
+		try
+		{
+			return new HtmlDocument(
+				ConfigurationProvider::getInstance()->getConfiguration(
+					'lightbit.html.document'
+				)
+			);
+		}
+		catch (Throwable $e)
+		{
+			throw new HtmlDocumentFactoryException(
+				$this,
+				sprintf('Can not create html document, uncaught throwable.'),
+				$e
+			);
+		}
 	}
 }

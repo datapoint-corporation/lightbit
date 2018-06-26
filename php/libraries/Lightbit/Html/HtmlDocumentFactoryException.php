@@ -25,61 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html;
 
-use \Lightbit\Html\HtmlDocumentProvider;
+use \Throwable;
 
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Exception;
+
+use \Lightbit\Html\IHtmlDocumentFactory;
 
 /**
- * HtmlViewScope.
+ * HtmlDocumentFactoryException.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+class HtmlDocumentFactoryException extends Exception
 {
-	/**
-	 * The view.
-	 *
-	 * @var IHtmlView
-	 */
-	private $view;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
-	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Gets the document.
+	 * @param IHtmlDocumentFactory $documentFactory
+	 *	The exception document factory.
 	 *
-	 * @return IHtmlDocument
-	 *	The document.
-	 */
-	public final function getDocument() : IHtmlDocument
-	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
-	}
-
-	/**
-	 * Sets the base view.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
+	public function __construct(IHtmlDocumentFactory $documentFactory, string $message, Throwable $previous = null)
 	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
+		parent::__construct($message, $previous);
 	}
 }

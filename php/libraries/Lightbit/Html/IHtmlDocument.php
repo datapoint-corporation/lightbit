@@ -25,61 +25,15 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
-
-use \Lightbit\Html\HtmlDocumentProvider;
-
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Rendering\IHtmlView;
+namespace Lightbit\Html;
 
 /**
- * HtmlViewScope.
+ * IHtmlDocument.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+interface IHtmlDocument
 {
-	/**
-	 * The view.
-	 *
-	 * @var IHtmlView
-	 */
-	private $view;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
-	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Gets the document.
-	 *
-	 * @return IHtmlDocument
-	 *	The document.
-	 */
-	public final function getDocument() : IHtmlDocument
-	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
-	}
-
-	/**
-	 * Sets the base view.
-	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
-	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
-	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
-	}
 }

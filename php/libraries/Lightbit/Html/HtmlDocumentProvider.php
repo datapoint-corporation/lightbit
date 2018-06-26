@@ -25,61 +25,76 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html;
 
-use \Lightbit\Html\HtmlDocumentProvider;
+use \Lightbit\Html\HtmlDocumentFactory;
+use \Lightbit\Html\HtmlDocumentFactoryException;
 
 use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Html\IHtmlDocumentFactory;
 
 /**
- * HtmlViewScope.
+ * HtmlDocumentProvider.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+final class HtmlDocumentProvider
 {
 	/**
-	 * The view.
-	 *
-	 * @var IHtmlView
+	 * The singleton instance.
 	 */
-	private $view;
+	private static $instance;
+
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HtmlDocumentProvider
+	 *	The singleton instance.
+	 */
+	public static final function getInstance() : HtmlDocumentProvider
+	{
+		return (self::$instance ?? (self::$instance = new HtmlDocumentProvider()));
+	}
+
+	/**
+	 * The document.
+	 *
+	 * @var IHtmlDocument
+	 */
+	private $document;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
 	 */
-	public function __construct(IHtmlView $view)
+	private function __construct()
 	{
-		$this->view = $view;
+
 	}
 
 	/**
 	 * Gets the document.
+	 *
+	 * @throws HtmlDocumentFactoryException
+	 *	Thrown if the document creation fails.
 	 *
 	 * @return IHtmlDocument
 	 *	The document.
 	 */
 	public final function getDocument() : IHtmlDocument
 	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
+		return ($this->document ?? ($this->document = $this->getDocumentFactory()->createDocument()));
 	}
 
 	/**
-	 * Sets the base view.
+	 * Gets the document factory.
 	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
+	 * @return IHtmlDocumentFactory
+	 *	The document factory.
 	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
+	public final function getDocumentFactory() : IHtmlDocumentFactory
 	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
+		return ($this->documentFactory ?? ($this->documentFactory = new HtmlDocumentFactory()));
 	}
+
 }
