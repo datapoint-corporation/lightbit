@@ -27,6 +27,7 @@
 
 namespace Lightbit\Http\Routing;
 
+use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Http\Routing\HttpRouterFactoryException;
 
 use \Lightbit\Http\Routing\IHttpRouter;
@@ -59,6 +60,10 @@ final class HttpRouterFactory implements IHttpRouterFactory
 	 */
 	public function createRouter() : IHttpRouter
 	{
-		return new HttpRouter();
+		return new HttpRouter(
+			ConfigurationProvider::getInstance()->getConfiguration(
+				'lightbit.http.router'
+			)
+		);
 	}
 }

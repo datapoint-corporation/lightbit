@@ -27,7 +27,6 @@
 
 namespace Lightbit\Http\Routing;
 
-use \Lightbit\Configuration\ConfigurationProvider;
 use \Lightbit\Data\Filtering\FilterParseException;
 use \Lightbit\Data\Filtering\FilterProvider;
 use \Lightbit\Http\Routing\HttpAction;
@@ -37,6 +36,7 @@ use \Lightbit\Http\Routing\HttpRouterContextQueryStringParameterNotSetException;
 use \Lightbit\Http\Routing\HttpRouterContextQueryStringParameterParseException;
 use \Lightbit\Http\HttpServer;
 
+use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Http\IHttpContext;
 use \Lightbit\Http\Routing\IHttpRoute;
 use \Lightbit\Http\Routing\IHttpRouter;
@@ -65,19 +65,21 @@ class HttpRouter implements IHttpRouter
 
 	/**
 	 * Constructor.
+	 *
+	 * @param IConfiguration $configuration
+	 *	The router configuration.
 	 */
-	public function __construct()
+	public function __construct(IConfiguration $configuration = null)
 	{
 		$this->routeList = [];
 
-		ConfigurationProvider::getInstance()->getConfiguration(
-			'lightbit.http.router'
-		)
-
-		->accept($this, [
-			'base_url' => 'setBaseUrl',
-			'route_list' => 'addRouteList'
-		]);
+		if ($configuration)
+		{
+			$configuration->accept($this, [
+				'base_url' => 'setBaseUrl',
+				'route_list' => 'addRouteList'
+			]);
+		}
 	}
 
 	/**
