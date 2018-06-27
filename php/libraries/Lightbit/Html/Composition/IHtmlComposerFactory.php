@@ -25,74 +25,26 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html\Composition;
 
-use \Lightbit\Html\HtmlDocumentProvider;
-use \Lightbit\Html\Composition\HtmlComposerProvider;
-
-use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Composition\IHtmlComposer;
-use \Lightbit\Html\Rendering\IHtmlView;
 
 /**
- * HtmlViewScope.
+ * IHtmlComposerFactory.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+interface IHtmlComposerFactory
 {
 	/**
-	 * The view.
+	 * Creates a composer.
 	 *
-	 * @var IHtmlView
-	 */
-	private $view;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
-	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Gets the composer.
+	 * @throws HtmlComposerFactoryException
+	 *	Thrown if the composer creation fails.
 	 *
 	 * @return IHtmlComposer
 	 *	The composer.
 	 */
-	public final function getComposer() : IHtmlComposer
-	{
-		return HtmlComposerProvider::getInstance()->getComposer();
-	}
-
-	/**
-	 * Gets the document.
-	 *
-	 * @return IHtmlDocument
-	 *	The document.
-	 */
-	public final function getDocument() : IHtmlDocument
-	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
-	}
-
-	/**
-	 * Sets the base view.
-	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
-	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
-	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
-	}
+	public function createComposer() : IHtmlComposer;
 }

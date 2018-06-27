@@ -25,74 +25,76 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html\Composition;
 
-use \Lightbit\Html\HtmlDocumentProvider;
-use \Lightbit\Html\Composition\HtmlComposerProvider;
+use \Lightbit\Html\Composition\HtmlComposerFactory;
+use \Lightbit\Html\Composition\HtmlComposerFactoryException;
 
-use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Composition\IHtmlComposer;
-use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Html\Composition\IHtmlComposerFactory;
 
 /**
- * HtmlViewScope.
+ * HtmlComposerProvider.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+final class HtmlComposerProvider
 {
 	/**
-	 * The view.
-	 *
-	 * @var IHtmlView
+	 * The singleton instance.
 	 */
-	private $view;
+	private static $instance;
+
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HtmlComposerProvider
+	 *	The singleton instance.
+	 */
+	public static final function getInstance() : HtmlComposerProvider
+	{
+		return (self::$instance ?? (self::$instance = new HtmlComposerProvider()));
+	}
+
+	/**
+	 * The composer.
+	 *
+	 * @var IHtmlComposer
+	 */
+	private $composer;
 
 	/**
 	 * Constructor.
-	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
 	 */
-	public function __construct(IHtmlView $view)
+	private function __construct()
 	{
-		$this->view = $view;
+
 	}
 
 	/**
 	 * Gets the composer.
+	 *
+	 * @throws HtmlComposerFactoryException
+	 *	Thrown if the composer creation fails.
 	 *
 	 * @return IHtmlComposer
 	 *	The composer.
 	 */
 	public final function getComposer() : IHtmlComposer
 	{
-		return HtmlComposerProvider::getInstance()->getComposer();
+		return ($this->composer ?? ($this->composer = $this->getComposerFactory()->createComposer()));
 	}
 
 	/**
-	 * Gets the document.
+	 * Gets the composer factory.
 	 *
-	 * @return IHtmlDocument
-	 *	The document.
+	 * @return IHtmlComposerFactory
+	 *	The composer factory.
 	 */
-	public final function getDocument() : IHtmlDocument
+	public final function getComposerFactory() : IHtmlComposerFactory
 	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
+		return ($this->composerFactory ?? ($this->composerFactory = new HtmlComposerFactory()));
 	}
 
-	/**
-	 * Sets the base view.
-	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
-	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
-	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
-	}
 }

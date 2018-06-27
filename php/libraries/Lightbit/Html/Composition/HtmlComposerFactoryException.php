@@ -25,74 +25,36 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Rendering;
+namespace Lightbit\Html\Composition;
 
-use \Lightbit\Html\HtmlDocumentProvider;
-use \Lightbit\Html\Composition\HtmlComposerProvider;
+use \Throwable;
 
-use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Composition\IHtmlComposer;
-use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Exception;
+
+use \Lightbit\Html\Composition\IHtmlComposerFactory;
 
 /**
- * HtmlViewScope.
+ * HtmlComposerFactoryException.
  *
- * @author Datapoint - Sistemas de Informação, Unipessoal, Lda.
+ * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlViewScope
+class HtmlComposerFactoryException extends Exception
 {
-	/**
-	 * The view.
-	 *
-	 * @var IHtmlView
-	 */
-	private $view;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param IHtmlView $view
-	 *	The scope view.
-	 */
-	public function __construct(IHtmlView $view)
-	{
-		$this->view = $view;
-	}
-
-	/**
-	 * Gets the composer.
+	 * @param IHtmlComposerFactory $composerFactory
+	 *	The exception composer factory.
 	 *
-	 * @return IHtmlComposer
-	 *	The composer.
-	 */
-	public final function getComposer() : IHtmlComposer
-	{
-		return HtmlComposerProvider::getInstance()->getComposer();
-	}
-
-	/**
-	 * Gets the document.
+	 * @param string $message
+	 *	The exception message.
 	 *
-	 * @return IHtmlDocument
-	 *	The document.
+	 * @param Throwable $previous
+	 *	The exception previous throwable.
 	 */
-	public final function getDocument() : IHtmlDocument
+	public function __construct(IHtmlComposerFactory $composerFactory, string $message, Throwable $previous = null)
 	{
-		return HtmlDocumentProvider::getInstance()->getDocument();
-	}
-
-	/**
-	 * Sets the base view.
-	 *
-	 * @param string $baseView
-	 *	The base view resource identifier.
-	 */
-	public final function inherit(string $baseView, array $baseViewVariableMap = null) : void
-	{
-		$this->view->setBaseView(
-			HtmlViewProvider::getInstance()->getView($baseView),
-			$baseViewVariableMap
-		);
+		parent::__construct($message, $previous);
 	}
 }
