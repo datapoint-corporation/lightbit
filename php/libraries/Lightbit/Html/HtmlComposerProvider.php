@@ -25,36 +25,76 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Composition;
+namespace Lightbit\Html;
 
-use \Throwable;
+use \Lightbit\Html\HtmlComposerFactory;
+use \Lightbit\Html\HtmlComposerFactoryException;
 
-use \Lightbit\Exception;
-
-use \Lightbit\Html\Composition\IHtmlComposerFactory;
+use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\IHtmlComposerFactory;
 
 /**
- * HtmlComposerFactoryException.
+ * HtmlComposerProvider.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlComposerFactoryException extends Exception
+final class HtmlComposerProvider
 {
 	/**
-	 * Constructor.
-	 *
-	 * @param IHtmlComposerFactory $composerFactory
-	 *	The exception composer factory.
-	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
+	 * The singleton instance.
 	 */
-	public function __construct(IHtmlComposerFactory $composerFactory, string $message, Throwable $previous = null)
+	private static $instance;
+
+	/**
+	 * Gets the singleton instance.
+	 *
+	 * @return HtmlComposerProvider
+	 *	The singleton instance.
+	 */
+	public static final function getInstance() : HtmlComposerProvider
 	{
-		parent::__construct($message, $previous);
+		return (self::$instance ?? (self::$instance = new HtmlComposerProvider()));
 	}
+
+	/**
+	 * The composer.
+	 *
+	 * @var IHtmlComposer
+	 */
+	private $composer;
+
+	/**
+	 * Constructor.
+	 */
+	private function __construct()
+	{
+
+	}
+
+	/**
+	 * Gets the composer.
+	 *
+	 * @throws HtmlComposerFactoryException
+	 *	Thrown if the composer creation fails.
+	 *
+	 * @return IHtmlComposer
+	 *	The composer.
+	 */
+	public final function getComposer() : IHtmlComposer
+	{
+		return ($this->composer ?? ($this->composer = $this->getComposerFactory()->createComposer()));
+	}
+
+	/**
+	 * Gets the composer factory.
+	 *
+	 * @return IHtmlComposerFactory
+	 *	The composer factory.
+	 */
+	public final function getComposerFactory() : IHtmlComposerFactory
+	{
+		return ($this->composerFactory ?? ($this->composerFactory = new HtmlComposerFactory()));
+	}
+
 }

@@ -25,16 +25,16 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Composition;
+namespace Lightbit\Html;
 
 use \Throwable;
 
 use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Html\Composition\HtmlComposer;
-use \Lightbit\Html\Composition\HtmlComposerFactoryException;
+use \Lightbit\Html\HtmlComposer;
+use \Lightbit\Html\HtmlComposerFactoryException;
 
-use \Lightbit\Html\Composition\IHtmlComposer;
-use \Lightbit\Html\Composition\IHtmlComposerFactory;
+use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\IHtmlComposerFactory;
 
 /**
  * HtmlComposerFactory.

@@ -25,76 +25,15 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Composition;
-
-use \Lightbit\Html\Composition\HtmlComposerFactory;
-use \Lightbit\Html\Composition\HtmlComposerFactoryException;
-
-use \Lightbit\Html\Composition\IHtmlComposer;
-use \Lightbit\Html\Composition\IHtmlComposerFactory;
+namespace Lightbit\Html;
 
 /**
- * HtmlComposerProvider.
+ * IHtmlComposer.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-final class HtmlComposerProvider
+interface IHtmlComposer
 {
-	/**
-	 * The singleton instance.
-	 */
-	private static $instance;
-
-	/**
-	 * Gets the singleton instance.
-	 *
-	 * @return HtmlComposerProvider
-	 *	The singleton instance.
-	 */
-	public static final function getInstance() : HtmlComposerProvider
-	{
-		return (self::$instance ?? (self::$instance = new HtmlComposerProvider()));
-	}
-
-	/**
-	 * The composer.
-	 *
-	 * @var IHtmlComposer
-	 */
-	private $composer;
-
-	/**
-	 * Constructor.
-	 */
-	private function __construct()
-	{
-
-	}
-
-	/**
-	 * Gets the composer.
-	 *
-	 * @throws HtmlComposerFactoryException
-	 *	Thrown if the composer creation fails.
-	 *
-	 * @return IHtmlComposer
-	 *	The composer.
-	 */
-	public final function getComposer() : IHtmlComposer
-	{
-		return ($this->composer ?? ($this->composer = $this->getComposerFactory()->createComposer()));
-	}
-
-	/**
-	 * Gets the composer factory.
-	 *
-	 * @return IHtmlComposerFactory
-	 *	The composer factory.
-	 */
-	public final function getComposerFactory() : IHtmlComposerFactory
-	{
-		return ($this->composerFactory ?? ($this->composerFactory = new HtmlComposerFactory()));
-	}
 
 }

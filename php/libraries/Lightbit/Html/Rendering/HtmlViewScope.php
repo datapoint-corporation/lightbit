@@ -28,10 +28,10 @@
 namespace Lightbit\Html\Rendering;
 
 use \Lightbit\Html\HtmlDocumentProvider;
-use \Lightbit\Html\Composition\HtmlComposerProvider;
+use \Lightbit\Html\HtmlComposerProvider;
 
 use \Lightbit\Html\IHtmlDocument;
-use \Lightbit\Html\Composition\IHtmlComposer;
+use \Lightbit\Html\IHtmlComposer;
 use \Lightbit\Html\Rendering\IHtmlView;
 
 /**

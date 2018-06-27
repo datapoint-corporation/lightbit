@@ -25,9 +25,9 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html\Composition;
+namespace Lightbit\Html;
 
-use \Lightbit\Html\Composition\IHtmlComposer;
+use \Lightbit\Html\IHtmlComposer;
 
 /**
  * IHtmlComposerFactory.
