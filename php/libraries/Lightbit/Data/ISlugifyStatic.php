@@ -25,68 +25,41 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Data\Filtering;
-
-use \Lightbit\Data\Filtering\FilterFactoryException;
-
-use \Lightbit\Data\Filtering\IFilter;
+namespace Lightbit\Data;
 
 /**
- * FilterFactory.
+ * ISlugifyStatic.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class FilterFactory implements IFilterFactory
+interface ISlugifyStatic
 {
 	/**
-	 * Constructor.
+	 * Slugifies an object.
+	 *
+	 * It uses late state binding to slugify a subject into its unique slug
+	 * identifier.
+	 *
+	 * @param object $subject
+	 *	The slugification subject.
+	 *
+	 * @return string
+	 *	The slug.
 	 */
-	public function __construct()
-	{
-
-	}
+	public static function slugify(object $subject) : string;
 
 	/**
-	 * Creates a filter.
+	 * Unslugifies an object.
 	 *
-	 * @throws FilterFactoryException
-	 *	Thrown when the filter creation fails.
+	 * It uses late state binding to unslugify a string subject into the
+	 * matching static type object.
 	 *
-	 * @param string $type
-	 *	The filter type.
+	 * @param string $subject
+	 *	The unslugification subject.
 	 *
-	 * @return IFilter
-	 *	The filter.
+	 * @return object
+	 *	The object.
 	 */
-	public function createFilter(string $type) : IFilter
-	{
-		switch ($type)
-		{
-			case 'bool':
-			case 'boolean':
-				return new BooleanFilter();
-
-			case 'double':
-			case 'float':
-				return new FloatFilter();
-
-			case 'int':
-			case 'integer':
-				return new IntegerFilter();
-
-			case 'string':
-				return new StringFilter();
-		}
-
-		if (class_exists($type))
-		{
-			return new ObjectFilter($type);
-		}
-
-		throw new FilterFactoryException($this, sprintf(
-			'Can not create filter, it does not exist: "%s"',
-			$type
-		));
-	}
+	public static function unslugify(string $subject) : ?object;
 }
