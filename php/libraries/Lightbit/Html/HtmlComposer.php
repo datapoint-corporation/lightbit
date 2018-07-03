@@ -28,6 +28,8 @@
 namespace Lightbit\Html;
 
 use \Lightbit\Data\Filtering\FilterProvider;
+use \Lightbit\Data\Filtering\FilterFactoryException;
+use \Lightbit\Data\Html\HtmlComposerException;
 
 use \Lightbit\Html\IHtmlComposer;
 use \Lightbit\Configuration\IConfiguration;
@@ -114,17 +116,29 @@ class HtmlComposer implements IHtmlComposer
 			}
 			else
 			{
+				$filter;
+
+				try
+				{
+					$filter = FilterProvider::getInstance()->getFilter(
+						lbstypeof($attribute)
+					);
+				}
+				catch (FilterFactoryException $e)
+				{
+					throw new HtmlComposerException(
+						$this,
+						sprintf(
+							'Can not compose attribute, type filter creation failure: "%s"',
+							lbstypeof($attribute)
+						),
+						$e
+					);
+				}
+
 				$html .= (
 					(' ' . $this->encode($property) . '="') .
-
-					$this->encode(
-						FilterProvider::getInstance()->getFilter(
-							lbstypeof($attribute)
-						)
-
-						->compose($attribute)
-					) .
-
+					$this->encode($filter->compose($attribute)) .
 					'"'
 				);
 			}
