@@ -35,5 +35,99 @@ namespace Lightbit\Html;
  */
 interface IHtmlComposer
 {
+	/**
+	 * Composes an element beginning markup.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $tag
+	 *	The element tag.
+	 *
+	 * @param array $attributeMap
+	 *	The element attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function begin(string $tag, array $attributeMap = null) : string;
 
+	/**
+	 * Decodes text.
+	 *
+	 * @param string $text
+	 *	The text to decode.
+	 *
+	 * @return string
+	 *	The text.
+	 */
+	public function decode(string $text) : string;
+
+	/**
+	 * Composes an element.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $tag
+	 *	The element tag.
+	 *
+	 * @param array $attributeMap
+	 *	The element attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function element(string $tag, array $attributeMap = null) : string;
+
+	/**
+	 * Encodes text.
+	 *
+	 * @param string $text
+	 *	The text to encode.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function encode(string $text) : string;
+
+	/**
+	 * Composes an element ending markup.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function end() : string;
+
+	/**
+	 * Creates an single attribute map by merging all given maps together,
+	 * transforming attributes as applicable.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if attribute mapping fails.
+	 *
+	 * @param array $attributeMap
+	 *	The attribute map.
+	 *
+	 * @return array
+	 *	The attribute map.
+	 */
+	public function map(array ...$attributeMap) : array;
+
+	/**
+	 * Composes a text sequence.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $text
+	 *	The text to compose.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function text(string $text) : string;
 }

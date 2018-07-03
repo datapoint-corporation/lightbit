@@ -27,6 +27,8 @@
 
 namespace Lightbit\Html;
 
+use \Lightbit\Data\Filtering\FilterProvider;
+
 use \Lightbit\Html\IHtmlComposer;
 use \Lightbit\Configuration\IConfiguration;
 
@@ -39,6 +41,37 @@ use \Lightbit\Configuration\IConfiguration;
 class HtmlComposer implements IHtmlComposer
 {
 	/**
+	 * The void element tag list.
+	 *
+	 * @var array
+	 */
+	private const VOID_ELEMENT_TAG_LIST = [
+		'area',
+		'base',
+		'br',
+		'col',
+		'embed',
+		'hr',
+		'img',
+		'input',
+		'keygen',
+		'link',
+		'menuitem',
+		'meta',
+		'param',
+		'source',
+		'track',
+		'wbr'
+	];
+
+	/**
+	 * The active element tag list.
+	 *
+	 * @var array
+	 */
+	private $activeElementTagList;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param IConfiguration $configuration
@@ -46,9 +79,289 @@ class HtmlComposer implements IHtmlComposer
 	 */
 	public function __construct(IConfiguration $configuration = null)
 	{
+		$this->activeElementTagList = [];
+
 		if ($configuration)
 		{
 			$configuration->accept($this, []);
 		}
+	}
+
+	/**
+	 * Composes an element attribute markup.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param array $attributeMap
+	 *	The attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function attribute(array $attributeMap) : string
+	{
+		$html = '';
+
+		foreach ($this->map($attributeMap) as $property => $attribute)
+		{
+			if (is_bool($attribute))
+			{
+				if ($attribute)
+				{
+					$html .= (' ' . $this->encode($property));
+				}
+			}
+			else
+			{
+				$html .= (
+					(' ' . $this->encode($property) . '="') .
+
+					$this->encode(
+						FilterProvider::getInstance()->getFilter(
+							lbstypeof($attribute)
+						)
+
+						->compose($attribute)
+					) .
+
+					'"'
+				);
+			}
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Composes an element beginning markup.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $tag
+	 *	The element tag.
+	 *
+	 * @param array $attributeMap
+	 *	The element attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function begin(string $tag, array $attributeMap = null) : string
+	{
+		$this->activeElementTagList[] = $tag;
+
+		$html = ('<' . $this->encode($tag));
+
+		if ($attributeMap)
+		{
+			$html .= $this->attribute($attributeMap);
+		}
+
+		$html .= '>';
+
+		return $html;
+	}
+
+	/**
+	 * Decodes text.
+	 *
+	 * @param string $text
+	 *	The text to decode.
+	 *
+	 * @return string
+	 *	The text.
+	 */
+	public function decode(string $text) : string
+	{
+		return htmlspecialchars_decode($text);
+	}
+
+	/**
+	 * Composes an element.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $tag
+	 *	The element tag.
+	 *
+	 * @param array $attributeMap
+	 *	The element attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function element(string $tag, array $attributeMap = null) : string
+	{
+		$html = ('<' . $this->encode($tag));
+
+		if ($attributeMap)
+		{
+			$html .= $this->attribute($attributeMap);
+		}
+
+		if (in_array($tag, self::VOID_ELEMENT_TAG_LIST))
+		{
+			$html .= ' />';
+		}
+		else
+		{
+			$html .= ('></' . $this->encode($tag) . '>');
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Encodes text.
+	 *
+	 * @param string $text
+	 *	The text to encode.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function encode(string $text) : string
+	{
+		return htmlspecialchars($text, (ENT_HTML5 | ENT_IGNORE | ENT_QUOTES), 'UTF-8', true);
+	}
+
+	/**
+	 * Composes an element ending markup.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function end() : string
+	{
+		if ($this->activeElementTagList)
+		{
+			return ('</' . $this->encode(array_pop($this->activeElementTagList)) . '>');
+		}
+
+		throw new HtmlComposerException($this, sprintf(
+			'Can not compose element ending tag, there is no open element'
+		));
+	}
+
+	/**
+	 * Creates an single attribute map by merging all given maps together,
+	 * transforming attributes as applicable.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if attribute mapping fails.
+	 *
+	 * @param array $attributeMap
+	 *	The attribute map.
+	 *
+	 * @return array
+	 *	The attribute map.
+	 */
+	public function map(array ...$attributeMap) : array
+	{
+		$finalAttributeMap = [];
+		$finalAttributeMapClassMap = [];
+
+		foreach ($attributeMap as $i => $attributeMapListItem)
+		{
+			foreach ($attributeMapListItem as $property => $attribute)
+			{
+				if (is_string($property) && $property)
+				{
+					if ($property[0] === '@')
+					{
+						continue;
+					}
+					if ($property === 'class')
+					{
+						if (is_array($attribute))
+						{
+							foreach ($attribute as $class => $inclusion)
+							{
+								if (is_bool($inclusion))
+								{
+									$finalAttributeMapClassMap[$class] = $inclusion;
+								}
+								else if (is_callable($inclusion))
+								{
+									$finalAttributeMapClassMap[$class] = !!call_user_func($inclusion, $class);
+								}
+								else
+								{
+									$finalAttributeMapClassMap[$class] = !!$inclusion;
+								}
+							}
+						}
+						else if (is_string($attribute))
+						{
+							foreach (preg_split('%\\s+%', $attribute, -1, PREG_SPLIT_NO_EMPTY) as $i => $class)
+							{
+								$finalAttributeMapClassMap[$class] = true;
+							}
+						}
+					}
+					else
+					{
+						$finalAttributeMap[$property] = $attribute;
+					}
+				}
+				else if (is_int($property))
+				{
+					if (is_string($attribute))
+					{
+						$finalAttributeMap[$attribute] = true;
+					}
+					else
+					{
+						throw new HtmlComposerException($this, sprintf(
+							'Can not map non-string attribute with numeric index: "%s"',
+							$property
+						));
+					}
+				}
+			}
+		}
+
+		if ($finalAttributeMapClassMap)
+		{
+			$finalAttributeMapClassList = [];
+
+			foreach ($finalAttributeMapClassMap as $class => $inclusion)
+			{
+				if ($inclusion)
+				{
+					$finalAttributeMapClassList[] = $class;
+				}
+			}
+
+			if ($finalAttributeMapClassList)
+			{
+				$finalAttributeMap['class'] = implode(' ', $finalAttributeMapClassList);
+			}
+		}
+
+		return $finalAttributeMap;
+	}
+
+	/**
+	 * Composes a text sequence.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $text
+	 *	The text to compose.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function text(string $text) : string
+	{
+		return $this->encode($text);
 	}
 }
