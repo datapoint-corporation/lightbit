@@ -27,6 +27,9 @@
 
 namespace Lightbit\Html;
 
+use \Lightbit\Html\Composition\HtmlComposer;
+use \Lightbit\Html\Composition\HtmlComposerProvider;
+
 use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Html\IHtmlDocument;
 
@@ -53,6 +56,20 @@ class HtmlDocument implements IHtmlDocument
 	private $defaultTitle;
 
 	/**
+	 * The script list.
+	 *
+	 * @var array
+	 */
+	private $scriptListMap;
+
+	/**
+	 * The style map.
+	 *
+	 * @var array
+	 */
+	private $styleList;
+
+	/**
 	 * The title.
 	 *
 	 * @var string
@@ -69,6 +86,8 @@ class HtmlDocument implements IHtmlDocument
 	{
 		$this->characterSet = 'utf-8';
 		$this->defaultTitle = 'Untitled Document';
+		$this->scriptListMap = [];
+		$this->styleList = [];
 
 		if ($configuration)
 		{
@@ -77,6 +96,112 @@ class HtmlDocument implements IHtmlDocument
 				'title' => 'setTitle'
 			]);
 		}
+	}
+
+	/**
+	 * Sets an additional inline script.
+	 *
+	 * @param string $position
+	 *	The script position.
+	 *
+	 * @param string $content
+	 *	The script content.
+	 *
+	 * @param array $attributeMap
+	 *	The script attribute map.
+	 */
+	public final function addInlineScript(string $position, string $content, array $attributeMap = null) : void
+	{
+		$this->scriptListMap[$position][] = new HtmlDocumentInlineScript($position, $content, $attributeMap);
+	}
+
+	/**
+	 * Sets an additional inline style.
+	 *
+	 * @param string $content
+	 *	The style content.
+	 *
+	 * @param array $attributeMap
+	 *	The style attribute map.
+	 */
+	public final function addInlineStyle(string $content, array $attributeMap = null) : void
+	{
+		$this->styleList[] = new HtmlDocumentInlineStyle($content, $attributeMap);
+	}
+
+	/**
+	 * Sets an additional script.
+	 *
+	 * @param string $position
+	 *	The script position.
+	 *
+	 * @param string $url
+	 *	The script uniform resource location.
+	 *
+	 * @param array $attributeMap
+	 *	The script attribute map.
+	 */
+	public final function addScript(string $position, string $url, array $attributeMap = null) : void
+	{
+		$this->scriptListMap[$position][] = new HtmlDocumentScript($position, $url, $attributeMap);
+	}
+
+	/**
+	 * Sets an additional style.
+	 *
+	 * @param string $url
+	 *	The style uniform resource location.
+	 *
+	 * @param array $attributeMap
+	 *	The style attribute map.
+	 */
+	public final function addStyle(string $url, array $attributeMap = null) : void
+	{
+		$this->styleList[] = new HtmlDocumentStyle($url, $attributeMap);
+	}
+
+	/**
+	 * Composes the document for a given position.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $position
+	 *	The position to compose for.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function compose(string $position) : string
+	{
+		$html = '';
+		$composer = HtmlComposerProvider::getInstance()->getComposer();
+
+		$html .= ($composer->comment('begin document ' . $position) . PHP_EOL);
+
+		if ($position === 'head')
+		{
+			$html .= ($composer->element('meta', [ 'charset' => $this->characterSet ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Powered-By', 'content' => 'Lightbit/2.0.0' ]) . PHP_EOL);
+			$html .= (($composer->begin('title') . $composer->text($this->title ?? $this->defaultTitle) . $composer->end()) . PHP_EOL);
+
+			foreach ($this->styleList as $i => $style)
+			{
+				$html .= ($style->compose() . PHP_EOL);
+			}
+		}
+
+		if (isset($this->scriptListMap[$position]))
+		{
+			foreach ($this->scriptListMap[$position] as $i => $script)
+			{
+				$html .= ($script->compose() . PHP_EOL);
+			}
+		}
+
+		$html .= ($composer->comment('end document ' . $position) . PHP_EOL);
+
+		return $html;
 	}
 
 	/**

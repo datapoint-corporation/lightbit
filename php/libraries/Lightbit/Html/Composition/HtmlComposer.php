@@ -179,6 +179,26 @@ class HtmlComposer implements IHtmlComposer
 	}
 
 	/**
+	 * Composes a comment.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @param string $tag
+	 *	The element tag.
+	 *
+	 * @param array $attributeMap
+	 *	The element attribute map.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function comment(string $text) : string
+	{
+		return ('<!-- ' . strtr($text, [ '<!--' => '<#--', '-->' => '--#>' ]) . ' //-->');
+	}
+
+	/**
 	 * Decodes text.
 	 *
 	 * @param string $text
@@ -276,66 +296,69 @@ class HtmlComposer implements IHtmlComposer
 	 * @return array
 	 *	The attribute map.
 	 */
-	public function map(array ...$attributeMap) : array
+	public function map(?array ...$attributeMap) : array
 	{
 		$finalAttributeMap = [];
 		$finalAttributeMapClassMap = [];
 
 		foreach ($attributeMap as $i => $attributeMapListItem)
 		{
-			foreach ($attributeMapListItem as $property => $attribute)
+			if (isset($attributeMapListItem))
 			{
-				if (is_string($property) && $property)
+				foreach ($attributeMapListItem as $property => $attribute)
 				{
-					if ($property[0] === '@')
+					if (is_string($property) && $property)
 					{
-						continue;
-					}
-					if ($property === 'class')
-					{
-						if (is_array($attribute))
+						if ($property[0] === '@')
 						{
-							foreach ($attribute as $class => $inclusion)
+							continue;
+						}
+						if ($property === 'class')
+						{
+							if (is_array($attribute))
 							{
-								if (is_bool($inclusion))
+								foreach ($attribute as $class => $inclusion)
 								{
-									$finalAttributeMapClassMap[$class] = $inclusion;
+									if (is_bool($inclusion))
+									{
+										$finalAttributeMapClassMap[$class] = $inclusion;
+									}
+									else if (is_callable($inclusion))
+									{
+										$finalAttributeMapClassMap[$class] = !!call_user_func($inclusion, $class);
+									}
+									else
+									{
+										$finalAttributeMapClassMap[$class] = !!$inclusion;
+									}
 								}
-								else if (is_callable($inclusion))
+							}
+							else if (is_string($attribute))
+							{
+								foreach (preg_split('%\\s+%', $attribute, -1, PREG_SPLIT_NO_EMPTY) as $i => $class)
 								{
-									$finalAttributeMapClassMap[$class] = !!call_user_func($inclusion, $class);
-								}
-								else
-								{
-									$finalAttributeMapClassMap[$class] = !!$inclusion;
+									$finalAttributeMapClassMap[$class] = true;
 								}
 							}
 						}
-						else if (is_string($attribute))
+						else
 						{
-							foreach (preg_split('%\\s+%', $attribute, -1, PREG_SPLIT_NO_EMPTY) as $i => $class)
-							{
-								$finalAttributeMapClassMap[$class] = true;
-							}
+							$finalAttributeMap[$property] = $attribute;
 						}
 					}
-					else
+					else if (is_int($property))
 					{
-						$finalAttributeMap[$property] = $attribute;
-					}
-				}
-				else if (is_int($property))
-				{
-					if (is_string($attribute))
-					{
-						$finalAttributeMap[$attribute] = true;
-					}
-					else
-					{
-						throw new HtmlComposerException($this, sprintf(
-							'Can not map non-string attribute with numeric index: "%s"',
-							$property
-						));
+						if (is_string($attribute))
+						{
+							$finalAttributeMap[$attribute] = true;
+						}
+						else
+						{
+							throw new HtmlComposerException($this, sprintf(
+								'Can not map non-string attribute with numeric index: "%s"',
+								$property
+							));
+						}
 					}
 				}
 			}
