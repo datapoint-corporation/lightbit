@@ -213,6 +213,20 @@ class HtmlComposer implements IHtmlComposer
 	}
 
 	/**
+	 * Composes the doctype declaration.
+	 *
+	 * @throws HtmlComposerException
+	 *	Thrown if composition fails.
+	 *
+	 * @return string
+	 *	The markup.
+	 */
+	public function doctype() : string
+	{
+		return '<!DOCTYPE html>';
+	}
+
+	/**
 	 * Composes an element.
 	 *
 	 * @throws HtmlComposerException

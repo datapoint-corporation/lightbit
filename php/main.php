@@ -76,6 +76,13 @@ return
 	function () : int
 	{
 		/**
+		 * The start time.
+		 *
+		 * @var float
+		 */
+		defined('LB_MICROTIME') || define('LB_MICROTIME', microtime(true));
+
+		/**
 		 * The environment name.
 		 *
 		 * @var string
