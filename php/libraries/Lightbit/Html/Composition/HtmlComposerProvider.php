@@ -25,13 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Composition;
 
-use \Lightbit\Html\HtmlComposerFactory;
-use \Lightbit\Html\HtmlComposerFactoryException;
+use \Lightbit\Html\Composition\HtmlComposerFactory;
+use \Lightbit\Html\Composition\HtmlComposerFactoryException;
 
-use \Lightbit\Html\IHtmlComposer;
-use \Lightbit\Html\IHtmlComposerFactory;
+use \Lightbit\Html\Composition\IHtmlComposer;
+use \Lightbit\Html\Composition\IHtmlComposerFactory;
 
 /**
  * HtmlComposerProvider.

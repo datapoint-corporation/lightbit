@@ -25,27 +25,27 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Composition;
 
 use \Throwable;
 
 use \Lightbit\Exception;
 
-use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\Composition\IHtmlComposerFactory;
 
 /**
- * HtmlComposerException.
+ * HtmlComposerFactoryException.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlComposerException extends Exception
+class HtmlComposerFactoryException extends Exception
 {
 	/**
 	 * Constructor.
 	 *
-	 * @param IHtmlComposer $composer
-	 *	The exception composer.
+	 * @param IHtmlComposerFactory $composerFactory
+	 *	The exception composer factory.
 	 *
 	 * @param string $message
 	 *	The exception message.
@@ -53,7 +53,7 @@ class HtmlComposerException extends Exception
 	 * @param Throwable $previous
 	 *	The exception previous throwable.
 	 */
-	public function __construct(IHtmlComposer $composer, string $message, Throwable $previous = null)
+	public function __construct(IHtmlComposerFactory $composerFactory, string $message, Throwable $previous = null)
 	{
 		parent::__construct($message, $previous);
 	}

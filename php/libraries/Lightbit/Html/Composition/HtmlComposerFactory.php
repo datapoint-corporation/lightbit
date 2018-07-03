@@ -25,36 +25,51 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Composition;
 
 use \Throwable;
 
-use \Lightbit\Exception;
+use \Lightbit\Configuration\ConfigurationProvider;
+use \Lightbit\Html\Composition\HtmlComposer;
+use \Lightbit\Html\Composition\HtmlComposerFactoryException;
 
-use \Lightbit\Html\IHtmlComposerFactory;
+use \Lightbit\Html\Composition\IHtmlComposer;
+use \Lightbit\Html\Composition\IHtmlComposerFactory;
 
 /**
- * HtmlComposerFactoryException.
+ * HtmlComposerFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlComposerFactoryException extends Exception
+class HtmlComposerFactory implements IHtmlComposerFactory
 {
 	/**
-	 * Constructor.
+	 * Creates a composer.
 	 *
-	 * @param IHtmlComposerFactory $composerFactory
-	 *	The exception composer factory.
+	 * @throws HtmlComposerFactoryException
+	 *	Thrown if the composer creation fails.
 	 *
-	 * @param string $message
-	 *	The exception message.
-	 *
-	 * @param Throwable $previous
-	 *	The exception previous throwable.
+	 * @return IHtmlComposer
+	 *	The composer.
 	 */
-	public function __construct(IHtmlComposerFactory $composerFactory, string $message, Throwable $previous = null)
+	public function createComposer() : IHtmlComposer
 	{
-		parent::__construct($message, $previous);
+		try
+		{
+			return new HtmlComposer(
+				ConfigurationProvider::getInstance()->getConfiguration(
+					'lightbit.html.composer'
+				)
+			);
+		}
+		catch (Throwable $e)
+		{
+			throw new HtmlComposerFactoryException(
+				$this,
+				sprintf('Can not create html composer, uncaught throwable.'),
+				$e
+			);
+		}
 	}
 }

@@ -25,13 +25,13 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Composition;
 
 use \Lightbit\Data\Filtering\FilterProvider;
 use \Lightbit\Data\Filtering\FilterFactoryException;
-use \Lightbit\Data\Html\HtmlComposerException;
+use \Lightbit\Data\Html\Composition\HtmlComposerException;
 
-use \Lightbit\Html\IHtmlComposer;
+use \Lightbit\Html\Composition\IHtmlComposer;
 use \Lightbit\Configuration\IConfiguration;
 
 /**

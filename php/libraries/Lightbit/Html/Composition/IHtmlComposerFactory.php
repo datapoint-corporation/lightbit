@@ -25,24 +25,17 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-namespace Lightbit\Html;
+namespace Lightbit\Html\Composition;
 
-use \Throwable;
-
-use \Lightbit\Configuration\ConfigurationProvider;
-use \Lightbit\Html\HtmlComposer;
-use \Lightbit\Html\HtmlComposerFactoryException;
-
-use \Lightbit\Html\IHtmlComposer;
-use \Lightbit\Html\IHtmlComposerFactory;
+use \Lightbit\Html\Composition\IHtmlComposer;
 
 /**
- * HtmlComposerFactory.
+ * IHtmlComposerFactory.
  *
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class HtmlComposerFactory implements IHtmlComposerFactory
+interface IHtmlComposerFactory
 {
 	/**
 	 * Creates a composer.
@@ -53,23 +46,5 @@ class HtmlComposerFactory implements IHtmlComposerFactory
 	 * @return IHtmlComposer
 	 *	The composer.
 	 */
-	public function createComposer() : IHtmlComposer
-	{
-		try
-		{
-			return new HtmlComposer(
-				ConfigurationProvider::getInstance()->getConfiguration(
-					'lightbit.html.composer'
-				)
-			);
-		}
-		catch (Throwable $e)
-		{
-			throw new HtmlComposerFactoryException(
-				$this,
-				sprintf('Can not create html composer, uncaught throwable.'),
-				$e
-			);
-		}
-	}
+	public function createComposer() : IHtmlComposer;
 }
