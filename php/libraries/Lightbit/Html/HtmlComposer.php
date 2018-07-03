@@ -43,27 +43,27 @@ use \Lightbit\Configuration\IConfiguration;
 class HtmlComposer implements IHtmlComposer
 {
 	/**
-	 * The void element tag list.
+	 * The void element tag map.
 	 *
 	 * @var array
 	 */
-	private const VOID_ELEMENT_TAG_LIST = [
-		'area',
-		'base',
-		'br',
-		'col',
-		'embed',
-		'hr',
-		'img',
-		'input',
-		'keygen',
-		'link',
-		'menuitem',
-		'meta',
-		'param',
-		'source',
-		'track',
-		'wbr'
+	private const VOID_ELEMENT_TAG_MAP = [
+		'area' => true,
+		'base' => true,
+		'br' => true,
+		'col' => true,
+		'embed' => true,
+		'hr' => true,
+		'img' => true,
+		'input' => true,
+		'keygen' => true,
+		'link' => true,
+		'menuitem' => true,
+		'meta' => true,
+		'param' => true,
+		'source' => true,
+		'track' => true,
+		'wbr' => true
 	];
 
 	/**
@@ -216,7 +216,7 @@ class HtmlComposer implements IHtmlComposer
 			$html .= $this->attribute($attributeMap);
 		}
 
-		if (in_array($tag, self::VOID_ELEMENT_TAG_LIST))
+		if (isset(self::VOID_ELEMENT_TAG_MAP[$tag]))
 		{
 			$html .= ' />';
 		}
