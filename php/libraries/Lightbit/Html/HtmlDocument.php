@@ -29,6 +29,7 @@ namespace Lightbit\Html;
 
 use \Lightbit\Html\Composition\HtmlComposer;
 use \Lightbit\Html\Composition\HtmlComposerProvider;
+use \Lightbit\Http\Routing\HttpRouterProvider;
 
 use \Lightbit\Configuration\IConfiguration;
 use \Lightbit\Html\IHtmlDocument;
@@ -101,16 +102,16 @@ class HtmlDocument implements IHtmlDocument
 	/**
 	 * Sets an additional inline script.
 	 *
-	 * @param string $position
-	 *	The script position.
-	 *
 	 * @param string $content
 	 *	The script content.
 	 *
 	 * @param array $attributeMap
 	 *	The script attribute map.
+	 *
+	 * @param string $position
+	 *	The script position.
 	 */
-	public final function addInlineScript(string $position, string $content, array $attributeMap = null) : void
+	public final function addInlineScript(string $content, array $attributeMap = null, string $position = 'body') : void
 	{
 		$this->scriptListMap[$position][] = new HtmlDocumentInlineScript($position, $content, $attributeMap);
 	}
@@ -132,16 +133,16 @@ class HtmlDocument implements IHtmlDocument
 	/**
 	 * Sets an additional script.
 	 *
-	 * @param string $position
-	 *	The script position.
-	 *
 	 * @param string $url
 	 *	The script uniform resource location.
 	 *
 	 * @param array $attributeMap
 	 *	The script attribute map.
+	 *
+	 * @param string $position
+	 *	The script position.
 	 */
-	public final function addScript(string $position, string $url, array $attributeMap = null) : void
+	public final function addScript(string $url, array $attributeMap = null, string $position = 'body') : void
 	{
 		$this->scriptListMap[$position][] = new HtmlDocumentScript($position, $url, $attributeMap);
 	}
@@ -181,8 +182,15 @@ class HtmlDocument implements IHtmlDocument
 
 		if ($position === 'head')
 		{
+			$router = HttpRouterProvider::getInstance()->getRouter();
+
+			$html .= ($composer->element('base', [ 'href' => $router->getBaseUrl() ]) . PHP_EOL);
 			$html .= ($composer->element('meta', [ 'charset' => $this->characterSet ]) . PHP_EOL);
-			$html .= ($composer->element('meta', [ 'name' => 'X-Powered-By', 'content' => 'Lightbit/2.0.0' ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit', 'content' => '2.0.0' ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author', 'content' => 'Datapoint - Sistemas de Informação, Lda.' ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.datapoint.pt/' ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.github.com/datapoint-corporation/' ]) . PHP_EOL);
+			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.github.com/datapoint-corporation/lightbit/' ]) . PHP_EOL);
 			$html .= (($composer->begin('title') . $composer->text($this->title ?? $this->defaultTitle) . $composer->end()) . PHP_EOL);
 
 			foreach ($this->styleList as $i => $style)
