@@ -86,7 +86,7 @@ class HtmlDocumentStyle implements IHtmlElement
 		return $composer->element(
 			'link',
 			$composer->map(
-				[ 'rel' => 'stylesheet', 'type' => 'text/javastyle', 'href' => $this->url ],
+				[ 'rel' => 'stylesheet', 'type' => 'text/css', 'href' => $this->url ],
 				$this->attributeMap
 			)
 		);

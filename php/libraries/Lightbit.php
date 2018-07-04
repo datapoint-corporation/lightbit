@@ -204,9 +204,11 @@ final class Lightbit
 
 		$this->addBundlePathMap([
 			'hooks' => ($modulePath . '/hooks'),
+			'layouts' => ($modulePath . '/layouts'),
 			'messages' => ($modulePath . '/messages'),
 			'settings' => ($modulePath . '/settings'),
 			'tests' => ($modulePath . '/tests'),
+			'themes' => ($modulePath . '/themes'),
 			'views' => ($modulePath . '/views')
 		]);
 	}
