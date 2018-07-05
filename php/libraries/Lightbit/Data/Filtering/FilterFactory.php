@@ -63,6 +63,9 @@ class FilterFactory implements IFilterFactory
 	{
 		switch ($type)
 		{
+			case 'array':
+				return new ArrayFilter();
+
 			case 'bool':
 			case 'boolean':
 				return new BooleanFilter();
