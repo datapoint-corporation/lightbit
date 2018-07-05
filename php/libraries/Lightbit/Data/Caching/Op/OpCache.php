@@ -30,9 +30,7 @@ namespace Lightbit\Data\Caching\Op;
 use \Lightbit\Configuration\ConfigurationException;
 use \Lightbit\Data\Caching\Cache;
 
-use \Lightbit\Data\Caching\IFileCache;
-use \Lightbit\Data\Caching\IMemoryCache;
-use \Lightbit\Data\Caching\INetworkCache;
+use \Lightbit\Data\Caching\IOpCache;
 
 /**
  * OpCache.
@@ -40,7 +38,7 @@ use \Lightbit\Data\Caching\INetworkCache;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class OpCache extends Cache implements IFileCache, IMemoryCache
+class OpCache extends Cache implements IOpCache
 {
 	/**
 	 * The key hash map.
