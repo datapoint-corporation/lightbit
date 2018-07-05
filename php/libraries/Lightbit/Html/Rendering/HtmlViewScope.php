@@ -27,8 +27,12 @@
 
 namespace Lightbit\Html\Rendering;
 
+use \Lightbit\Data\Filtering\FilterFactoryException;
+use \Lightbit\Data\Filtering\FilterProvider;
+use \Lightbit\Data\Filtering\FilterException;
 use \Lightbit\Html\HtmlDocumentProvider;
 use \Lightbit\Html\Composition\HtmlComposerProvider;
+use \Lightbit\Html\Rendering\HtmlViewException;
 
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Composition\IHtmlComposer;
@@ -80,6 +84,60 @@ class HtmlViewScope
 	public final function getDocument() : IHtmlDocument
 	{
 		return HtmlDocumentProvider::getInstance()->getDocument();
+	}
+
+	/**
+	 * Filters a variable.
+	 *
+	 * @throws FilterFactoryException
+	 *	Thrown when the filter creation fails.
+	 *
+	 * @throws FilterParseException
+	 *	Thrown when the subject is a string with an incompatible format which
+	 *	can not be parsed by the filter.
+	 *
+	 * @throws FilterTransformException
+	 *	Thrown when the subject is of an incompatible type which can not
+	 *	be transformed by the filter.
+	 *
+	 * @param string $type
+	 *	The variable type or filter name, optionally preffixed by a question
+	 *	mark ("?") to allow for null or undefined variables.
+	 *
+	 * @param mixed $variable
+	 *	The variable input and output reference.
+	 *
+	 * @param mixed $default
+	 *	The variable default value.
+	 */
+	public final function filter(?string $type, &$variable, $default = null) : void
+	{
+		if (isset($variable))
+		{
+			if ($type)
+			{
+				if ($type[0] === '?')
+				{
+					$type = substr($type, 1);
+				}
+
+				$variable = FilterProvider::getInstance()->getFilter($type)->transform($variable);
+			}
+		}
+		else if (isset($default))
+		{
+			$variable = $default;
+		}
+		else if ($type && $type[0] === '?')
+		{
+			$variable = null;
+		}
+		else
+		{
+			throw new HtmlViewException($this->view,sprintf(
+				'Can not filter view variable, it is not set'
+			));
+		}
 	}
 
 	/**

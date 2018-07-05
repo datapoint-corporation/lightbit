@@ -67,14 +67,14 @@ final class FilterProvider
 	 *
 	 * @var array
 	 */
-	private $filtersMap;
+	private $filterMap;
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct()
 	{
-		$this->filtersMap = [];
+		$this->filterMap = [];
 	}
 
 	/**
@@ -91,7 +91,7 @@ final class FilterProvider
 	 */
 	public final function getFilter(string $type) : IFilter
 	{
-		return ($this->filtersMap[$type] ?? ($this->filtersMap[$type] = $this->getFilterFactory()->createFilter($type)));
+		return ($this->filterMap[$type] ?? ($this->filterMap[$type] = $this->getFilterFactory()->createFilter($type)));
 	}
 
 	/**
