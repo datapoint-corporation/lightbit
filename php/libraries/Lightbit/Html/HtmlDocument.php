@@ -57,6 +57,11 @@ class HtmlDocument implements IHtmlDocument
 	private $defaultTitle;
 
 	/**
+	 * The meta content list map.
+	 */
+	private $metaContentListMap;
+
+	/**
 	 * The script list.
 	 *
 	 * @var array
@@ -87,6 +92,7 @@ class HtmlDocument implements IHtmlDocument
 	{
 		$this->characterSet = 'utf-8';
 		$this->defaultTitle = 'Untitled Document';
+		$this->metaContentListMap = [];
 		$this->scriptListMap = [];
 		$this->styleList = [];
 
@@ -128,6 +134,20 @@ class HtmlDocument implements IHtmlDocument
 	public final function addInlineStyle(string $content, array $attributeMap = null) : void
 	{
 		$this->styleList[] = new HtmlDocumentInlineStyle($content, $attributeMap);
+	}
+
+	/**
+	 * Sets additional meta property content.
+	 *
+	 * @param string $name
+	 *	The meta property name.
+	 *
+	 * @param string $content
+	 *	The meta property content.
+	 */
+	public final function addMeta(string $name, string $content) : void
+	{
+		$this->metaContentListMap[$name][] = $content;
 	}
 
 	/**
@@ -191,6 +211,15 @@ class HtmlDocument implements IHtmlDocument
 			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.datapoint.pt/' ]) . PHP_EOL);
 			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.github.com/datapoint-corporation/' ]) . PHP_EOL);
 			$html .= ($composer->element('meta', [ 'name' => 'X-Lightbit-Author-Url', 'content' => 'https://www.github.com/datapoint-corporation/lightbit/' ]) . PHP_EOL);
+
+			foreach ($this->metaContentListMap as $property => $contentList)
+			{
+				foreach ($contentList as $i => $content)
+				{
+					$html .= ($composer->element('meta', [ 'name' => $property, 'content' => $content ]) . PHP_EOL);
+				}
+			}
+
 			$html .= (($composer->begin('title') . $composer->text($this->title ?? $this->defaultTitle) . $composer->end()) . PHP_EOL);
 
 			foreach ($this->styleList as $i => $style)

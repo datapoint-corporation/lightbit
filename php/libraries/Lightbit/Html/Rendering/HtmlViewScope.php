@@ -30,13 +30,17 @@ namespace Lightbit\Html\Rendering;
 use \Lightbit\Data\Filtering\FilterFactoryException;
 use \Lightbit\Data\Filtering\FilterProvider;
 use \Lightbit\Data\Filtering\FilterException;
+use \Lightbit\Html\HtmlDocumentFactoryException;
 use \Lightbit\Html\HtmlDocumentProvider;
 use \Lightbit\Html\Composition\HtmlComposerProvider;
 use \Lightbit\Html\Rendering\HtmlViewException;
+use \Lightbit\Http\Routing\HttpRouterFactoryException;
+use \Lightbit\Http\Routing\HttpRouterProvider;
 
 use \Lightbit\Html\IHtmlDocument;
 use \Lightbit\Html\Composition\IHtmlComposer;
 use \Lightbit\Html\Rendering\IHtmlView;
+use \Lightbit\Http\Routing\IHttpRouter;
 
 /**
  * HtmlViewScope.
@@ -67,6 +71,9 @@ class HtmlViewScope
 	/**
 	 * Gets the composer.
 	 *
+	 * @throws HtmlComposerFactoryException
+	 *	Thrown if the composer creation fails.
+	 *
 	 * @return IHtmlComposer
 	 *	The composer.
 	 */
@@ -78,12 +85,29 @@ class HtmlViewScope
 	/**
 	 * Gets the document.
 	 *
+	 * @throws HtmlDocumentFactoryException
+	 *	Thrown if the document creation fails.
+	 *
 	 * @return IHtmlDocument
 	 *	The document.
 	 */
 	public final function getDocument() : IHtmlDocument
 	{
 		return HtmlDocumentProvider::getInstance()->getDocument();
+	}
+
+	/**
+	 * Gets the http router.
+	 *
+	 * @throws HttpRouterFactoryException
+	 *	Thrown if the http router creation fails.
+	 *
+	 * @return IHttpRouter
+	 *	The http router.
+	 */
+	public final function getHttpRouter() : IHttpRouter
+	{
+		return HttpRouterProvider::getInstance()->getRouter();
 	}
 
 	/**
