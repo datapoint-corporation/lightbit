@@ -396,6 +396,7 @@ final class Lightbit
 				if ($opcache->read('lightbit.class.path', $classPathMap))
 				{
 					$this->classPathMap += $classPathMap;
+					$this->classPathMapUpdate = false;
 				}
 			}
 
@@ -404,6 +405,7 @@ final class Lightbit
 				if ($opcache->read('lightbit.resource.path', $resourcePathListMap))
 				{
 					$this->resourcePathListMap += $resourcePathListMap;
+					$this->classPathMapUpdate = false;
 				}
 			}
 		}

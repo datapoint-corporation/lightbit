@@ -44,17 +44,6 @@ use \Lightbit\Data\Caching\ICache;
 abstract class Cache implements ICache
 {
 	/**
-	 * Checks if a key is set.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @return bool
-	 *	The key status.
-	 */
-	abstract public function contains(string $key) : bool;
-
-	/**
 	 * Reads a value.
 	 *
 	 * @throws CacheReadException

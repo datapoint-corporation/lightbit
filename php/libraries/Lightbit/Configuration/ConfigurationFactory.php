@@ -66,39 +66,31 @@ class ConfigurationFactory implements IConfigurationFactory
 	public final function createConfiguration(string $configuration) : IConfiguration
 	{
 		$environment = Environment::getInstance();
+		$lightbit = Lightbit::getInstance();
 
-		$propertiesMap = CacheProvider::getInstance()->getOpCache()->invoke(
-			(implode('.', [ 'application', $environment->getName(), $configuration ])),
-			function() use ($environment, $configuration)
+		$propertiesMap = [];
+
+		// Base
+		foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
+		{
+			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
+
+			if (is_array($subject))
 			{
-				$propertiesMap = [];
-				$lightbit = Lightbit::getInstance();
-
-				// Base
-				foreach ($lightbit->getResourcePathList('php', ('settings://' . $configuration)) as $i => $filePath)
-				{
-					$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
-
-					if (is_array($subject))
-					{
-						$propertiesMap = $subject + $propertiesMap;
-					}
-				}
-
-				// Environment
-				foreach ($lightbit->getResourcePathList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $filePath)
-				{
-					$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
-
-					if (is_array($subject))
-					{
-						$propertiesMap = $subject + $propertiesMap;
-					}
-				}
-
-				return $propertiesMap;
+				$propertiesMap = $subject + $propertiesMap;
 			}
-		);
+		}
+
+		// Environment
+		foreach ($lightbit->getResourcePathList('php', ('settings://' . $environment->getName() . '/' . $configuration)) as $i => $filePath)
+		{
+			$subject = $lightbit->include($filePath, [ 'environment' => $environment ]);
+
+			if (is_array($subject))
+			{
+				$propertiesMap = $subject + $propertiesMap;
+			}
+		}
 
 		return new Configuration($propertiesMap);
 	}

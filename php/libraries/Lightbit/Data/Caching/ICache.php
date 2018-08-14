@@ -42,29 +42,6 @@ use \Lightbit\Configuration\IConfiguration;
 interface ICache
 {
 	/**
-	 * Configures this object by accepting any relevant properties from
-	 * the given configuration.
-	 *
-	 * @throws ConfigurationException
-	 *	Thrown if a configurable property fails to be set.
-	 *
-	 * @param IConfiguration $configuration
-	 *	The configuration to accept from.
-	 */
-	public function configure(IConfiguration $configuration) : void;
-
-	/**
-	 * Checks if a key is set.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @return bool
-	 *	The key status.
-	 */
-	public function contains(string $key) : bool;
-
-	/**
 	 * Reads a value.
 	 *
 	 * @throws CacheReadException

@@ -220,6 +220,7 @@ return
 		}
 
 		$lightbit->commit();
+
 		return $status;
 	}
 )
