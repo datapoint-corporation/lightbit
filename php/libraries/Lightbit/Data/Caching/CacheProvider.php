@@ -31,6 +31,7 @@ use \Lightbit\Data\Caching\ICacheFactory;
 use \Lightbit\Data\Caching\IFileCache;
 use \Lightbit\Data\Caching\IMemoryCache;
 use \Lightbit\Data\Caching\IOpCache;
+use \Lightbit\Data\Caching\Op\OpCache;
 
 /**
  * CacheProvider.
@@ -116,7 +117,7 @@ final class CacheProvider
 	 */
 	public final function getOpCache() : IOpCache
 	{
-		return ($this->opCache ?? ($this->opCache = $this->getCacheFactory()->createOpCache()));
+		return ($this->opCache ?? new OpCache());
 	}
 
 	/**

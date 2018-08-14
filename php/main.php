@@ -25,12 +25,6 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
-use \Lightbit\BootstrapException;
-use \Lightbit\ErrorException;
-use \Lightbit\Environment;
-use \Lightbit\Cli\CliApplication;
-use \Lightbit\Http\HttpApplication;
-
 /**
  * The lightbit path.
  *
@@ -50,14 +44,8 @@ const LB_PATH_LIGHTBIT = __DIR__;
 
 		->bindTo(null, 'static');
 
-		// Functions
 		$__require(LB_PATH_LIGHTBIT . '/functions.php');
-
-		// Classes
 		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit.php');
-		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/Exception.php');
-		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/BootstrapException.php');
-		$__require(LB_PATH_LIGHTBIT . '/libraries/Lightbit/ErrorException.php');
 	}
 )();
 
@@ -191,7 +179,7 @@ return
 					$message = sprintf("%s in %s(%d)", $message, $filePath, $lineNumber);
 				}
 
-				throw new Lightbit\ErrorException($level, $filePath, $lineNumber, $message);
+				throw new \Lightbit\ErrorException($level, $filePath, $lineNumber, $message);
 			},
 
 			LB_ERROR_REPORT_FILTER
@@ -220,15 +208,15 @@ return
 		// Get the environment type, get the singleton instance of the matching
 		// application type and run it.
 		$status;
-		$environment = Environment::getInstance();
+		$environment = \Lightbit\Environment::getInstance();
 
 		if ($environment->isWeb())
 		{
-			$status = HttpApplication::getInstance()->run();
+			$status = \Lightbit\Http\HttpApplication::getInstance()->run();
 		}
 		else
 		{
-			$status = CliApplication::getInstance()->run();
+			$status = \Lightbit\Cli\CliApplication::getInstance()->run();
 		}
 
 		$lightbit->commit();

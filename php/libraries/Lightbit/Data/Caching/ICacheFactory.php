@@ -72,15 +72,4 @@ interface ICacheFactory
 	 *	The network cache.
 	 */
 	public function createNetworkCache() : INetworkCache;
-
-	/**
-	 * Creates the opcode cache.
-	 *
-	 * @throws CacheFactoryException
-	 *	Thrown if the cache fails to be created.
-	 *
-	 * @return IOpCache
-	 *	The opcode cache.
-	 */
-	public function createOpCache() : IOpCache;
 }

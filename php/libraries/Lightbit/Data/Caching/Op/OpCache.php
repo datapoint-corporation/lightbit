@@ -38,7 +38,7 @@ use \Lightbit\Data\Caching\IOpCache;
  * @author Datapoint — Sistemas de Informação, Unipessoal, Lda.
  * @since 2.0.0
  */
-class OpCache extends Cache implements IOpCache
+final class OpCache extends Cache implements IOpCache
 {
 	/**
 	 * The key hash map.

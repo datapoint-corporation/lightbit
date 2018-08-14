@@ -25,6 +25,8 @@
 // SOFTWARE.
 // -----------------------------------------------------------------------------
 
+use \Lightbit\Data\Caching\CacheProvider;
+
 /**
  * Lightbit.
  *
@@ -234,35 +236,18 @@ final class Lightbit
 	{
 		if (LB_CACHE)
 		{
+			$opcache = CacheProvider::getInstance()->getOpCache();
+
 			if ($this->classPathMapUpdate && LB_CACHE_CLASS_PATH)
 			{
-				$this->write('lightbit.class.path', $this->classPathMap);
+				$opcache->write('lightbit.class.path', $this->classPathMap);
 			}
 
 			if ($this->resourcePathListMapUpdate && LB_CACHE_RESOURCE_PATH)
 			{
-				$this->write('lightbit.resource.path', $this->resourcePathListMap);
+				$opcache->write('lightbit.resource.path', $this->resourcePathListMap);
 			}
 		}
-	}
-
-	/**
-	 * Gets a key value file path.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @return string
-	 *	The key value file path.
-	 */
-	private function getKeyValueFilePath(string $key) : string
-	{
-		return ($this->keyValueFilePathMap[$key] ?? (
-			$this->keyValueFilePathMap[$key] = (
-				LB_PATH_APPLICATION_TEMPORARY .
-				DIRECTORY_SEPARATOR .
-				md5($key) . '.lightbit.php'
-		)));
 	}
 
 	/**
@@ -398,61 +383,29 @@ final class Lightbit
 	}
 
 	/**
-	 * Fetches from internal cache.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @return mixed
-	 *	The value.
-	 */
-	private function fetch(string $key)
-	{
-		if (file_exists($filePath = $this->getKeyValueFilePath($key)))
-		{
-			return (require ($filePath));
-		}
-
-		return null;
-	}
-
-	/**
 	 * Restores from internal cache.
 	 */
 	public final function restore() : void
 	{
 		if (LB_CACHE)
 		{
+			$opcache = CacheProvider::getInstance()->getOpCache();
+
 			if (LB_CACHE_CLASS_PATH)
 			{
-				$this->classPathMap += ($this->fetch('lightbit.class.path') ?? []);
+				if ($opcache->read('lightbit.class.path', $classPathMap))
+				{
+					$this->classPathMap += $classPathMap;
+				}
 			}
 
 			if (LB_CACHE_RESOURCE_PATH)
 			{
-				$this->resourcePathListMap += ($this->fetch('lightbit.resource.path') ?? []);
+				if ($opcache->read('lightbit.resource.path', $resourcePathListMap))
+				{
+					$this->resourcePathListMap += $resourcePathListMap;
+				}
 			}
 		}
-	}
-
-	/**
-	 * Writes to internal cache.
-	 *
-	 * @param string $key
-	 *	The key.
-	 *
-	 * @param mixed $value
-	 *	The key value.
-	 *
-	 * @return bool
-	 *	The success status.
-	 */
-	private function write(string $key, $value) : bool
-	{
-		return !!file_put_contents(
-			$this->getKeyValueFilePath($key),
-			('<?php return (' . var_export($value, true) . '); // Lightbit/2.0.0'),
-			LOCK_EX
-		);
 	}
 }

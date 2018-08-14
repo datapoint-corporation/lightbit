@@ -65,6 +65,21 @@ interface ICache
 	public function contains(string $key) : bool;
 
 	/**
+	 * Reads a value.
+	 *
+	 * @throws CacheReadException
+	 *	Thrown if the key value is set but fails to be read because it can not
+	 *	be unserialized from persistent storage.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @return mixed
+	 *	The value, if set.
+	 */
+	public function fetch(string $key);
+
+	/**
 	 * Gets a value.
 	 *
 	 * @throws CacheReadException

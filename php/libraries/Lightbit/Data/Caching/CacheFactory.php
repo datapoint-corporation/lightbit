@@ -109,23 +109,4 @@ class CacheFactory implements ICacheFactory
 	{
 		return new SimulationCache();
 	}
-
-	/**
-	 * Creates the opcode cache.
-	 *
-	 * @throws CacheFactoryException
-	 *	Thrown if the cache fails to be created.
-	 *
-	 * @return IOpCache
-	 *	The opcode cache.
-	 */
-	public function createOpCache() : IOpCache
-	{
-		if (LB_CACHE)
-		{
-			return new OpCache();
-		}
-
-		return new SimulationCache();
-	}
 }

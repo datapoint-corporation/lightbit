@@ -117,6 +117,29 @@ abstract class Cache implements ICache
 	}
 
 	/**
+	 * Reads a value.
+	 *
+	 * @throws CacheReadException
+	 *	Thrown if the key value is set but fails to be read because it can not
+	 *	be unserialized from persistent storage.
+	 *
+	 * @param string $key
+	 *	The value key.
+	 *
+	 * @return mixed
+	 *	The value, if set.
+	 */
+	public final function fetch(string $key)
+	{
+		if ($this->read($key, $value))
+		{
+			return $value;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Gets a value.
 	 *
 	 * @throws CacheReadException
